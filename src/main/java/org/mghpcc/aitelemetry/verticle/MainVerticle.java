@@ -166,12 +166,12 @@ import org.mghpcc.aitelemetry.user.SiteUserEnUSGenApiService;
 import org.mghpcc.aitelemetry.user.SiteUserEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.result.BaseResult;
 import org.mghpcc.aitelemetry.model.BaseModel;
-import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
-import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.page.SitePage;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.hub.Hub;
+import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
+import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.page.SitePage;
 import org.mghpcc.aitelemetry.model.cluster.ClusterEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.cluster.ClusterEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
@@ -341,10 +341,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 			siteRequest.setConfig(config);
 			siteRequest.setWebClient(webClient);
 			siteRequest.initDeepSiteRequest(siteRequest);
-			SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
-			apiSitePage.setVertx(vertx);
-			apiSitePage.setConfig(config);
-			apiSitePage.setWebClient(webClient);
 			SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
 			apiSiteUser.setVertx(vertx);
 			apiSiteUser.setConfig(config);
@@ -353,6 +349,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 			apiHub.setVertx(vertx);
 			apiHub.setConfig(config);
 			apiHub.setWebClient(webClient);
+			SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
+			apiSitePage.setVertx(vertx);
+			apiSitePage.setConfig(config);
+			apiSitePage.setWebClient(webClient);
 			ClusterEnUSApiServiceImpl apiCluster = new ClusterEnUSApiServiceImpl();
 			apiCluster.setVertx(vertx);
 			apiCluster.setConfig(config);
@@ -402,12 +402,12 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 			apiBareMetalOrder.setConfig(config);
 			apiBareMetalOrder.setWebClient(webClient);
 			apiSiteUser.createAuthorizationScopes().onSuccess(authToken -> {
-				apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
-						.compose(q1 -> apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-						.onSuccess(q1 -> {
-						apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
-								.compose(q3 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-								.compose(q3 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }))
+					apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
+							.compose(q2 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
+							.compose(q2 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }))
+							.onSuccess(q2 -> {
+						apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
+								.compose(q3 -> apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
 								.onSuccess(q3 -> {
 							apiCluster.authorizeGroupData(authToken, Cluster.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
 									.compose(q4 -> apiCluster.authorizeGroupData(authToken, Cluster.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
@@ -454,7 +454,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 																				.onSuccess(q15 -> {
 																			LOG.info("authorize data complete");
 																			promise.complete();
-																		}).onFailure(ex -> promise.fail(ex));
+																	}).onFailure(ex -> promise.fail(ex));
 																}).onFailure(ex -> promise.fail(ex));
 															}).onFailure(ex -> promise.fail(ex));
 														}).onFailure(ex -> promise.fail(ex));
@@ -662,9 +662,9 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 				Integer zookeeperPort = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_PORT));
 				String zookeeperHosts = Optional.ofNullable(config.getString(ConfigKeys.ZOOKEEPER_HOSTS)).orElse(zookeeperHostName + ":" + zookeeperPort);
 				String clusterHostName = config.getString(ConfigKeys.CLUSTER_HOST_NAME);
-				Integer clusterPort = Optional.ofNullable(config.getString(ConfigKeys.CLUSTER_PORT)).map(val -> Integer.parseInt(val)).orElse(null);
+				Integer clusterPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PORT));
 				String clusterPublicHostName = config.getString(ConfigKeys.CLUSTER_PUBLIC_HOST_NAME);
-				Integer clusterPublicPort = Optional.ofNullable(config.getString(ConfigKeys.CLUSTER_PUBLIC_PORT)).map(val -> Integer.parseInt(val)).orElse(null);
+				Integer clusterPublicPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PUBLIC_PORT));
 				String zookeeperRetryPolicy = config.getString(ConfigKeys.ZOOKEEPER_RETRY_POLICY);
 				Integer zookeeperBaseSleepTimeMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_BASE_SLEEP_TIME_MILLIS));
 				Integer zookeeperMaxSleepMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_SLEEP_MILLIS));
@@ -1465,21 +1465,22 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 		Promise<Void> promise = Promise.promise();
 		try {
 			List<Future<?>> futures = new ArrayList<>();
-			List<String> authResources = Arrays.asList("SITEPAGE","HUB","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER");
-			List<String> publicResources = Arrays.asList("SITEPAGE","CLUSTERTEMPLATE","BAREMETALRESOURCECLASS");
+			List<String> authClassSimpleNames = Arrays.asList("Hub","SitePage","Cluster","AiNode","GpuDevice","Project","ClusterTemplate","ClusterOrder","ManagedCluster","ClusterRequest","BareMetalNetwork","BareMetalResourceClass","BareMetalNode","BareMetalOrder");
+			List<String> authResources = Arrays.asList("HUB","SITEPAGE","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER");
+			List<String> publicClassSimpleNames = Arrays.asList("SitePage","ClusterTemplate","BareMetalResourceClass");
 			SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
 			initializeApiService(apiSiteUser);
 			registerApiService(SiteUserEnUSGenApiService.class, apiSiteUser, SiteUser.getClassApiAddress());
-			apiSiteUser.configureUserSearchApi(config().getString(ComputateConfigKeys.USER_SEARCH_URI), router, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_SiteUser, config(), webClient, authResources);
-			apiSiteUser.configurePublicSearchApi(config().getString(ComputateConfigKeys.PUBLIC_SEARCH_URI), router, SiteRequest.class, config(), webClient, publicResources);
-
-			SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
-			initializeApiService(apiSitePage);
-			registerApiService(SitePageEnUSGenApiService.class, apiSitePage, SitePage.getClassApiAddress());
+			apiSiteUser.configureUserSearchApi(config().getString(ComputateConfigKeys.USER_SEARCH_URI), router, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_SiteUser, config(), webClient, authResources, authClassSimpleNames);
+			apiSiteUser.configurePublicSearchApi(config().getString(ComputateConfigKeys.PUBLIC_SEARCH_URI), router, SiteRequest.class, config(), webClient, publicClassSimpleNames);
 
 			HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
 			initializeApiService(apiHub);
 			registerApiService(HubEnUSGenApiService.class, apiHub, Hub.getClassApiAddress());
+
+			SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
+			initializeApiService(apiSitePage);
+			registerApiService(SitePageEnUSGenApiService.class, apiSitePage, SitePage.getClassApiAddress());
 
 			ClusterEnUSApiServiceImpl apiCluster = new ClusterEnUSApiServiceImpl();
 			initializeApiService(apiCluster);
@@ -1563,7 +1564,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 				SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
 				initializeApiService(apiSiteUser);
 				ServiceRequest serviceRequest = apiSiteUser.generateServiceRequest(handler);
-				apiSiteUser.user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_ComputateSiteUser, "postSiteUserFuture", "patchSiteUserFuture", false).onSuccess(siteRequest -> {
+				apiSiteUser.user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_SiteUser, "postSiteUserFuture", "patchSiteUserFuture", false).onSuccess(siteRequest -> {
 					try {
 
 						String uri = handler.pathParam("uri");
@@ -1655,7 +1656,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 
 			SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
 			initializeApiService(apiSiteUser);
-			SiteRoutes.routes(router, oauth2AuthHandler, config(), webClient, jinjava, apiSiteUser);
+			SiteRoutes.routes(vertx, router, oauth2AuthHandler, config(), webClient, jinjava, apiSiteUser);
 
 			LOG.info("The UI was configured properly.");
 			promise.complete();

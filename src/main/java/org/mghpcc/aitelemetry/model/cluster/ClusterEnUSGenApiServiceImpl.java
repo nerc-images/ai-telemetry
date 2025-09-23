@@ -180,6 +180,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
@@ -376,6 +377,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
@@ -511,6 +513,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PATCH");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
@@ -714,7 +717,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestCluster();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketCluster", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -1096,6 +1099,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("POST");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
@@ -1676,6 +1680,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -1874,7 +1879,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestCluster();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketCluster", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -2079,6 +2084,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PUT");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
@@ -2437,6 +2443,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
@@ -2510,7 +2517,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 		});
 	}
 
-	public void searchpageClusterPageInit(ClusterPage page, SearchList<Cluster> listCluster) {
+	public void searchpageClusterPageInit(JsonObject ctx, ClusterPage page, SearchList<Cluster> listCluster, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageCluster(ServiceRequest serviceRequest) {
@@ -2539,9 +2547,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageClusterPageInit(ctx, page, listCluster, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageCluster failed. "), ex);
 					promise.fail(ex);
@@ -2654,6 +2668,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
@@ -2703,7 +2718,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 		});
 	}
 
-	public void editpageClusterPageInit(ClusterPage page, SearchList<Cluster> listCluster) {
+	public void editpageClusterPageInit(JsonObject ctx, ClusterPage page, SearchList<Cluster> listCluster, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageCluster(ServiceRequest serviceRequest) {
@@ -2732,9 +2748,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageClusterPageInit(ctx, page, listCluster, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageCluster failed. "), ex);
 					promise.fail(ex);
@@ -2847,6 +2869,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
@@ -2896,7 +2919,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 		});
 	}
 
-	public void userpageClusterPageInit(ClusterPage page, SearchList<Cluster> listCluster) {
+	public void userpageClusterPageInit(JsonObject ctx, ClusterPage page, SearchList<Cluster> listCluster, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateUserPageCluster(ServiceRequest serviceRequest) {
@@ -2925,9 +2949,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					userpageClusterPageInit(ctx, page, listCluster, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200UserPageCluster failed. "), ex);
 					promise.fail(ex);
@@ -3041,6 +3071,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -3239,7 +3270,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestCluster();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketCluster", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

@@ -356,6 +356,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -542,7 +543,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestClusterTemplate();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketClusterTemplate", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -798,6 +799,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1236,6 +1238,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1417,7 +1420,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterTemplate();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketClusterTemplate", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -1587,6 +1590,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -1906,7 +1910,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 		});
 	}
 
-	public void searchpageClusterTemplatePageInit(ClusterTemplatePage page, SearchList<ClusterTemplate> listClusterTemplate) {
+	public void searchpageClusterTemplatePageInit(JsonObject ctx, ClusterTemplatePage page, SearchList<ClusterTemplate> listClusterTemplate, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageClusterTemplate(ServiceRequest serviceRequest) {
@@ -1935,9 +1940,15 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageClusterTemplatePageInit(ctx, page, listClusterTemplate, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageClusterTemplate failed. "), ex);
 					promise.fail(ex);
@@ -2023,6 +2034,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, false).onSuccess(listClusterTemplate -> {
 							response200EditPageClusterTemplate(listClusterTemplate).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2067,7 +2079,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 		});
 	}
 
-	public void editpageClusterTemplatePageInit(ClusterTemplatePage page, SearchList<ClusterTemplate> listClusterTemplate) {
+	public void editpageClusterTemplatePageInit(JsonObject ctx, ClusterTemplatePage page, SearchList<ClusterTemplate> listClusterTemplate, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageClusterTemplate(ServiceRequest serviceRequest) {
@@ -2096,9 +2109,15 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageClusterTemplatePageInit(ctx, page, listClusterTemplate, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageClusterTemplate failed. "), ex);
 					promise.fail(ex);
@@ -2197,6 +2216,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2378,7 +2398,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterTemplate();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketClusterTemplate", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

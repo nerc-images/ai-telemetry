@@ -156,6 +156,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
 							response200SearchClusterRequest(listClusterRequest).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -321,6 +322,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
 							response200GETClusterRequest(listClusterRequest).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -439,6 +441,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -625,7 +628,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestClusterRequest();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketClusterRequest", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -922,6 +925,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1376,6 +1380,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1557,7 +1562,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterRequest();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketClusterRequest", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -1770,6 +1775,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2083,6 +2089,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
 							response200SearchPageClusterRequest(listClusterRequest).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2127,7 +2134,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 		});
 	}
 
-	public void searchpageClusterRequestPageInit(ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest) {
+	public void searchpageClusterRequestPageInit(JsonObject ctx, ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageClusterRequest(ServiceRequest serviceRequest) {
@@ -2156,9 +2164,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageClusterRequestPageInit(ctx, page, listClusterRequest, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageClusterRequest failed. "), ex);
 					promise.fail(ex);
@@ -2245,6 +2259,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
 							response200EditPageClusterRequest(listClusterRequest).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2289,7 +2304,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 		});
 	}
 
-	public void editpageClusterRequestPageInit(ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest) {
+	public void editpageClusterRequestPageInit(JsonObject ctx, ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageClusterRequest(ServiceRequest serviceRequest) {
@@ -2318,9 +2334,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageClusterRequestPageInit(ctx, page, listClusterRequest, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageClusterRequest failed. "), ex);
 					promise.fail(ex);
@@ -2407,6 +2429,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
 							response200UserPageClusterRequest(listClusterRequest).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2451,7 +2474,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 		});
 	}
 
-	public void userpageClusterRequestPageInit(ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest) {
+	public void userpageClusterRequestPageInit(JsonObject ctx, ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateUserPageClusterRequest(ServiceRequest serviceRequest) {
@@ -2480,9 +2504,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					userpageClusterRequestPageInit(ctx, page, listClusterRequest, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200UserPageClusterRequest failed. "), ex);
 					promise.fail(ex);
@@ -2584,6 +2614,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2765,7 +2796,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterRequest();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketClusterRequest", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
