@@ -151,6 +151,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200SearchBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -315,6 +316,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200GETBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -430,6 +432,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -616,7 +619,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestBareMetalNetwork();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketBareMetalNetwork", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -1112,6 +1115,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1820,6 +1824,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2001,7 +2006,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestBareMetalNetwork();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketBareMetalNetwork", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -2171,6 +2176,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2483,6 +2489,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200SearchPageBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2527,7 +2534,8 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 		});
 	}
 
-	public void searchpageBareMetalNetworkPageInit(BareMetalNetworkPage page, SearchList<BareMetalNetwork> listBareMetalNetwork) {
+	public void searchpageBareMetalNetworkPageInit(JsonObject ctx, BareMetalNetworkPage page, SearchList<BareMetalNetwork> listBareMetalNetwork, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageBareMetalNetwork(ServiceRequest serviceRequest) {
@@ -2556,9 +2564,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageBareMetalNetworkPageInit(ctx, page, listBareMetalNetwork, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageBareMetalNetwork failed. "), ex);
 					promise.fail(ex);
@@ -2644,6 +2658,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200EditPageBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2688,7 +2703,8 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 		});
 	}
 
-	public void editpageBareMetalNetworkPageInit(BareMetalNetworkPage page, SearchList<BareMetalNetwork> listBareMetalNetwork) {
+	public void editpageBareMetalNetworkPageInit(JsonObject ctx, BareMetalNetworkPage page, SearchList<BareMetalNetwork> listBareMetalNetwork, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageBareMetalNetwork(ServiceRequest serviceRequest) {
@@ -2717,9 +2733,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageBareMetalNetworkPageInit(ctx, page, listBareMetalNetwork, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageBareMetalNetwork failed. "), ex);
 					promise.fail(ex);
@@ -2818,6 +2840,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2999,7 +3022,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestBareMetalNetwork();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketBareMetalNetwork", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

@@ -153,6 +153,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200SearchClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -317,6 +318,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200GETClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -432,6 +434,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, true).onSuccess(listClusterOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -618,7 +621,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestClusterOrder();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -897,6 +900,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1346,6 +1350,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, true).onSuccess(listClusterOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1527,7 +1532,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterOrder();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -1717,6 +1722,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2029,6 +2035,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200SearchPageClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2073,7 +2080,8 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 		});
 	}
 
-	public void searchpageClusterOrderPageInit(ClusterOrderPage page, SearchList<ClusterOrder> listClusterOrder) {
+	public void searchpageClusterOrderPageInit(JsonObject ctx, ClusterOrderPage page, SearchList<ClusterOrder> listClusterOrder, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageClusterOrder(ServiceRequest serviceRequest) {
@@ -2102,9 +2110,15 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageClusterOrderPageInit(ctx, page, listClusterOrder, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageClusterOrder failed. "), ex);
 					promise.fail(ex);
@@ -2190,6 +2204,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200EditPageClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2234,7 +2249,8 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 		});
 	}
 
-	public void editpageClusterOrderPageInit(ClusterOrderPage page, SearchList<ClusterOrder> listClusterOrder) {
+	public void editpageClusterOrderPageInit(JsonObject ctx, ClusterOrderPage page, SearchList<ClusterOrder> listClusterOrder, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageClusterOrder(ServiceRequest serviceRequest) {
@@ -2263,9 +2279,15 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageClusterOrderPageInit(ctx, page, listClusterOrder, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageClusterOrder failed. "), ex);
 					promise.fail(ex);
@@ -2364,6 +2386,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, true).onSuccess(listClusterOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2545,7 +2568,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterOrder();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

@@ -189,6 +189,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, false).onSuccess(listGpuDevice -> {
 							response200SearchGpuDevice(listGpuDevice).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -385,6 +386,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, false).onSuccess(listGpuDevice -> {
 							response200GETGpuDevice(listGpuDevice).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -532,6 +534,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, true).onSuccess(listGpuDevice -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -718,7 +721,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestGpuDevice();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketGpuDevice", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -1179,6 +1182,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1799,6 +1803,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, true).onSuccess(listGpuDevice -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1980,7 +1985,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestGpuDevice();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketGpuDevice", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -2242,6 +2247,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2588,6 +2594,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, false).onSuccess(listGpuDevice -> {
 							response200SearchPageGpuDevice(listGpuDevice).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2656,7 +2663,8 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 		});
 	}
 
-	public void searchpageGpuDevicePageInit(GpuDevicePage page, SearchList<GpuDevice> listGpuDevice) {
+	public void searchpageGpuDevicePageInit(JsonObject ctx, GpuDevicePage page, SearchList<GpuDevice> listGpuDevice, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageGpuDevice(ServiceRequest serviceRequest) {
@@ -2685,9 +2693,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageGpuDevicePageInit(ctx, page, listGpuDevice, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageGpuDevice failed. "), ex);
 					promise.fail(ex);
@@ -2805,6 +2819,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, false).onSuccess(listGpuDevice -> {
 							response200EditPageGpuDevice(listGpuDevice).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2849,7 +2864,8 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 		});
 	}
 
-	public void editpageGpuDevicePageInit(GpuDevicePage page, SearchList<GpuDevice> listGpuDevice) {
+	public void editpageGpuDevicePageInit(JsonObject ctx, GpuDevicePage page, SearchList<GpuDevice> listGpuDevice, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageGpuDevice(ServiceRequest serviceRequest) {
@@ -2878,9 +2894,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageGpuDevicePageInit(ctx, page, listGpuDevice, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageGpuDevice failed. "), ex);
 					promise.fail(ex);
@@ -2998,6 +3020,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, false).onSuccess(listGpuDevice -> {
 							response200UserPageGpuDevice(listGpuDevice).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -3042,7 +3065,8 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 		});
 	}
 
-	public void userpageGpuDevicePageInit(GpuDevicePage page, SearchList<GpuDevice> listGpuDevice) {
+	public void userpageGpuDevicePageInit(JsonObject ctx, GpuDevicePage page, SearchList<GpuDevice> listGpuDevice, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateUserPageGpuDevice(ServiceRequest serviceRequest) {
@@ -3071,9 +3095,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					userpageGpuDevicePageInit(ctx, page, listGpuDevice, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200UserPageGpuDevice failed. "), ex);
 					promise.fail(ex);
@@ -3204,6 +3234,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchGpuDeviceList(siteRequest, false, true, true).onSuccess(listGpuDevice -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -3385,7 +3416,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestGpuDevice();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketGpuDevice", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

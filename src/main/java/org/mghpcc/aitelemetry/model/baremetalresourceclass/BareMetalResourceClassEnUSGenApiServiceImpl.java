@@ -356,6 +356,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalResourceClassList(siteRequest, false, true, true).onSuccess(listBareMetalResourceClass -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -542,7 +543,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestBareMetalResourceClass();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketBareMetalResourceClass", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -782,6 +783,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1202,6 +1204,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalResourceClassList(siteRequest, false, true, true).onSuccess(listBareMetalResourceClass -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1383,7 +1386,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestBareMetalResourceClass();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketBareMetalResourceClass", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -1553,6 +1556,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -1872,7 +1876,8 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 		});
 	}
 
-	public void searchpageBareMetalResourceClassPageInit(BareMetalResourceClassPage page, SearchList<BareMetalResourceClass> listBareMetalResourceClass) {
+	public void searchpageBareMetalResourceClassPageInit(JsonObject ctx, BareMetalResourceClassPage page, SearchList<BareMetalResourceClass> listBareMetalResourceClass, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageBareMetalResourceClass(ServiceRequest serviceRequest) {
@@ -1901,9 +1906,15 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageBareMetalResourceClassPageInit(ctx, page, listBareMetalResourceClass, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageBareMetalResourceClass failed. "), ex);
 					promise.fail(ex);
@@ -1989,6 +2000,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalResourceClassList(siteRequest, false, true, false).onSuccess(listBareMetalResourceClass -> {
 							response200EditPageBareMetalResourceClass(listBareMetalResourceClass).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2033,7 +2045,8 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 		});
 	}
 
-	public void editpageBareMetalResourceClassPageInit(BareMetalResourceClassPage page, SearchList<BareMetalResourceClass> listBareMetalResourceClass) {
+	public void editpageBareMetalResourceClassPageInit(JsonObject ctx, BareMetalResourceClassPage page, SearchList<BareMetalResourceClass> listBareMetalResourceClass, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageBareMetalResourceClass(ServiceRequest serviceRequest) {
@@ -2062,9 +2075,15 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageBareMetalResourceClassPageInit(ctx, page, listBareMetalResourceClass, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageBareMetalResourceClass failed. "), ex);
 					promise.fail(ex);
@@ -2163,6 +2182,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchBareMetalResourceClassList(siteRequest, false, true, true).onSuccess(listBareMetalResourceClass -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2344,7 +2364,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestBareMetalResourceClass();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketBareMetalResourceClass", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

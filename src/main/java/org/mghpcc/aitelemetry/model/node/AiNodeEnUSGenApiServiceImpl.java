@@ -187,6 +187,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200SearchAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -383,6 +384,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200GETAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -530,6 +532,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, true).onSuccess(listAiNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -716,7 +719,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestAiNode();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -1130,6 +1133,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1712,6 +1716,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, true).onSuccess(listAiNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1893,7 +1898,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestAiNode();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -2135,6 +2140,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2481,6 +2487,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200SearchPageAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2549,7 +2556,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 		});
 	}
 
-	public void searchpageAiNodePageInit(AiNodePage page, SearchList<AiNode> listAiNode) {
+	public void searchpageAiNodePageInit(JsonObject ctx, AiNodePage page, SearchList<AiNode> listAiNode, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageAiNode(ServiceRequest serviceRequest) {
@@ -2578,9 +2586,15 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageAiNodePageInit(ctx, page, listAiNode, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageAiNode failed. "), ex);
 					promise.fail(ex);
@@ -2698,6 +2712,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200EditPageAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2742,7 +2757,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 		});
 	}
 
-	public void editpageAiNodePageInit(AiNodePage page, SearchList<AiNode> listAiNode) {
+	public void editpageAiNodePageInit(JsonObject ctx, AiNodePage page, SearchList<AiNode> listAiNode, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageAiNode(ServiceRequest serviceRequest) {
@@ -2771,9 +2787,15 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageAiNodePageInit(ctx, page, listAiNode, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageAiNode failed. "), ex);
 					promise.fail(ex);
@@ -2891,6 +2913,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200UserPageAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2935,7 +2958,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 		});
 	}
 
-	public void userpageAiNodePageInit(AiNodePage page, SearchList<AiNode> listAiNode) {
+	public void userpageAiNodePageInit(JsonObject ctx, AiNodePage page, SearchList<AiNode> listAiNode, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateUserPageAiNode(ServiceRequest serviceRequest) {
@@ -2964,9 +2988,15 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					userpageAiNodePageInit(ctx, page, listAiNode, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200UserPageAiNode failed. "), ex);
 					promise.fail(ex);
@@ -3097,6 +3127,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, true).onSuccess(listAiNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -3278,7 +3309,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestAiNode();
-										if(apiRequest.getVars().size() > 0)
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 											eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

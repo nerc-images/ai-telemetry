@@ -36,12 +36,12 @@ import org.computate.vertx.api.ApiCounter;
 import org.computate.vertx.api.ApiRequest;
 import org.mghpcc.aitelemetry.config.ConfigKeys;
 import org.mghpcc.aitelemetry.request.SiteRequest;
-import org.mghpcc.aitelemetry.page.SitePage;
-import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSGenApiService;
+import org.mghpcc.aitelemetry.page.SitePage;
+import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import org.mghpcc.aitelemetry.model.cluster.ClusterEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.cluster.ClusterEnUSGenApiService;
@@ -588,10 +588,10 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
 			siteRequest.addScopes("GET");
 			String templatePath = config().getString(ComputateConfigKeys.TEMPLATE_PATH);
 
-			SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
-			initializeApiService(apiSitePage);
 			HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
 			initializeApiService(apiHub);
+			SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
+			initializeApiService(apiSitePage);
 			ClusterEnUSApiServiceImpl apiCluster = new ClusterEnUSApiServiceImpl();
 			initializeApiService(apiCluster);
 			AiNodeEnUSApiServiceImpl apiAiNode = new AiNodeEnUSApiServiceImpl();
@@ -615,8 +615,8 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
 			BareMetalNodeEnUSApiServiceImpl apiBareMetalNode = new BareMetalNodeEnUSApiServiceImpl();
 			initializeApiService(apiBareMetalNode);
 
-			apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q1 -> {
-				apiHub.importTimer(Paths.get(templatePath, "/en-us/view/hub"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubResource", "userPage", "download").onSuccess(q2 -> {
+			apiHub.importTimer(Paths.get(templatePath, "/en-us/view/hub"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubResource", "userPage", "download").onSuccess(q1 -> {
+				apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q2 -> {
 					apiCluster.importTimer(Paths.get(templatePath, "/en-us/user/cluster"), vertx, siteRequest, Cluster.CLASS_CANONICAL_NAME, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, Cluster.CLASS_AUTH_RESOURCE, "clusterResource", "userPage", "download").onSuccess(q3 -> {
 						apiAiNode.importTimer(Paths.get(templatePath, "/en-us/user/ai-node"), vertx, siteRequest, AiNode.CLASS_CANONICAL_NAME, AiNode.CLASS_SIMPLE_NAME, AiNode.CLASS_API_ADDRESS_AiNode, AiNode.CLASS_AUTH_RESOURCE, "nodeResource", "userPage", "download").onSuccess(q4 -> {
 							apiGpuDevice.importTimer(Paths.get(templatePath, "/en-us/user/gpu-device"), vertx, siteRequest, GpuDevice.CLASS_CANONICAL_NAME, GpuDevice.CLASS_SIMPLE_NAME, GpuDevice.CLASS_API_ADDRESS_GpuDevice, GpuDevice.CLASS_AUTH_RESOURCE, "gpuDeviceResource", "userPage", "download").onSuccess(q5 -> {

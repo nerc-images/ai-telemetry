@@ -152,6 +152,7 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, false).onSuccess(listSiteUser -> {
 							response200SearchSiteUser(listSiteUser).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -332,6 +333,7 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, true).onSuccess(listSiteUser -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -518,7 +520,7 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestSiteUser();
-											if(apiRequest.getVars().size() > 0)
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
 												eventBus.publish("websocketSiteUser", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -833,6 +835,7 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1330,6 +1333,7 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, false).onSuccess(listSiteUser -> {
 							response200SearchPageSiteUser(listSiteUser).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -1374,7 +1378,8 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 		});
 	}
 
-	public void searchpageSiteUserPageInit(SiteUserPage page, SearchList<SiteUser> listSiteUser) {
+	public void searchpageSiteUserPageInit(JsonObject ctx, SiteUserPage page, SearchList<SiteUser> listSiteUser, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateSearchPageSiteUser(ServiceRequest serviceRequest) {
@@ -1403,9 +1408,15 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					searchpageSiteUserPageInit(ctx, page, listSiteUser, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200SearchPageSiteUser failed. "), ex);
 					promise.fail(ex);
@@ -1492,6 +1503,7 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
+						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, false).onSuccess(listSiteUser -> {
 							response200EditPageSiteUser(listSiteUser).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -1536,7 +1548,8 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 		});
 	}
 
-	public void editpageSiteUserPageInit(SiteUserPage page, SearchList<SiteUser> listSiteUser) {
+	public void editpageSiteUserPageInit(JsonObject ctx, SiteUserPage page, SearchList<SiteUser> listSiteUser, Promise<Void> promise) {
+		promise.complete();
 	}
 
 	public String templateEditPageSiteUser(ServiceRequest serviceRequest) {
@@ -1565,9 +1578,15 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
-					String renderedTemplate = jinjava.render(template, ctx.getMap());
-					Buffer buffer = Buffer.buffer(renderedTemplate);
-					promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					Promise<Void> promise1 = Promise.promise();
+					editpageSiteUserPageInit(ctx, page, listSiteUser, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
 				} catch(Exception ex) {
 					LOG.error(String.format("response200EditPageSiteUser failed. "), ex);
 					promise.fail(ex);
