@@ -152,7 +152,6 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, false).onSuccess(listSiteUser -> {
 							response200SearchSiteUser(listSiteUser).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -333,7 +332,6 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, true).onSuccess(listSiteUser -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -835,7 +833,6 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1333,7 +1330,6 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, false).onSuccess(listSiteUser -> {
 							response200SearchPageSiteUser(listSiteUser).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -1503,7 +1499,6 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchSiteUserList(siteRequest, false, true, false).onSuccess(listSiteUser -> {
 							response200EditPageSiteUser(listSiteUser).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));

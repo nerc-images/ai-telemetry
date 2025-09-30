@@ -154,7 +154,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
 							response200SearchBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -320,7 +319,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
 							response200GETBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -439,7 +437,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -972,7 +969,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1497,7 +1493,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1857,7 +1852,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
 							response200SearchPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2027,7 +2021,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
 							response200EditPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2197,7 +2190,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
 							response200UserPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2382,7 +2374,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();

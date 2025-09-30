@@ -188,12 +188,12 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
 							response200SearchProject(listProject).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -391,12 +391,12 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
 							response200GETProject(listProject).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -533,6 +533,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PATCH");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
@@ -550,7 +551,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1084,6 +1084,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("POST");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
@@ -1101,7 +1102,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1610,6 +1610,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -1627,7 +1628,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2040,6 +2040,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PUT");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
@@ -2057,7 +2058,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2405,12 +2405,12 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
 							response200SearchPageProject(listProject).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2636,12 +2636,12 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
 							response200EditPageProject(listProject).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2843,12 +2843,12 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
 							response200UserPageProject(listProject).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -3051,6 +3051,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -3068,7 +3069,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();

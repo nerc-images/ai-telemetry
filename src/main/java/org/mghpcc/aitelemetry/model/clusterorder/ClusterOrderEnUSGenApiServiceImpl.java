@@ -153,7 +153,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200SearchClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -318,7 +317,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200GETClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -434,7 +432,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, true).onSuccess(listClusterOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -900,7 +897,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1350,7 +1346,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, true).onSuccess(listClusterOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1722,7 +1717,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2035,7 +2029,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200SearchPageClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2204,7 +2197,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, false).onSuccess(listClusterOrder -> {
 							response200EditPageClusterOrder(listClusterOrder).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2386,7 +2378,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterOrderList(siteRequest, false, true, true).onSuccess(listClusterOrder -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();

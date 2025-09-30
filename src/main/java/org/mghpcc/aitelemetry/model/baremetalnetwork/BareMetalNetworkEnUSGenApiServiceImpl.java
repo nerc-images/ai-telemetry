@@ -151,7 +151,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200SearchBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -316,7 +315,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200GETBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -432,7 +430,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1115,7 +1112,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1824,7 +1820,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2176,7 +2171,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2489,7 +2483,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200SearchPageBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2658,7 +2651,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
 							response200EditPageBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2840,7 +2832,6 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();

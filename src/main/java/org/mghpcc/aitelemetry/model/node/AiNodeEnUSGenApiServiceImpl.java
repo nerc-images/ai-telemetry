@@ -182,12 +182,12 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200SearchAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -379,12 +379,12 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200GETAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -515,6 +515,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PATCH");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
@@ -532,7 +533,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, true).onSuccess(listAiNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1116,6 +1116,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("POST");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
@@ -1133,7 +1134,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1699,6 +1699,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -1716,7 +1717,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, true).onSuccess(listAiNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -2123,6 +2123,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PUT");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
@@ -2140,7 +2141,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2482,12 +2482,12 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200SearchPageAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2707,12 +2707,12 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200EditPageAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2908,12 +2908,12 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, false).onSuccess(listAiNode -> {
 							response200UserPageAiNode(listAiNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -3110,6 +3110,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -3127,7 +3128,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchAiNodeList(siteRequest, false, true, true).onSuccess(listAiNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
