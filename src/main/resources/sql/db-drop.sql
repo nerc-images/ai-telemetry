@@ -12,3 +12,4 @@ DROP TABLE BareMetalNetwork CASCADE;
 DROP TABLE BareMetalResourceClass CASCADE;
 DROP TABLE BareMetalNode CASCADE;
 DROP TABLE BareMetalOrder CASCADE;
+DROP TABLE VirtualMachine CASCADE;
