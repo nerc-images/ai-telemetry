@@ -151,7 +151,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
 							response200SearchManagedCluster(listManagedCluster).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -316,7 +315,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
 							response200GETManagedCluster(listManagedCluster).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -432,7 +430,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -875,7 +872,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1314,7 +1310,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1666,7 +1661,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -1979,7 +1973,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
 							response200DownloadManagedCluster(listManagedCluster).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2088,7 +2081,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
 							response200SearchPageManagedCluster(listManagedCluster).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2257,7 +2249,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
 							response200EditPageManagedCluster(listManagedCluster).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2439,7 +2430,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();

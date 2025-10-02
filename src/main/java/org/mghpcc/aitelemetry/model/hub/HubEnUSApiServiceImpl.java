@@ -809,7 +809,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
             Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
             String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
             Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-            String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("sum by (cluster, exported_namespace) (DCGM_FI_DEV_GPU_UTIL{cluster=\"%s\"})", clusterName)));
+            String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{cluster='%s', exported_namespace!=''}[1h:]) > bool 0)[31d:1d]))", clusterName)));
 
             webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
                     .putHeader("Authorization", String.format("Bearer %s", accessToken))

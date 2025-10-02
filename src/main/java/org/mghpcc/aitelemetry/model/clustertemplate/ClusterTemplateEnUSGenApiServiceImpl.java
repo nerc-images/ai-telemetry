@@ -356,7 +356,6 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -799,7 +798,6 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1238,7 +1236,6 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1590,7 +1587,6 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2034,7 +2030,6 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, false).onSuccess(listClusterTemplate -> {
 							response200EditPageClusterTemplate(listClusterTemplate).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2216,7 +2211,6 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();

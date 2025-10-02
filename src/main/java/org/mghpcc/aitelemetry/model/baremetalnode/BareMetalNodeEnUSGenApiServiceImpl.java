@@ -151,7 +151,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
 							response200SearchBareMetalNode(listBareMetalNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -316,7 +315,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
 							response200GETBareMetalNode(listBareMetalNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -432,7 +430,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -915,7 +912,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1399,7 +1395,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1751,7 +1746,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2064,7 +2058,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
 							response200SearchPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2233,7 +2226,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
 							response200EditPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2415,7 +2407,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();

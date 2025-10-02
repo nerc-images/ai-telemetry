@@ -172,12 +172,12 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
 							response200SearchHub(listHub).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -363,12 +363,12 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
 							response200GETHub(listHub).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -493,6 +493,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PATCH");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
@@ -510,7 +511,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, true).onSuccess(listHub -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -780,14 +780,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							num++;
 							bParams.add(o2.sqlHubId());
 						break;
-					case "setCreated":
-							o2.setCreated(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(Hub.VAR_created + "=$" + num);
-							num++;
-							bParams.add(o2.sqlCreated());
-						break;
 					case "setHubResource":
 							o2.setHubResource(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -795,6 +787,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							bSql.append(Hub.VAR_hubResource + "=$" + num);
 							num++;
 							bParams.add(o2.sqlHubResource());
+						break;
+					case "setCreated":
+							o2.setCreated(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Hub.VAR_created + "=$" + num);
+							num++;
+							bParams.add(o2.sqlCreated());
 						break;
 					case "setPageId":
 							o2.setPageId(jsonObject.getString(entityVar));
@@ -804,14 +804,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							num++;
 							bParams.add(o2.sqlPageId());
 						break;
-					case "setArchived":
-							o2.setArchived(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(Hub.VAR_archived + "=$" + num);
-							num++;
-							bParams.add(o2.sqlArchived());
-						break;
 					case "setDescription":
 							o2.setDescription(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -819,6 +811,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							bSql.append(Hub.VAR_description + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDescription());
+						break;
+					case "setArchived":
+							o2.setArchived(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Hub.VAR_archived + "=$" + num);
+							num++;
+							bParams.add(o2.sqlArchived());
 						break;
 					case "setLocalClusterName":
 							o2.setLocalClusterName(jsonObject.getString(entityVar));
@@ -978,6 +978,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("POST");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
@@ -995,7 +996,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -1254,15 +1254,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						num++;
 						bParams.add(o2.sqlHubId());
 						break;
-					case Hub.VAR_created:
-						o2.setCreated(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(Hub.VAR_created + "=$" + num);
-						num++;
-						bParams.add(o2.sqlCreated());
-						break;
 					case Hub.VAR_hubResource:
 						o2.setHubResource(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1271,6 +1262,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						bSql.append(Hub.VAR_hubResource + "=$" + num);
 						num++;
 						bParams.add(o2.sqlHubResource());
+						break;
+					case Hub.VAR_created:
+						o2.setCreated(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Hub.VAR_created + "=$" + num);
+						num++;
+						bParams.add(o2.sqlCreated());
 						break;
 					case Hub.VAR_pageId:
 						o2.setPageId(jsonObject.getString(entityVar));
@@ -1281,15 +1281,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						num++;
 						bParams.add(o2.sqlPageId());
 						break;
-					case Hub.VAR_archived:
-						o2.setArchived(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(Hub.VAR_archived + "=$" + num);
-						num++;
-						bParams.add(o2.sqlArchived());
-						break;
 					case Hub.VAR_description:
 						o2.setDescription(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1298,6 +1289,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						bSql.append(Hub.VAR_description + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDescription());
+						break;
+					case Hub.VAR_archived:
+						o2.setArchived(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Hub.VAR_archived + "=$" + num);
+						num++;
+						bParams.add(o2.sqlArchived());
 						break;
 					case Hub.VAR_localClusterName:
 						o2.setLocalClusterName(jsonObject.getString(entityVar));
@@ -1461,6 +1461,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -1478,7 +1479,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, true).onSuccess(listHub -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -1839,6 +1839,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("PUT");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
@@ -1856,7 +1857,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						ApiRequest apiRequest = new ApiRequest();
 						JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
 						apiRequest.setRows(Long.valueOf(jsonArray.size()));
@@ -2192,12 +2192,12 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
 							response200SearchPageHub(listHub).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2411,12 +2411,12 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
 							response200EditPageHub(listHub).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2606,12 +2606,12 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
 							response200DisplayPageHub(listHub).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2801,12 +2801,12 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
 							response200UserPageHub(listHub).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
@@ -2997,6 +2997,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(fqs.size() > 0) {
 							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
 							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
 						}
 					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
@@ -3014,7 +3015,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						siteRequest.setFilteredScope(true);
 						searchHubList(siteRequest, false, true, true).onSuccess(listHub -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
@@ -3641,7 +3641,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubName, hubId, created, hubResource, pageId, archived, description, localClusterName, sessionId, userKey, objectTitle, displayPage FROM Hub WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubName, hubId, hubResource, created, pageId, description, archived, localClusterName, sessionId, userKey, objectTitle, displayPage FROM Hub WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -3847,11 +3847,11 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 
 			page.persistForClass(Hub.VAR_hubName, Hub.staticSetHubName(siteRequest2, (String)result.get(Hub.VAR_hubName)));
 			page.persistForClass(Hub.VAR_hubId, Hub.staticSetHubId(siteRequest2, (String)result.get(Hub.VAR_hubId)));
-			page.persistForClass(Hub.VAR_created, Hub.staticSetCreated(siteRequest2, (String)result.get(Hub.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(Hub.VAR_hubResource, Hub.staticSetHubResource(siteRequest2, (String)result.get(Hub.VAR_hubResource)));
+			page.persistForClass(Hub.VAR_created, Hub.staticSetCreated(siteRequest2, (String)result.get(Hub.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(Hub.VAR_pageId, Hub.staticSetPageId(siteRequest2, (String)result.get(Hub.VAR_pageId)));
-			page.persistForClass(Hub.VAR_archived, Hub.staticSetArchived(siteRequest2, (String)result.get(Hub.VAR_archived)));
 			page.persistForClass(Hub.VAR_description, Hub.staticSetDescription(siteRequest2, (String)result.get(Hub.VAR_description)));
+			page.persistForClass(Hub.VAR_archived, Hub.staticSetArchived(siteRequest2, (String)result.get(Hub.VAR_archived)));
 			page.persistForClass(Hub.VAR_localClusterName, Hub.staticSetLocalClusterName(siteRequest2, (String)result.get(Hub.VAR_localClusterName)));
 			page.persistForClass(Hub.VAR_sessionId, Hub.staticSetSessionId(siteRequest2, (String)result.get(Hub.VAR_sessionId)));
 			page.persistForClass(Hub.VAR_userKey, Hub.staticSetUserKey(siteRequest2, (String)result.get(Hub.VAR_userKey)));
