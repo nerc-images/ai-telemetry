@@ -248,7 +248,7 @@ SITE_SYSTEMD: "{{ '/usr/lib/systemd/system' if ansible_distribution_file_variety
 #######################
 
 # The name of the cloud provider where the public site is deployed. 
-SITE_POWERED_BY_NAME: "{{ lookup('env', 'SITE_POWERED_BY_NAME') | default('Mass Open Cloud', true) }}"
+SITE_POWERED_BY_NAME: "{{ lookup('env', 'SITE_POWERED_BY_NAME') | default('Open Sovereign AI Cloud', true) }}"
 # The URL of the cloud provider where the public site is deployed. 
 SITE_POWERED_BY_URL: "{{ lookup('env', 'SITE_POWERED_BY_URL') | default('https://research.redhat.com/mass-open-cloud/', true) }}"
 # The static path to the logo of the cloud provider where the public site is deployed. 

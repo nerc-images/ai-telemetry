@@ -208,6 +208,9 @@ import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNode;
 import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrder;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
 
 
 /**
@@ -401,6 +404,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 			apiBareMetalOrder.setVertx(vertx);
 			apiBareMetalOrder.setConfig(config);
 			apiBareMetalOrder.setWebClient(webClient);
+			VirtualMachineEnUSApiServiceImpl apiVirtualMachine = new VirtualMachineEnUSApiServiceImpl();
+			apiVirtualMachine.setVertx(vertx);
+			apiVirtualMachine.setConfig(config);
+			apiVirtualMachine.setWebClient(webClient);
 			apiSiteUser.createAuthorizationScopes().onSuccess(authToken -> {
 					apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
 							.compose(q2 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
@@ -452,8 +459,13 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 																				.compose(q15 -> apiBareMetalOrder.authorizeGroupData(authToken, BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }))
 																				.compose(q15 -> apiBareMetalOrder.authorizeGroupData(authToken, BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
 																				.onSuccess(q15 -> {
-																			LOG.info("authorize data complete");
-																			promise.complete();
+																			apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
+																					.compose(q16 -> apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
+																					.compose(q16 -> apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
+																					.onSuccess(q16 -> {
+																				LOG.info("authorize data complete");
+																				promise.complete();
+																		}).onFailure(ex -> promise.fail(ex));
 																	}).onFailure(ex -> promise.fail(ex));
 																}).onFailure(ex -> promise.fail(ex));
 															}).onFailure(ex -> promise.fail(ex));
@@ -1465,8 +1477,8 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 		Promise<Void> promise = Promise.promise();
 		try {
 			List<Future<?>> futures = new ArrayList<>();
-			List<String> authClassSimpleNames = Arrays.asList("Hub","SitePage","Cluster","AiNode","GpuDevice","Project","ClusterTemplate","ClusterOrder","ManagedCluster","ClusterRequest","BareMetalNetwork","BareMetalResourceClass","BareMetalNode","BareMetalOrder");
-			List<String> authResources = Arrays.asList("HUB","SITEPAGE","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER");
+			List<String> authClassSimpleNames = Arrays.asList("Hub","SitePage","Cluster","AiNode","GpuDevice","Project","ClusterTemplate","ClusterOrder","ManagedCluster","ClusterRequest","BareMetalNetwork","BareMetalResourceClass","BareMetalNode","BareMetalOrder","VirtualMachine");
+			List<String> authResources = Arrays.asList("HUB","SITEPAGE","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER","VIRTUALMACHINE");
 			List<String> publicClassSimpleNames = Arrays.asList("SitePage","ClusterTemplate","BareMetalResourceClass");
 			SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
 			initializeApiService(apiSiteUser);
@@ -1529,6 +1541,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 			BareMetalOrderEnUSApiServiceImpl apiBareMetalOrder = new BareMetalOrderEnUSApiServiceImpl();
 			initializeApiService(apiBareMetalOrder);
 			registerApiService(BareMetalOrderEnUSGenApiService.class, apiBareMetalOrder, BareMetalOrder.getClassApiAddress());
+
+			VirtualMachineEnUSApiServiceImpl apiVirtualMachine = new VirtualMachineEnUSApiServiceImpl();
+			initializeApiService(apiVirtualMachine);
+			registerApiService(VirtualMachineEnUSGenApiService.class, apiVirtualMachine, VirtualMachine.getClassApiAddress());
 
 			Future.all(futures).onSuccess( a -> {
 				LOG.info("The API was configured properly.");
