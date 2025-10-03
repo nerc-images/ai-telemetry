@@ -1,0 +1,476 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud-setup-tasks
+  namespace: smartaquaculture
+data:
+  main.yaml: |
+    ---
+
+    - name: Get postgres pod by label
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: postgres
+        label_selectors:
+          - postgres-operator.crunchydata.com/role=master
+      register: postgres_pod_info
+    - name: Set postgres pod name
+      set_fact:
+        POSTGRES_POD_NAME: "{{ postgres_pod_info.resources[0].metadata.name }}"
+    - name: "Create database user {{ DATABASE_USERNAME }}"
+      kubernetes.core.k8s_exec:
+        namespace: postgres
+        pod: "{{ POSTGRES_POD_NAME }}"
+        command: >-
+          env psql -U postgres postgres -c 
+          "create user {{ DATABASE_USERNAME }} password '{{ DATABASE_PASSWORD }}';"
+      ignore_errors: true
+      register: create_database_user
+    - name: Test create database user
+      fail:
+        msg: "{{ command_status }}"
+      when: create_database_user.failed and create_database_user is not search("already exists")
+    - name: "Create database {{ DATABASE_DATABASE }}"
+      kubernetes.core.k8s_exec:
+        namespace: postgres
+        pod: "{{ POSTGRES_POD_NAME }}"
+        command: >-
+          env psql -U postgres postgres -c 
+          "create database {{ DATABASE_DATABASE }} owner {{ DATABASE_USERNAME }};"
+      ignore_errors: true
+      register: create_database
+    - name: Test create database
+      fail:
+        msg: "{{ command_status }}"
+      when: create_database.failed and create_database is not search("already exists")
+
+    - name: >-
+        Create {{ SOLR_COLLECTION }} collection: 
+        SOLR_AUTH_TYPE=basic 
+        SOLR_AUTHENTICATION_OPTS="-Dbasicauth=admin:{{ SOLR_PASSWORD }}" 
+        /opt/solr/bin/solr create_collection --solr-url http://localhost:8983 -c {{ SOLR_COLLECTION }} -n computate'
+      kubernetes.core.k8s_exec:
+        namespace: solr
+        pod: solr-solrcloud-0
+        command: >-
+          bash -c '
+          SOLR_AUTH_TYPE=basic
+          SOLR_AUTHENTICATION_OPTS="-Dbasicauth=admin:{{ SOLR_PASSWORD }}" 
+          /opt/solr/bin/solr create_collection --solr-url http://localhost:8983 -c {{ SOLR_COLLECTION }} -n computate
+          '
+      register: create_collection
+      ignore_errors: true
+    - name: Debug create_collection
+      debug:
+        var: create_collection
+    - name: Test create {{ SOLR_COLLECTION }} collection success
+      fail:
+        msg: "{{ command_status }}"
+      when: create_collection.failed and create_collection is not search("already exists")
+
+    - name: Configure keycloak realm
+      community.general.keycloak_realm:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        state: present
+        id: "{{ AUTH_REALM }}"
+        realm: "{{ AUTH_REALM }}"
+        enabled: true
+        displayName: "{{ AUTH_REALM }}"
+        registrationAllowed: true
+        resetPasswordAllowed: true
+        editUsernameAllowed: false
+        rememberMe: true
+        verifyEmail: false
+        loginWithEmailAllowed: false
+
+    #- name: Configure authentication browser executions
+    #  community.general.keycloak_authentication:
+    #    validate_certs: false
+    #    auth_keycloak_url: "{{ AUTH_URL }}"
+    #    auth_realm: master
+    #    auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+    #    auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+    #    realm: "{{ AUTH_REALM }}"
+    #    state: present
+    #    force: true
+    #    alias: "browser-PATCH"
+    #    copyFrom: "browser"
+    #    authenticationExecutions:
+    #      - providerId: identity-provider-redirector
+    #        requirement: REQUIRED
+    #        index: 4
+    #        authenticationConfig:
+    #          alias: openshift
+    #          config:
+    #            defaultProvider: openshift
+    #  ignore_errors: true
+
+    #- name: Reconfigure keycloak realm with new browserFlow
+    #  community.general.keycloak_realm:
+    #    validate_certs: false
+    #    auth_client_id: admin-cli
+    #    auth_keycloak_url: "{{ AUTH_URL }}"
+    #    auth_realm: master
+    #    auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+    #    auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+    #    state: present
+    #    id: "{{ AUTH_REALM }}"
+    #    realm: "{{ AUTH_REALM }}"
+    #    enabled: true
+    #    displayName: "{{ AUTH_REALM }}"
+    #    registrationAllowed: false
+    #    resetPasswordAllowed: true
+    #    editUsernameAllowed: false
+    #    rememberMe: true
+    #    verifyEmail: false
+    #    loginWithEmailAllowed: false
+    #    browserFlow: browser-PATCH
+
+    - name: Enable Unmanaged Attributes
+      community.general.keycloak_userprofile:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        state: present
+        parent_id: "{{ AUTH_REALM }}"
+        config:
+          kc_user_profile_config:
+            - unmanagedAttributePolicy: ENABLED
+              attributes:
+                - name: username
+                  displayName: ${username}
+                  validations:
+                    length:
+                      min: 3
+                      max: 255
+                    username_prohibited_characters: {}
+                    up_username_not_idn_homograph: {}
+                  annotations: {}
+                  permissions:
+                    view:
+                      - admin
+                      - user
+                    edit:
+                      - admin
+                  multivalued: false
+                - name: email
+                  displayName: ${email}
+                  validations:
+                    email: {}
+                    length:
+                      max: 255
+                  annotations: {}
+                  required:
+                    roles:
+                      - user
+                  permissions:
+                    view:
+                      - admin
+                      - user
+                    edit:
+                      - admin
+                      - user
+                  multivalued: false
+                - name: firstName
+                  displayName: ${firstName}
+                  validations:
+                    length:
+                      max: 255
+                    person_name_prohibited_characters: {}
+                  annotations: {}
+                  required:
+                    roles:
+                      - user
+                  permissions:
+                    view:
+                      - admin
+                      - user
+                    edit:
+                      - admin
+                      - user
+                  multivalued: false
+                - name: lastName
+                  displayName: ${lastName}
+                  validations:
+                    length:
+                      max: 255
+                    person_name_prohibited_characters: {}
+                  annotations: {}
+                  required:
+                    roles:
+                      - user
+                  permissions:
+                    view:
+                      - admin
+                      - user
+                    edit:
+                      - admin
+                      - user
+                  multivalued: false
+                - name: customerProfileId
+                  displayName: ${customerProfileId}
+                  validations:
+                    length:
+                      max: 255
+                    person_name_prohibited_characters: {}
+                  annotations: {}
+                  required:
+                    roles:
+                      - user
+                  permissions:
+                    view:
+                      - admin
+                    edit:
+                      - admin
+                  multivalued: false
+              groups:
+                - name: user-metadata
+                  displayHeader: User metadata
+                  displayDescription: Attributes, which refer to user metadata
+                  annotations: {}
+
+    - name: "Configure keycloak client scope openid"
+      community.general.keycloak_clientscope:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        state: present
+        id: "{{ AUTH_REALM }}-openid"
+        realm: "{{ AUTH_REALM }}"
+        name: "openid"
+        description: A client scope for the openid client
+        protocol: openid-connect
+        attributes:
+          include.in.token.scope: 'true'
+        protocolMappers:
+          - config:
+              access.token.claim: 'true'
+              introspection.token.claim: 'true'
+            id: "{{ AUTH_REALM }}-openid-sub"
+            name: "sub"
+            protocol: openid-connect
+            protocolMapper: oidc-sub-mapper
+
+    - name: "Configure keycloak client scope {{ AUTH_CLIENT }}"
+      community.general.keycloak_clientscope:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        state: present
+        id: "{{ AUTH_REALM }}-{{ AUTH_CLIENT }}"
+        realm: "{{ AUTH_REALM }}"
+        name: "{{ AUTH_CLIENT }}"
+        description: A client scope for the {{ AUTH_CLIENT }} client
+        protocol: openid-connect
+        attributes:
+          include.in.token.scope: 'true'
+        protocolMappers:
+          - config:
+              access.token.claim: 'true'
+              id.token.claim: 'false'
+              included.client.audience: '{{ AUTH_CLIENT }}'
+            id: "{{ AUTH_REALM }}-{{ AUTH_CLIENT }}"
+            name: "{{ AUTH_CLIENT }}"
+            protocol: openid-connect
+            protocolMapper: oidc-audience-mapper
+          - config:
+              full.path: "true"
+              introspection.token.claim: "true"
+              userinfo.token.claim: "true"
+              id.token.claim: "true"
+              lightweight.claim: "false"
+              access.token.claim: "true"
+              claim.name: "groups"
+            id: "{{ AUTH_REALM }}-{{ AUTH_CLIENT }}-groups"
+            name: "groups"
+            protocol: openid-connect
+            protocolMapper: oidc-group-membership-mapper
+
+    - name: "Configure keycloak client scope customerProfileId"
+      community.general.keycloak_clientscope:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        state: present
+        id: "{{ AUTH_REALM }}-customerProfileId"
+        realm: "{{ AUTH_REALM }}"
+        name: "customerProfileId"
+        description: A customerProfileId client scope
+        protocol: openid-connect
+        attributes:
+          include.in.token.scope: 'true'
+          display.on.consent.screen: 'true'
+        protocolMappers:
+          - config:
+              introspection.token.claim: 'true'
+              access.token.claim: 'true'
+              id.token.claim: 'true'
+              userinfo.token.claim: 'true'
+              lightweight.claim: 'false'
+              claim.name: customerProfileId
+              jsonType.label: String
+              user.attribute: customerProfileId
+            id: "{{ AUTH_REALM }}-customerProfileId"
+            name: customerProfileId
+            protocol: openid-connect
+            protocolMapper: oidc-usermodel-attribute-mapper
+
+    - name: "Disable RSA-OAEP key component from {{ AUTH_REALM }}"
+      community.general.keycloak_component:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        state: absent
+        name: rsa-enc-generated
+        parent_id: "{{ AUTH_REALM }}"
+        provider_id: rsa-enc-generated
+        provider_type: org.keycloak.keys.KeyProvider
+
+    - name: "Configure OpenShift client {{ AUTH_CLIENT }}"
+      community.general.keycloak_client:
+        state: present
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        realm: "{{ AUTH_REALM }}"
+        id: "{{ AUTH_CLIENT }}"
+        name: "{{ AUTH_CLIENT }}"
+        clientId: "{{ AUTH_CLIENT }}"
+        standardFlowEnabled: true
+        serviceAccountsEnabled: true
+        authorizationServicesEnabled: true
+        frontchannelLogout: true
+        publicClient: false
+        protocol: openid-connect
+        redirectUris: "{{ lookup('template', 'keycloak-redirect-uris.yaml') | from_yaml }}"
+        defaultClientScopes:
+          - openid
+          - profile
+          - customerProfileId
+          - "{{ AUTH_CLIENT }}"
+        authorizationSettings:
+          decisionStrategy: AFFIRMATIVE
+
+    #- name: Get keycloak OAuthClient resource info
+    #  kubernetes.core.k8s_info:
+    #    api_version: oauth.openshift.io/v1
+    #    kind: OAuthClient
+    #    name: keycloak
+    #  register: keycloak_oauth_client
+    #- name: "Install keycloak OAuthClient on OpenShift"
+    #  kubernetes.core.k8s:
+    #    state: present
+    #    definition: "{{ lookup('template', 'oauthclient.yaml') }}"
+    #    validate_certs: false
+    #  when: keycloak_oauth_client.resources | length == 0
+    #- name: Get keycloak OAuthClient resource info
+    #  kubernetes.core.k8s_info:
+    #    api_version: oauth.openshift.io/v1
+    #    kind: OAuthClient
+    #    name: keycloak
+    #  register: keycloak_oauth_client_2
+    #- name: Configure Keycloak OpenShift v4 identity provider
+    #  community.general.keycloak_identity_provider:
+    #    state: present
+    #    validate_certs: false
+    #    auth_client_id: admin-cli
+    #    auth_keycloak_url: "{{ AUTH_URL }}"
+    #    auth_realm: master
+    #    auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+    #    auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+    #    enabled: true
+    #    realm: "{{ AUTH_REALM }}"
+    #    providerId: openshift-v4
+    #    alias: openshift
+    #    displayName: OpenShift
+    #    trustEmail: true
+    #    storeToken: false
+    #    addReadTokenRoleOnCreate: false
+    #    authenticateByDefault: false
+    #    linkOnly: false
+    #    config:
+    #      syncMode: "LEGACY"
+    #      baseUrl: "https://api{{ OPENSHIFT_APPS_DOMAIN | regex_replace('^[^\\.]*') }}:6443"
+    #      clientId: "keycloak"
+    #      clientSecret: "{{ keycloak_oauth_client_2.resources[0].secret }}"
+
+    - name: Get a new Keycloak client secret, passing client_id instead of id
+      community.general.keycloak_clientsecret_info:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        client_id: '{{ AUTH_CLIENT }}'
+        realm: "{{ AUTH_REALM }}"
+      register: AUTH_CLIENT_SECRET
+    - name: Set AUTH_SECRET variable
+      set_fact:
+        AUTH_SECRET: "{{ AUTH_CLIENT_SECRET.clientsecret_info.value }}"
+
+    - name: "Create a zookeeper secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'zookeeper-secret.yaml') }}"
+        validate_certs: false
+    - name: "Create a solr secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'solr-secret.yaml') }}"
+        validate_certs: false
+    - name: "Create a database secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'database-secret.yaml') }}"
+        validate_certs: false
+    - name: "Create a auth secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'auth-secret.yaml') }}"
+        validate_certs: false
+    - name: "Create a context-broker secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'context-broker-secret.yaml') }}"
+        validate_certs: false
+    - name: "Create a site secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'site-secret.yaml') }}"
+        validate_certs: false
+    - name: "Create a font-awesome secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'font-awesome-secret.yaml') }}"
+        validate_certs: false
+      when: query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | length == 0
+    - name: "Create an extra secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'extra-secret.yaml') }}"
+        validate_certs: false
+      when: query('kubernetes.core.k8s', kind='Secret', resource_name='cloud-extra', namespace=SITE_NAMESPACE) | length == 0
