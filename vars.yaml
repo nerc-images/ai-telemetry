@@ -39,7 +39,7 @@ SITE_DISPLAY_NAME: AI Telemetry
 # A short description of the site. 
 SITE_DESCRIPTION: "AI telemetry on OpenShift dashboards"
 # The site namespace in OpenShift. 
-SITE_NAMESPACE: "{{ lookup('env', 'SITE_NAMESPACE') | default('smartaquaculture', true) }}"
+SITE_NAMESPACE: "{{ lookup('env', 'SITE_NAMESPACE') | default('aitelemetry', true) }}"
 # The main locale of this application. 
 SITE_LOCALE: en-US
 # A computate specific identifier for the locale and language of the code. 
