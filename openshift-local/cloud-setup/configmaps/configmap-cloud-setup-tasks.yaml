@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cloud-setup-tasks
-  namespace: smartaquaculture
+  namespace: aitelemetry
 data:
   main.yaml: |
     ---

@@ -1,7 +1,7 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  namespace: smartaquaculture
+  namespace: aitelemetry
   name: aitelemetry
 spec:
   host: aitelemetry.apps-crc.testing

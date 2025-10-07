@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cloud-setup-playbook
-  namespace: smartaquaculture
+  namespace: aitelemetry
 data:
   cloud-setup.yaml: |
     ---
