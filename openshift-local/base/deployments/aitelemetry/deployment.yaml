@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: aitelemetry
     deployment: aitelemetry
   name: aitelemetry
-  namespace: smartaquaculture
+  namespace: aitelemetry
 spec:
   progressDeadlineSeconds: 600
   replicas: 1

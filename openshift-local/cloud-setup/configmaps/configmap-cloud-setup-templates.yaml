@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cloud-setup-templates
-  namespace: smartaquaculture
+  namespace: aitelemetry
 data:
   keycloak-redirect-uris.yaml: |
     - "https://oauth-openshift.{{ OPENSHIFT_APPS_DOMAIN }}/oauth2callback/Keycloak"

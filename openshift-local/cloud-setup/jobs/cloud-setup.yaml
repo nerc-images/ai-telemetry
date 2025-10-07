@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: cloud-setup
-  namespace: smartaquaculture
+  namespace: aitelemetry
 spec:
   backoffLimit: 1000
   template:

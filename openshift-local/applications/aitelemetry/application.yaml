@@ -13,7 +13,7 @@ spec:
     targetRevision: HEAD
     path: openshift-local/base/
   destination:
-    namespace: smartaquaculture
+    namespace: aitelemetry
     server: 'https://kubernetes.default.svc'
   syncPolicy:
     automated:
