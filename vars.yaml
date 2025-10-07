@@ -588,6 +588,10 @@ WRITE_API: true
 # Write code comments into generated code. 
 WRITE_COMMENTS: true
 
+##############
+# extra vars #
+##############
+
 #######################
 # prom-keycloak-proxy #
 #######################
@@ -600,7 +604,7 @@ PROM_KEYCLOAK_PROXY_PORT: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | defaul
 # The Auth client. 
 AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(SITE_NAME + '-sa', true) }}"
 # The Auth openshift secret with the client secret credentials. 
-AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('keycloak-client-' + AUTH_CLIENT_SA, true) }}"
+AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-extra', true) }}"
 # The Auth secret. 
 AUTH_SECRET_SA: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE)[0].data.clientSecret | b64decode }}"
 
@@ -614,7 +618,7 @@ GRAFANA_BASE_URL: https://grafana.apps.obs.nerc.mghpcc.org
 ###################
 
 # The Auth openshift secret with the admin credentials. 
-FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default('fulfillment-api', true) }}"
+FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
 # The Auth admin username. 
 FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=FULFILLMENT_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE)[0].data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
@@ -636,7 +640,7 @@ IMPORT_DATA_PERIOD_ManagedCluster: 30 seconds
 # Enable thin UI
 ENABLE_THIN_UI: "{{ lookup('env', 'ENABLE_THIN_UI') | default('false', true) | bool }}"
 # The Auth openshift secret with the admin credentials. 
-ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default('fulfillment-api', true) }}"
+ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
 # The Auth admin username. 
 ESI_API_OPENSHIFT_TOKEN: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=ESI_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE)[0].data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
