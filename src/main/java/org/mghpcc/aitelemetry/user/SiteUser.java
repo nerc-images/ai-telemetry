@@ -5,6 +5,7 @@ import java.util.List;
 import org.computate.search.wrap.Wrap;
 import org.computate.vertx.model.user.ComputateSiteUser;
 import org.computate.vertx.request.ComputateSiteRequest;
+import org.mghpcc.aitelemetry.config.ConfigKeys;
 import org.mghpcc.aitelemetry.model.BaseModel;
 import org.mghpcc.aitelemetry.request.SiteRequest;
 
@@ -177,7 +178,7 @@ public class SiteUser extends SiteUserGen<BaseModel> implements ComputateSiteUse
 	 *   tailspin: Tailspin — "Like a bird in flight, guiding you from there to here."
 	 */
 	protected void _webComponentsTheme(Wrap<String> w) {
-		w.o("tailspin");
+		w.o(siteRequest_.getConfig().getString(ConfigKeys.WEB_COMPONENTS_THEME));
 	}
 
 	/**

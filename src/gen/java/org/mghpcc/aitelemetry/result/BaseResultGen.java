@@ -1944,7 +1944,7 @@ public abstract class BaseResultGen<DEV> extends Object {
 	public static final String DISPLAY_NAME_saves = "";
 	public static final String DISPLAY_NAME_objectTitle = "title";
 	public static final String DISPLAY_NAME_displayPage = "";
-	public static final String DISPLAY_NAME_editPage = "edit";
+	public static final String DISPLAY_NAME_editPage = "manage";
 	public static final String DISPLAY_NAME_userPage = "user";
 	public static final String DISPLAY_NAME_download = "download";
 	public static final String DISPLAY_NAME_objectSuggest = "autosuggest";
@@ -2052,7 +2052,7 @@ public abstract class BaseResultGen<DEV> extends Object {
 		case VAR_objectTitle:
 			return "The title of this page. ";
 		case VAR_editPage:
-			return "Edit this";
+			return "Manage this";
 		case VAR_userPage:
 			return "User page";
 		case VAR_download:
