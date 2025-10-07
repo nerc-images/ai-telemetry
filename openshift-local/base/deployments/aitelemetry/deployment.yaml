@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: aitelemetry
+    app.kubernetes.io/instance: aitelemetry
+    app.kubernetes.io/name: aitelemetry
+    deployment: aitelemetry
+  name: aitelemetry
+  namespace: smartaquaculture
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: aitelemetry
+      app.kubernetes.io/instance: aitelemetry
+      app.kubernetes.io/name: aitelemetry
+      deployment: aitelemetry
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: aitelemetry
+        app.kubernetes.io/instance: aitelemetry
+        app.kubernetes.io/name: aitelemetry
+        deployment: aitelemetry
+    spec:
+      containers:
+      - name: aitelemetry
+        envFrom:
+        - secretRef:
+            name: cloud-zookeeper
+        - secretRef:
+            name: cloud-solr
+        - secretRef:
+            name: cloud-database
+        - secretRef:
+            name: cloud-auth
+        - secretRef:
+            name: cloud-context-broker
+        - secretRef:
+            name: cloud-site
+        - secretRef:
+            name: cloud-font-awesome
+        - secretRef:
+            name: cloud-extra
+        image: quay.io/computateorg/ai-telemetry:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 10
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: http
+          timeoutSeconds: 10
+        ports:
+        - containerPort: 10210
+          name: http
+          protocol: TCP
+        - containerPort: 10211
+          name: cluster
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 10
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: http
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: 750m
+            ephemeral-storage: 1Gi
+            memory: 768Mi
+          requests:
+            cpu: 750m
+            ephemeral-storage: 1Gi
+            memory: 768Mi
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
