@@ -179,7 +179,7 @@ SITE_LICENSE_URL: https://www.gnu.org/licenses/gpl-3.0.en.html
 # The container registry where the container will be pushed. 
 CONTAINER_REGISTRY: quay.io
 # The organization within quay.io where the container will be pushed. 
-CONTAINER_ORG: computateorg
+CONTAINER_ORG: nerc-images
 # The container name where the container will be pushed. 
 CONTAINER_NAME: "{{ SITE_NAME }}"
 # The container version where the container will be pushed. 
@@ -460,6 +460,8 @@ IOTAGENT_TRANSPORT: AMQP
 
 # Enable Kafka message integration. 
 ENABLE_KAFKA: "{{ (lookup('env', 'ENABLE_KAFKA') | lower) == 'true' }}"
+# The Kafka port. 
+KAFKA_PORT: "{{ lookup('env', 'KAFKA_PORT') | default('32000', true) }}"
 # The namespace in OpenShift where Kafka will run. 
 KAFKA_NAMESPACE: "{{ lookup('env', 'KAFKA_NAMESPACE') | default('kafka', true) }}"
 # The Kafka brokers hostname and port. 
@@ -606,7 +608,7 @@ AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(SITE_NAME + '-sa',
 # The Auth openshift secret with the client secret credentials. 
 AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-extra', true) }}"
 # The Auth secret. 
-AUTH_SECRET_SA: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE)[0].data.clientSecret | b64decode }}"
+AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"clientSecret\": \"\"}})).data.clientSecret | b64decode }}"
 
 ###########
 # grafana #
@@ -620,7 +622,7 @@ GRAFANA_BASE_URL: https://grafana.apps.obs.nerc.mghpcc.org
 # The Auth openshift secret with the admin credentials. 
 FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
 # The Auth admin username. 
-FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=FULFILLMENT_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE)[0].data['token'] | b64decode }}"
+FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=FULFILLMENT_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\"}})).data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
 FULFILLMENT_API_SSL: "{{ (lookup('env', 'FULFILLMENT_API_SSL') | lower) != 'false' }}"
 # The host name to connect to the fulfillment API in OpenShift. 
@@ -642,7 +644,7 @@ ENABLE_THIN_UI: "{{ lookup('env', 'ENABLE_THIN_UI') | default('false', true) | b
 # The Auth openshift secret with the admin credentials. 
 ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
 # The Auth admin username. 
-ESI_API_OPENSHIFT_TOKEN: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=ESI_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE)[0].data['token'] | b64decode }}"
+ESI_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=ESI_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\"}})).data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
 ESI_API_SSL: "{{ (lookup('env', 'ESI_API_SSL') | lower) != 'false' }}"
 # The host name to connect to the fulfillment API in OpenShift. 
