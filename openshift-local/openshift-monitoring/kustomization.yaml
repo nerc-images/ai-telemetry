@@ -7,4 +7,3 @@ resources:
   - secretenginemounts/
   - secretstores/
   - pushsecrets/
-  - kubernetesauthengineroles/
