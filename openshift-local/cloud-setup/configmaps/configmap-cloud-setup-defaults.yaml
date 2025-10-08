@@ -555,11 +555,11 @@ data:
     # prom-keycloak-proxy #
     #######################
     # Whether to use SSL when connecting to the Prometheus Keycloak Proxy. 
-    PROM_KEYCLOAK_PROXY_SSL: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | lower) != 'false' }}"
+    PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | default('true', true) | lower) != 'false' }}"
     # The host name to connect to the Prometheus Keycloak Proxy in OpenShift. 
-    PROM_KEYCLOAK_PROXY_HOST_NAME: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('prom-keycloak-proxy.' + OPENSHIFT_APPS_DOMAIN, true) }}"
+    PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('metrics-local-cluster.' + OPENSHIFT_APPS_DOMAIN, true) }}"
     # The default port that the Prometheus Keycloak Proxy runs. 
-    PROM_KEYCLOAK_PROXY_PORT: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
+    PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
     # The Auth client. 
     AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(SITE_NAME + '-sa', true) }}"
     # The Auth openshift secret with the client secret credentials. 

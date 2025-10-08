@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/OCP-on-NERC/ai-telemetry.git
     targetRevision: HEAD
-    path: openshift-local/prom-keycloak-proxy/overlays/local-cluster/
+    path: openshift-local/openshift-monitoring/
   destination:
     namespace: prom-keycloak-proxy
     server: 'https://kubernetes.default.svc'
@@ -27,8 +27,3 @@ spec:
         duration: 30s # Initial duration
         factor: 2 # Factor to multiply duration by on each retry
         maxDuration: 5m # Maximum duration between retries
-    syncOptions:
-      - CreateNamespace=true
-    managedNamespaceMetadata:
-      labels:
-        database-engine-admin: 'true'
