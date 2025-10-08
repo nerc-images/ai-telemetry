@@ -10,7 +10,7 @@ COPY . /home/default/ai-telemetry
 RUN git clone https://github.com/computate-org/computate-base.git /home/default/computate-base
 RUN git clone https://github.com/computate-org/computate-search.git /home/default/computate-search
 RUN git clone https://github.com/computate-org/computate-vertx.git /home/default/computate-vertx
-RUN git clone https://github.com/computate/ai-telemetry-static.git -b computate /home/default/ai-telemetry-static
+RUN git clone https://github.com/nerc-images/ai-telemetry-static.git /home/default/ai-telemetry-static
 
 WORKDIR /home/default/computate-base
 RUN mvn clean install -DskipTests
