@@ -192,7 +192,7 @@ CONTAINER_URI: "{{ CONTAINER_REGISTRY }}/{{ CONTAINER_ORG }}/{{ CONTAINER_NAME }
 ###########################
 
 # A secret with links to web components. 
-WEB_COMPONENTS_SECRET: "{{ lookup('env', 'WEB_COMPONENTS_SECRET') | default('local-extra', true) }}"
+WEB_COMPONENTS_SECRET: "{{ lookup('env', 'WEB_COMPONENTS_SECRET') | default('local-font-awesome', true) }}"
 # Switch between Shoelace "sl-" and Web Awesome "wa-" element prefixes. 
 WEB_COMPONENTS_PREFIX: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.WEB_COMPONENTS_PREFIX | default('') | b64decode | default('wa-', true) }}"
 # Web components default theme. 
@@ -428,6 +428,8 @@ CONTEXT_BROKER_PORT: "{{ lookup('env', 'CONTEXT_BROKER_PORT') | default('443', t
 CONTEXT_BROKER_DELAY_MILLIS: 0
 # The Context Broker namespace. 
 CONTEXT_BROKER_CONTEXT: "{{ STATIC_BASE_URL }}/fiware/context.jsonld"
+# The base URL where the project will put NGSI-LD context information public on the Internet. 
+NGSILD_BASE_URL: "{{ lookup('env', 'NGSILD_BASE_URL') | default(SITE_PUBLIC_URL + '/static/fiware', true) }}"
 # The default NGSI-LD tenant environment variable
 NGSILD_TENANT_ENV: "{{ lookup('env', 'NGSILD_TENANT_ENV') | default('NGSILD_TENANT', true) }}"
 # The default NGSI-LD path
@@ -475,17 +477,17 @@ KAFKA_SSL_KEYSTORE_TYPE: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_TYPE') | default(
 # The Kafka SSL keystore location. 
 KAFKA_SSL_KEYSTORE_LOCATION: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_LOCATION') | default('/opt/app-root/src/kafka/keystore/user.p12', true) }}"
 # The Kafka SSL keystore OpenShift secret. 
-KAFKA_SSL_KEYSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_SECRET') | default('esi', true) }}"
+KAFKA_SSL_KEYSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_SECRET') | default('local-extra', true) }}"
 # The Kafka SSL keystore password. 
-KAFKA_SSL_KEYSTORE_PASSWORD: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_KEYSTORE_SECRET, namespace=SITE_NAMESPACE)[0].data['user.password'] | b64decode }}"
+KAFKA_SSL_KEYSTORE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_KEYSTORE_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"user.password\": \"\" } } )).data['user.password'] | b64decode }}"
 # The Kafka SSL truststore type. 
 KAFKA_SSL_TRUSTSTORE_TYPE: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_TYPE') | default('PKCS12', true) }}"
 # The Kafka SSL truststore location. 
 KAFKA_SSL_TRUSTSTORE_LOCATION: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_LOCATION') | default('/opt/app-root/src/kafka/truststore/ca.p12', true) }}"
 # The Kafka SSL truststore OpenShift secret. 
-KAFKA_SSL_TRUSTSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_SECRET') | default('kafka-cluster-ca-cert', true) }}"
+KAFKA_SSL_TRUSTSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_SECRET') | default('local-extra', true) }}"
 # The Kafka SSL truststore password. 
-KAFKA_SSL_TRUSTSTORE_PASSWORD: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_TRUSTSTORE_SECRET, namespace=SITE_NAMESPACE)[0].data['ca.password'] | b64decode }}"
+KAFKA_SSL_TRUSTSTORE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_TRUSTSTORE_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"ca.password\": \"\" } } )).data['ca.password'] | b64decode }}"
 
 #############
 # MQTT vars #
@@ -594,21 +596,28 @@ WRITE_COMMENTS: true
 # extra vars #
 ##############
 
+########
+# hubs #
+########
+
+# Describes the available hubs as a JSON object. 
+HUBS: '{ "local-cluster": { "hubName": "OpenShift Local", "description": "OpenShift Local on your own computer. " } }'
+
 #######################
 # prom-keycloak-proxy #
 #######################
 # Whether to use SSL when connecting to the Prometheus Keycloak Proxy. 
-PROM_KEYCLOAK_PROXY_SSL: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | lower) != 'false' }}"
+PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | default('true', true) | lower) != 'false' }}"
 # The host name to connect to the Prometheus Keycloak Proxy in OpenShift. 
-PROM_KEYCLOAK_PROXY_HOST_NAME: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('prom-keycloak-proxy.' + OPENSHIFT_APPS_DOMAIN, true) }}"
+PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('metrics-local-cluster.' + OPENSHIFT_APPS_DOMAIN, true) }}"
 # The default port that the Prometheus Keycloak Proxy runs. 
-PROM_KEYCLOAK_PROXY_PORT: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
+PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
 # The Auth client. 
-AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(SITE_NAME + '-sa', true) }}"
+AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(AUTH_CLIENT, true) }}"
 # The Auth openshift secret with the client secret credentials. 
 AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-extra', true) }}"
 # The Auth secret. 
-AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"clientSecret\": \"\"}})).data.clientSecret | b64decode }}"
+AUTH_SECRET_SA: "{{ lookup('env', 'AUTH_SECRET_SA') | default(AUTH_SECRET, true) }}"
 
 ###########
 # grafana #
@@ -622,7 +631,7 @@ GRAFANA_BASE_URL: https://grafana.apps.obs.nerc.mghpcc.org
 # The Auth openshift secret with the admin credentials. 
 FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
 # The Auth admin username. 
-FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=FULFILLMENT_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\"}})).data['token'] | b64decode }}"
+FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=FULFILLMENT_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\" } } )).data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
 FULFILLMENT_API_SSL: "{{ (lookup('env', 'FULFILLMENT_API_SSL') | lower) != 'false' }}"
 # The host name to connect to the fulfillment API in OpenShift. 
@@ -644,7 +653,7 @@ ENABLE_THIN_UI: "{{ lookup('env', 'ENABLE_THIN_UI') | default('false', true) | b
 # The Auth openshift secret with the admin credentials. 
 ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
 # The Auth admin username. 
-ESI_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=ESI_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\"}})).data['token'] | b64decode }}"
+ESI_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=ESI_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\" } } )).data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
 ESI_API_SSL: "{{ (lookup('env', 'ESI_API_SSL') | lower) != 'false' }}"
 # The host name to connect to the fulfillment API in OpenShift. 
@@ -668,12 +677,12 @@ ENABLE_IMPORT_DATA_Cluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Cluster') | de
 ENABLE_IMPORT_DATA_AiNode: "{{ lookup('env', 'ENABLE_IMPORT_DATA_AiNode') | default('true', true) | bool }}"
 ENABLE_IMPORT_DATA_Project: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Project') | default('true', true) | bool }}"
 ENABLE_IMPORT_DATA_GpuDevice: "{{ lookup('env', 'ENABLE_IMPORT_DATA_GpuDevice') | default('true', true) | bool }}"
-ENABLE_IMPORT_DATA_ClusterOrder: "{{ lookup('env', 'ENABLE_IMPORT_DATA_ClusterOrder') | default('true', true) | bool }}"
-ENABLE_IMPORT_DATA_ClusterTemplate: "{{ lookup('env', 'ENABLE_IMPORT_DATA_ClusterTemplate') | default('true', true) | bool }}"
-ENABLE_IMPORT_DATA_BareMetalNetwork: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalNetwork') | default('true', true) | bool }}"
-ENABLE_IMPORT_DATA_BareMetalNode: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalNode') | default('true', true) | bool }}"
-ENABLE_IMPORT_DATA_BareMetalResourceClass: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalResourceClass') | default('true', true) | bool }}"
-ENABLE_IMPORT_DATA_ManagedCluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalCluster') | default('true', true) | bool }}"
+ENABLE_IMPORT_DATA_ClusterOrder: "{{ lookup('env', 'ENABLE_IMPORT_DATA_ClusterOrder') | default('false', true) | bool }}"
+ENABLE_IMPORT_DATA_ClusterTemplate: "{{ lookup('env', 'ENABLE_IMPORT_DATA_ClusterTemplate') | default('false', true) | bool }}"
+ENABLE_IMPORT_DATA_BareMetalNetwork: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalNetwork') | default('false', true) | bool }}"
+ENABLE_IMPORT_DATA_BareMetalNode: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalNode') | default('false', true) | bool }}"
+ENABLE_IMPORT_DATA_BareMetalResourceClass: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalResourceClass') | default('false', true) | bool }}"
+ENABLE_IMPORT_DATA_ManagedCluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_BareMetalCluster') | default('false', true) | bool }}"
 
 ENABLE_FEATURE_OBSERVABILITY: "{{ lookup('env', 'ENABLE_FEATURE_OBSERVABILITY') | default('true', true) | bool }}"
 ENABLE_FEATURE_ORDER_BARE_METAL: "{{ lookup('env', 'ENABLE_FEATURE_ORDER_BARE_METAL') | default('false', true) | bool }}"
