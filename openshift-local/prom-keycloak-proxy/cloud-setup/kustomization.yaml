@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - serviceaccounts/
+  - clusterrolebindings/
+  - rolebindings/
+  - configmaps/
+  - jobs/
+
+secretGenerator:
+  - name: prom-keycloak-proxy-token
+    namespace: prom-keycloak-proxy
+    type: kubernetes.io/service-account-token
+    options:
+      disableNameSuffixHash: true
+      annotations:
+        kubernetes.io/service-account.name: prom-keycloak-proxy

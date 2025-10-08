@@ -4,3 +4,7 @@ resources:
   - aitelemetry-secrets/
   - cloud-setup/
   - aitelemetry/
+  - openshift-monitoring/
+  - prom-keycloak-proxy-secrets/
+  - prom-keycloak-proxy-cloud-setup/
+  - prom-keycloak-proxy-local-cluster/

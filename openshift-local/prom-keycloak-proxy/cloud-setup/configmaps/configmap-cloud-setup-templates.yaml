@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud-setup-templates
+  namespace: prom-keycloak-proxy
+data:
+  auth-secret.yaml: |
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: cloud-auth
+      namespace: {{ SITE_NAMESPACE }}
+    type: Opaque
+    stringData:
+      PROXY_PROMETHEUS_BASE_URL: "https://thanos-querier.openshift-monitoring.svc:9091"
+      PROXY_AUTH_CLIENT_ID: "{{ AUTH_CLIENT }}"
+      PROXY_AUTH_CLIENT_SECRET: "{{ AUTH_SECRET }}"

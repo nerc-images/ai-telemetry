@@ -1,0 +1,63 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+labels:
+  - pairs:
+      app: prom-keycloak-proxy
+      deployment: prom-keycloak-proxy-local-cluster
+    includeSelectors: true
+
+nameSuffix: -local-cluster
+
+resources:
+  - ../../base
+
+patches:
+  - patch: |
+      apiVersion: external-secrets.io/v1beta1
+      kind: ExternalSecret
+      metadata:
+        name: prom-keycloak-proxy-certs
+      spec:
+        target:
+          name: prom-keycloak-proxy-certs-local-cluster
+        dataFrom:
+        - extract:
+            key: openshift-monitoring/kv/thanos-querier-tls
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: prom-keycloak-proxy
+      spec:
+        template:
+          spec:
+            containers:
+            - name: prom-keycloak-proxy
+              env:
+                - name: PROXY_ACM_HUB
+                  value: local-cluster
+              envFrom:
+                - secretRef:
+                    name: cloud-auth
+            volumes:
+              - name: prom-keycloak-proxy-certs
+                secret:
+                  secretName: prom-keycloak-proxy-certs-local-cluster
+  - patch: |
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: prom-keycloak-proxy
+      spec:
+        selector:
+          app: prom-keycloak-proxy
+          deployment: prom-keycloak-proxy-local-cluster
+  - patch: |
+      kind: Route
+      apiVersion: route.openshift.io/v1
+      metadata:
+        name: prom-keycloak-proxy
+      spec:
+        host: metrics-local-cluster.apps-crc.testing
+        to:
+          name: prom-keycloak-proxy-local-cluster
