@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud-setup-tasks
+  namespace: prom-keycloak-proxy
+data:
+  main.yaml: |
+    ---
+
+
+    - name: Get a new Keycloak client secret, passing client_id instead of id
+      community.general.keycloak_clientsecret_info:
+        validate_certs: false
+        auth_client_id: admin-cli
+        auth_keycloak_url: "{{ AUTH_URL }}"
+        auth_realm: master
+        auth_username: "{{ AUTH_ADMIN_USERNAME }}"
+        auth_password: "{{ AUTH_ADMIN_PASSWORD }}"
+        client_id: '{{ AUTH_CLIENT }}'
+        realm: "{{ AUTH_REALM }}"
+      register: AUTH_CLIENT_SECRET
+    - name: Set AUTH_SECRET variable
+      set_fact:
+        AUTH_SECRET: "{{ AUTH_CLIENT_SECRET.clientsecret_info.value }}"
+    - name: "Create a auth secret in namespace {{ SITE_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'auth-secret.yaml') }}"
+        validate_certs: false
