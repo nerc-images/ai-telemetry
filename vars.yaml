@@ -202,7 +202,7 @@ SITE_FONT_SIZE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=W
 # An optional FontAwesome Pro Kit for additional FontAwesome icons. 
 FONTAWESOME_KIT: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.FONTAWESOME_KIT | default('', true) | b64decode | default('', true) }}"
 # A default FontAwesome style. 
-FONTAWESOME_STYLE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.FONTAWESOME_STYLE | default('', true) | b64decode | default('default', true) }}"
+FONTAWESOME_STYLE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.FONTAWESOME_STYLE | default('', true) | b64decode | default('fa-duotone fa-solid', true) }}"
 # Site default theme, light or dark. 
 SITE_THEME: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.SITE_THEME | default('', true) | b64decode | default('dark', true) }}"
 # The site logo relative URI

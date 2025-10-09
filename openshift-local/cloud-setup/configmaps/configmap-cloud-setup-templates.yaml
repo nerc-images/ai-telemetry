@@ -297,50 +297,50 @@ data:
       namespace: {{ SITE_NAMESPACE }}
     type: Opaque
     stringData:
-      HUBS: "{{ HUBS }}"
-      PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: "{{ PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER }}"
-      PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: "{{ PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER }}"
-      PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: "{{ PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER }}"
-      AUTH_CLIENT_SA: "{{ AUTH_CLIENT_SA }}"
-      AUTH_OPENSHIFT_SECRET_SA: "{{ AUTH_OPENSHIFT_SECRET_SA }}"
-      AUTH_SECRET_SA: "{{ AUTH_SECRET_SA }}"
-      GRAFANA_BASE_URL: "{{ GRAFANA_BASE_URL }}"
-      FULFILLMENT_API_OPENSHIFT_SECRET: "{{ FULFILLMENT_API_OPENSHIFT_SECRET }}"
-      FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ FULFILLMENT_API_OPENSHIFT_TOKEN }}"
-      FULFILLMENT_API_SSL: "{{ FULFILLMENT_API_SSL }}"
-      FULFILLMENT_API_HOST_NAME: "{{ FULFILLMENT_API_HOST_NAME }}"
-      FULFILLMENT_API_PORT: "{{ FULFILLMENT_API_PORT }}"
-      IMPORT_DATA_START_TIME_ClusterOrder: "{{ IMPORT_DATA_START_TIME_ClusterOrder }}"
-      IMPORT_DATA_PERIOD_ClusterOrder: "{{ IMPORT_DATA_PERIOD_ClusterOrder }}"
-      IMPORT_DATA_START_TIME_ManagedCluster: "{{ IMPORT_DATA_START_TIME_ManagedCluster }}"
-      IMPORT_DATA_PERIOD_ManagedCluster: "{{ IMPORT_DATA_PERIOD_ManagedCluster }}"
-      ENABLE_THIN_UI: "{{ ENABLE_THIN_UI }}"
-      ESI_API_OPENSHIFT_SECRET: "{{ ESI_API_OPENSHIFT_SECRET }}"
-      ESI_API_OPENSHIFT_TOKEN: "{{ ESI_API_OPENSHIFT_TOKEN }}"
-      ESI_API_SSL: "{{ ESI_API_SSL }}"
-      ESI_API_HOST_NAME: "{{ ESI_API_HOST_NAME }}"
-      ESI_API_PORT: "{{ ESI_API_PORT }}"
-      KAFKA_TOPIC_FULFILL_OFFER: "{{ KAFKA_TOPIC_FULFILL_OFFER }}"
-      KAFKA_TOPIC_ORDER_LOOP: "{{ KAFKA_TOPIC_ORDER_LOOP }}"
-      KAFKA_TOPIC_ORDER_STATUS: "{{ KAFKA_TOPIC_ORDER_STATUS }}"
-      IMPORT_DATA_START_TIME_BareMetalNode: "{{ IMPORT_DATA_START_TIME_BareMetalNode }}"
-      IMPORT_DATA_PERIOD_BareMetalNode: "{{ IMPORT_DATA_PERIOD_BareMetalNode }}"
-      IMPORT_DATA_START_TIME_BareMetalResourceClass: "{{ IMPORT_DATA_START_TIME_BareMetalResourceClass }}"
-      IMPORT_DATA_PERIOD_BareMetalResourceClass: "{{ IMPORT_DATA_PERIOD_BareMetalResourceClass }}"
-      IMPORT_DATA_START_TIME_Project: "{{ IMPORT_DATA_START_TIME_Project }}"
-      IMPORT_DATA_PERIOD_Project: "{{ IMPORT_DATA_PERIOD_Project }}"
-      ENABLE_IMPORT_DATA_Cluster: "{{ ENABLE_IMPORT_DATA_Cluster }}"
-      ENABLE_IMPORT_DATA_AiNode: "{{ ENABLE_IMPORT_DATA_AiNode }}"
-      ENABLE_IMPORT_DATA_Project: "{{ ENABLE_IMPORT_DATA_Project }}"
-      ENABLE_IMPORT_DATA_GpuDevice: "{{ ENABLE_IMPORT_DATA_GpuDevice }}"
-      ENABLE_IMPORT_DATA_ClusterOrder: "{{ ENABLE_IMPORT_DATA_ClusterOrder }}"
-      ENABLE_IMPORT_DATA_ClusterTemplate: "{{ ENABLE_IMPORT_DATA_ClusterTemplate }}"
-      ENABLE_IMPORT_DATA_BareMetalNetwork: "{{ ENABLE_IMPORT_DATA_BareMetalNetwork }}"
-      ENABLE_IMPORT_DATA_BareMetalNode: "{{ ENABLE_IMPORT_DATA_BareMetalNode }}"
-      ENABLE_IMPORT_DATA_BareMetalResourceClass: "{{ ENABLE_IMPORT_DATA_BareMetalResourceClass }}"
-      ENABLE_IMPORT_DATA_ManagedCluster: "{{ ENABLE_IMPORT_DATA_ManagedCluster }}"
-      ENABLE_FEATURE_OBSERVABILITY: "{{ ENABLE_FEATURE_OBSERVABILITY }}"
-      ENABLE_FEATURE_ORDER_BARE_METAL: "{{ ENABLE_FEATURE_ORDER_BARE_METAL }}"
-      ENABLE_FEATURE_ORDER_CLUSTER: "{{ ENABLE_FEATURE_ORDER_CLUSTER }}"
-      ENABLE_FEATURE_OBSERVE_BARE_METAL: "{{ ENABLE_FEATURE_OBSERVE_BARE_METAL }}"
-      ENABLE_FEATURE_OBSERVE_CLUSTER: "{{ ENABLE_FEATURE_OBSERVE_CLUSTER }}"
+      HUBS: '{{ HUBS | replace("'", "\\'") }}'
+      PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER | replace("'", "\\'") }}'
+      PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER | replace("'", "\\'") }}'
+      PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER | replace("'", "\\'") }}'
+      AUTH_CLIENT_SA: '{{ AUTH_CLIENT_SA | replace("'", "\\'") }}'
+      AUTH_OPENSHIFT_SECRET_SA: '{{ AUTH_OPENSHIFT_SECRET_SA | replace("'", "\\'") }}'
+      AUTH_SECRET_SA: '{{ AUTH_SECRET_SA | replace("'", "\\'") }}'
+      GRAFANA_BASE_URL: '{{ GRAFANA_BASE_URL | replace("'", "\\'") }}'
+      FULFILLMENT_API_OPENSHIFT_SECRET: '{{ FULFILLMENT_API_OPENSHIFT_SECRET | replace("'", "\\'") }}'
+      FULFILLMENT_API_OPENSHIFT_TOKEN: '{{ FULFILLMENT_API_OPENSHIFT_TOKEN | replace("'", "\\'") }}'
+      FULFILLMENT_API_SSL: '{{ FULFILLMENT_API_SSL | replace("'", "\\'") }}'
+      FULFILLMENT_API_HOST_NAME: '{{ FULFILLMENT_API_HOST_NAME | replace("'", "\\'") }}'
+      FULFILLMENT_API_PORT: '{{ FULFILLMENT_API_PORT | replace("'", "\\'") }}'
+      IMPORT_DATA_START_TIME_ClusterOrder: '{{ IMPORT_DATA_START_TIME_ClusterOrder | replace("'", "\\'") }}'
+      IMPORT_DATA_PERIOD_ClusterOrder: '{{ IMPORT_DATA_PERIOD_ClusterOrder | replace("'", "\\'") }}'
+      IMPORT_DATA_START_TIME_ManagedCluster: '{{ IMPORT_DATA_START_TIME_ManagedCluster | replace("'", "\\'") }}'
+      IMPORT_DATA_PERIOD_ManagedCluster: '{{ IMPORT_DATA_PERIOD_ManagedCluster | replace("'", "\\'") }}'
+      ENABLE_THIN_UI: '{{ ENABLE_THIN_UI | replace("'", "\\'") }}'
+      ESI_API_OPENSHIFT_SECRET: '{{ ESI_API_OPENSHIFT_SECRET | replace("'", "\\'") }}'
+      ESI_API_OPENSHIFT_TOKEN: '{{ ESI_API_OPENSHIFT_TOKEN | replace("'", "\\'") }}'
+      ESI_API_SSL: '{{ ESI_API_SSL | replace("'", "\\'") }}'
+      ESI_API_HOST_NAME: '{{ ESI_API_HOST_NAME | replace("'", "\\'") }}'
+      ESI_API_PORT: '{{ ESI_API_PORT | replace("'", "\\'") }}'
+      KAFKA_TOPIC_FULFILL_OFFER: '{{ KAFKA_TOPIC_FULFILL_OFFER | replace("'", "\\'") }}'
+      KAFKA_TOPIC_ORDER_LOOP: '{{ KAFKA_TOPIC_ORDER_LOOP | replace("'", "\\'") }}'
+      KAFKA_TOPIC_ORDER_STATUS: '{{ KAFKA_TOPIC_ORDER_STATUS | replace("'", "\\'") }}'
+      IMPORT_DATA_START_TIME_BareMetalNode: '{{ IMPORT_DATA_START_TIME_BareMetalNode | replace("'", "\\'") }}'
+      IMPORT_DATA_PERIOD_BareMetalNode: '{{ IMPORT_DATA_PERIOD_BareMetalNode | replace("'", "\\'") }}'
+      IMPORT_DATA_START_TIME_BareMetalResourceClass: '{{ IMPORT_DATA_START_TIME_BareMetalResourceClass | replace("'", "\\'") }}'
+      IMPORT_DATA_PERIOD_BareMetalResourceClass: '{{ IMPORT_DATA_PERIOD_BareMetalResourceClass | replace("'", "\\'") }}'
+      IMPORT_DATA_START_TIME_Project: '{{ IMPORT_DATA_START_TIME_Project | replace("'", "\\'") }}'
+      IMPORT_DATA_PERIOD_Project: '{{ IMPORT_DATA_PERIOD_Project | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_Cluster: '{{ ENABLE_IMPORT_DATA_Cluster | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_AiNode: '{{ ENABLE_IMPORT_DATA_AiNode | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_Project: '{{ ENABLE_IMPORT_DATA_Project | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_GpuDevice: '{{ ENABLE_IMPORT_DATA_GpuDevice | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_ClusterOrder: '{{ ENABLE_IMPORT_DATA_ClusterOrder | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_ClusterTemplate: '{{ ENABLE_IMPORT_DATA_ClusterTemplate | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_BareMetalNetwork: '{{ ENABLE_IMPORT_DATA_BareMetalNetwork | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_BareMetalNode: '{{ ENABLE_IMPORT_DATA_BareMetalNode | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_BareMetalResourceClass: '{{ ENABLE_IMPORT_DATA_BareMetalResourceClass | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_ManagedCluster: '{{ ENABLE_IMPORT_DATA_ManagedCluster | replace("'", "\\'") }}'
+      ENABLE_FEATURE_OBSERVABILITY: '{{ ENABLE_FEATURE_OBSERVABILITY | replace("'", "\\'") }}'
+      ENABLE_FEATURE_ORDER_BARE_METAL: '{{ ENABLE_FEATURE_ORDER_BARE_METAL | replace("'", "\\'") }}'
+      ENABLE_FEATURE_ORDER_CLUSTER: '{{ ENABLE_FEATURE_ORDER_CLUSTER | replace("'", "\\'") }}'
+      ENABLE_FEATURE_OBSERVE_BARE_METAL: '{{ ENABLE_FEATURE_OBSERVE_BARE_METAL | replace("'", "\\'") }}'
+      ENABLE_FEATURE_OBSERVE_CLUSTER: '{{ ENABLE_FEATURE_OBSERVE_CLUSTER | replace("'", "\\'") }}'
