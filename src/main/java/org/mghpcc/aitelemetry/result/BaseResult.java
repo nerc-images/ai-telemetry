@@ -180,6 +180,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
 	/**
 	 * {@inheritDoc}
 	 * DocValues: true
+   * Persist: true
 	 * Facet: true
 	 * DisplayName: edit
 	 * Description: Edit this
@@ -196,6 +197,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
 	/**
 	 * {@inheritDoc}
 	 * DocValues: true
+   * Persist: true
 	 * Facet: true
 	 * DisplayName: user
 	 * Description: User page
@@ -211,6 +213,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
 	/**
 	 * {@inheritDoc}
 	 * DocValues: true
+   * Persist: true
 	 * Facet: true
 	 * DisplayName: download
 	 * Description: the download URL
