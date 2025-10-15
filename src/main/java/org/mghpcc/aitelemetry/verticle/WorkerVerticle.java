@@ -78,6 +78,9 @@ import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNodeEnUSGenApiService
 import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrder;
 import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSGenApiService;
 import org.computate.vertx.api.ApiCounter;
 import org.computate.vertx.api.ApiRequest;
 import org.computate.vertx.config.ComputateConfigKeys;
@@ -614,6 +617,8 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
 			initializeApiService(apiBareMetalResourceClass);
 			BareMetalNodeEnUSApiServiceImpl apiBareMetalNode = new BareMetalNodeEnUSApiServiceImpl();
 			initializeApiService(apiBareMetalNode);
+			VirtualMachineEnUSApiServiceImpl apiVirtualMachine = new VirtualMachineEnUSApiServiceImpl();
+			initializeApiService(apiVirtualMachine);
 
 			apiHub.importTimer(Paths.get(templatePath, "/en-us/view/hub"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubResource", "userPage", "download").onSuccess(q1 -> {
 				apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q2 -> {
@@ -628,8 +633,10 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
 													apiBareMetalNetwork.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNetwork.CLASS_CANONICAL_NAME, BareMetalNetwork.CLASS_SIMPLE_NAME, BareMetalNetwork.CLASS_API_ADDRESS_BareMetalNetwork, BareMetalNetwork.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q11 -> {
 														apiBareMetalResourceClass.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalResourceClass.CLASS_CANONICAL_NAME, BareMetalResourceClass.CLASS_SIMPLE_NAME, BareMetalResourceClass.CLASS_API_ADDRESS_BareMetalResourceClass, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q12 -> {
 															apiBareMetalNode.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNode.CLASS_CANONICAL_NAME, BareMetalNode.CLASS_SIMPLE_NAME, BareMetalNode.CLASS_API_ADDRESS_BareMetalNode, BareMetalNode.CLASS_AUTH_RESOURCE, "nodeId", "userPage", "download").onSuccess(q13 -> {
-																LOG.info("data import complete");
-																promise.complete();
+																apiVirtualMachine.importTimer(Paths.get(templatePath, "/en-us/user/vm"), vertx, siteRequest, VirtualMachine.CLASS_CANONICAL_NAME, VirtualMachine.CLASS_SIMPLE_NAME, VirtualMachine.CLASS_API_ADDRESS_VirtualMachine, VirtualMachine.CLASS_AUTH_RESOURCE, "vmResource", "userPage", "download").onSuccess(q14 -> {
+																	LOG.info("data import complete");
+																	promise.complete();
+																}).onFailure(ex -> promise.fail(ex));
 															}).onFailure(ex -> promise.fail(ex));
 														}).onFailure(ex -> promise.fail(ex));
 													}).onFailure(ex -> promise.fail(ex));

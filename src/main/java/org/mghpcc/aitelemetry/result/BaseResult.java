@@ -181,10 +181,10 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
 	 * {@inheritDoc}
 	 * DocValues: true
 	 * Facet: true
-	 * DisplayName: edit
-	 * Description: Edit this
+	 * DisplayName: manage
+	 * Description: Manage this
 	 * Link: true
-	 * Icon: <i class="fa-duotone fa-regular fa-pen-to-square"></i>
+	 * Icon: <i class="fa-regular fa-pen-to-square"></i>
 	 * VarUrlEditPage: true
 	 */
 	protected void _editPage(Wrap<String> w) {
