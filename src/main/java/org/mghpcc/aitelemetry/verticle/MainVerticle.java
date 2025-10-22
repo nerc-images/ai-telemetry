@@ -271,8 +271,8 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
   }
 
 
-  /**  
-   *  The main method for the Vert.x application that runs the Vert.x Runner class
+  /**
+   * The main method for the Vert.x application that runs the Vert.x Runner class
    **/
   public static void  main(String[] args) {
     Vertx vertx = Vertx.vertx();
@@ -288,9 +288,8 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
         Boolean runAuthorizationGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_AUTHORIZATION_GENERATOR))).orElse(false);
         Boolean runFiwareGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_FIWARE_GENERATOR))).orElse(false);
         Boolean runProjectGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_PROJECT_GENERATOR))).orElse(false);
-        Boolean runDbToSolrSync = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_DB_TO_SOLR_SYNC))).orElse(false);
 
-        if(runOpenApi3Generator || runSqlGenerator || runFiwareGenerator || runProjectGenerator || runDbToSolrSync) {
+        if(runOpenApi3Generator || runSqlGenerator || runFiwareGenerator || runProjectGenerator) {
           SiteRequest siteRequest = new SiteRequest();
           siteRequest.setConfig(config);
           siteRequest.setWebClient(webClient);
@@ -312,8 +311,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
             future = future.compose(a -> api.writeFiware());
           if(runProjectGenerator)
             future = future.compose(a -> api.writeProject());
-          if(runDbToSolrSync)
-            future = future.compose(a -> runDbToSolrSync(config));
           future.onComplete(a -> {
             vertx.close();
             System.exit(0);
@@ -324,16 +321,18 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
           }).onFailure(ex -> {
             LOG.info("MainVerticle run failed");
             vertx.close();
-            System.exit(0);
+            System.exit(1);
           }));
         }
       } catch(Exception ex) {
         LOG.error(String.format("Error loading config: %s", configVarsPath), ex);
         vertx.close();
+        System.exit(1);
       }
     }).onFailure(ex -> {
       LOG.error(String.format("Error loading config: %s", configVarsPath), ex);
       vertx.close();
+      System.exit(1);
     });
   }
 
@@ -484,271 +483,9 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
   }
 
   /**
-   * Description: Static method to sync Solr search engine records with database. 
-   * Val.Complete.enUS: database to solr sync completed. 
-   **/
-  public static Future<Void> runDbToSolrSync(JsonObject config) {
-    Promise<Void> promise = Promise.promise();
-    try {
-      Boolean enableZookeeperCluster = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_ZOOKEEPER_CLUSTER));
-      VertxOptions vertxOptions = new VertxOptions();
-      EventBusOptions eventBusOptions = new EventBusOptions();
-  
-      ClusterManager clusterManager = null;
-      if(enableZookeeperCluster) {
-        JsonObject zkConfig = new JsonObject();
-        String zookeeperHostName = config.getString(ConfigKeys.ZOOKEEPER_HOST_NAME);
-        Integer zookeeperPort = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_PORT));
-        String zookeeperHosts = Optional.ofNullable(config.getString(ConfigKeys.ZOOKEEPER_HOSTS)).orElse(zookeeperHostName + ":" + zookeeperPort);
-        String clusterHostName = config.getString(ConfigKeys.CLUSTER_HOST_NAME);
-        Integer clusterPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PORT)) + 1;
-        String clusterPublicHostName = config.getString(ConfigKeys.CLUSTER_PUBLIC_HOST_NAME);
-        Integer clusterPublicPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PUBLIC_PORT));
-        String zookeeperRetryPolicy = config.getString(ConfigKeys.ZOOKEEPER_RETRY_POLICY);
-        Integer zookeeperBaseSleepTimeMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_BASE_SLEEP_TIME_MILLIS));
-        Integer zookeeperMaxSleepMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_SLEEP_MILLIS));
-        Integer zookeeperMaxRetries = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_RETRIES));
-        Integer zookeeperConnectionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_CONNECTION_TIMEOUT_MILLIS));
-        Integer zookeeperSessionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_SESSION_TIMEOUT_MILLIS));
-        zkConfig.put("zookeeperHosts", zookeeperHosts);
-        zkConfig.put("sessionTimeout", zookeeperSessionTimeoutMillis);
-        zkConfig.put("connectTimeout", zookeeperConnectionTimeoutMillis);
-        zkConfig.put("rootPath", config.getString(ConfigKeys.SITE_NAME));
-        zkConfig.put("retry", new JsonObject()
-            .put("policy", zookeeperRetryPolicy)
-            .put("initialSleepTime", zookeeperBaseSleepTimeMillis)
-            .put("intervalTimes", zookeeperMaxSleepMillis)
-            .put("maxTimes", zookeeperMaxRetries)
-        );
-        clusterManager = new ZookeeperClusterManager(zkConfig);
-  
-        if(clusterHostName != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_HOST_NAME, clusterHostName));
-          eventBusOptions.setHost(clusterHostName);
-        }
-        if(clusterPort != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PORT, clusterPort));
-          eventBusOptions.setPort(clusterPort);
-        }
-        if(clusterPublicHostName != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_HOST_NAME, clusterPublicHostName));
-          eventBusOptions.setClusterPublicHost(clusterPublicHostName);
-        }
-        if(clusterPublicPort != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_PORT, clusterPublicPort));
-          eventBusOptions.setClusterPublicPort(clusterPublicPort);
-        }
-      }
-      Long vertxWarningExceptionSeconds = config.getLong(ConfigKeys.VERTX_WARNING_EXCEPTION_SECONDS);
-      Long vertxMaxEventLoopExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME);
-      Long vertxMaxWorkerExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_WORKER_EXECUTE_TIME);
-      vertxOptions.setEventBusOptions(eventBusOptions);
-      vertxOptions.setWarningExceptionTime(vertxWarningExceptionSeconds);
-      vertxOptions.setWarningExceptionTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setMaxEventLoopExecuteTime(vertxMaxEventLoopExecuteTime);
-      vertxOptions.setMaxEventLoopExecuteTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setMaxWorkerExecuteTime(vertxMaxWorkerExecuteTime);
-      vertxOptions.setMaxWorkerExecuteTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setWorkerPoolSize(Integer.parseInt(config.getString(ConfigKeys.WORKER_POOL_SIZE)));
-      VertxBuilder vertxBuilder = Vertx.builder();
-      vertxBuilder.with(vertxOptions);
-      vertxBuilder.withClusterManager(clusterManager);
-      vertxBuilder.buildClustered().onSuccess(vertx -> {
-        dbToSolrSync(vertx, config).onSuccess(a -> {
-          promise.complete();
-        }).onFailure(ex -> {
-          LOG.error("Starting the database Solr sync failed. ", ex);
-          promise.fail(ex);
-        });
-      }).onFailure(ex -> {
-        LOG.error("Starting the database Solr sync failed. ", ex);
-        promise.fail(ex);
-      });
-    } catch (Exception ex) {
-      LOG.error("Could not initialize the database schema.", ex);
-      promise.fail(ex);
-    }
-    return promise.future();
-  }
-
-  /**
-   * Description: Sync Solr search engine records with database. 
-   * Val.Complete.enUS: database to solr sync completed. 
-   **/
-  public static Future<Void> dbToSolrSync(Vertx vertx, JsonObject config) {
-    Promise<Void> promise = Promise.promise();
-    try {
-      PgConnectOptions pgOptions = new PgConnectOptions();
-      pgOptions.setPort(Integer.parseInt(config.getString(ConfigKeys.DATABASE_PORT)));
-      pgOptions.setHost(config.getString(ConfigKeys.DATABASE_HOST_NAME));
-      pgOptions.setDatabase(config.getString(ConfigKeys.DATABASE_DATABASE));
-      pgOptions.setUser(config.getString(ConfigKeys.DATABASE_USERNAME));
-      pgOptions.setPassword(config.getString(ConfigKeys.DATABASE_PASSWORD));
-      pgOptions.setIdleTimeout(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_IDLE_TIME)));
-      pgOptions.setIdleTimeoutUnit(TimeUnit.SECONDS);
-      pgOptions.setConnectTimeout(Integer.parseInt(config.getString(ConfigKeys.DATABASE_CONNECT_TIMEOUT)));
-
-      PoolOptions poolOptions = new PoolOptions();
-      poolOptions.setMaxSize(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_POOL_SIZE)));
-      poolOptions.setMaxWaitQueueSize(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_WAIT_QUEUE_SIZE)));
-
-      Pool pgPool = PgBuilder.pool().connectingTo(pgOptions).with(poolOptions).using(vertx).build();
-      dbToSolrSyncRecord(vertx, config, pgPool, Hub.CLASS_SIMPLE_NAME).onSuccess(q1 -> {
-        // dbToSolrSyncRecord(vertx, config, pgPool, SitePage.CLASS_SIMPLE_NAME).onSuccess(q2 -> {
-          dbToSolrSyncRecord(vertx, config, pgPool, Cluster.CLASS_SIMPLE_NAME).onSuccess(q3 -> {
-            dbToSolrSyncRecord(vertx, config, pgPool, AiNode.CLASS_SIMPLE_NAME).onSuccess(q4 -> {
-              dbToSolrSyncRecord(vertx, config, pgPool, GpuDevice.CLASS_SIMPLE_NAME).onSuccess(q5 -> {
-                dbToSolrSyncRecord(vertx, config, pgPool, Project.CLASS_SIMPLE_NAME).onSuccess(q6 -> {
-                  dbToSolrSyncRecord(vertx, config, pgPool, ClusterTemplate.CLASS_SIMPLE_NAME).onSuccess(q7 -> {
-                    dbToSolrSyncRecord(vertx, config, pgPool, ClusterOrder.CLASS_SIMPLE_NAME).onSuccess(q8 -> {
-                      dbToSolrSyncRecord(vertx, config, pgPool, ManagedCluster.CLASS_SIMPLE_NAME).onSuccess(q9 -> {
-                        dbToSolrSyncRecord(vertx, config, pgPool, ClusterRequest.CLASS_SIMPLE_NAME).onSuccess(q10 -> {
-                          dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNetwork.CLASS_SIMPLE_NAME).onSuccess(q11 -> {
-                            dbToSolrSyncRecord(vertx, config, pgPool, BareMetalResourceClass.CLASS_SIMPLE_NAME).onSuccess(q12 -> {
-                              dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNode.CLASS_SIMPLE_NAME).onSuccess(q13 -> {
-                                LOG.info(dbToSolrSyncComplete);
-                                promise.complete();
-                              }).onFailure(ex -> promise.fail(ex));
-                            }).onFailure(ex -> promise.fail(ex));
-                          }).onFailure(ex -> promise.fail(ex));
-                        }).onFailure(ex -> promise.fail(ex));
-                      }).onFailure(ex -> promise.fail(ex));
-                    }).onFailure(ex -> promise.fail(ex));
-                  }).onFailure(ex -> promise.fail(ex));
-                }).onFailure(ex -> promise.fail(ex));
-              }).onFailure(ex -> promise.fail(ex));
-            }).onFailure(ex -> promise.fail(ex));
-          }).onFailure(ex -> promise.fail(ex));
-        // }).onFailure(ex -> promise.fail(ex));
-      }).onFailure(ex -> promise.fail(ex));
-    } catch (Exception ex) {
-      LOG.error("Could not initialize the database schema.", ex);
-      promise.fail(ex);
-    }
-    return promise.future();
-  }
-
-  /**
-   * Sync %s data from the database to Solr. 
-   * Val.Complete.enUS: %s data sync completed. 
-   * Val.Fail.enUS: %s data sync failed. 
-   * Val.CounterResetFail.enUS: %s data sync failed to reset counter. 
-   * Val.Skip.enUS: %s data sync skipped. 
-   * Val.Started.enUS: %s data sync started. 
-   **/
-  public static Future<Void> dbToSolrSyncRecord(Vertx vertx, JsonObject config, Pool pgPool, String tableName) {
-    Promise<Void> promise = Promise.promise();
-    try {
-      LOG.info(String.format(dbToSolrSyncRecordStarted, tableName));
-      pgPool.withTransaction(sqlConnection -> {
-        Promise<Void> promise1 = Promise.promise();
-        sqlConnection.query(String.format("SELECT count(pk) FROM %s", tableName)).execute().onSuccess(countRowSet -> {
-          try {
-            Optional<Long> rowCountOptional = Optional.ofNullable(countRowSet.iterator().next()).map(row -> row.getLong(0));
-            if(rowCountOptional.isPresent()) {
-              Long apiCounterResume = config.getLong(ConfigKeys.API_COUNTER_RESUME);
-              Integer apiCounterFetch = config.getInteger(ConfigKeys.API_COUNTER_FETCH);
-              ApiCounter apiCounter = new ApiCounter();
-  
-              SiteRequest siteRequest = new SiteRequest();
-              siteRequest.setConfig(config);
-              siteRequest.initDeepSiteRequest(siteRequest);
-    
-              ApiRequest apiRequest = new ApiRequest();
-              apiRequest.setRows(apiCounterFetch.longValue());
-              apiRequest.setNumFound(rowCountOptional.get());
-              apiRequest.setNumPATCH(apiCounter.getQueueNum());
-              apiRequest.setCreated(ZonedDateTime.now(ZoneId.of(config.getString(ConfigKeys.SITE_ZONE))));
-              apiRequest.initDeepApiRequest(siteRequest);
-              vertx.eventBus().publish(String.format("websocket%s", tableName), JsonObject.mapFrom(apiRequest));
-    
-              sqlConnection.prepare(String.format("SELECT pk FROM %s", tableName)).onSuccess(preparedStatement -> {
-                apiCounter.setQueueNum(0L);
-                apiCounter.setTotalNum(0L);
-                try {
-                  RowStream<Row> stream = preparedStatement.createStream(apiCounterFetch);
-                  stream.pause();
-                  stream.fetch(apiCounterFetch);
-                  stream.exceptionHandler(ex -> {
-                    LOG.error(String.format(dbToSolrSyncRecordFail, tableName), new RuntimeException(ex));
-                    promise1.fail(ex);
-                  });
-                  stream.endHandler(v -> {
-                    LOG.info(String.format(dbToSolrSyncRecordComplete, tableName));
-                    promise1.complete();
-                  });
-                  stream.handler(row -> {
-                    apiCounter.incrementQueueNum();
-                    try {
-                      vertx.eventBus().request(
-                          String.format("ai-telemetry-enUS-%s", tableName)
-                          , new JsonObject().put(
-                              "context"
-                              , new JsonObject().put(
-                                  "params"
-                                  , new JsonObject()
-                                      .put("body", new JsonObject().put("pk", row.getLong(0).toString()))
-                                      .put("path", new JsonObject())
-                                      .put("cookie", new JsonObject())
-                                      .put("scopes", new JsonArray().add("GET"))
-                                      .put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("pk:" + row.getLong(0))).put("var", new JsonArray().add("refresh:false")))
-                              )
-                          )
-                          , new DeliveryOptions().addHeader("action", String.format("patch%sFuture", tableName))).onSuccess(a -> {
-                        apiCounter.incrementTotalNum();
-                        apiCounter.decrementQueueNum();
-                        if(apiCounter.getQueueNum().compareTo(apiCounterResume) == 0) {
-                          stream.fetch(apiCounterFetch);
-                          apiRequest.setNumPATCH(apiCounter.getTotalNum());
-                          apiRequest.setTimeRemaining(apiRequest.calculateTimeRemaining());
-                          vertx.eventBus().publish(String.format("websocket%s", tableName), JsonObject.mapFrom(apiRequest));
-                        }
-                      }).onFailure(ex -> {
-                        LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-                        promise1.fail(ex);
-                      });
-                    } catch (Exception ex) {
-                      LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-                      promise1.fail(ex);
-                    }
-                  });
-                } catch (Exception ex) {
-                  LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-                  promise1.fail(ex);
-                }
-              }).onFailure(ex -> {
-                LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-                promise1.fail(ex);
-              });
-            } else {
-              promise1.complete();
-            }
-          } catch (Exception ex) {
-            LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-            promise1.fail(ex);
-          }
-        }).onFailure(ex -> {
-          LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-          promise1.fail(ex);
-        });
-        return promise1.future();
-      }).onSuccess(a -> {
-        promise.complete();
-      }).onFailure(ex -> {
-        LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-        promise.fail(ex);
-      });
-    } catch (Exception ex) {
-      LOG.error(String.format(dbToSolrSyncRecordFail, tableName), ex);
-      promise.fail(ex);
-    }
-    return promise.future();
-  }
-
-  /**  
-   *  Configure shared database connections across the cluster for massive scaling of the application. 
-   *  Return a promise that configures a shared database client connection. 
-   *  Load the database configuration into a shared io.vertx.ext.jdbc.JDBCClient for a scalable, clustered datasource connection pool. 
+   * Configure shared database connections across the cluster for massive scaling of the application. 
+   * Return a promise that configures a shared database client connection. 
+   * Load the database configuration into a shared io.vertx.ext.jdbc.JDBCClient for a scalable, clustered datasource connection pool. 
    **/
   public static Future<Void> configureDatabaseSchema(Vertx vertx, JsonObject config) {
     Promise<Void> promise = Promise.promise();
@@ -982,7 +719,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       vertxOptions.setWorkerPoolSize(Integer.parseInt(config.getString(ConfigKeys.WORKER_POOL_SIZE)));
 
       Resource resource = Resource.builder()
-          .put("service.name", SITE_NAME)
+          .put("service.name", config.getString(ConfigKeys.SITE_NAME))
           .build();
       SdkTracerProvider sdkTracerProvider = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY)) ? 
           SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(OtlpHttpSpanExporter.builder().build())).build() : null;
@@ -1117,7 +854,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    **/
   public Future<Void> configureWebClient() {
     Promise<Void> promise = Promise.promise();
@@ -1345,10 +1082,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
-   *  Configure shared database connections across the cluster for massive scaling of the application. 
-   *  Return a promise that configures a shared database client connection. 
-   *  Load the database configuration into a shared io.vertx.ext.jdbc.JDBCClient for a scalable, clustered datasource connection pool. 
+  /**
+   * Configure shared database connections across the cluster for massive scaling of the application. 
+   * Return a promise that configures a shared database client connection. 
+   * Load the database configuration into a shared io.vertx.ext.jdbc.JDBCClient for a scalable, clustered datasource connection pool. 
    **/
   public Future<Void> configureData() {
     Promise<Void> promise = Promise.promise();
@@ -1400,7 +1137,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    * Configure the connection to the auth server and setup the routes based on the OpenAPI definition. 
    * Setup a callback route when returning from the auth server after successful authentication. 
    * Setup a logout route for logging out completely of the application. 
@@ -1452,7 +1189,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    * Configure the connection to the auth server and setup the routes based on the OpenAPI definition. 
    * Setup a callback route when returning from the auth server after successful authentication. 
    * Setup a logout route for logging out completely of the application. 
@@ -1596,7 +1333,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    **/
   public static Future<JsonObject> configureConfig(Vertx vertx) {
     Promise<JsonObject> promise = Promise.promise();
@@ -1651,7 +1388,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    * Configure health checks for the status of the website and it's dependent services. 
    * Return a promise that configures the health checks. 
    **/
@@ -1687,7 +1424,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    * Configure websockets for realtime messages. 
    **/
   public Future<Void> configureWebsockets() {
@@ -1961,7 +1698,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    * Start the Vert.x server. 
    **/
   public Future<Void> startServer() {
@@ -2006,7 +1743,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**  
+  /**
    * This is called by Vert.x when the verticle instance is undeployed. 
    * Setup the stopPromise to handle tearing down the server. 
    **/

@@ -95,23 +95,6 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 	public static final String authorizeDataFail1 = "Adding Keycloak authorization resources, policies, and permissions failed. ";
 	public static final String authorizeDataFail = authorizeDataFail1;
 
-	public static final String runDbToSolrSyncComplete1 = "database to solr sync completed. ";
-	public static final String runDbToSolrSyncComplete = runDbToSolrSyncComplete1;
-
-	public static final String dbToSolrSyncComplete1 = "database to solr sync completed. ";
-	public static final String dbToSolrSyncComplete = dbToSolrSyncComplete1;
-
-	public static final String dbToSolrSyncRecordComplete1 = "%s data sync completed. ";
-	public static final String dbToSolrSyncRecordComplete = dbToSolrSyncRecordComplete1;
-	public static final String dbToSolrSyncRecordFail1 = "%s data sync failed. ";
-	public static final String dbToSolrSyncRecordFail = dbToSolrSyncRecordFail1;
-	public static final String dbToSolrSyncRecordCounterResetFail1 = "%s data sync failed to reset counter. ";
-	public static final String dbToSolrSyncRecordCounterResetFail = dbToSolrSyncRecordCounterResetFail1;
-	public static final String dbToSolrSyncRecordSkip1 = "%s data sync skipped. ";
-	public static final String dbToSolrSyncRecordSkip = dbToSolrSyncRecordSkip1;
-	public static final String dbToSolrSyncRecordStarted1 = "%s data sync started. ";
-	public static final String dbToSolrSyncRecordStarted = dbToSolrSyncRecordStarted1;
-
 	public static final String configureI18nFileError1 = "Failed to load internationalization data from file: %s";
 	public static final String configureI18nFileError = configureI18nFileError1;
 	public static final String configureI18nError1 = "Failed to load internationalization data. ";
@@ -261,7 +244,7 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 		return sb.toString();
 	}
 
-	public static final String[] MainVerticleVals = new String[] { authorizeDataFail1, runDbToSolrSyncComplete1, dbToSolrSyncComplete1, dbToSolrSyncRecordComplete1, dbToSolrSyncRecordFail1, dbToSolrSyncRecordCounterResetFail1, dbToSolrSyncRecordSkip1, dbToSolrSyncRecordStarted1, configureI18nFileError1, configureI18nError1, configureI18nComplete1, configureI18nLoaded1 };
+	public static final String[] MainVerticleVals = new String[] { authorizeDataFail1, configureI18nFileError1, configureI18nError1, configureI18nComplete1, configureI18nLoaded1 };
 
 	public static final String CLASS_SIMPLE_NAME = "MainVerticle";
 	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.verticle.MainVerticle";

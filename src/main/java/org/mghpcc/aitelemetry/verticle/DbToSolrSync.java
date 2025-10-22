@@ -132,7 +132,7 @@ public class DbToSolrSync extends DbToSolrSyncGen<AbstractVerticle> {
         Integer zookeeperPort = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_PORT));
         String zookeeperHosts = Optional.ofNullable(config.getString(ConfigKeys.ZOOKEEPER_HOSTS)).orElse(zookeeperHostName + ":" + zookeeperPort);
         String clusterHostName = config.getString(ConfigKeys.CLUSTER_HOST_NAME);
-        Integer clusterPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PORT)) + 1;
+        Integer clusterPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PORT));
         String clusterPublicHostName = config.getString(ConfigKeys.CLUSTER_PUBLIC_HOST_NAME);
         Integer clusterPublicPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PUBLIC_PORT));
         String zookeeperRetryPolicy = config.getString(ConfigKeys.ZOOKEEPER_RETRY_POLICY);
