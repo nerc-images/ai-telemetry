@@ -150,7 +150,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -347,7 +347,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -483,7 +483,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PATCH")) {
+					if(!scopes.contains("PATCH") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -656,31 +656,33 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				searchClusterList(siteRequest, false, true, true).onSuccess(listCluster -> {
 					try {
 						Cluster o = listCluster.first();
-						if(o != null && listCluster.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						Cluster o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listCluster.first()).map(o2 -> o2.getClusterResource().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listCluster.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listCluster.first()).map(o3 -> o3.getClusterResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listCluster.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							Cluster o2 = jsonObject.mapTo(Cluster.class);
+							o2 = jsonObject.mapTo(Cluster.class);
 							o2.setSiteRequest_(siteRequest);
-							patchClusterFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(Cluster.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchClusterFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchCluster failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -927,6 +929,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlNgsildPath());
 						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Cluster.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
 					case "setNgsildContext":
 							o2.setNgsildContext(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -935,6 +945,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlNgsildContext());
 						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Cluster.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
 					case "setNgsildData":
 							o2.setNgsildData(jsonObject.getJsonObject(entityVar));
 							if(bParams.size() > 0)
@@ -942,6 +960,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							bSql.append(Cluster.VAR_ngsildData + "=$" + num);
 							num++;
 							bParams.add(o2.sqlNgsildData());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Cluster.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 					case "setAiNodesTotal":
 							o2.setAiNodesTotal(jsonObject.getString(entityVar));
@@ -1069,7 +1095,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("POST")) {
+					if(!scopes.contains("POST") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -1503,6 +1529,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlNgsildPath());
 						break;
+					case Cluster.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Cluster.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
 					case Cluster.VAR_ngsildContext:
 						o2.setNgsildContext(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1512,6 +1547,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlNgsildContext());
 						break;
+					case Cluster.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Cluster.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
 					case Cluster.VAR_ngsildData:
 						o2.setNgsildData(jsonObject.getJsonObject(entityVar));
 						if(bParams.size() > 0) {
@@ -1520,6 +1564,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						bSql.append(Cluster.VAR_ngsildData + "=$" + num);
 						num++;
 						bParams.add(o2.sqlNgsildData());
+						break;
+					case Cluster.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Cluster.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					case Cluster.VAR_aiNodesTotal:
 						o2.setAiNodesTotal(jsonObject.getString(entityVar));
@@ -1650,7 +1703,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2054,7 +2107,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PUT")) {
+					if(!scopes.contains("PUT") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2413,7 +2466,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2623,6 +2676,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			form.add("permission", String.format("%s#%s", Cluster.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Cluster.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Cluster.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", Cluster.CLASS_AUTH_RESOURCE, clusterResource, "GET"));
 			if(clusterResource != null)
 				form.add("permission", String.format("%s#%s", clusterResource, "GET"));
 			webClient.post(
@@ -2638,7 +2692,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2824,6 +2878,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			form.add("permission", String.format("%s#%s", Cluster.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Cluster.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Cluster.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", Cluster.CLASS_AUTH_RESOURCE, clusterResource, "GET"));
 			if(clusterResource != null)
 				form.add("permission", String.format("%s#%s", clusterResource, "GET"));
 			webClient.post(
@@ -2839,7 +2894,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2924,7 +2979,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 	}
 
 	public String templateUserPageCluster(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", serviceRequest.getExtra().getString("uri").substring(1));
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
 	}
 	public Future<ServiceResponse> response200UserPageCluster(SearchList<Cluster> listCluster) {
 		Promise<ServiceResponse> promise = Promise.promise();
@@ -3041,7 +3096,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -3737,7 +3792,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, description, sessionId, userKey, location, id, objectTitle, ngsildTenant, displayPage, ngsildPath, ngsildContext, ngsildData, aiNodesTotal, gpuDevicesTotal, cpuCoresTotal, memoryBytesTotal FROM Cluster WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, description, sessionId, userKey, location, id, objectTitle, ngsildTenant, displayPage, ngsildPath, editPage, ngsildContext, userPage, ngsildData, download, aiNodesTotal, gpuDevicesTotal, cpuCoresTotal, memoryBytesTotal FROM Cluster WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4017,16 +4072,20 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			page.persistForClass(Cluster.VAR_ngsildTenant, Cluster.staticSetNgsildTenant(siteRequest2, (String)result.get(Cluster.VAR_ngsildTenant)));
 			page.persistForClass(Cluster.VAR_displayPage, Cluster.staticSetDisplayPage(siteRequest2, (String)result.get(Cluster.VAR_displayPage)));
 			page.persistForClass(Cluster.VAR_ngsildPath, Cluster.staticSetNgsildPath(siteRequest2, (String)result.get(Cluster.VAR_ngsildPath)));
+			page.persistForClass(Cluster.VAR_editPage, Cluster.staticSetEditPage(siteRequest2, (String)result.get(Cluster.VAR_editPage)));
 			page.persistForClass(Cluster.VAR_ngsildContext, Cluster.staticSetNgsildContext(siteRequest2, (String)result.get(Cluster.VAR_ngsildContext)));
+			page.persistForClass(Cluster.VAR_userPage, Cluster.staticSetUserPage(siteRequest2, (String)result.get(Cluster.VAR_userPage)));
 			page.persistForClass(Cluster.VAR_ngsildData, Cluster.staticSetNgsildData(siteRequest2, (String)result.get(Cluster.VAR_ngsildData)));
+			page.persistForClass(Cluster.VAR_download, Cluster.staticSetDownload(siteRequest2, (String)result.get(Cluster.VAR_download)));
 			page.persistForClass(Cluster.VAR_aiNodesTotal, Cluster.staticSetAiNodesTotal(siteRequest2, (String)result.get(Cluster.VAR_aiNodesTotal)));
 			page.persistForClass(Cluster.VAR_gpuDevicesTotal, Cluster.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(Cluster.VAR_gpuDevicesTotal)));
 			page.persistForClass(Cluster.VAR_cpuCoresTotal, Cluster.staticSetCpuCoresTotal(siteRequest2, (String)result.get(Cluster.VAR_cpuCoresTotal)));
 			page.persistForClass(Cluster.VAR_memoryBytesTotal, Cluster.staticSetMemoryBytesTotal(siteRequest2, (String)result.get(Cluster.VAR_memoryBytesTotal)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);

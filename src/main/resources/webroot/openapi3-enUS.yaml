@@ -2574,47 +2574,6 @@ paths:
                 $ref: '#/components/schemas/SearchPageBareMetalOrderResponse'
   /en-us/user/bare-metal-order/{pk}:
     get:
-      operationId: displaypageBareMetalOrder
-      x-vertx-event-bus: ai-telemetry-enUS-BareMetalOrder
-      description: >+
-      summary: >+
-      tags:
-        - bare metal orders
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: pk
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/DisplayPageBareMetalOrderResponse'
-    get:
       operationId: userpageBareMetalOrder
       x-vertx-event-bus: ai-telemetry-enUS-BareMetalOrder
       security:
@@ -4407,47 +4366,6 @@ paths:
                 $ref: '#/components/schemas/SearchPageClusterResponse'
   /en-us/user/cluster/{clusterResource}:
     get:
-      operationId: displaypageCluster
-      x-vertx-event-bus: ai-telemetry-enUS-Cluster
-      description: >+
-      summary: >+
-      tags:
-        - OpenShift clusters
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: clusterResource
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/DisplayPageClusterResponse'
-    get:
       operationId: userpageCluster
       x-vertx-event-bus: ai-telemetry-enUS-Cluster
       security:
@@ -6229,47 +6147,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/SearchPageClusterRequestResponse'
   /en-us/user/cluster-request/{name}:
-    get:
-      operationId: displaypageClusterRequest
-      x-vertx-event-bus: ai-telemetry-enUS-ClusterRequest
-      description: >+
-      summary: >+
-      tags:
-        - OpenShift cluster requests
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: name
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/DisplayPageClusterRequestResponse'
     get:
       operationId: userpageClusterRequest
       x-vertx-event-bus: ai-telemetry-enUS-ClusterRequest
@@ -8062,47 +7939,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/SearchPageGpuDeviceResponse'
   /en-us/user/gpu-device/{gpuDeviceResource}:
-    get:
-      operationId: displaypageGpuDevice
-      x-vertx-event-bus: ai-telemetry-enUS-GpuDevice
-      description: >+
-      summary: >+
-      tags:
-        - GPU devices
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: gpuDeviceResource
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/DisplayPageGpuDeviceResponse'
     get:
       operationId: userpageGpuDevice
       x-vertx-event-bus: ai-telemetry-enUS-GpuDevice
@@ -10927,47 +10763,6 @@ paths:
                 $ref: '#/components/schemas/SearchPageAiNodeResponse'
   /en-us/user/ai-node/{nodeResource}:
     get:
-      operationId: displaypageAiNode
-      x-vertx-event-bus: ai-telemetry-enUS-AiNode
-      description: >+
-      summary: >+
-      tags:
-        - AI nodes
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: nodeResource
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/DisplayPageAiNodeResponse'
-    get:
       operationId: userpageAiNode
       x-vertx-event-bus: ai-telemetry-enUS-AiNode
       security:
@@ -11894,47 +11689,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/SearchPageProjectResponse'
   /en-us/user/project/{projectResource}:
-    get:
-      operationId: displaypageProject
-      x-vertx-event-bus: ai-telemetry-enUS-Project
-      description: >+
-      summary: >+
-      tags:
-        - projects
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: projectResource
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/DisplayPageProjectResponse'
     get:
       operationId: userpageProject
       x-vertx-event-bus: ai-telemetry-enUS-Project
@@ -13508,11 +13262,6 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/SearchPageBareMetalOrderResponse'
-    DisplayPageBareMetalOrderResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/DisplayPageBareMetalOrderResponse'
     UserPageBareMetalOrderResponse:
       content:
         text/html; charset=utf-8:
@@ -13638,11 +13387,6 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/SearchPageClusterResponse'
-    DisplayPageClusterResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/DisplayPageClusterResponse'
     UserPageClusterResponse:
       content:
         text/html; charset=utf-8:
@@ -13768,11 +13512,6 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/SearchPageClusterRequestResponse'
-    DisplayPageClusterRequestResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/DisplayPageClusterRequestResponse'
     UserPageClusterRequestResponse:
       content:
         text/html; charset=utf-8:
@@ -13898,11 +13637,6 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/SearchPageGpuDeviceResponse'
-    DisplayPageGpuDeviceResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/DisplayPageGpuDeviceResponse'
     UserPageGpuDeviceResponse:
       content:
         text/html; charset=utf-8:
@@ -14103,11 +13837,6 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/SearchPageAiNodeResponse'
-    DisplayPageAiNodeResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/DisplayPageAiNodeResponse'
     UserPageAiNodeResponse:
       content:
         text/html; charset=utf-8:
@@ -14173,11 +13902,6 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/SearchPageProjectResponse'
-    DisplayPageProjectResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/DisplayPageProjectResponse'
     UserPageProjectResponse:
       content:
         text/html; charset=utf-8:
@@ -16554,9 +16278,6 @@ components:
     SearchPageBareMetalOrderResponse:
       allOf:
         - type: string
-    DisplayPageBareMetalOrderResponse:
-      allOf:
-        - type: string
     UserPageBareMetalOrderResponse:
       allOf:
         - type: string
@@ -17518,9 +17239,6 @@ components:
     SearchPageClusterResponse:
       allOf:
         - type: string
-    DisplayPageClusterResponse:
-      allOf:
-        - type: string
     UserPageClusterResponse:
       allOf:
         - type: string
@@ -17862,9 +17580,6 @@ components:
       allOf:
         - type: string
     SearchPageClusterRequestResponse:
-      allOf:
-        - type: string
-    DisplayPageClusterRequestResponse:
       allOf:
         - type: string
     UserPageClusterRequestResponse:
@@ -19000,9 +18715,6 @@ components:
       allOf:
         - type: string
     SearchPageGpuDeviceResponse:
-      allOf:
-        - type: string
-    DisplayPageGpuDeviceResponse:
       allOf:
         - type: string
     UserPageGpuDeviceResponse:
@@ -20199,9 +19911,6 @@ components:
     SearchPageAiNodeResponse:
       allOf:
         - type: string
-    DisplayPageAiNodeResponse:
-      allOf:
-        - type: string
     UserPageAiNodeResponse:
       allOf:
         - type: string
@@ -20510,9 +20219,6 @@ components:
     SearchPageProjectResponse:
       allOf:
         - type: string
-    DisplayPageProjectResponse:
-      allOf:
-        - type: string
     UserPageProjectResponse:
       allOf:
         - type: string
@@ -20584,6 +20290,32 @@ components:
                     type: string
                   pageImageAlt:
                     type: string
+                  prerequisiteArticleIds:
+                    type: string
+                  prerequisiteArticles:
+                    type: array
+                    items:
+                      anyOf:
+                        - type: string
+                        - type: number
+                        - type: string
+                        - type: boolean
+                  nextArticleIds:
+                    type: string
+                  nextArticles:
+                    type: array
+                    items:
+                      anyOf:
+                        - type: string
+                        - type: number
+                        - type: string
+                        - type: boolean
+                  labelsString:
+                    type: string
+                  labels:
+                    type: array
+                    items:
+                      type: string
                   relatedArticleIds:
                     type: string
                   relatedArticles:
@@ -20773,6 +20505,94 @@ components:
               type: string
             removeAllPageImageAlt:
               type: string
+            setPrerequisiteArticleIds:
+              type: string
+              nullable: true
+            removePrerequisiteArticleIds:
+              type: string
+            removeAllPrerequisiteArticleIds:
+              type: string
+            setPrerequisiteArticles:
+              type: array
+              nullable: true
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removePrerequisiteArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removeAllPrerequisiteArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            setNextArticleIds:
+              type: string
+              nullable: true
+            removeNextArticleIds:
+              type: string
+            removeAllNextArticleIds:
+              type: string
+            setNextArticles:
+              type: array
+              nullable: true
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removeNextArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removeAllNextArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            setLabelsString:
+              type: string
+              nullable: true
+            removeLabelsString:
+              type: string
+            removeAllLabelsString:
+              type: string
+            setLabels:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLabels:
+              type: string
+            removeAllLabels:
+              type: array
+              items:
+                type: string
+            addLabels:
+              type: string
+            addAllLabels:
+              type: array
+              items:
+                type: string
             setRelatedArticleIds:
               type: string
               nullable: true
@@ -20984,6 +20804,94 @@ components:
               type: string
             removeAllPageImageAlt:
               type: string
+            setPrerequisiteArticleIds:
+              type: string
+              nullable: true
+            removePrerequisiteArticleIds:
+              type: string
+            removeAllPrerequisiteArticleIds:
+              type: string
+            setPrerequisiteArticles:
+              type: array
+              nullable: true
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removePrerequisiteArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removeAllPrerequisiteArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            setNextArticleIds:
+              type: string
+              nullable: true
+            removeNextArticleIds:
+              type: string
+            removeAllNextArticleIds:
+              type: string
+            setNextArticles:
+              type: array
+              nullable: true
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removeNextArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            removeAllNextArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            setLabelsString:
+              type: string
+              nullable: true
+            removeLabelsString:
+              type: string
+            removeAllLabelsString:
+              type: string
+            setLabels:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLabels:
+              type: string
+            removeAllLabels:
+              type: array
+              items:
+                type: string
+            addLabels:
+              type: string
+            addAllLabels:
+              type: array
+              items:
+                type: string
             setRelatedArticleIds:
               type: string
               nullable: true
@@ -21070,6 +20978,32 @@ components:
               type: string
             pageImageAlt:
               type: string
+            prerequisiteArticleIds:
+              type: string
+            prerequisiteArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            nextArticleIds:
+              type: string
+            nextArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            labelsString:
+              type: string
+            labels:
+              type: array
+              items:
+                type: string
             relatedArticleIds:
               type: string
             relatedArticles:
@@ -21134,6 +21068,32 @@ components:
               type: string
             pageImageAlt:
               type: string
+            prerequisiteArticleIds:
+              type: string
+            prerequisiteArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            nextArticleIds:
+              type: string
+            nextArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            labelsString:
+              type: string
+            labels:
+              type: array
+              items:
+                type: string
             relatedArticleIds:
               type: string
             relatedArticles:
@@ -21203,6 +21163,32 @@ components:
                     type: string
                   pageImageAlt:
                     type: string
+                  prerequisiteArticleIds:
+                    type: string
+                  prerequisiteArticles:
+                    type: array
+                    items:
+                      anyOf:
+                        - type: string
+                        - type: number
+                        - type: string
+                        - type: boolean
+                  nextArticleIds:
+                    type: string
+                  nextArticles:
+                    type: array
+                    items:
+                      anyOf:
+                        - type: string
+                        - type: number
+                        - type: string
+                        - type: boolean
+                  labelsString:
+                    type: string
+                  labels:
+                    type: array
+                    items:
+                      type: string
                   relatedArticleIds:
                     type: string
                   relatedArticles:
@@ -21267,6 +21253,32 @@ components:
                     type: string
                   pageImageAlt:
                     type: string
+                  prerequisiteArticleIds:
+                    type: string
+                  prerequisiteArticles:
+                    type: array
+                    items:
+                      anyOf:
+                        - type: string
+                        - type: number
+                        - type: string
+                        - type: boolean
+                  nextArticleIds:
+                    type: string
+                  nextArticles:
+                    type: array
+                    items:
+                      anyOf:
+                        - type: string
+                        - type: number
+                        - type: string
+                        - type: boolean
+                  labelsString:
+                    type: string
+                  labels:
+                    type: array
+                    items:
+                      type: string
                   relatedArticleIds:
                     type: string
                   relatedArticles:
@@ -21331,6 +21343,32 @@ components:
               type: string
             pageImageAlt:
               type: string
+            prerequisiteArticleIds:
+              type: string
+            prerequisiteArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            nextArticleIds:
+              type: string
+            nextArticles:
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: string
+                  - type: boolean
+            labelsString:
+              type: string
+            labels:
+              type: array
+              items:
+                type: string
             relatedArticleIds:
               type: string
             relatedArticles:

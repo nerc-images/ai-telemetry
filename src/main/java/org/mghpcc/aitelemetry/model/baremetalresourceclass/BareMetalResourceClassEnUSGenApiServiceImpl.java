@@ -481,31 +481,33 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 				searchBareMetalResourceClassList(siteRequest, false, true, true).onSuccess(listBareMetalResourceClass -> {
 					try {
 						BareMetalResourceClass o = listBareMetalResourceClass.first();
-						if(o != null && listBareMetalResourceClass.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						BareMetalResourceClass o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listBareMetalResourceClass.first()).map(o2 -> o2.getName().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listBareMetalResourceClass.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listBareMetalResourceClass.first()).map(o3 -> o3.getName().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listBareMetalResourceClass.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							BareMetalResourceClass o2 = jsonObject.mapTo(BareMetalResourceClass.class);
+							o2 = jsonObject.mapTo(BareMetalResourceClass.class);
 							o2.setSiteRequest_(siteRequest);
-							patchBareMetalResourceClassFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(BareMetalResourceClass.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchBareMetalResourceClassFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchBareMetalResourceClass failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -672,6 +674,30 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 							bSql.append(BareMetalResourceClass.VAR_displayPage + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDisplayPage());
+						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(BareMetalResourceClass.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(BareMetalResourceClass.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(BareMetalResourceClass.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 				}
 			}
@@ -1093,6 +1119,33 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 						bSql.append(BareMetalResourceClass.VAR_displayPage + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDisplayPage());
+						break;
+					case BareMetalResourceClass.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(BareMetalResourceClass.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
+					case BareMetalResourceClass.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(BareMetalResourceClass.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
+					case BareMetalResourceClass.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(BareMetalResourceClass.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					}
 				}
@@ -1978,6 +2031,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 			form.add("permission", String.format("%s#%s", BareMetalResourceClass.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", BareMetalResourceClass.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", BareMetalResourceClass.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", BareMetalResourceClass.CLASS_AUTH_RESOURCE, name, "GET"));
 			if(name != null)
 				form.add("permission", String.format("%s#%s", name, "GET"));
 			webClient.post(
@@ -2803,7 +2857,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT name, count, created, archived, sessionId, userKey, objectTitle, displayPage FROM BareMetalResourceClass WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT name, count, created, archived, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM BareMetalResourceClass WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -3015,10 +3069,14 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 			page.persistForClass(BareMetalResourceClass.VAR_userKey, BareMetalResourceClass.staticSetUserKey(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_userKey)));
 			page.persistForClass(BareMetalResourceClass.VAR_objectTitle, BareMetalResourceClass.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_objectTitle)));
 			page.persistForClass(BareMetalResourceClass.VAR_displayPage, BareMetalResourceClass.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_displayPage)));
+			page.persistForClass(BareMetalResourceClass.VAR_editPage, BareMetalResourceClass.staticSetEditPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_editPage)));
+			page.persistForClass(BareMetalResourceClass.VAR_userPage, BareMetalResourceClass.staticSetUserPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_userPage)));
+			page.persistForClass(BareMetalResourceClass.VAR_download, BareMetalResourceClass.staticSetDownload(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_download)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);

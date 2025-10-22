@@ -557,31 +557,33 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 				searchClusterOrderList(siteRequest, false, true, true).onSuccess(listClusterOrder -> {
 					try {
 						ClusterOrder o = listClusterOrder.first();
-						if(o != null && listClusterOrder.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						ClusterOrder o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getId().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listClusterOrder.first()).map(o3 -> o3.getId().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							ClusterOrder o2 = jsonObject.mapTo(ClusterOrder.class);
+							o2 = jsonObject.mapTo(ClusterOrder.class);
 							o2.setSiteRequest_(siteRequest);
-							patchClusterOrderFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(ClusterOrder.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchClusterOrderFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchClusterOrder failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -787,6 +789,30 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 							bSql.append(ClusterOrder.VAR_displayPage + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDisplayPage());
+						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(ClusterOrder.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(ClusterOrder.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(ClusterOrder.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 				}
 			}
@@ -1237,6 +1263,33 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 						bSql.append(ClusterOrder.VAR_displayPage + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDisplayPage());
+						break;
+					case ClusterOrder.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(ClusterOrder.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
+					case ClusterOrder.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(ClusterOrder.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
+					case ClusterOrder.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(ClusterOrder.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					}
 				}
@@ -2179,6 +2232,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 			form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "GET"));
 			if(id != null)
 				form.add("permission", String.format("%s#%s", id, "GET"));
 			webClient.post(
@@ -3024,7 +3078,7 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT id, templateId, created, state, clusterId, archived, sessionId, userKey, objectTitle, displayPage FROM ClusterOrder WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT id, templateId, created, state, clusterId, archived, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM ClusterOrder WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -3299,10 +3353,14 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 			page.persistForClass(ClusterOrder.VAR_userKey, ClusterOrder.staticSetUserKey(siteRequest2, (String)result.get(ClusterOrder.VAR_userKey)));
 			page.persistForClass(ClusterOrder.VAR_objectTitle, ClusterOrder.staticSetObjectTitle(siteRequest2, (String)result.get(ClusterOrder.VAR_objectTitle)));
 			page.persistForClass(ClusterOrder.VAR_displayPage, ClusterOrder.staticSetDisplayPage(siteRequest2, (String)result.get(ClusterOrder.VAR_displayPage)));
+			page.persistForClass(ClusterOrder.VAR_editPage, ClusterOrder.staticSetEditPage(siteRequest2, (String)result.get(ClusterOrder.VAR_editPage)));
+			page.persistForClass(ClusterOrder.VAR_userPage, ClusterOrder.staticSetUserPage(siteRequest2, (String)result.get(ClusterOrder.VAR_userPage)));
+			page.persistForClass(ClusterOrder.VAR_download, ClusterOrder.staticSetDownload(siteRequest2, (String)result.get(ClusterOrder.VAR_download)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);
