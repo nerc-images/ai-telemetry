@@ -21,6 +21,7 @@ ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS displayName text;
 ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS siteFontSize text;
 ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS siteTheme text;
 ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS webComponentsTheme text;
+ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS customerProfileId text;
 
 CREATE TABLE IF NOT EXISTS Hub();
 ALTER TABLE Hub ADD COLUMN IF NOT EXISTS pk bigserial primary key;
