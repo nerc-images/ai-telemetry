@@ -555,31 +555,33 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 				searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
 					try {
 						BareMetalNetwork o = listBareMetalNetwork.first();
-						if(o != null && listBareMetalNetwork.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						BareMetalNetwork o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listBareMetalNetwork.first()).map(o2 -> o2.getId().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listBareMetalNetwork.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listBareMetalNetwork.first()).map(o3 -> o3.getId().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listBareMetalNetwork.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							BareMetalNetwork o2 = jsonObject.mapTo(BareMetalNetwork.class);
+							o2 = jsonObject.mapTo(BareMetalNetwork.class);
 							o2.setSiteRequest_(siteRequest);
-							patchBareMetalNetworkFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(BareMetalNetwork.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchBareMetalNetworkFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchBareMetalNetwork failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -843,6 +845,14 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 							num++;
 							bParams.add(o2.sqlRevisionNumber());
 						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(BareMetalNetwork.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
 					case "setStatus":
 							o2.setStatus(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -851,6 +861,14 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 							num++;
 							bParams.add(o2.sqlStatus());
 						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(BareMetalNetwork.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
 					case "setSubnetIds":
 							o2.setSubnetIds(jsonObject.getJsonArray(entityVar));
 							if(bParams.size() > 0)
@@ -858,6 +876,14 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 							bSql.append(BareMetalNetwork.VAR_subnetIds + "=$" + num);
 							num++;
 							bParams.add(o2.sqlSubnetIds());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(BareMetalNetwork.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 					case "setTags":
 							o2.setTags(jsonObject.getJsonArray(entityVar));
@@ -1532,6 +1558,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 						num++;
 						bParams.add(o2.sqlRevisionNumber());
 						break;
+					case BareMetalNetwork.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(BareMetalNetwork.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
 					case BareMetalNetwork.VAR_status:
 						o2.setStatus(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1541,6 +1576,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 						num++;
 						bParams.add(o2.sqlStatus());
 						break;
+					case BareMetalNetwork.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(BareMetalNetwork.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
 					case BareMetalNetwork.VAR_subnetIds:
 						o2.setSubnetIds(jsonObject.getJsonArray(entityVar));
 						if(bParams.size() > 0) {
@@ -1549,6 +1593,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 						bSql.append(BareMetalNetwork.VAR_subnetIds + "=$" + num);
 						num++;
 						bParams.add(o2.sqlSubnetIds());
+						break;
+					case BareMetalNetwork.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(BareMetalNetwork.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					case BareMetalNetwork.VAR_tags:
 						o2.setTags(jsonObject.getJsonArray(entityVar));
@@ -2633,6 +2686,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 			form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, id, "GET"));
 			if(id != null)
 				form.add("permission", String.format("%s#%s", id, "GET"));
 			webClient.post(
@@ -3458,7 +3512,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT id, name, created, description, availabilityZoneHints, archived, availabilityZones, createdAt, dnsDomain, mtu, sessionId, projectId, userKey, providerNetworkType, providerPhysicalNetwork, providerSegmentationId, objectTitle, qosPolicyId, displayPage, revisionNumber, status, subnetIds, tags, tenantId, updatedAt, isAdminStateUp, isDefault, isPortSecurityEnabled, isRouterExternal, isShared, isVlanQueing, isVlanTransparent, l2Adjacency, locationCloud, locationProjectDomainId, locationProjectDomainName, locationProjectId, locationProjectName, locationRegionName, locationZone FROM BareMetalNetwork WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT id, name, created, description, availabilityZoneHints, archived, availabilityZones, createdAt, dnsDomain, mtu, sessionId, projectId, userKey, providerNetworkType, providerPhysicalNetwork, providerSegmentationId, objectTitle, qosPolicyId, displayPage, revisionNumber, editPage, status, userPage, subnetIds, download, tags, tenantId, updatedAt, isAdminStateUp, isDefault, isPortSecurityEnabled, isRouterExternal, isShared, isVlanQueing, isVlanTransparent, l2Adjacency, locationCloud, locationProjectDomainId, locationProjectDomainName, locationProjectId, locationProjectName, locationRegionName, locationZone FROM BareMetalNetwork WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -3682,8 +3736,11 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 			page.persistForClass(BareMetalNetwork.VAR_qosPolicyId, BareMetalNetwork.staticSetQosPolicyId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_qosPolicyId)));
 			page.persistForClass(BareMetalNetwork.VAR_displayPage, BareMetalNetwork.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_displayPage)));
 			page.persistForClass(BareMetalNetwork.VAR_revisionNumber, BareMetalNetwork.staticSetRevisionNumber(siteRequest2, (String)result.get(BareMetalNetwork.VAR_revisionNumber)));
+			page.persistForClass(BareMetalNetwork.VAR_editPage, BareMetalNetwork.staticSetEditPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_editPage)));
 			page.persistForClass(BareMetalNetwork.VAR_status, BareMetalNetwork.staticSetStatus(siteRequest2, (String)result.get(BareMetalNetwork.VAR_status)));
+			page.persistForClass(BareMetalNetwork.VAR_userPage, BareMetalNetwork.staticSetUserPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_userPage)));
 			page.persistForClass(BareMetalNetwork.VAR_subnetIds, BareMetalNetwork.staticSetSubnetIds(siteRequest2, (String)result.get(BareMetalNetwork.VAR_subnetIds)));
+			page.persistForClass(BareMetalNetwork.VAR_download, BareMetalNetwork.staticSetDownload(siteRequest2, (String)result.get(BareMetalNetwork.VAR_download)));
 			page.persistForClass(BareMetalNetwork.VAR_tags, BareMetalNetwork.staticSetTags(siteRequest2, (String)result.get(BareMetalNetwork.VAR_tags)));
 			page.persistForClass(BareMetalNetwork.VAR_tenantId, BareMetalNetwork.staticSetTenantId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_tenantId)));
 			page.persistForClass(BareMetalNetwork.VAR_updatedAt, BareMetalNetwork.staticSetUpdatedAt(siteRequest2, (String)result.get(BareMetalNetwork.VAR_updatedAt), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
@@ -3703,9 +3760,10 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
 			page.persistForClass(BareMetalNetwork.VAR_locationRegionName, BareMetalNetwork.staticSetLocationRegionName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationRegionName)));
 			page.persistForClass(BareMetalNetwork.VAR_locationZone, BareMetalNetwork.staticSetLocationZone(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationZone)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);

@@ -152,7 +152,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -355,7 +355,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -497,7 +497,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PATCH")) {
+					if(!scopes.contains("PATCH") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -676,31 +676,33 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
 					try {
 						Project o = listProject.first();
-						if(o != null && listProject.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						Project o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getProjectResource().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listProject.first()).map(o3 -> o3.getProjectResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							Project o2 = jsonObject.mapTo(Project.class);
+							o2 = jsonObject.mapTo(Project.class);
 							o2.setSiteRequest_(siteRequest);
-							patchProjectFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(Project.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchProjectFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchProject failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -954,6 +956,30 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlDisplayPage());
 						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Project.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Project.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Project.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
+						break;
 				}
 			}
 			bSql.append(" WHERE pk=$" + num);
@@ -1048,7 +1074,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("POST")) {
+					if(!scopes.contains("POST") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -1481,6 +1507,33 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlDisplayPage());
 						break;
+					case Project.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Project.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
+					case Project.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Project.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
+					case Project.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Project.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
+						break;
 					}
 				}
 			}
@@ -1574,7 +1627,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2004,7 +2057,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PUT")) {
+					if(!scopes.contains("PUT") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2369,7 +2422,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2585,6 +2638,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
 			if(projectResource != null)
 				form.add("permission", String.format("%s#%s", projectResource, "GET"));
 			webClient.post(
@@ -2600,7 +2654,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2792,6 +2846,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
 			if(projectResource != null)
 				form.add("permission", String.format("%s#%s", projectResource, "GET"));
 			webClient.post(
@@ -2807,7 +2862,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2898,7 +2953,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 	}
 
 	public String templateUserPageProject(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", serviceRequest.getExtra().getString("uri").substring(1));
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
 	}
 	public Future<ServiceResponse> response200UserPageProject(SearchList<Project> listProject) {
 		Promise<ServiceResponse> promise = Promise.promise();
@@ -3015,7 +3070,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -3738,7 +3793,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, userKey, objectTitle, displayPage FROM Project WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4051,10 +4106,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			page.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
 			page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
 			page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
+			page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
+			page.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
+			page.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);

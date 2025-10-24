@@ -148,7 +148,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -339,7 +339,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -469,7 +469,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PATCH")) {
+					if(!scopes.contains("PATCH") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -636,31 +636,33 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				searchHubList(siteRequest, false, true, true).onSuccess(listHub -> {
 					try {
 						Hub o = listHub.first();
-						if(o != null && listHub.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						Hub o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getHubResource().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o3 -> o3.getHubResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listHub.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							Hub o2 = jsonObject.mapTo(Hub.class);
+							o2 = jsonObject.mapTo(Hub.class);
 							o2.setSiteRequest_(siteRequest);
-							patchHubFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(Hub.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchHubFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchHub failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -780,14 +782,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							num++;
 							bParams.add(o2.sqlHubId());
 						break;
-					case "setHubResource":
-							o2.setHubResource(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(Hub.VAR_hubResource + "=$" + num);
-							num++;
-							bParams.add(o2.sqlHubResource());
-						break;
 					case "setCreated":
 							o2.setCreated(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -795,6 +789,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							bSql.append(Hub.VAR_created + "=$" + num);
 							num++;
 							bParams.add(o2.sqlCreated());
+						break;
+					case "setHubResource":
+							o2.setHubResource(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Hub.VAR_hubResource + "=$" + num);
+							num++;
+							bParams.add(o2.sqlHubResource());
 						break;
 					case "setPageId":
 							o2.setPageId(jsonObject.getString(entityVar));
@@ -804,14 +806,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							num++;
 							bParams.add(o2.sqlPageId());
 						break;
-					case "setDescription":
-							o2.setDescription(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(Hub.VAR_description + "=$" + num);
-							num++;
-							bParams.add(o2.sqlDescription());
-						break;
 					case "setArchived":
 							o2.setArchived(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -819,6 +813,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							bSql.append(Hub.VAR_archived + "=$" + num);
 							num++;
 							bParams.add(o2.sqlArchived());
+						break;
+					case "setDescription":
+							o2.setDescription(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Hub.VAR_description + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDescription());
 						break;
 					case "setLocalClusterName":
 							o2.setLocalClusterName(jsonObject.getString(entityVar));
@@ -859,6 +861,30 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							bSql.append(Hub.VAR_displayPage + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDisplayPage());
+						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Hub.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Hub.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Hub.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 				}
 			}
@@ -954,7 +980,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("POST")) {
+					if(!scopes.contains("POST") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -1254,15 +1280,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						num++;
 						bParams.add(o2.sqlHubId());
 						break;
-					case Hub.VAR_hubResource:
-						o2.setHubResource(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(Hub.VAR_hubResource + "=$" + num);
-						num++;
-						bParams.add(o2.sqlHubResource());
-						break;
 					case Hub.VAR_created:
 						o2.setCreated(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1271,6 +1288,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						bSql.append(Hub.VAR_created + "=$" + num);
 						num++;
 						bParams.add(o2.sqlCreated());
+						break;
+					case Hub.VAR_hubResource:
+						o2.setHubResource(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Hub.VAR_hubResource + "=$" + num);
+						num++;
+						bParams.add(o2.sqlHubResource());
 						break;
 					case Hub.VAR_pageId:
 						o2.setPageId(jsonObject.getString(entityVar));
@@ -1281,15 +1307,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						num++;
 						bParams.add(o2.sqlPageId());
 						break;
-					case Hub.VAR_description:
-						o2.setDescription(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(Hub.VAR_description + "=$" + num);
-						num++;
-						bParams.add(o2.sqlDescription());
-						break;
 					case Hub.VAR_archived:
 						o2.setArchived(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1298,6 +1315,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						bSql.append(Hub.VAR_archived + "=$" + num);
 						num++;
 						bParams.add(o2.sqlArchived());
+						break;
+					case Hub.VAR_description:
+						o2.setDescription(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Hub.VAR_description + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDescription());
 						break;
 					case Hub.VAR_localClusterName:
 						o2.setLocalClusterName(jsonObject.getString(entityVar));
@@ -1343,6 +1369,33 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						bSql.append(Hub.VAR_displayPage + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDisplayPage());
+						break;
+					case Hub.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Hub.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
+					case Hub.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Hub.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
+					case Hub.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Hub.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					}
 				}
@@ -1437,7 +1490,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -1815,7 +1868,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PUT")) {
+					if(!scopes.contains("PUT") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2168,7 +2221,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2372,6 +2425,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", Hub.CLASS_AUTH_RESOURCE, hubResource, "GET"));
 			if(hubResource != null)
 				form.add("permission", String.format("%s#%s", hubResource, "GET"));
 			webClient.post(
@@ -2387,7 +2441,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2567,6 +2621,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", Hub.CLASS_AUTH_RESOURCE, hubResource, "GET"));
 			if(hubResource != null)
 				form.add("permission", String.format("%s#%s", hubResource, "GET"));
 			webClient.post(
@@ -2582,7 +2637,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2661,7 +2716,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 	}
 
 	public String templateDisplayPageHub(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", serviceRequest.getExtra().getString("uri").substring(1));
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
 	}
 	public Future<ServiceResponse> response200DisplayPageHub(SearchList<Hub> listHub) {
 		Promise<ServiceResponse> promise = Promise.promise();
@@ -2762,6 +2817,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", Hub.CLASS_AUTH_RESOURCE, hubResource, "GET"));
 			if(hubResource != null)
 				form.add("permission", String.format("%s#%s", hubResource, "GET"));
 			webClient.post(
@@ -2777,7 +2833,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2856,7 +2912,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 	}
 
 	public String templateUserPageHub(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", serviceRequest.getExtra().getString("uri").substring(1));
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
 	}
 	public Future<ServiceResponse> response200UserPageHub(SearchList<Hub> listHub) {
 		Promise<ServiceResponse> promise = Promise.promise();
@@ -2973,7 +3029,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -3641,7 +3697,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubName, hubId, hubResource, created, pageId, description, archived, localClusterName, sessionId, userKey, objectTitle, displayPage FROM Hub WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubName, hubId, created, hubResource, pageId, archived, description, localClusterName, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM Hub WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -3847,20 +3903,24 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 
 			page.persistForClass(Hub.VAR_hubName, Hub.staticSetHubName(siteRequest2, (String)result.get(Hub.VAR_hubName)));
 			page.persistForClass(Hub.VAR_hubId, Hub.staticSetHubId(siteRequest2, (String)result.get(Hub.VAR_hubId)));
-			page.persistForClass(Hub.VAR_hubResource, Hub.staticSetHubResource(siteRequest2, (String)result.get(Hub.VAR_hubResource)));
 			page.persistForClass(Hub.VAR_created, Hub.staticSetCreated(siteRequest2, (String)result.get(Hub.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+			page.persistForClass(Hub.VAR_hubResource, Hub.staticSetHubResource(siteRequest2, (String)result.get(Hub.VAR_hubResource)));
 			page.persistForClass(Hub.VAR_pageId, Hub.staticSetPageId(siteRequest2, (String)result.get(Hub.VAR_pageId)));
-			page.persistForClass(Hub.VAR_description, Hub.staticSetDescription(siteRequest2, (String)result.get(Hub.VAR_description)));
 			page.persistForClass(Hub.VAR_archived, Hub.staticSetArchived(siteRequest2, (String)result.get(Hub.VAR_archived)));
+			page.persistForClass(Hub.VAR_description, Hub.staticSetDescription(siteRequest2, (String)result.get(Hub.VAR_description)));
 			page.persistForClass(Hub.VAR_localClusterName, Hub.staticSetLocalClusterName(siteRequest2, (String)result.get(Hub.VAR_localClusterName)));
 			page.persistForClass(Hub.VAR_sessionId, Hub.staticSetSessionId(siteRequest2, (String)result.get(Hub.VAR_sessionId)));
 			page.persistForClass(Hub.VAR_userKey, Hub.staticSetUserKey(siteRequest2, (String)result.get(Hub.VAR_userKey)));
 			page.persistForClass(Hub.VAR_objectTitle, Hub.staticSetObjectTitle(siteRequest2, (String)result.get(Hub.VAR_objectTitle)));
 			page.persistForClass(Hub.VAR_displayPage, Hub.staticSetDisplayPage(siteRequest2, (String)result.get(Hub.VAR_displayPage)));
+			page.persistForClass(Hub.VAR_editPage, Hub.staticSetEditPage(siteRequest2, (String)result.get(Hub.VAR_editPage)));
+			page.persistForClass(Hub.VAR_userPage, Hub.staticSetUserPage(siteRequest2, (String)result.get(Hub.VAR_userPage)));
+			page.persistForClass(Hub.VAR_download, Hub.staticSetDownload(siteRequest2, (String)result.get(Hub.VAR_download)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);

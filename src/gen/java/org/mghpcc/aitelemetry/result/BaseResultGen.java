@@ -820,6 +820,10 @@ public abstract class BaseResultGen<DEV> extends Object {
 		return BaseResult.staticSearchEditPage(siteRequest_, BaseResult.staticSetEditPage(siteRequest_, o)).toString();
 	}
 
+	public String sqlEditPage() {
+		return editPage;
+	}
+
 	//////////////
 	// userPage //
 	//////////////
@@ -872,6 +876,10 @@ public abstract class BaseResultGen<DEV> extends Object {
 		return BaseResult.staticSearchUserPage(siteRequest_, BaseResult.staticSetUserPage(siteRequest_, o)).toString();
 	}
 
+	public String sqlUserPage() {
+		return userPage;
+	}
+
 	//////////////
 	// download //
 	//////////////
@@ -922,6 +930,10 @@ public abstract class BaseResultGen<DEV> extends Object {
 
 	public static String staticSearchFqDownload(SiteRequest siteRequest_, String o) {
 		return BaseResult.staticSearchDownload(siteRequest_, BaseResult.staticSetDownload(siteRequest_, o)).toString();
+	}
+
+	public String sqlDownload() {
+		return download;
 	}
 
 	///////////////////
@@ -1484,6 +1496,24 @@ public abstract class BaseResultGen<DEV> extends Object {
 					setDisplayPage((String)val);
 				}
 				saves.add("displayPage");
+				return val;
+			} else if("editpage".equals(varLower)) {
+				if(val instanceof String) {
+					setEditPage((String)val);
+				}
+				saves.add("editPage");
+				return val;
+			} else if("userpage".equals(varLower)) {
+				if(val instanceof String) {
+					setUserPage((String)val);
+				}
+				saves.add("userPage");
+				return val;
+			} else if("download".equals(varLower)) {
+				if(val instanceof String) {
+					setDownload((String)val);
+				}
+				saves.add("download");
 				return val;
 			} else if("solrid".equals(varLower)) {
 				if(val instanceof String) {
