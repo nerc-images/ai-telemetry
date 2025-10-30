@@ -67,7 +67,7 @@ CLUSTER_PORT: "{{ (SITE_PORT | int) + 1 }}"
 # The public port of the Zookeeper cluster manager. 
 CLUSTER_PUBLIC_PORT: "{{ (SITE_PORT | int) + 1 }}"
 # Zookeeper root path to avoid conflicts with other apps using Zookeeper for clustering. 
-ZOOKEEPER_ROOT_PATH: "{{ lookup('env', 'ZOOKEEPER_ROOT_PATH') | default(SITE_NAME + '-local', true) }}"
+ZOOKEEPER_ROOT_PATH: "{{ lookup('env', 'ZOOKEEPER_ROOT_PATH') | default(SITE_NAME, true) }}"
 # Verify SSL connections. 
 SSL_VERIFY: "{{ lookup('env', 'SSL_VERIFY') | default('false', true) | bool }}"
 # The public search endpoint for searching public items in the site. 
@@ -130,11 +130,11 @@ SUFFIX_SRC_GEN_JAVA: /src/gen/java
 # The relative paths in the project to watch for changes. 
 RELATIVE_PATHS_TO_WATCH: "src/main/java/{{ SITE_JAVA_PACKAGE | replace('.', '/') }}"
 # The default source code directory for the computate application which helps generate and translate most the code. 
-COMPUTATE_SRC: "{{ lookup('env', 'HOME') + '/.local/src/computate' | realpath }}"
+COMPUTATE_SRC: "{{ lookup('env', 'COMPUTATE_SRC') | default(lookup('env', 'HOME') + '/.local/src/computate', true) | realpath }}"
 # The default source code directory for the computate-search application. 
-COMPUTATE_SEARCH_SRC: "{{ lookup('env', 'HOME') + '/.local/src/computate-search' | realpath }}"
+COMPUTATE_SEARCH_SRC: "{{ lookup('env', 'COMPUTATE_SEARCH_SRC') | default(lookup('env', 'HOME') + '/.local/src/computate-search', true) | realpath }}"
 # The default source code directory for the computate-vertx application. 
-COMPUTATE_VERTX_SRC: "{{ lookup('env', 'HOME') + '/.local/src/computate-vertx' | realpath }}"
+COMPUTATE_VERTX_SRC: "{{ lookup('env', 'COMPUTATE_VERTX_SRC') | default(lookup('env', 'HOME') + '/.local/src/computate-vertx', true) | realpath }}"
 # The paths to the internationalization for this project. 
 I18N_PATHS: ["{{ COMPUTATE_VERTX_SRC }}/src/main/resources/org/computate/i18n/i18n_{{ SITE_LANG }}.yaml"]
 # The Java main class of the site. 
@@ -252,7 +252,7 @@ SITE_SYSTEMD: "{{ '/usr/lib/systemd/system' if ansible_distribution_file_variety
 #######################
 
 # The name of the cloud provider where the public site is deployed. 
-SITE_POWERED_BY_NAME: "{{ lookup('env', 'SITE_POWERED_BY_NAME') | default('Mass Open Cloud', true) }}"
+SITE_POWERED_BY_NAME: "{{ lookup('env', 'SITE_POWERED_BY_NAME') | default('Open Sovereign AI Cloud', true) }}"
 # The URL of the cloud provider where the public site is deployed. 
 SITE_POWERED_BY_URL: "{{ lookup('env', 'SITE_POWERED_BY_URL') | default('https://research.redhat.com/mass-open-cloud/', true) }}"
 # The static path to the logo of the cloud provider where the public site is deployed. 
@@ -329,9 +329,9 @@ DATABASE_PORT: "{{ lookup('env', 'DATABASE_PORT') | default('30432', true) }}"
 # The PostgreSQL database user name of the site. 
 DATABASE_USERNAME: "{{ lookup('env', 'DATABASE_USERNAME_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME, true) }}"
 # The database secret containing the user password to connect to the database. 
-DATABASE_SECRET: "local-database"
+DATABASE_SECRET: "{{ lookup('env', 'DATABASE_SECRET_' + SITE_SHORT_NAME) | default('local-database', true) }}"
 # The PostgreSQL database password of the site. 
-DATABASE_PASSWORD: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=DATABASE_SECRET, namespace=SITE_NAMESPACE)[0].data.DATABASE_PASSWORD | b64decode }}"
+DATABASE_PASSWORD: "{{ lookup('env', 'DATABASE_PASSWORD_' + SITE_SHORT_NAME) | default(query('kubernetes.core.k8s', kind='Secret', resource_name=DATABASE_SECRET, namespace=SITE_NAMESPACE)[0].data.password | b64decode, true) }}"
 # The PostgreSQL database name of the site. 
 DATABASE_DATABASE: "{{ lookup('env', 'DATABASE_DATABASE_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME + 'local', true) }}"
 # The PostgreSQL database max pool size. 
@@ -362,11 +362,11 @@ AUTH_REALM: "{{ lookup('env', 'AUTH_REALM_' + SITE_SHORT_NAME) | default(SITE_SH
 # The Auth client. 
 AUTH_CLIENT: "{{ lookup('env', 'AUTH_CLIENT_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME, true) }}"
 # The Auth openshift secret with the client secret credentials. 
-AUTH_OPENSHIFT_SECRET: "local-auth"
+AUTH_OPENSHIFT_SECRET: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_' + SITE_SHORT_NAME) | default('local-auth', true) }}"
 # The Auth secret. 
 AUTH_SECRET: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_SECRET | b64decode }}"
 # The Auth openshift secret with the admin credentials. 
-AUTH_ADMIN_OPENSHIFT_SECRET: "local-auth"
+AUTH_ADMIN_OPENSHIFT_SECRET: "{{ lookup('env', 'AUTH_ADMIN_OPENSHIFT_SECRET_' + SITE_SHORT_NAME) | default('local-auth', true) }}"
 # The Auth admin username. 
 AUTH_ADMIN_USERNAME: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_ADMIN_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_ADMIN_USERNAME | b64decode | default('admin') }}"
 # The Auth admin password. 
@@ -464,6 +464,10 @@ IOTAGENT_TRANSPORT: AMQP
 # Kafka vars #
 ##############
 
+# The kafka keystore secret name. 
+KAFKA_KEYSTORE_SECRET: "{{ lookup('env', 'KAFKA_KEYSTORE_SECRET_' + SITE_SHORT_NAME) | default('kafka-' + SITE_NAME, true) }}"
+# The kafka truststore secret name. 
+KAFKA_TRUSTSTORE_SECRET: "{{ lookup('env', 'KAFKA_TRUSTSTORE_SECRET_' + SITE_SHORT_NAME) | default('kafka-cluster-ca-cert', true) }}"
 # Enable Kafka message integration. 
 ENABLE_KAFKA: "{{ (lookup('env', 'ENABLE_KAFKA') | lower) == 'true' }}"
 # The Kafka port. 
@@ -481,7 +485,7 @@ KAFKA_SSL_KEYSTORE_TYPE: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_TYPE') | default(
 # The Kafka SSL keystore location. 
 KAFKA_SSL_KEYSTORE_LOCATION: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_LOCATION') | default('/opt/app-root/src/kafka/keystore/user.p12', true) }}"
 # The Kafka SSL keystore OpenShift secret. 
-KAFKA_SSL_KEYSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_SECRET') | default('local-extra', true) }}"
+KAFKA_SSL_KEYSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_SECRET') | default(KAFKA_SECRET, true) }}"
 # The Kafka SSL keystore password. 
 KAFKA_SSL_KEYSTORE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_KEYSTORE_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"user.password\": \"\" } } )).data['user.password'] | b64decode }}"
 # The Kafka SSL truststore type. 
@@ -489,7 +493,7 @@ KAFKA_SSL_TRUSTSTORE_TYPE: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_TYPE') | defa
 # The Kafka SSL truststore location. 
 KAFKA_SSL_TRUSTSTORE_LOCATION: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_LOCATION') | default('/opt/app-root/src/kafka/truststore/ca.p12', true) }}"
 # The Kafka SSL truststore OpenShift secret. 
-KAFKA_SSL_TRUSTSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_SECRET') | default('local-extra', true) }}"
+KAFKA_SSL_TRUSTSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_SECRET') | default(KAFKA_SECRET, true) }}"
 # The Kafka SSL truststore password. 
 KAFKA_SSL_TRUSTSTORE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_TRUSTSTORE_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"ca.password\": \"\" } } )).data['ca.password'] | b64decode }}"
 
@@ -600,13 +604,6 @@ WRITE_COMMENTS: true
 # extra vars #
 ##############
 
-########
-# hubs #
-########
-
-# Describes the available hubs as a JSON object. 
-HUBS: '{ "local-cluster": { "hubName": "OpenShift Local", "description": "OpenShift Local on your own computer. " } }'
-
 #######################
 # prom-keycloak-proxy #
 #######################
@@ -621,7 +618,7 @@ AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(AUTH_CLIENT, true)
 # The Auth openshift secret with the client secret credentials. 
 AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-extra', true) }}"
 # The Auth secret. 
-AUTH_SECRET_SA: "{{ lookup('env', 'AUTH_SECRET_SA') | default(AUTH_SECRET, true) }}"
+AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_SECRET | b64decode }}"
 
 ###########
 # grafana #
@@ -632,8 +629,10 @@ GRAFANA_BASE_URL: https://grafana.apps.obs.nerc.mghpcc.org
 # Fulfillment API #
 ###################
 
+# The fulfillment API secret name. 
+FULFILLMENT_API_SECRET: "{{ lookup('env', 'FULFILLMENT_API_SECRET') | default('fulfillment-api', true) }}"
 # The Auth openshift secret with the admin credentials. 
-FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
+FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default(FULFILLMENT_API_SECRET, true) }}"
 # The Auth admin username. 
 FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=FULFILLMENT_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\" } } )).data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
@@ -652,10 +651,12 @@ IMPORT_DATA_PERIOD_ManagedCluster: 30 seconds
 # ESI API #
 ###########
 
+# The ESI API secret name. 
+ESI_API_SECRET: "{{ lookup('env', 'ESI_API_SECRET') | default('esi-uitest-cloud-config', true) }}"
 # Enable thin UI
 ENABLE_THIN_UI: "{{ lookup('env', 'ENABLE_THIN_UI') | default('false', true) | bool }}"
 # The Auth openshift secret with the admin credentials. 
-ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default('local-extra', true) }}"
+ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default(ESI_API_SECRET, true) }}"
 # The Auth admin username. 
 ESI_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=ESI_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\" } } )).data['token'] | b64decode }}"
 # Whether to use SSL when connecting to the fulfillment API. 
