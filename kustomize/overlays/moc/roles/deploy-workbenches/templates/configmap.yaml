@@ -6,6 +6,7 @@ metadata:
 data:
   SITE_SRC: "{{ SITE_SRC }}"
   SOLR_COLLECTION_{{ SITE_SHORT_NAME }}: '{{ SITE_SHORT_NAME }}-{{ USER_NAME }}'
+  DATABASE_SECRET_{{ SITE_SHORT_NAME }}: "postgres-pguser-{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
   DATABASE_USERNAME_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
   DATABASE_DATABASE_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
   AUTH_NAMESPACE_{{ SITE_SHORT_NAME }}: "{{ WORKBENCH_NAMESPACE }}"
@@ -22,13 +23,46 @@ data:
   FULFILLMENT_API_HOST_NAME: "{{ FULFILLMENT_API_HOST_NAME }}"
   FULFILLMENT_API_SSL: "{{ FULFILLMENT_API_SSL | string | lower }}"
   FULFILLMENT_API_PORT: "{{ FULFILLMENT_API_PORT }}"
+  KAFKA_SSL_KEYSTORE_SECRET: "esi"
+  KAFKA_SSL_TRUSTSTORE_SECRET: "kafka-cluster-ca-cert"
   KAFKA_TOPIC_FULFILL_OFFER: "esi-fulfill-offer-task-{{ USER_NAME }}"
   KAFKA_TOPIC_ORDER_LOOP: "esi-fulfill-order-loop-{{ USER_NAME }}"
   KAFKA_TOPIC_ORDER_STATUS: "esi-fulfill-order-status-{{ USER_NAME }}"
   KAFKA_GROUP: "esi-fulfill-group-{{ USER_NAME }}"
   KAFKA_GROUP_FULFILL: "esi-fulfill-group-{{ USER_NAME }}"
 
+  AUTH_CLIENT_SA: "ai-telemetry-sa"
+  AUTH_OPENSHIFT_SECRET_SA: "keycloak-client-ai-telemetry-sa"
+
+  FULFILLMENT_API_SECRET: "fulfillment-api"
+
+  ESI_API_SECRET: "esi-uitest-cloud-config"
   ESI_API_OPENSHIFT_SECRET: "{{ ESI_API_OPENSHIFT_SECRET }}"
   ESI_API_HOST_NAME: "{{ ESI_API_HOST_NAME }}"
   ESI_API_SSL: "{{ ESI_API_SSL | string | lower }}"
   ESI_API_PORT: "{{ ESI_API_PORT }}"
+
+  HUBS: >-
+    { 
+    "moc": { 
+    "hubName": "Mass Open Cloud", 
+    "description": "This active partnership between higher education, medical research centers, government, and industry provides structure and resources that enable a close collaboration between research, development, and operations in a series of interconnected projects. The goal of this collaboration is to provide predictable low cost resources and facilitator support for domain researchers, and more broadly, innovation in the public cloud. " 
+    }
+    , "innabox-dev": { 
+    "hubName": "Innabox development environment", 
+    "description": "The open source development environment for organizations standing up their own clouds. " 
+    }
+    , "open-sovereign-ai-cloud": { 
+    "hubName": "Open Sovereign AI Cloud", 
+    "description": "An open source solution for organizations standing up their own clouds. " 
+    }
+    }
+  PROM_KEYCLOAK_PROXY_PORT_MOC: "443"
+  PROM_KEYCLOAK_PROXY_SSL_MOC: "true"
+  PROM_KEYCLOAK_PROXY_HOST_NAME_MOC: "metrics-moc.apps.obs.nerc.mghpcc.org"
+  PROM_KEYCLOAK_PROXY_PORT_INNABOXDEV: "443"
+  PROM_KEYCLOAK_PROXY_SSL_INNABOXDEV: "true"
+  PROM_KEYCLOAK_PROXY_HOST_NAME_INNABOXDEV: "metrics-innabox-dev.apps.obs.nerc.mghpcc.org"
+  PROM_KEYCLOAK_PROXY_PORT_OPENSOVEREIGNAICLOUD: "443"
+  PROM_KEYCLOAK_PROXY_SSL_OPENSOVEREIGNAICLOUD: "true"
+  PROM_KEYCLOAK_PROXY_HOST_NAME_OPENSOVEREIGNAICLOUD: "metrics-open-sovereign-ai-cloud.apps.obs.nerc.mghpcc.org"
