@@ -414,7 +414,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\")") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -441,7 +441,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\")") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -1003,7 +1003,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(metricsBody.getJsonObject("data").getJsonArray("result"));
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
