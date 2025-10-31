@@ -127,7 +127,11 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 		Promise<Void> promise2 = Promise.promise();
 		promiseVirtualMachinePage(promise2);
 		promise2.future().onSuccess(a -> {
-			promise.complete(this);
+			super.promiseDeepVirtualMachineGenPage(siteRequest_).onSuccess(b -> {
+				promise.complete(this);
+			}).onFailure(ex -> {
+				promise.fail(ex);
+			});
 		}).onFailure(ex -> {
 			promise.fail(ex);
 		});
@@ -151,7 +155,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 		return promise.future();
 	}
 
-	public Future<? extends VirtualMachinePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+	@Override public Future<? extends VirtualMachinePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
 		return promiseDeepVirtualMachinePage(siteRequest_);
 	}
 
@@ -160,6 +164,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	/////////////////
 
 	public void siteRequestVirtualMachinePage(SiteRequest siteRequest_) {
+			super.siteRequestVirtualMachineGenPage(siteRequest_);
 	}
 
 	public void siteRequestForClass(SiteRequest siteRequest_) {
@@ -170,7 +175,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	// obtain //
 	/////////////
 
-	public Object obtainForClass(String var) {
+	@Override public Object obtainForClass(String var) {
 		String[] vars = StringUtils.split(var, ".");
 		Object o = null;
 		for(String v : vars) {
@@ -191,7 +196,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 		VirtualMachinePage oVirtualMachinePage = (VirtualMachinePage)this;
 		switch(var) {
 			default:
-				return null;
+				return super.obtainVirtualMachineGenPage(var);
 		}
 	}
 
@@ -199,7 +204,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	// relate //
 	///////////////
 
-	public boolean relateForClass(String var, Object val) {
+	@Override public boolean relateForClass(String var, Object val) {
 		String[] vars = StringUtils.split(var, ".");
 		Object o = null;
 		for(String v : vars) {
@@ -216,7 +221,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 		VirtualMachinePage oVirtualMachinePage = (VirtualMachinePage)this;
 		switch(var) {
 			default:
-				return null;
+				return super.relateVirtualMachineGenPage(var, val);
 		}
 	}
 
@@ -230,7 +235,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	public static Object staticSetVirtualMachinePage(String entityVar, SiteRequest siteRequest_, String v, VirtualMachinePage o) {
 		switch(entityVar) {
 			default:
-				return null;
+				return VirtualMachineGenPage.staticSetVirtualMachineGenPage(entityVar,  siteRequest_, v, o);
 		}
 	}
 
@@ -244,7 +249,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	public static Object staticSearchVirtualMachinePage(String entityVar, SiteRequest siteRequest_, Object o) {
 		switch(entityVar) {
 			default:
-				return null;
+				return VirtualMachineGenPage.staticSearchVirtualMachineGenPage(entityVar,  siteRequest_, o);
 		}
 	}
 
@@ -258,7 +263,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	public static String staticSearchStrVirtualMachinePage(String entityVar, SiteRequest siteRequest_, Object o) {
 		switch(entityVar) {
 			default:
-				return null;
+				return VirtualMachineGenPage.staticSearchStrVirtualMachineGenPage(entityVar,  siteRequest_, o);
 		}
 	}
 
@@ -272,7 +277,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	public static String staticSearchFqVirtualMachinePage(String entityVar, SiteRequest siteRequest_, String o) {
 		switch(entityVar) {
 			default:
-				return null;
+				return VirtualMachineGenPage.staticSearchFqVirtualMachineGenPage(entityVar,  siteRequest_, o);
 		}
 	}
 
@@ -282,6 +287,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 
 	@Override public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append(super.toString());
 		return sb.toString();
 	}
 
@@ -290,38 +296,47 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	public static final String CLASS_AUTH_RESOURCE = "";
 
 
+	@Override
 	public String idForClass() {
 		return null;
 	}
 
+	@Override
 	public String titleForClass() {
 		return null;
 	}
 
+	@Override
 	public String nameForClass() {
 		return null;
 	}
 
+	@Override
 	public String classNameAdjectiveSingularForClass() {
 		return null;
 	}
 
+	@Override
 	public String descriptionForClass() {
 		return null;
 	}
 
+	@Override
 	public String classStringFormatUrlEditPageForClass() {
 		return null;
 	}
 
+	@Override
 	public String classStringFormatUrlDisplayPageForClass() {
 		return null;
 	}
 
+	@Override
 	public String classStringFormatUrlUserPageForClass() {
 		return null;
 	}
 
+	@Override
 	public String classStringFormatUrlDownloadForClass() {
 		return null;
 	}
@@ -332,7 +347,7 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 	public static String displayNameVirtualMachinePage(String var) {
 		switch(var) {
 		default:
-			return null;
+			return VirtualMachineGenPage.displayNameVirtualMachineGenPage(var);
 		}
 	}
 
@@ -341,63 +356,63 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
 			return null;
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.descriptionVirtualMachineGenPage(var);
 		}
 	}
 
 	public static String classSimpleNameVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.classSimpleNameVirtualMachineGenPage(var);
 		}
 	}
 
 	public static Integer htmColumnVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.htmColumnVirtualMachineGenPage(var);
 		}
 	}
 
 	public static Integer htmRowVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.htmRowVirtualMachineGenPage(var);
 		}
 	}
 
 	public static Integer htmCellVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.htmCellVirtualMachineGenPage(var);
 		}
 	}
 
 	public static Integer lengthMinVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.lengthMinVirtualMachineGenPage(var);
 		}
 	}
 
 	public static Integer lengthMaxVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.lengthMaxVirtualMachineGenPage(var);
 		}
 	}
 
 	public static Integer maxVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.maxVirtualMachineGenPage(var);
 		}
 	}
 
 	public static Integer minVirtualMachinePage(String var) {
 		switch(var) {
 			default:
-				return null;
+				return VirtualMachineGenPage.minVirtualMachineGenPage(var);
 		}
 	}
 }

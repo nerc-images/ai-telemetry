@@ -107,6 +107,7 @@ import java.util.Base64;
 import java.time.ZonedDateTime;
 import org.apache.commons.lang3.BooleanUtils;
 import org.computate.vertx.search.list.SearchList;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachinePage;
 
 
 /**
@@ -151,7 +152,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -348,7 +349,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -484,7 +485,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PATCH")) {
+					if(!scopes.contains("PATCH") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -657,31 +658,33 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				searchVirtualMachineList(siteRequest, false, true, true).onSuccess(listVirtualMachine -> {
 					try {
 						VirtualMachine o = listVirtualMachine.first();
-						if(o != null && listVirtualMachine.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						VirtualMachine o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getVmResource().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listVirtualMachine.first()).map(o3 -> o3.getVmResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							VirtualMachine o2 = jsonObject.mapTo(VirtualMachine.class);
+							o2 = jsonObject.mapTo(VirtualMachine.class);
 							o2.setSiteRequest_(siteRequest);
-							patchVirtualMachineFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(VirtualMachine.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchVirtualMachineFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchVirtualMachine failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -718,7 +721,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestVirtualMachine();
-											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 												eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -1125,7 +1128,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("POST")) {
+					if(!scopes.contains("POST") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -1753,7 +1756,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -1982,7 +1985,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestVirtualMachine();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -2177,7 +2180,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PUT")) {
+					if(!scopes.contains("PUT") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2536,7 +2539,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2746,6 +2749,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, vmResource, "GET"));
 			if(vmResource != null)
 				form.add("permission", String.format("%s#%s", vmResource, "GET"));
 			webClient.post(
@@ -2761,7 +2765,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2947,6 +2951,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, vmResource, "GET"));
 			if(vmResource != null)
 				form.add("permission", String.format("%s#%s", vmResource, "GET"));
 			webClient.post(
@@ -2962,7 +2967,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -3047,7 +3052,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 	}
 
 	public String templateUserPageVirtualMachine(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", serviceRequest.getExtra().getString("uri").substring(1));
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
 	}
 	public Future<ServiceResponse> response200UserPageVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<ServiceResponse> promise = Promise.promise();
@@ -3164,7 +3169,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -3393,7 +3398,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestVirtualMachine();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -4208,9 +4213,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			page.persistForClass(VirtualMachine.VAR_ngsildContext, VirtualMachine.staticSetNgsildContext(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildContext)));
 			page.persistForClass(VirtualMachine.VAR_ngsildData, VirtualMachine.staticSetNgsildData(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildData)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);

@@ -544,7 +544,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestBareMetalResourceClass();
-											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 												eventBus.publish("websocketBareMetalResourceClass", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -1436,7 +1436,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestBareMetalResourceClass();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketBareMetalResourceClass", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -2412,7 +2412,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestBareMetalResourceClass();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketBareMetalResourceClass", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}

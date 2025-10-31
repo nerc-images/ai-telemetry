@@ -544,7 +544,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestClusterTemplate();
-											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 												eventBus.publish("websocketClusterTemplate", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -1470,7 +1470,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterTemplate();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketClusterTemplate", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -2446,7 +2446,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestClusterTemplate();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketClusterTemplate", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
