@@ -422,7 +422,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(metricsBody.getJsonObject("data").getJsonArray("result"));
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -449,7 +449,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(metricsBody.getJsonObject("data").getJsonArray("result"));
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -476,7 +476,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(metricsBody.getJsonObject("data").getJsonArray("result"));
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -503,7 +503,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(metricsBody.getJsonObject("data").getJsonArray("result"));
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -1005,7 +1005,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
         promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
-        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        LOG.error(String.format("Querying GPU projects failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
       });
     } catch(Throwable ex) {
@@ -1144,7 +1144,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(metricsBody.getJsonObject("data").getJsonArray("result"));
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -1195,7 +1195,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
               .expecting(HttpResponseExpectation.SC_OK)
               .onSuccess(metricsResponse -> {
             JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-            JsonArray dataResult = metricsBody.getJsonObject("data").getJsonArray("result");
+            JsonArray dataResult = Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray());
             List<Future<?>> futures = new ArrayList<>();
             dataResult.stream().map(o -> (JsonObject)o).forEach(clusterResult -> {
               futures.add(Future.future(promise1 -> {
