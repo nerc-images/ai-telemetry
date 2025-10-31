@@ -1005,6 +1005,10 @@ public abstract class BaseModelGen<DEV> extends Object {
 		return BaseModel.staticSearchEditPage(siteRequest_, BaseModel.staticSetEditPage(siteRequest_, o)).toString();
 	}
 
+	public String sqlEditPage() {
+		return editPage;
+	}
+
 	//////////////
 	// userPage //
 	//////////////
@@ -1057,6 +1061,10 @@ public abstract class BaseModelGen<DEV> extends Object {
 		return BaseModel.staticSearchUserPage(siteRequest_, BaseModel.staticSetUserPage(siteRequest_, o)).toString();
 	}
 
+	public String sqlUserPage() {
+		return userPage;
+	}
+
 	//////////////
 	// download //
 	//////////////
@@ -1107,6 +1115,10 @@ public abstract class BaseModelGen<DEV> extends Object {
 
 	public static String staticSearchFqDownload(SiteRequest siteRequest_, String o) {
 		return BaseModel.staticSearchDownload(siteRequest_, BaseModel.staticSetDownload(siteRequest_, o)).toString();
+	}
+
+	public String sqlDownload() {
+		return download;
 	}
 
 	///////////////////
@@ -1720,6 +1732,24 @@ public abstract class BaseModelGen<DEV> extends Object {
 					setDisplayPage((String)val);
 				}
 				saves.add("displayPage");
+				return val;
+			} else if("editpage".equals(varLower)) {
+				if(val instanceof String) {
+					setEditPage((String)val);
+				}
+				saves.add("editPage");
+				return val;
+			} else if("userpage".equals(varLower)) {
+				if(val instanceof String) {
+					setUserPage((String)val);
+				}
+				saves.add("userPage");
+				return val;
+			} else if("download".equals(varLower)) {
+				if(val instanceof String) {
+					setDownload((String)val);
+				}
+				saves.add("download");
 				return val;
 		} else {
 			return null;

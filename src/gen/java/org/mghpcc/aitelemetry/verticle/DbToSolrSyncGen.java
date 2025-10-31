@@ -41,23 +41,23 @@ import io.vertx.core.json.JsonArray;
 /**
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
- * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these MainVerticle objects in a RESTful API. 
- * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class MainVerticleGen into the class MainVerticle. 
+ * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these DbToSolrSync objects in a RESTful API. 
+ * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class DbToSolrSyncGen into the class DbToSolrSync. 
  * </li>
- * <h3>About the MainVerticle class and it's generated class MainVerticleGen&lt;AbstractVerticle&gt;: </h3>extends MainVerticleGen
+ * <h3>About the DbToSolrSync class and it's generated class DbToSolrSyncGen&lt;AbstractVerticle&gt;: </h3>extends DbToSolrSyncGen
  * <p>
- * This Java class extends a generated Java class MainVerticleGen built by the <a href="https://github.com/computate-org/computate">https://github.com/computate-org/computate</a> project. 
+ * This Java class extends a generated Java class DbToSolrSyncGen built by the <a href="https://github.com/computate-org/computate">https://github.com/computate-org/computate</a> project. 
  * Whenever this Java class is modified or touched, the watch service installed as described in the README, indexes all the information about this Java class in a local Apache Solr Search Engine. 
  * If you are running the service, you can see the indexed data about this Java Class here: 
  * </p>
- * <p><a href="https://solr.apps-crc.testing/solr/computate/select?q=*:*&fq=partEstClasse_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.verticle.MainVerticle">Find the class MainVerticle in Solr. </a></p>
+ * <p><a href="https://solr.apps-crc.testing/solr/computate/select?q=*:*&fq=partEstClasse_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.verticle.DbToSolrSync">Find the class DbToSolrSync in Solr. </a></p>
  * <p>
  * The extended class ending with "Gen" did not exist at first, but was automatically created by the same watch service based on the data retrieved from the local Apache Server search engine. 
  * The extended class contains many generated fields, getters, setters, initialization code, and helper methods to help build a website and API fast, reactive, and scalable. 
  * </p>
- * extends MainVerticleGen<AbstractVerticle>
- * <p>This <code>class MainVerticle extends MainVerticleGen&lt;AbstractVerticle&gt;</code>, which means it extends a newly generated MainVerticleGen. 
- * The generated <code>class MainVerticleGen extends AbstractVerticle</code> which means that MainVerticle extends MainVerticleGen which extends AbstractVerticle. 
+ * extends DbToSolrSyncGen<AbstractVerticle>
+ * <p>This <code>class DbToSolrSync extends DbToSolrSyncGen&lt;AbstractVerticle&gt;</code>, which means it extends a newly generated DbToSolrSyncGen. 
+ * The generated <code>class DbToSolrSyncGen extends AbstractVerticle</code> which means that DbToSolrSync extends DbToSolrSyncGen which extends AbstractVerticle. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
  * <h2>Api: true</h2>
@@ -66,7 +66,7 @@ import io.vertx.core.json.JsonArray;
  * <h2>Color: null</h2>
  * <h2>Indexed: true</h2>
  * <h2>{@inheritDoc}</h2>
- * <p>By adding a class comment "{@inheritDoc}", the MainVerticle class will inherit the helpful inherited class comments from the super class MainVerticleGen. 
+ * <p>By adding a class comment "{@inheritDoc}", the DbToSolrSync class will inherit the helpful inherited class comments from the super class DbToSolrSyncGen. 
  * </p>
  * <h2>Rows: null</h2>
  * <h2>Model: true</h2>
@@ -75,8 +75,8 @@ import io.vertx.core.json.JsonArray;
  * <h2>Promise: true</h2>
  * <h2>AName.enUS: null</h2>
  * <p>
- * Delete the class MainVerticle in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.verticle.MainVerticle&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * Delete the class DbToSolrSync in Solr: 
+ * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.verticle.DbToSolrSync&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
  * </p>
  * <p>
  * Delete  the package org.mghpcc.aitelemetry.verticle in Solr: 
@@ -88,39 +88,46 @@ import io.vertx.core.json.JsonArray;
  * </p>
  * Generated: true
  **/
-public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
-	protected static final Logger LOG = LoggerFactory.getLogger(MainVerticle.class);
-	public static final String authorizeDataFail1 = "Adding Keycloak authorization resources, policies, and permissions failed. ";
-	public static final String authorizeDataFail = authorizeDataFail1;
+public abstract class DbToSolrSyncGen<DEV> extends AbstractVerticle {
+	protected static final Logger LOG = LoggerFactory.getLogger(DbToSolrSync.class);
 
-	public static final String configureI18nFileError1 = "Failed to load internationalization data from file: %s";
-	public static final String configureI18nFileError = configureI18nFileError1;
-	public static final String configureI18nError1 = "Failed to load internationalization data. ";
-	public static final String configureI18nError = configureI18nError1;
-	public static final String configureI18nComplete1 = "Loading internationalization data is complete. ";
-	public static final String configureI18nComplete = configureI18nComplete1;
-	public static final String configureI18nLoaded1 = "Loaded internationalization data: %s";
-	public static final String configureI18nLoaded = configureI18nLoaded1;
+	public static final String SITE_NAME = "ai-telemetry";
+	public static final String runDbToSolrSyncComplete1 = "database to solr sync completed. ";
+	public static final String runDbToSolrSyncComplete = runDbToSolrSyncComplete1;
+
+	public static final String dbToSolrSyncComplete1 = "database to solr sync completed. ";
+	public static final String dbToSolrSyncComplete = dbToSolrSyncComplete1;
+
+	public static final String dbToSolrSyncRecordComplete1 = "%s data sync completed. ";
+	public static final String dbToSolrSyncRecordComplete = dbToSolrSyncRecordComplete1;
+	public static final String dbToSolrSyncRecordFail1 = "%s data sync failed. ";
+	public static final String dbToSolrSyncRecordFail = dbToSolrSyncRecordFail1;
+	public static final String dbToSolrSyncRecordCounterResetFail1 = "%s data sync failed to reset counter. ";
+	public static final String dbToSolrSyncRecordCounterResetFail = dbToSolrSyncRecordCounterResetFail1;
+	public static final String dbToSolrSyncRecordSkip1 = "%s data sync skipped. ";
+	public static final String dbToSolrSyncRecordSkip = dbToSolrSyncRecordSkip1;
+	public static final String dbToSolrSyncRecordStarted1 = "%s data sync started. ";
+	public static final String dbToSolrSyncRecordStarted = dbToSolrSyncRecordStarted1;
 
 
 	//////////////
 	// initDeep //
 	//////////////
 
-	public MainVerticle initDeepMainVerticle(SiteRequest siteRequest_) {
-		initDeepMainVerticle();
-		return (MainVerticle)this;
+	public DbToSolrSync initDeepDbToSolrSync(SiteRequest siteRequest_) {
+		initDeepDbToSolrSync();
+		return (DbToSolrSync)this;
 	}
 
-	public void initDeepMainVerticle() {
-		initMainVerticle();
+	public void initDeepDbToSolrSync() {
+		initDbToSolrSync();
 	}
 
-	public void initMainVerticle() {
+	public void initDbToSolrSync() {
 	}
 
 	public void initDeepForClass(SiteRequest siteRequest_) {
-		initDeepMainVerticle(siteRequest_);
+		initDeepDbToSolrSync(siteRequest_);
 	}
 
 	/////////////
@@ -132,7 +139,7 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 		Object o = null;
 		for(String v : vars) {
 			if(o == null)
-				o = obtainMainVerticle(v);
+				o = obtainDbToSolrSync(v);
 			else if(o instanceof BaseModel) {
 				BaseModel baseModel = (BaseModel)o;
 				o = baseModel.obtainForClass(v);
@@ -144,8 +151,8 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 		}
 		return o;
 	}
-	public Object obtainMainVerticle(String var) {
-		MainVerticle oMainVerticle = (MainVerticle)this;
+	public Object obtainDbToSolrSync(String var) {
+		DbToSolrSync oDbToSolrSync = (DbToSolrSync)this;
 		switch(var) {
 			default:
 				return null;
@@ -161,7 +168,7 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 		Object o = null;
 		for(String v : vars) {
 			if(o == null)
-				o = relateMainVerticle(v, val);
+				o = relateDbToSolrSync(v, val);
 			else if(o instanceof BaseModel) {
 				BaseModel baseModel = (BaseModel)o;
 				o = baseModel.relateForClass(v, val);
@@ -169,8 +176,8 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 		}
 		return o != null;
 	}
-	public Object relateMainVerticle(String var, Object val) {
-		MainVerticle oMainVerticle = (MainVerticle)this;
+	public Object relateDbToSolrSync(String var, Object val) {
+		DbToSolrSync oDbToSolrSync = (DbToSolrSync)this;
 		switch(var) {
 			default:
 				return null;
@@ -181,10 +188,10 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 	// staticSet //
 	///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, MainVerticle o) {
-		return staticSetMainVerticle(entityVar,  siteRequest_, v, o);
+	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, DbToSolrSync o) {
+		return staticSetDbToSolrSync(entityVar,  siteRequest_, v, o);
 	}
-	public static Object staticSetMainVerticle(String entityVar, SiteRequest siteRequest_, String v, MainVerticle o) {
+	public static Object staticSetDbToSolrSync(String entityVar, SiteRequest siteRequest_, String v, DbToSolrSync o) {
 		switch(entityVar) {
 			default:
 				return null;
@@ -196,9 +203,9 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 	////////////////
 
 	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchMainVerticle(entityVar,  siteRequest_, o);
+		return staticSearchDbToSolrSync(entityVar,  siteRequest_, o);
 	}
-	public static Object staticSearchMainVerticle(String entityVar, SiteRequest siteRequest_, Object o) {
+	public static Object staticSearchDbToSolrSync(String entityVar, SiteRequest siteRequest_, Object o) {
 		switch(entityVar) {
 			default:
 				return null;
@@ -210,9 +217,9 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 	///////////////////
 
 	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrMainVerticle(entityVar,  siteRequest_, o);
+		return staticSearchStrDbToSolrSync(entityVar,  siteRequest_, o);
 	}
-	public static String staticSearchStrMainVerticle(String entityVar, SiteRequest siteRequest_, Object o) {
+	public static String staticSearchStrDbToSolrSync(String entityVar, SiteRequest siteRequest_, Object o) {
 		switch(entityVar) {
 			default:
 				return null;
@@ -224,9 +231,9 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 	//////////////////
 
 	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqMainVerticle(entityVar,  siteRequest_, o);
+		return staticSearchFqDbToSolrSync(entityVar,  siteRequest_, o);
 	}
-	public static String staticSearchFqMainVerticle(String entityVar, SiteRequest siteRequest_, String o) {
+	public static String staticSearchFqDbToSolrSync(String entityVar, SiteRequest siteRequest_, String o) {
 		switch(entityVar) {
 			default:
 				return null;
@@ -242,10 +249,10 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 		return sb.toString();
 	}
 
-	public static final String[] MainVerticleVals = new String[] { authorizeDataFail1, configureI18nFileError1, configureI18nError1, configureI18nComplete1, configureI18nLoaded1 };
+	public static final String[] DbToSolrSyncVals = new String[] { runDbToSolrSyncComplete1, dbToSolrSyncComplete1, dbToSolrSyncRecordComplete1, dbToSolrSyncRecordFail1, dbToSolrSyncRecordCounterResetFail1, dbToSolrSyncRecordSkip1, dbToSolrSyncRecordStarted1 };
 
-	public static final String CLASS_SIMPLE_NAME = "MainVerticle";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.verticle.MainVerticle";
+	public static final String CLASS_SIMPLE_NAME = "DbToSolrSync";
+	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.verticle.DbToSolrSync";
 	public static final String CLASS_AUTH_RESOURCE = "";
 
 
@@ -286,16 +293,16 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 	}
 
 	public static String displayNameForClass(String var) {
-		return MainVerticle.displayNameMainVerticle(var);
+		return DbToSolrSync.displayNameDbToSolrSync(var);
 	}
-	public static String displayNameMainVerticle(String var) {
+	public static String displayNameDbToSolrSync(String var) {
 		switch(var) {
 		default:
 			return null;
 		}
 	}
 
-	public static String descriptionMainVerticle(String var) {
+	public static String descriptionDbToSolrSync(String var) {
 		if(var == null)
 			return null;
 		switch(var) {
@@ -304,56 +311,56 @@ public abstract class MainVerticleGen<DEV> extends AbstractVerticle {
 		}
 	}
 
-	public static String classSimpleNameMainVerticle(String var) {
+	public static String classSimpleNameDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;
 		}
 	}
 
-	public static Integer htmColumnMainVerticle(String var) {
+	public static Integer htmColumnDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;
 		}
 	}
 
-	public static Integer htmRowMainVerticle(String var) {
+	public static Integer htmRowDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;
 		}
 	}
 
-	public static Integer htmCellMainVerticle(String var) {
+	public static Integer htmCellDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;
 		}
 	}
 
-	public static Integer lengthMinMainVerticle(String var) {
+	public static Integer lengthMinDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;
 		}
 	}
 
-	public static Integer lengthMaxMainVerticle(String var) {
+	public static Integer lengthMaxDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;
 		}
 	}
 
-	public static Integer maxMainVerticle(String var) {
+	public static Integer maxDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;
 		}
 	}
 
-	public static Integer minMainVerticle(String var) {
+	public static Integer minDbToSolrSync(String var) {
 		switch(var) {
 			default:
 				return null;

@@ -152,7 +152,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -349,7 +349,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -485,7 +485,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PATCH")) {
+					if(!scopes.contains("PATCH") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -658,31 +658,33 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				searchAiNodeList(siteRequest, false, true, true).onSuccess(listAiNode -> {
 					try {
 						AiNode o = listAiNode.first();
-						if(o != null && listAiNode.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						AiNode o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getNodeResource().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listAiNode.first()).map(o3 -> o3.getNodeResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							AiNode o2 = jsonObject.mapTo(AiNode.class);
+							o2 = jsonObject.mapTo(AiNode.class);
 							o2.setSiteRequest_(siteRequest);
-							patchAiNodeFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(AiNode.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchAiNodeFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchAiNode failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -960,6 +962,22 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 							num++;
 							bParams.add(o2.sqlId());
 						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(AiNode.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(AiNode.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
 					case "setNgsildTenant":
 							o2.setNgsildTenant(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -967,6 +985,14 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 							bSql.append(AiNode.VAR_ngsildTenant + "=$" + num);
 							num++;
 							bParams.add(o2.sqlNgsildTenant());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(AiNode.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 					case "setNgsildPath":
 							o2.setNgsildPath(jsonObject.getString(entityVar));
@@ -1086,7 +1112,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("POST")) {
+					if(!scopes.contains("POST") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -1540,6 +1566,24 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						num++;
 						bParams.add(o2.sqlId());
 						break;
+					case AiNode.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(AiNode.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
+					case AiNode.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(AiNode.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
 					case AiNode.VAR_ngsildTenant:
 						o2.setNgsildTenant(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1548,6 +1592,15 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 						bSql.append(AiNode.VAR_ngsildTenant + "=$" + num);
 						num++;
 						bParams.add(o2.sqlNgsildTenant());
+						break;
+					case AiNode.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(AiNode.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					case AiNode.VAR_ngsildPath:
 						o2.setNgsildPath(jsonObject.getString(entityVar));
@@ -1669,7 +1722,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2093,7 +2146,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("PUT")) {
+					if(!scopes.contains("PUT") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2452,7 +2505,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2662,6 +2715,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 			form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "GET"));
 			if(nodeResource != null)
 				form.add("permission", String.format("%s#%s", nodeResource, "GET"));
 			webClient.post(
@@ -2677,7 +2731,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2863,6 +2917,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 			form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "GET"));
 			if(nodeResource != null)
 				form.add("permission", String.format("%s#%s", nodeResource, "GET"));
 			webClient.post(
@@ -2878,7 +2933,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET")) {
+					if(!scopes.contains("GET") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -2963,7 +3018,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 	}
 
 	public String templateUserPageAiNode(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", serviceRequest.getExtra().getString("uri").substring(1));
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
 	}
 	public Future<ServiceResponse> response200UserPageAiNode(SearchList<AiNode> listAiNode) {
 		Promise<ServiceResponse> promise = Promise.promise();
@@ -3080,7 +3135,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("DELETE")) {
+					if(!scopes.contains("DELETE") && !classPublicRead) {
 						//
 						List<String> fqs = new ArrayList<>();
 						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
@@ -3797,7 +3852,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, nodeName, nodeResource, description, sessionId, userKey, location, objectTitle, gpuDevicesTotal, displayPage, id, ngsildTenant, ngsildPath, ngsildContext, ngsildData FROM AiNode WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, nodeName, nodeResource, description, sessionId, userKey, location, objectTitle, gpuDevicesTotal, displayPage, id, editPage, userPage, ngsildTenant, download, ngsildPath, ngsildContext, ngsildData FROM AiNode WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4113,14 +4168,18 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 			page.persistForClass(AiNode.VAR_gpuDevicesTotal, AiNode.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(AiNode.VAR_gpuDevicesTotal)));
 			page.persistForClass(AiNode.VAR_displayPage, AiNode.staticSetDisplayPage(siteRequest2, (String)result.get(AiNode.VAR_displayPage)));
 			page.persistForClass(AiNode.VAR_id, AiNode.staticSetId(siteRequest2, (String)result.get(AiNode.VAR_id)));
+			page.persistForClass(AiNode.VAR_editPage, AiNode.staticSetEditPage(siteRequest2, (String)result.get(AiNode.VAR_editPage)));
+			page.persistForClass(AiNode.VAR_userPage, AiNode.staticSetUserPage(siteRequest2, (String)result.get(AiNode.VAR_userPage)));
 			page.persistForClass(AiNode.VAR_ngsildTenant, AiNode.staticSetNgsildTenant(siteRequest2, (String)result.get(AiNode.VAR_ngsildTenant)));
+			page.persistForClass(AiNode.VAR_download, AiNode.staticSetDownload(siteRequest2, (String)result.get(AiNode.VAR_download)));
 			page.persistForClass(AiNode.VAR_ngsildPath, AiNode.staticSetNgsildPath(siteRequest2, (String)result.get(AiNode.VAR_ngsildPath)));
 			page.persistForClass(AiNode.VAR_ngsildContext, AiNode.staticSetNgsildContext(siteRequest2, (String)result.get(AiNode.VAR_ngsildContext)));
 			page.persistForClass(AiNode.VAR_ngsildData, AiNode.staticSetNgsildData(siteRequest2, (String)result.get(AiNode.VAR_ngsildData)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);

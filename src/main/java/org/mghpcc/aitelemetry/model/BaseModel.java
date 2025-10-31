@@ -214,6 +214,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
 	/**
 	 * {@inheritDoc}
 	 * DocValues: true
+   * Persist: true
 	 * Facet: true
 	 * DisplayName: manage
 	 * Description: Manage this
@@ -230,6 +231,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
 	/**
 	 * {@inheritDoc}
 	 * DocValues: true
+   * Persist: true
 	 * Facet: true
 	 * DisplayName: user
 	 * Description: User page
@@ -245,6 +247,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
 	/**
 	 * {@inheritDoc}
 	 * DocValues: true
+   * Persist: true
 	 * Facet: true
 	 * DisplayName: download
 	 * Description: the download URL

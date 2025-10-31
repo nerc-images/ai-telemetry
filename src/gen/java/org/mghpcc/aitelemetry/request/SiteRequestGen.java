@@ -37,8 +37,8 @@ import io.vertx.core.json.JsonObject;
 import org.computate.vertx.serialize.vertx.JsonObjectDeserializer;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.api.service.ServiceRequest;
-import io.vertx.ext.auth.User;
 import java.lang.String;
+import io.vertx.ext.auth.User;
 import java.lang.Long;
 import java.lang.Boolean;
 import io.vertx.core.json.JsonArray;
@@ -449,6 +449,162 @@ public abstract class SiteRequestGen<DEV> extends Object {
 		return (SiteRequest)this;
 	}
 
+	/////////////////////////
+	// sessionSiteFontSize //
+	/////////////////////////
+
+
+	/**	 The entity sessionSiteFontSize
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonInclude(Include.NON_NULL)
+	protected String sessionSiteFontSize;
+
+	/**	<br> The entity sessionSiteFontSize
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.request.SiteRequest&fq=entiteVar_enUS_indexed_string:sessionSiteFontSize">Find the entity sessionSiteFontSize in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _sessionSiteFontSize(Wrap<String> w);
+
+	public String getSessionSiteFontSize() {
+		return sessionSiteFontSize;
+	}
+	public void setSessionSiteFontSize(String o) {
+		this.sessionSiteFontSize = SiteRequest.staticSetSessionSiteFontSize(siteRequest_, o);
+	}
+	public static String staticSetSessionSiteFontSize(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	protected SiteRequest sessionSiteFontSizeInit() {
+		Wrap<String> sessionSiteFontSizeWrap = new Wrap<String>().var("sessionSiteFontSize");
+		if(sessionSiteFontSize == null) {
+			_sessionSiteFontSize(sessionSiteFontSizeWrap);
+			Optional.ofNullable(sessionSiteFontSizeWrap.getO()).ifPresent(o -> {
+				setSessionSiteFontSize(o);
+			});
+		}
+		return (SiteRequest)this;
+	}
+
+	public static String staticSearchSessionSiteFontSize(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrSessionSiteFontSize(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqSessionSiteFontSize(SiteRequest siteRequest_, String o) {
+		return SiteRequest.staticSearchSessionSiteFontSize(siteRequest_, SiteRequest.staticSetSessionSiteFontSize(siteRequest_, o)).toString();
+	}
+
+	///////////////////////////////
+	// sessionWebComponentsTheme //
+	///////////////////////////////
+
+
+	/**	 The entity sessionWebComponentsTheme
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonInclude(Include.NON_NULL)
+	protected String sessionWebComponentsTheme;
+
+	/**	<br> The entity sessionWebComponentsTheme
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.request.SiteRequest&fq=entiteVar_enUS_indexed_string:sessionWebComponentsTheme">Find the entity sessionWebComponentsTheme in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _sessionWebComponentsTheme(Wrap<String> w);
+
+	public String getSessionWebComponentsTheme() {
+		return sessionWebComponentsTheme;
+	}
+	public void setSessionWebComponentsTheme(String o) {
+		this.sessionWebComponentsTheme = SiteRequest.staticSetSessionWebComponentsTheme(siteRequest_, o);
+	}
+	public static String staticSetSessionWebComponentsTheme(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	protected SiteRequest sessionWebComponentsThemeInit() {
+		Wrap<String> sessionWebComponentsThemeWrap = new Wrap<String>().var("sessionWebComponentsTheme");
+		if(sessionWebComponentsTheme == null) {
+			_sessionWebComponentsTheme(sessionWebComponentsThemeWrap);
+			Optional.ofNullable(sessionWebComponentsThemeWrap.getO()).ifPresent(o -> {
+				setSessionWebComponentsTheme(o);
+			});
+		}
+		return (SiteRequest)this;
+	}
+
+	public static String staticSearchSessionWebComponentsTheme(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrSessionWebComponentsTheme(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqSessionWebComponentsTheme(SiteRequest siteRequest_, String o) {
+		return SiteRequest.staticSearchSessionWebComponentsTheme(siteRequest_, SiteRequest.staticSetSessionWebComponentsTheme(siteRequest_, o)).toString();
+	}
+
+	//////////////////////
+	// sessionSiteTheme //
+	//////////////////////
+
+
+	/**	 The entity sessionSiteTheme
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonInclude(Include.NON_NULL)
+	protected String sessionSiteTheme;
+
+	/**	<br> The entity sessionSiteTheme
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.request.SiteRequest&fq=entiteVar_enUS_indexed_string:sessionSiteTheme">Find the entity sessionSiteTheme in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _sessionSiteTheme(Wrap<String> w);
+
+	public String getSessionSiteTheme() {
+		return sessionSiteTheme;
+	}
+	public void setSessionSiteTheme(String o) {
+		this.sessionSiteTheme = SiteRequest.staticSetSessionSiteTheme(siteRequest_, o);
+	}
+	public static String staticSetSessionSiteTheme(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	protected SiteRequest sessionSiteThemeInit() {
+		Wrap<String> sessionSiteThemeWrap = new Wrap<String>().var("sessionSiteTheme");
+		if(sessionSiteTheme == null) {
+			_sessionSiteTheme(sessionSiteThemeWrap);
+			Optional.ofNullable(sessionSiteThemeWrap.getO()).ifPresent(o -> {
+				setSessionSiteTheme(o);
+			});
+		}
+		return (SiteRequest)this;
+	}
+
+	public static String staticSearchSessionSiteTheme(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrSessionSiteTheme(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqSessionSiteTheme(SiteRequest siteRequest_, String o) {
+		return SiteRequest.staticSearchSessionSiteTheme(siteRequest_, SiteRequest.staticSetSessionSiteTheme(siteRequest_, o)).toString();
+	}
+
 	//////////
 	// user //
 	//////////
@@ -765,6 +921,58 @@ public abstract class SiteRequestGen<DEV> extends Object {
 
 	public static String staticSearchFqSessionIdBefore(SiteRequest siteRequest_, String o) {
 		return SiteRequest.staticSearchSessionIdBefore(siteRequest_, SiteRequest.staticSetSessionIdBefore(siteRequest_, o)).toString();
+	}
+
+	///////////////////////
+	// customerProfileId //
+	///////////////////////
+
+
+	/**	 The entity customerProfileId
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonInclude(Include.NON_NULL)
+	protected String customerProfileId;
+
+	/**	<br> The entity customerProfileId
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.request.SiteRequest&fq=entiteVar_enUS_indexed_string:customerProfileId">Find the entity customerProfileId in Solr</a>
+	 * <br>
+	 * @param c is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _customerProfileId(Wrap<String> c);
+
+	public String getCustomerProfileId() {
+		return customerProfileId;
+	}
+	public void setCustomerProfileId(String o) {
+		this.customerProfileId = SiteRequest.staticSetCustomerProfileId(siteRequest_, o);
+	}
+	public static String staticSetCustomerProfileId(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	protected SiteRequest customerProfileIdInit() {
+		Wrap<String> customerProfileIdWrap = new Wrap<String>().var("customerProfileId");
+		if(customerProfileId == null) {
+			_customerProfileId(customerProfileIdWrap);
+			Optional.ofNullable(customerProfileIdWrap.getO()).ifPresent(o -> {
+				setCustomerProfileId(o);
+			});
+		}
+		return (SiteRequest)this;
+	}
+
+	public static String staticSearchCustomerProfileId(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrCustomerProfileId(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqCustomerProfileId(SiteRequest siteRequest_, String o) {
+		return SiteRequest.staticSearchCustomerProfileId(siteRequest_, SiteRequest.staticSetCustomerProfileId(siteRequest_, o)).toString();
 	}
 
 	//////////////
@@ -1748,12 +1956,16 @@ public abstract class SiteRequestGen<DEV> extends Object {
 				apiRequest_Init();
 				jsonObjectInit();
 				serviceRequestInit();
+				sessionSiteFontSizeInit();
+				sessionWebComponentsThemeInit();
+				sessionSiteThemeInit();
 				userInit();
 				userPrincipalInit();
 				userIdInit();
 				userKeyInit();
 				sessionIdInit();
 				sessionIdBeforeInit();
+				customerProfileIdInit();
 				userNameInit();
 				userLastNameInit();
 				userFirstNameInit();
@@ -1827,6 +2039,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 				return oSiteRequest.jsonObject;
 			case "serviceRequest":
 				return oSiteRequest.serviceRequest;
+			case "sessionSiteFontSize":
+				return oSiteRequest.sessionSiteFontSize;
+			case "sessionWebComponentsTheme":
+				return oSiteRequest.sessionWebComponentsTheme;
+			case "sessionSiteTheme":
+				return oSiteRequest.sessionSiteTheme;
 			case "user":
 				return oSiteRequest.user;
 			case "userPrincipal":
@@ -1839,6 +2057,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 				return oSiteRequest.sessionId;
 			case "sessionIdBefore":
 				return oSiteRequest.sessionIdBefore;
+			case "customerProfileId":
+				return oSiteRequest.customerProfileId;
 			case "userName":
 				return oSiteRequest.userName;
 			case "userLastName":
@@ -1920,6 +2140,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSetI18n(siteRequest_, v);
 		case "jsonObject":
 			return SiteRequest.staticSetJsonObject(siteRequest_, v);
+		case "sessionSiteFontSize":
+			return SiteRequest.staticSetSessionSiteFontSize(siteRequest_, v);
+		case "sessionWebComponentsTheme":
+			return SiteRequest.staticSetSessionWebComponentsTheme(siteRequest_, v);
+		case "sessionSiteTheme":
+			return SiteRequest.staticSetSessionSiteTheme(siteRequest_, v);
 		case "userPrincipal":
 			return SiteRequest.staticSetUserPrincipal(siteRequest_, v);
 		case "userId":
@@ -1930,6 +2156,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSetSessionId(siteRequest_, v);
 		case "sessionIdBefore":
 			return SiteRequest.staticSetSessionIdBefore(siteRequest_, v);
+		case "customerProfileId":
+			return SiteRequest.staticSetCustomerProfileId(siteRequest_, v);
 		case "userName":
 			return SiteRequest.staticSetUserName(siteRequest_, v);
 		case "userLastName":
@@ -1978,6 +2206,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSearchI18n(siteRequest_, (JsonObject)o);
 		case "jsonObject":
 			return SiteRequest.staticSearchJsonObject(siteRequest_, (JsonObject)o);
+		case "sessionSiteFontSize":
+			return SiteRequest.staticSearchSessionSiteFontSize(siteRequest_, (String)o);
+		case "sessionWebComponentsTheme":
+			return SiteRequest.staticSearchSessionWebComponentsTheme(siteRequest_, (String)o);
+		case "sessionSiteTheme":
+			return SiteRequest.staticSearchSessionSiteTheme(siteRequest_, (String)o);
 		case "userPrincipal":
 			return SiteRequest.staticSearchUserPrincipal(siteRequest_, (JsonObject)o);
 		case "userId":
@@ -1988,6 +2222,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSearchSessionId(siteRequest_, (String)o);
 		case "sessionIdBefore":
 			return SiteRequest.staticSearchSessionIdBefore(siteRequest_, (String)o);
+		case "customerProfileId":
+			return SiteRequest.staticSearchCustomerProfileId(siteRequest_, (String)o);
 		case "userName":
 			return SiteRequest.staticSearchUserName(siteRequest_, (String)o);
 		case "userLastName":
@@ -2036,6 +2272,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSearchStrI18n(siteRequest_, (String)o);
 		case "jsonObject":
 			return SiteRequest.staticSearchStrJsonObject(siteRequest_, (String)o);
+		case "sessionSiteFontSize":
+			return SiteRequest.staticSearchStrSessionSiteFontSize(siteRequest_, (String)o);
+		case "sessionWebComponentsTheme":
+			return SiteRequest.staticSearchStrSessionWebComponentsTheme(siteRequest_, (String)o);
+		case "sessionSiteTheme":
+			return SiteRequest.staticSearchStrSessionSiteTheme(siteRequest_, (String)o);
 		case "userPrincipal":
 			return SiteRequest.staticSearchStrUserPrincipal(siteRequest_, (String)o);
 		case "userId":
@@ -2046,6 +2288,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSearchStrSessionId(siteRequest_, (String)o);
 		case "sessionIdBefore":
 			return SiteRequest.staticSearchStrSessionIdBefore(siteRequest_, (String)o);
+		case "customerProfileId":
+			return SiteRequest.staticSearchStrCustomerProfileId(siteRequest_, (String)o);
 		case "userName":
 			return SiteRequest.staticSearchStrUserName(siteRequest_, (String)o);
 		case "userLastName":
@@ -2094,6 +2338,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSearchFqI18n(siteRequest_, o);
 		case "jsonObject":
 			return SiteRequest.staticSearchFqJsonObject(siteRequest_, o);
+		case "sessionSiteFontSize":
+			return SiteRequest.staticSearchFqSessionSiteFontSize(siteRequest_, o);
+		case "sessionWebComponentsTheme":
+			return SiteRequest.staticSearchFqSessionWebComponentsTheme(siteRequest_, o);
+		case "sessionSiteTheme":
+			return SiteRequest.staticSearchFqSessionSiteTheme(siteRequest_, o);
 		case "userPrincipal":
 			return SiteRequest.staticSearchFqUserPrincipal(siteRequest_, o);
 		case "userId":
@@ -2104,6 +2354,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return SiteRequest.staticSearchFqSessionId(siteRequest_, o);
 		case "sessionIdBefore":
 			return SiteRequest.staticSearchFqSessionIdBefore(siteRequest_, o);
+		case "customerProfileId":
+			return SiteRequest.staticSearchFqCustomerProfileId(siteRequest_, o);
 		case "userName":
 			return SiteRequest.staticSearchFqUserName(siteRequest_, o);
 		case "userLastName":
@@ -2156,12 +2408,16 @@ public abstract class SiteRequestGen<DEV> extends Object {
 	public static final String VAR_apiRequest_ = "apiRequest_";
 	public static final String VAR_jsonObject = "jsonObject";
 	public static final String VAR_serviceRequest = "serviceRequest";
+	public static final String VAR_sessionSiteFontSize = "sessionSiteFontSize";
+	public static final String VAR_sessionWebComponentsTheme = "sessionWebComponentsTheme";
+	public static final String VAR_sessionSiteTheme = "sessionSiteTheme";
 	public static final String VAR_user = "user";
 	public static final String VAR_userPrincipal = "userPrincipal";
 	public static final String VAR_userId = "userId";
 	public static final String VAR_userKey = "userKey";
 	public static final String VAR_sessionId = "sessionId";
 	public static final String VAR_sessionIdBefore = "sessionIdBefore";
+	public static final String VAR_customerProfileId = "customerProfileId";
 	public static final String VAR_userName = "userName";
 	public static final String VAR_userLastName = "userLastName";
 	public static final String VAR_userFirstName = "userFirstName";
@@ -2188,12 +2444,16 @@ public abstract class SiteRequestGen<DEV> extends Object {
 	public static final String DISPLAY_NAME_apiRequest_ = "";
 	public static final String DISPLAY_NAME_jsonObject = "";
 	public static final String DISPLAY_NAME_serviceRequest = "";
+	public static final String DISPLAY_NAME_sessionSiteFontSize = "";
+	public static final String DISPLAY_NAME_sessionWebComponentsTheme = "";
+	public static final String DISPLAY_NAME_sessionSiteTheme = "";
 	public static final String DISPLAY_NAME_user = "";
 	public static final String DISPLAY_NAME_userPrincipal = "";
 	public static final String DISPLAY_NAME_userId = "";
 	public static final String DISPLAY_NAME_userKey = "";
 	public static final String DISPLAY_NAME_sessionId = "";
 	public static final String DISPLAY_NAME_sessionIdBefore = "";
+	public static final String DISPLAY_NAME_customerProfileId = "";
 	public static final String DISPLAY_NAME_userName = "";
 	public static final String DISPLAY_NAME_userLastName = "";
 	public static final String DISPLAY_NAME_userFirstName = "";
@@ -2268,6 +2528,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return DISPLAY_NAME_jsonObject;
 		case VAR_serviceRequest:
 			return DISPLAY_NAME_serviceRequest;
+		case VAR_sessionSiteFontSize:
+			return DISPLAY_NAME_sessionSiteFontSize;
+		case VAR_sessionWebComponentsTheme:
+			return DISPLAY_NAME_sessionWebComponentsTheme;
+		case VAR_sessionSiteTheme:
+			return DISPLAY_NAME_sessionSiteTheme;
 		case VAR_user:
 			return DISPLAY_NAME_user;
 		case VAR_userPrincipal:
@@ -2280,6 +2546,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return DISPLAY_NAME_sessionId;
 		case VAR_sessionIdBefore:
 			return DISPLAY_NAME_sessionIdBefore;
+		case VAR_customerProfileId:
+			return DISPLAY_NAME_customerProfileId;
 		case VAR_userName:
 			return DISPLAY_NAME_userName;
 		case VAR_userLastName:
@@ -2339,6 +2607,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return "The JSON object if passed into the request";
 		case VAR_serviceRequest:
 			return "The Vert.x service request";
+		case VAR_sessionSiteFontSize:
+			return "The session site font size. ";
+		case VAR_sessionWebComponentsTheme:
+			return "The session site font size. ";
+		case VAR_sessionSiteTheme:
+			return "The session site theme. ";
 		case VAR_user:
 			return "The authenticated user object";
 		case VAR_userPrincipal:
@@ -2351,6 +2625,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return "The session ID of the user's session";
 		case VAR_sessionIdBefore:
 			return "The session ID of the user before the user logged in";
+		case VAR_customerProfileId:
+			return "The customer profile ID of the user";
 		case VAR_userName:
 			return "The username of the user";
 		case VAR_userLastName:
@@ -2408,6 +2684,12 @@ public abstract class SiteRequestGen<DEV> extends Object {
 			return "JsonObject";
 		case VAR_serviceRequest:
 			return "ServiceRequest";
+		case VAR_sessionSiteFontSize:
+			return "String";
+		case VAR_sessionWebComponentsTheme:
+			return "String";
+		case VAR_sessionSiteTheme:
+			return "String";
 		case VAR_user:
 			return "User";
 		case VAR_userPrincipal:
@@ -2419,6 +2701,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
 		case VAR_sessionId:
 			return "String";
 		case VAR_sessionIdBefore:
+			return "String";
+		case VAR_customerProfileId:
 			return "String";
 		case VAR_userName:
 			return "String";

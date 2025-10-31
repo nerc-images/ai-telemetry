@@ -1,4 +1,30 @@
 ---
+- name: "Download computate configset: curl -k https://raw.githubusercontent.com/computate-org/computate/refs/heads/main/config/solr/computate-configset.zip -o /tmp/computate-configset.zip"
+  kubernetes.core.k8s_exec:
+    namespace: "{{ SOLR_NAMESPACE }}"
+    pod: solr-solrcloud-0
+    command: >-
+      curl -k https://raw.githubusercontent.com/computate-org/computate/refs/heads/main/config/solr/computate-configset.zip -o /tmp/computate-configset.zip
+- name: >-
+    Upload default computate configset: 
+    curl -k -X POST 
+      -H "Content-Type:application/octet-stream" 
+      --data-binary @/tmp/computate-configset.zip 
+      "https://solr.apps-crc.testing/solr/admin/configs?action=UPLOAD&name=computate&overwrite=true"
+  kubernetes.core.k8s_exec:
+    namespace: "{{ SOLR_NAMESPACE }}"
+    pod: solr-solrcloud-0
+    command: >-
+      bash -c '
+      curl -k -X POST -u "admin:{{ SOLR_PASSWORD }}" 
+      -H "Content-Type:application/octet-stream" 
+      --data-binary @/tmp/computate-configset.zip 
+      "http://localhost:8983/solr/admin/configs?action=UPLOAD&name=computate&overwrite=true"
+      '
+  register: upload_computate_configset
+- name: Debug upload_computate_configset
+  debug:
+    var: upload_computate_configset
 - name: "Deploy workbenches"
   include_tasks: deploy-workbench.yaml
   loop: "{{ WORKBENCH_NAMES }}"
@@ -7,8 +33,10 @@
     WORKBENCH_NAME: "{{ WORKBENCH_VARS.USER_NAME }}"
     USER_NAME: "{{ WORKBENCH_VARS.USER_NAME }}"
     WORKBENCH_ADMIN: "{{ WORKBENCH_VARS.WORKBENCH_ADMIN is defined and WORKBENCH_VARS.WORKBENCH_ADMIN }}"
+    DATABASE_SECRET: "{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }}"
     DATABASE_USERNAME: "{{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }}"
     DATABASE_DATABASE: "{{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }}"
+    SOLR_SECRET: '{{ SITE_SHORT_NAME }}-{{ WORKBENCH_VARS.USER_NAME }}'
     SOLR_COLLECTION: '{{ SITE_SHORT_NAME }}-{{ WORKBENCH_VARS.USER_NAME }}'
     SOLR_COLLECTION_COMPUTATE: 'computate-{{ WORKBENCH_VARS.USER_NAME }}'
   tags:

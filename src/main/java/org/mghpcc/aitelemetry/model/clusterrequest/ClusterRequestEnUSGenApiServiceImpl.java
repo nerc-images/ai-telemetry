@@ -564,31 +564,33 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 				searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
 					try {
 						ClusterRequest o = listClusterRequest.first();
-						if(o != null && listClusterRequest.getResponse().getResponse().getNumFound() == 1) {
-							ApiRequest apiRequest = new ApiRequest();
-							apiRequest.setRows(1L);
-							apiRequest.setNumFound(1L);
-							apiRequest.setNumPATCH(0L);
-							apiRequest.initDeepApiRequest(siteRequest);
-							siteRequest.setApiRequest_(apiRequest);
-							if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
-								siteRequest.getRequestVars().put( "refresh", "false" );
-							}
+						ApiRequest apiRequest = new ApiRequest();
+						apiRequest.setRows(1L);
+						apiRequest.setNumFound(1L);
+						apiRequest.setNumPATCH(0L);
+						apiRequest.initDeepApiRequest(siteRequest);
+						siteRequest.setApiRequest_(apiRequest);
+						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+							siteRequest.getRequestVars().put( "refresh", "false" );
+						}
+						ClusterRequest o2;
+						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listClusterRequest.first()).map(o2 -> o2.getName().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listClusterRequest.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listClusterRequest.first()).map(o3 -> o3.getName().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listClusterRequest.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							ClusterRequest o2 = jsonObject.mapTo(ClusterRequest.class);
+							o2 = jsonObject.mapTo(ClusterRequest.class);
 							o2.setSiteRequest_(siteRequest);
-							patchClusterRequestFuture(o2, false).onSuccess(o3 -> {
-								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-							}).onFailure(ex -> {
-								eventHandler.handle(Future.failedFuture(ex));
-							});
 						} else {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							o2 = body.mapTo(ClusterRequest.class);
+							o2.setSiteRequest_(siteRequest);
 						}
+						patchClusterRequestFuture(o2, false).onSuccess(o3 -> {
+							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+						}).onFailure(ex -> {
+							eventHandler.handle(Future.failedFuture(ex));
+						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchClusterRequest failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -809,6 +811,30 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							bSql.append(ClusterRequest.VAR_displayPage + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDisplayPage());
+						break;
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(ClusterRequest.VAR_editPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlEditPage());
+						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(ClusterRequest.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(ClusterRequest.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 				}
 			}
@@ -1264,6 +1290,33 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						bSql.append(ClusterRequest.VAR_displayPage + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDisplayPage());
+						break;
+					case ClusterRequest.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(ClusterRequest.VAR_editPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlEditPage());
+						break;
+					case ClusterRequest.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(ClusterRequest.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
+						break;
+					case ClusterRequest.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(ClusterRequest.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					}
 				}
@@ -2233,6 +2286,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
 			if(name != null)
 				form.add("permission", String.format("%s#%s", name, "GET"));
 			siteRequest.setPublicRead(classPublicRead);
@@ -2402,6 +2456,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
 			if(name != null)
 				form.add("permission", String.format("%s#%s", name, "GET"));
 			siteRequest.setPublicRead(classPublicRead);
@@ -2470,7 +2525,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 	}
 
 	public String templateUserPageClusterRequest(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", serviceRequest.getExtra().getString("uri").substring(1));
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
 	}
 	public Future<ServiceResponse> response200UserPageClusterRequest(SearchList<ClusterRequest> listClusterRequest) {
 		Promise<ServiceResponse> promise = Promise.promise();
@@ -3276,7 +3331,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT name, clusterTemplateTitle, created, userId, archived, sessionId, userKey, objectTitle, displayPage FROM ClusterRequest WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT name, clusterTemplateTitle, created, userId, archived, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM ClusterRequest WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -3585,10 +3640,14 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			page.persistForClass(ClusterRequest.VAR_userKey, ClusterRequest.staticSetUserKey(siteRequest2, (String)result.get(ClusterRequest.VAR_userKey)));
 			page.persistForClass(ClusterRequest.VAR_objectTitle, ClusterRequest.staticSetObjectTitle(siteRequest2, (String)result.get(ClusterRequest.VAR_objectTitle)));
 			page.persistForClass(ClusterRequest.VAR_displayPage, ClusterRequest.staticSetDisplayPage(siteRequest2, (String)result.get(ClusterRequest.VAR_displayPage)));
+			page.persistForClass(ClusterRequest.VAR_editPage, ClusterRequest.staticSetEditPage(siteRequest2, (String)result.get(ClusterRequest.VAR_editPage)));
+			page.persistForClass(ClusterRequest.VAR_userPage, ClusterRequest.staticSetUserPage(siteRequest2, (String)result.get(ClusterRequest.VAR_userPage)));
+			page.persistForClass(ClusterRequest.VAR_download, ClusterRequest.staticSetDownload(siteRequest2, (String)result.get(ClusterRequest.VAR_download)));
 
-			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(a -> {
+			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {
-					JsonObject data = JsonObject.mapFrom(result);
+					JsonObject data = JsonObject.mapFrom(o);
+					ctx.put("result", data.getMap());
 					promise.complete(data);
 				} catch(Exception ex) {
 					LOG.error(String.format(importModelFail, classSimpleName), ex);
