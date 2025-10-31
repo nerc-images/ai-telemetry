@@ -536,7 +536,7 @@ public class SitePageEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 						apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 						if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 							o.apiRequestSitePage();
-							if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+							if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 								eventBus.publish("websocketSitePage", JsonObject.mapFrom(apiRequest).toString());
 						}
 					}

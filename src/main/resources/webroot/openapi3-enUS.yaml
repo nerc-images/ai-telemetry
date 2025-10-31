@@ -38,6 +38,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -52,14 +60,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -230,6 +230,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -244,14 +252,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -347,6 +347,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -361,14 +369,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -431,6 +431,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -445,14 +453,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -501,6 +501,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -547,6 +555,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -568,14 +584,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -637,6 +645,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -725,6 +741,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -739,14 +763,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -918,6 +934,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -932,14 +956,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -1110,6 +1126,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -1124,14 +1148,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -1227,6 +1243,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -1241,14 +1265,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -1311,6 +1327,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -1325,14 +1349,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -1381,6 +1397,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: nodeId
           in: path
           description: >+
@@ -1427,6 +1451,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: nodeId
           in: path
           description: >+
@@ -1448,14 +1480,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -1517,6 +1541,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: nodeId
           in: path
           description: >+
@@ -1605,6 +1637,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -1619,14 +1659,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -1798,6 +1830,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -1812,14 +1852,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -1990,6 +2022,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -2004,14 +2044,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -2107,6 +2139,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -2121,14 +2161,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -2190,6 +2222,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pk
           in: path
           description: >+
@@ -2236,6 +2276,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pk
           in: path
           description: >+
@@ -2257,14 +2305,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -2326,6 +2366,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pk
           in: path
           description: >+
@@ -2414,6 +2462,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -2428,14 +2484,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -2606,6 +2654,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pk
           in: path
           description: >+
@@ -2649,6 +2705,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -2663,14 +2727,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -2841,6 +2897,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -2855,14 +2919,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -2958,6 +3014,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -2972,14 +3036,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -3042,6 +3098,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -3056,14 +3120,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -3107,6 +3163,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: name
           in: path
           description: >+
@@ -3153,6 +3217,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: name
           in: path
           description: >+
@@ -3174,14 +3246,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -3243,6 +3307,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: name
           in: path
           description: >+
@@ -3326,6 +3398,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -3340,14 +3420,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -3519,6 +3591,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -3533,14 +3613,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -3711,6 +3783,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -3725,14 +3805,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -3828,6 +3900,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -3842,14 +3922,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -3912,6 +3984,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -3926,14 +4006,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -3982,6 +4054,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: clusterResource
           in: path
           description: >+
@@ -4028,6 +4108,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: clusterResource
           in: path
           description: >+
@@ -4049,14 +4137,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -4118,6 +4198,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: clusterResource
           in: path
           description: >+
@@ -4206,6 +4294,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -4220,14 +4316,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -4398,6 +4486,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: clusterResource
           in: path
           description: >+
@@ -4446,6 +4542,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -4460,14 +4564,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -4638,6 +4734,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -4652,14 +4756,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -4755,6 +4851,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -4769,14 +4873,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -4839,6 +4935,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -4853,14 +4957,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -4909,6 +5005,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -4955,6 +5059,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -4976,14 +5088,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -5045,6 +5149,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -5133,6 +5245,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -5147,14 +5267,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -5321,6 +5433,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -5335,14 +5455,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -5508,6 +5620,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -5522,14 +5642,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -5620,6 +5732,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -5634,14 +5754,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -5704,6 +5816,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -5718,14 +5838,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -5769,6 +5881,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: name
           in: path
           description: >+
@@ -5815,6 +5935,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: name
           in: path
           description: >+
@@ -5836,14 +5964,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -5905,6 +6025,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: name
           in: path
           description: >+
@@ -5988,6 +6116,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -6002,14 +6138,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -6180,6 +6308,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: name
           in: path
           description: >+
@@ -6223,6 +6359,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -6237,14 +6381,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -6415,6 +6551,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -6429,14 +6573,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -6532,6 +6668,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -6546,14 +6690,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -6616,6 +6752,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -6630,14 +6774,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -6681,6 +6817,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -6727,6 +6871,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -6748,14 +6900,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -6817,6 +6961,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -6900,6 +7052,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -6914,14 +7074,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -7093,6 +7245,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -7107,14 +7267,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -7285,6 +7437,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -7299,14 +7459,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -7402,6 +7554,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -7416,14 +7576,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -7486,6 +7638,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -7500,14 +7660,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -7556,6 +7708,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: gpuDeviceResource
           in: path
           description: >+
@@ -7602,6 +7762,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: gpuDeviceResource
           in: path
           description: >+
@@ -7623,14 +7791,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -7692,6 +7852,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: gpuDeviceResource
           in: path
           description: >+
@@ -7780,6 +7948,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -7794,14 +7970,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -7972,6 +8140,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: gpuDeviceResource
           in: path
           description: >+
@@ -8020,6 +8196,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -8034,14 +8218,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -8212,6 +8388,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -8226,14 +8410,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -8329,6 +8505,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -8343,14 +8527,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -8413,6 +8589,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -8427,14 +8611,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -8483,6 +8659,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: hubResource
           in: path
           description: >+
@@ -8529,6 +8713,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: hubResource
           in: path
           description: >+
@@ -8550,14 +8742,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -8619,6 +8803,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: hubId
           in: path
           description: >+
@@ -8707,6 +8899,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -8721,14 +8921,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -8899,6 +9091,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: hubId
           in: path
           description: >+
@@ -8941,6 +9141,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: hubId
           in: path
           description: >+
@@ -8989,6 +9197,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -9003,14 +9219,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -9181,6 +9389,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -9195,14 +9411,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -9298,6 +9506,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -9312,14 +9528,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -9382,6 +9590,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -9396,14 +9612,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -9452,6 +9660,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -9498,6 +9714,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -9519,14 +9743,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -9588,6 +9804,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -9635,6 +9859,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: id
           in: path
           description: >+
@@ -9723,6 +9955,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -9737,14 +9977,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -9916,6 +10148,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -9930,14 +10170,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -10108,6 +10340,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -10122,14 +10362,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -10225,6 +10457,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -10239,14 +10479,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -10309,6 +10541,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -10323,14 +10563,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -10379,6 +10611,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: nodeResource
           in: path
           description: >+
@@ -10425,6 +10665,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: nodeResource
           in: path
           description: >+
@@ -10446,14 +10694,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -10515,6 +10755,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: nodeResource
           in: path
           description: >+
@@ -10603,6 +10851,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -10617,14 +10873,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -10795,6 +11043,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: nodeResource
           in: path
           description: >+
@@ -10843,6 +11099,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -10857,14 +11121,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -11035,6 +11291,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -11049,14 +11313,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -11152,6 +11408,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -11166,14 +11430,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -11236,6 +11492,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -11250,14 +11514,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -11306,6 +11562,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: projectResource
           in: path
           description: >+
@@ -11352,6 +11616,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: projectResource
           in: path
           description: >+
@@ -11373,14 +11645,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -11442,6 +11706,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: projectResource
           in: path
           description: >+
@@ -11530,6 +11802,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -11544,14 +11824,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -11722,6 +11994,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: projectResource
           in: path
           description: >+
@@ -11735,6 +12015,957 @@ paths:
             text/html; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/UserPageProjectResponse'
+  /en-us/api/vm:
+    get:
+      operationId: searchVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
+          name: q
+          description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
+          required: false
+          schema:
+            type: string
+            default: '*:*'
+        - in: query
+          name: fq
+          description: 'The filter query parameter defines a query that can be used to restrict the superset of documents that can be returned, without influencing score. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: fl
+          description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sort
+          description: 'The sort parameter arranges search results in either ascending (asc) or descending (desc) order. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: start
+          description: 'The start parameter specifies an offset into a query result set and instructs Solr to begin displaying results from this offset. '
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - in: query
+          name: rows
+          description: 'The rows parameter specifies the maximum number of documents from the complete result set that Solr should return to the client at one time. '
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 0
+        - in: query
+          name: facet
+          description: 'The facet parameter enables facet counts in the query response. '
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: facet.range.start
+          description: 'The facet.range.start parameter specifies the lower bound of the ranges. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range.end
+          description: 'The facet.range.end specifies the upper bound of the ranges. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range.gap
+          description: 'The span of each range expressed as a value to be added to the lower bound. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.pivot
+          description: 'The facet.pivot parameter defines the fields to use for the pivot. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range
+          description: 'The facet.range parameter defines the field for which Solr should create range facets. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.field
+          description: 'The facet.field parameter identifies a field that should be treated as a facet. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: d
+          description: 'The radial distance, usually in kilometers. '
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+        - in: query
+          name: pt
+          description: 'he center point using the format lat,lon if latitude & longitude. Otherwise, x,y for PointType or x y for RPT field types. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sfield
+          description: 'A spatial indexed field. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: score
+          description: '(Advanced option; not supported by LatLonType (deprecated) or PointType) If the query is used in a scoring context (e.g., as the main query in q), this local parameter determines what scores will be produced. Valid values are: none, kilometers, miles, degrees, distance, recipDistance, overlapRatio, area, area2D'
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: distanceUnits
+          description: 'This is used to specify the units for distance measurements used throughout the use of this field. This can be degrees, kilometers or miles. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: stats
+          description: 'The Stats component returns simple statistics for numeric, string, and date fields within the document set. '
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: stats.field
+          description: 'Specifies a field for which statistics should be generated. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: >+
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/SearchVirtualMachineResponse'
+    patch:
+      operationId: patchVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
+          name: q
+          description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
+          required: false
+          schema:
+            type: string
+            default: '*:*'
+        - in: query
+          name: fq
+          description: 'The filter query parameter defines a query that can be used to restrict the superset of documents that can be returned, without influencing score. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        description: >+
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PATCHVirtualMachineRequest'
+      responses:
+        '200':
+          description: >+
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/PATCHVirtualMachineResponse'
+    post:
+      operationId: postVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+      requestBody:
+        description: >+
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/POSTVirtualMachineRequest'
+      responses:
+        '200':
+          description: >+
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/POSTVirtualMachineResponse'
+    delete:
+      operationId: deletefilterVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
+          name: q
+          description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
+          required: false
+          schema:
+            type: string
+            default: '*:*'
+        - in: query
+          name: fq
+          description: 'The filter query parameter defines a query that can be used to restrict the superset of documents that can be returned, without influencing score. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: commitWithin
+          description: 'The number of milliseconds to commit the record to Solr. '
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: softCommit
+          description: 'Does a soft commit for the record in Solr immediately. '
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: rows
+          description: 'The rows parameter specifies the maximum number of documents from the complete result set that Solr should return to the client at one time. '
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 0
+      responses:
+        '200':
+          description: >+
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/DELETEFilterVirtualMachineResponse'
+  /en-us/api/vm-import:
+    put:
+      operationId: putimportVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
+          name: q
+          description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
+          required: false
+          schema:
+            type: string
+            default: '*:*'
+        - in: query
+          name: fq
+          description: 'The filter query parameter defines a query that can be used to restrict the superset of documents that can be returned, without influencing score. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        description: >+
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PUTImportVirtualMachineRequest'
+      responses:
+        '200':
+          description: >+
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/PUTImportVirtualMachineResponse'
+  /en-us/api/vm/{vmResource}:
+    get:
+      operationId: getVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - name: vmResource
+          in: path
+          description: >+
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >+
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/GETVirtualMachineResponse'
+    delete:
+      operationId: deleteVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - name: vmResource
+          in: path
+          description: >+
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: q
+          description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
+          required: false
+          schema:
+            type: string
+            default: '*:*'
+        - in: query
+          name: fq
+          description: 'The filter query parameter defines a query that can be used to restrict the superset of documents that can be returned, without influencing score. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: commitWithin
+          description: 'The number of milliseconds to commit the record to Solr. '
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: softCommit
+          description: 'Does a soft commit for the record in Solr immediately. '
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: rows
+          description: 'The rows parameter specifies the maximum number of documents from the complete result set that Solr should return to the client at one time. '
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 0
+      responses:
+        '200':
+          description: >+
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/DELETEVirtualMachineResponse'
+  /en-us/edit/vm/{vmResource}:
+    get:
+      operationId: editpageVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - name: vmResource
+          in: path
+          description: >+
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: facet.range.start
+          description: 'The facet.range.start parameter specifies the lower bound of the ranges. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range.end
+          description: 'The facet.range.end specifies the upper bound of the ranges. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range.gap
+          description: 'The span of each range expressed as a value to be added to the lower bound. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.pivot
+          description: 'The facet.pivot parameter defines the fields to use for the pivot. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range
+          description: 'The facet.range parameter defines the field for which Solr should create range facets. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: >+
+          content:
+            text/html; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EditPageVirtualMachineResponse'
+  /en-us/search/vm:
+    get:
+      operationId: searchpageVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
+          name: q
+          description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
+          required: false
+          schema:
+            type: string
+            default: '*:*'
+        - in: query
+          name: fq
+          description: 'The filter query parameter defines a query that can be used to restrict the superset of documents that can be returned, without influencing score. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: fl
+          description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sort
+          description: 'The sort parameter arranges search results in either ascending (asc) or descending (desc) order. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: start
+          description: 'The start parameter specifies an offset into a query result set and instructs Solr to begin displaying results from this offset. '
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - in: query
+          name: rows
+          description: 'The rows parameter specifies the maximum number of documents from the complete result set that Solr should return to the client at one time. '
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 0
+        - in: query
+          name: facet
+          description: 'The facet parameter enables facet counts in the query response. '
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: facet.range.start
+          description: 'The facet.range.start parameter specifies the lower bound of the ranges. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range.end
+          description: 'The facet.range.end specifies the upper bound of the ranges. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range.gap
+          description: 'The span of each range expressed as a value to be added to the lower bound. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.pivot
+          description: 'The facet.pivot parameter defines the fields to use for the pivot. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.range
+          description: 'The facet.range parameter defines the field for which Solr should create range facets. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: facet.field
+          description: 'The facet.field parameter identifies a field that should be treated as a facet. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: d
+          description: 'The radial distance, usually in kilometers. '
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+        - in: query
+          name: pt
+          description: 'he center point using the format lat,lon if latitude & longitude. Otherwise, x,y for PointType or x y for RPT field types. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sfield
+          description: 'A spatial indexed field. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: score
+          description: '(Advanced option; not supported by LatLonType (deprecated) or PointType) If the query is used in a scoring context (e.g., as the main query in q), this local parameter determines what scores will be produced. Valid values are: none, kilometers, miles, degrees, distance, recipDistance, overlapRatio, area, area2D'
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: distanceUnits
+          description: 'This is used to specify the units for distance measurements used throughout the use of this field. This can be degrees, kilometers or miles. '
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: stats
+          description: 'The Stats component returns simple statistics for numeric, string, and date fields within the document set. '
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: stats.field
+          description: 'Specifies a field for which statistics should be generated. '
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: >+
+          content:
+            text/html; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/SearchPageVirtualMachineResponse'
+  /en-us/user/vm/{vmResource}:
+    get:
+      operationId: userpageVirtualMachine
+      x-vertx-event-bus: ai-telemetry-enUS-VirtualMachine
+      security:
+        - openIdConnect:
+          - openid
+          - profile
+          - customerProfileId
+      description: >+
+      summary: >+
+      tags:
+        - virtual machines
+      parameters:
+        - name: vertx-web.session
+          in: cookie
+          schema:
+            type: string
+        - name: sessionIdBefore
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_FONT_SIZE
+          in: cookie
+          schema:
+            type: string
+        - name: SITE_THEME
+          in: cookie
+          schema:
+            type: string
+        - name: WEB_COMPONENTS_THEME
+          in: cookie
+          schema:
+            type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - name: vmResource
+          in: path
+          description: >+
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >+
+          content:
+            text/html; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/UserPageVirtualMachineResponse'
   /en-us/api/article:
     get:
       operationId: searchSitePage
@@ -11765,6 +12996,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -11779,14 +13018,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -11957,6 +13188,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -11971,14 +13210,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -12074,6 +13305,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -12088,14 +13327,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -12158,6 +13389,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -12172,14 +13411,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -12223,6 +13454,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pageId
           in: path
           description: >+
@@ -12269,6 +13508,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pageId
           in: path
           description: >+
@@ -12290,14 +13537,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: commitWithin
           description: 'The number of milliseconds to commit the record to Solr. '
@@ -12359,6 +13598,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pageId
           in: path
           description: >+
@@ -12442,6 +13689,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -12456,14 +13711,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -12629,6 +13876,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: pageId
           in: path
           description: >+
@@ -12677,6 +13932,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -12691,14 +13954,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -12869,6 +14124,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -12883,14 +14146,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
       requestBody:
         description: >+
         required: true
@@ -12986,6 +14241,14 @@ paths:
           in: cookie
           schema:
             type: string
+        - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
         - name: userId
           in: path
           description: >+
@@ -13074,6 +14337,14 @@ paths:
           schema:
             type: string
         - in: query
+          name: var
+          description: 'The var parameters are additional optional variables and values to pass into the application. '
+          required: false
+          schema:
+            type: array
+            items:
+                type: string
+        - in: query
           name: q
           description: 'The query parameter defines a query using standard query syntax. This parameter is mandatory.'
           required: false
@@ -13088,14 +14359,6 @@ paths:
             type: array
             items:
               type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
         - in: query
           name: fl
           description: 'The field list parameter limits the information included in a query response to a specified list of fields. '
@@ -13262,7 +14525,7 @@ components:
   securitySchemes:
     openIdConnect:
       type: openIdConnect
-      openIdConnectUrl: https://keycloak.apps-crc.testing/realms/AITELEMETRY/.well-known/openid-configuration
+      openIdConnectUrl: https://keycloak.apps.obs.nerc.mghpcc.org/realms/NERC/.well-known/openid-configuration
   requestBodies:
     SearchBareMetalNetworkResponse:
       content:
@@ -14079,6 +15342,71 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/UserPageProjectResponse'
+    SearchVirtualMachineResponse:
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/SearchVirtualMachineResponse'
+    PATCHVirtualMachineRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PATCHVirtualMachineRequest'
+    PATCHVirtualMachineResponse:
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/PATCHVirtualMachineResponse'
+    POSTVirtualMachineRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/POSTVirtualMachineRequest'
+    POSTVirtualMachineResponse:
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/POSTVirtualMachineResponse'
+    DELETEFilterVirtualMachineResponse:
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/DELETEFilterVirtualMachineResponse'
+    PUTImportVirtualMachineRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PUTImportVirtualMachineRequest'
+    PUTImportVirtualMachineResponse:
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/PUTImportVirtualMachineResponse'
+    GETVirtualMachineResponse:
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/GETVirtualMachineResponse'
+    DELETEVirtualMachineResponse:
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/DELETEVirtualMachineResponse'
+    EditPageVirtualMachineResponse:
+      content:
+        text/html; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/EditPageVirtualMachineResponse'
+    SearchPageVirtualMachineResponse:
+      content:
+        text/html; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/SearchPageVirtualMachineResponse'
+    UserPageVirtualMachineResponse:
+      content:
+        text/html; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/UserPageVirtualMachineResponse'
     SearchSitePageResponse:
       content:
         application/json; charset=utf-8:
@@ -16648,6 +17976,8 @@ components:
                     type: string
                   gpuDevicesTotal:
                     type: string
+                  vmsTotal:
+                    type: string
                   cpuCoresTotal:
                     type: string
                   memoryBytesTotal:
@@ -16815,6 +18145,13 @@ components:
             removeGpuDevicesTotal:
               type: string
             removeAllGpuDevicesTotal:
+              type: string
+            setVmsTotal:
+              type: string
+              nullable: true
+            removeVmsTotal:
+              type: string
+            removeAllVmsTotal:
               type: string
             setCpuCoresTotal:
               type: string
@@ -17004,6 +18341,13 @@ components:
               type: string
             removeAllGpuDevicesTotal:
               type: string
+            setVmsTotal:
+              type: string
+              nullable: true
+            removeVmsTotal:
+              type: string
+            removeAllVmsTotal:
+              type: string
             setCpuCoresTotal:
               type: string
               nullable: true
@@ -17078,6 +18422,8 @@ components:
               type: string
             gpuDevicesTotal:
               type: string
+            vmsTotal:
+              type: string
             cpuCoresTotal:
               type: string
             memoryBytesTotal:
@@ -17132,6 +18478,8 @@ components:
               type: string
             gpuDevicesTotal:
               type: string
+            vmsTotal:
+              type: string
             cpuCoresTotal:
               type: string
             memoryBytesTotal:
@@ -17185,6 +18533,8 @@ components:
             aiNodesTotal:
               type: string
             gpuDevicesTotal:
+              type: string
+            vmsTotal:
               type: string
             cpuCoresTotal:
               type: string
@@ -17245,6 +18595,8 @@ components:
                     type: string
                   gpuDevicesTotal:
                     type: string
+                  vmsTotal:
+                    type: string
                   cpuCoresTotal:
                     type: string
                   memoryBytesTotal:
@@ -17298,6 +18650,8 @@ components:
                   aiNodesTotal:
                     type: string
                   gpuDevicesTotal:
+                    type: string
+                  vmsTotal:
                     type: string
                   cpuCoresTotal:
                     type: string
@@ -17353,6 +18707,8 @@ components:
               type: string
             gpuDevicesTotal:
               type: string
+            vmsTotal:
+              type: string
             cpuCoresTotal:
               type: string
             memoryBytesTotal:
@@ -17406,6 +18762,8 @@ components:
             aiNodesTotal:
               type: string
             gpuDevicesTotal:
+              type: string
+            vmsTotal:
               type: string
             cpuCoresTotal:
               type: string
@@ -20402,6 +21760,812 @@ components:
       allOf:
         - type: string
     UserPageProjectResponse:
+      allOf:
+        - type: string
+    SearchVirtualMachineResponse:
+      allOf:
+        - type: object
+          properties:
+            startNum:
+              type: integer
+              minimum: 0
+            foundNum:
+              type: integer
+              minimum: 0
+            returnedNum:
+              type: integer
+              minimum: 0
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  hubId:
+                    type: string
+                  hubResource:
+                    type: string
+                  clusterName:
+                    type: string
+                  clusterResource:
+                    type: string
+                  vmProject:
+                    type: string
+                  vmName:
+                    type: string
+                  os:
+                    type: string
+                  vmResource:
+                    type: string
+                  vmDisplayName:
+                    type: string
+                  description:
+                    type: string
+                  locationColors:
+                    type: array
+                    items:
+                      type: string
+                  locationTitles:
+                    type: array
+                    items:
+                      type: string
+                  locationLinks:
+                    type: array
+                    items:
+                      type: string
+                  location:
+                    type: object
+                  gpuDevicesTotal:
+                    type: string
+                  id:
+                    type: string
+                  entityShortId:
+                    type: string
+                  ngsildTenant:
+                    type: string
+                  ngsildPath:
+                    type: string
+                  ngsildContext:
+                    type: string
+                  ngsildData:
+                    type: object
+    PATCHVirtualMachineRequest:
+      allOf:
+        - type: object
+          properties:
+            setHubId:
+              type: string
+              nullable: true
+            removeHubId:
+              type: string
+            removeAllHubId:
+              type: string
+            setHubResource:
+              type: string
+              nullable: true
+            removeHubResource:
+              type: string
+            removeAllHubResource:
+              type: string
+            setClusterName:
+              type: string
+              nullable: true
+            removeClusterName:
+              type: string
+            removeAllClusterName:
+              type: string
+            setClusterResource:
+              type: string
+              nullable: true
+            removeClusterResource:
+              type: string
+            removeAllClusterResource:
+              type: string
+            setVmProject:
+              type: string
+              nullable: true
+            removeVmProject:
+              type: string
+            removeAllVmProject:
+              type: string
+            setVmName:
+              type: string
+              nullable: true
+            removeVmName:
+              type: string
+            removeAllVmName:
+              type: string
+            setOs:
+              type: string
+              nullable: true
+            removeOs:
+              type: string
+            removeAllOs:
+              type: string
+            setVmResource:
+              type: string
+              nullable: true
+            removeVmResource:
+              type: string
+            removeAllVmResource:
+              type: string
+            setVmDisplayName:
+              type: string
+              nullable: true
+            removeVmDisplayName:
+              type: string
+            removeAllVmDisplayName:
+              type: string
+            setDescription:
+              type: string
+              nullable: true
+            removeDescription:
+              type: string
+            removeAllDescription:
+              type: string
+            setLocationColors:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLocationColors:
+              type: string
+            removeAllLocationColors:
+              type: array
+              items:
+                type: string
+            addLocationColors:
+              type: string
+            addAllLocationColors:
+              type: array
+              items:
+                type: string
+            setLocationTitles:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLocationTitles:
+              type: string
+            removeAllLocationTitles:
+              type: array
+              items:
+                type: string
+            addLocationTitles:
+              type: string
+            addAllLocationTitles:
+              type: array
+              items:
+                type: string
+            setLocationLinks:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLocationLinks:
+              type: string
+            removeAllLocationLinks:
+              type: array
+              items:
+                type: string
+            addLocationLinks:
+              type: string
+            addAllLocationLinks:
+              type: array
+              items:
+                type: string
+            setLocation:
+              type: object
+              nullable: true
+            removeLocation:
+              type: object
+            removeAllLocation:
+              type: object
+            setGpuDevicesTotal:
+              type: string
+              nullable: true
+            removeGpuDevicesTotal:
+              type: string
+            removeAllGpuDevicesTotal:
+              type: string
+            setId:
+              type: string
+              nullable: true
+            removeId:
+              type: string
+            removeAllId:
+              type: string
+            setEntityShortId:
+              type: string
+              nullable: true
+            removeEntityShortId:
+              type: string
+            removeAllEntityShortId:
+              type: string
+            setNgsildTenant:
+              type: string
+              nullable: true
+            removeNgsildTenant:
+              type: string
+            removeAllNgsildTenant:
+              type: string
+            setNgsildPath:
+              type: string
+              nullable: true
+            removeNgsildPath:
+              type: string
+            removeAllNgsildPath:
+              type: string
+            setNgsildContext:
+              type: string
+              nullable: true
+            removeNgsildContext:
+              type: string
+            removeAllNgsildContext:
+              type: string
+            setNgsildData:
+              type: object
+              nullable: true
+            removeNgsildData:
+              type: object
+            removeAllNgsildData:
+              type: object
+    PATCHVirtualMachineResponse:
+      allOf:
+        - type: object
+          properties:
+            setHubId:
+              type: string
+              nullable: true
+            removeHubId:
+              type: string
+            removeAllHubId:
+              type: string
+            setHubResource:
+              type: string
+              nullable: true
+            removeHubResource:
+              type: string
+            removeAllHubResource:
+              type: string
+            setClusterName:
+              type: string
+              nullable: true
+            removeClusterName:
+              type: string
+            removeAllClusterName:
+              type: string
+            setClusterResource:
+              type: string
+              nullable: true
+            removeClusterResource:
+              type: string
+            removeAllClusterResource:
+              type: string
+            setVmProject:
+              type: string
+              nullable: true
+            removeVmProject:
+              type: string
+            removeAllVmProject:
+              type: string
+            setVmName:
+              type: string
+              nullable: true
+            removeVmName:
+              type: string
+            removeAllVmName:
+              type: string
+            setOs:
+              type: string
+              nullable: true
+            removeOs:
+              type: string
+            removeAllOs:
+              type: string
+            setVmResource:
+              type: string
+              nullable: true
+            removeVmResource:
+              type: string
+            removeAllVmResource:
+              type: string
+            setVmDisplayName:
+              type: string
+              nullable: true
+            removeVmDisplayName:
+              type: string
+            removeAllVmDisplayName:
+              type: string
+            setDescription:
+              type: string
+              nullable: true
+            removeDescription:
+              type: string
+            removeAllDescription:
+              type: string
+            setLocationColors:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLocationColors:
+              type: string
+            removeAllLocationColors:
+              type: array
+              items:
+                type: string
+            addLocationColors:
+              type: string
+            addAllLocationColors:
+              type: array
+              items:
+                type: string
+            setLocationTitles:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLocationTitles:
+              type: string
+            removeAllLocationTitles:
+              type: array
+              items:
+                type: string
+            addLocationTitles:
+              type: string
+            addAllLocationTitles:
+              type: array
+              items:
+                type: string
+            setLocationLinks:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeLocationLinks:
+              type: string
+            removeAllLocationLinks:
+              type: array
+              items:
+                type: string
+            addLocationLinks:
+              type: string
+            addAllLocationLinks:
+              type: array
+              items:
+                type: string
+            setLocation:
+              type: object
+              nullable: true
+            removeLocation:
+              type: object
+            removeAllLocation:
+              type: object
+            setGpuDevicesTotal:
+              type: string
+              nullable: true
+            removeGpuDevicesTotal:
+              type: string
+            removeAllGpuDevicesTotal:
+              type: string
+            setId:
+              type: string
+              nullable: true
+            removeId:
+              type: string
+            removeAllId:
+              type: string
+            setEntityShortId:
+              type: string
+              nullable: true
+            removeEntityShortId:
+              type: string
+            removeAllEntityShortId:
+              type: string
+            setNgsildTenant:
+              type: string
+              nullable: true
+            removeNgsildTenant:
+              type: string
+            removeAllNgsildTenant:
+              type: string
+            setNgsildPath:
+              type: string
+              nullable: true
+            removeNgsildPath:
+              type: string
+            removeAllNgsildPath:
+              type: string
+            setNgsildContext:
+              type: string
+              nullable: true
+            removeNgsildContext:
+              type: string
+            removeAllNgsildContext:
+              type: string
+            setNgsildData:
+              type: object
+              nullable: true
+            removeNgsildData:
+              type: object
+            removeAllNgsildData:
+              type: object
+    POSTVirtualMachineRequest:
+      allOf:
+        - type: object
+          properties:
+            hubId:
+              type: string
+            hubResource:
+              type: string
+            clusterName:
+              type: string
+            clusterResource:
+              type: string
+            vmProject:
+              type: string
+            vmName:
+              type: string
+            os:
+              type: string
+            vmResource:
+              type: string
+            vmDisplayName:
+              type: string
+            description:
+              type: string
+            locationColors:
+              type: array
+              items:
+                type: string
+            locationTitles:
+              type: array
+              items:
+                type: string
+            locationLinks:
+              type: array
+              items:
+                type: string
+            location:
+              type: object
+            gpuDevicesTotal:
+              type: string
+            id:
+              type: string
+            entityShortId:
+              type: string
+            ngsildTenant:
+              type: string
+            ngsildPath:
+              type: string
+            ngsildContext:
+              type: string
+            ngsildData:
+              type: object
+    POSTVirtualMachineResponse:
+      allOf:
+        - type: object
+          properties:
+            hubId:
+              type: string
+            hubResource:
+              type: string
+            clusterName:
+              type: string
+            clusterResource:
+              type: string
+            vmProject:
+              type: string
+            vmName:
+              type: string
+            os:
+              type: string
+            vmResource:
+              type: string
+            vmDisplayName:
+              type: string
+            description:
+              type: string
+            locationColors:
+              type: array
+              items:
+                type: string
+            locationTitles:
+              type: array
+              items:
+                type: string
+            locationLinks:
+              type: array
+              items:
+                type: string
+            location:
+              type: object
+            gpuDevicesTotal:
+              type: string
+            id:
+              type: string
+            entityShortId:
+              type: string
+            ngsildTenant:
+              type: string
+            ngsildPath:
+              type: string
+            ngsildContext:
+              type: string
+            ngsildData:
+              type: object
+    DELETEFilterVirtualMachineResponse:
+      allOf:
+        - type: object
+          properties:
+            hubId:
+              type: string
+            hubResource:
+              type: string
+            clusterName:
+              type: string
+            clusterResource:
+              type: string
+            vmProject:
+              type: string
+            vmName:
+              type: string
+            os:
+              type: string
+            vmResource:
+              type: string
+            vmDisplayName:
+              type: string
+            description:
+              type: string
+            locationColors:
+              type: array
+              items:
+                type: string
+            locationTitles:
+              type: array
+              items:
+                type: string
+            locationLinks:
+              type: array
+              items:
+                type: string
+            location:
+              type: object
+            gpuDevicesTotal:
+              type: string
+            id:
+              type: string
+            entityShortId:
+              type: string
+            ngsildTenant:
+              type: string
+            ngsildPath:
+              type: string
+            ngsildContext:
+              type: string
+            ngsildData:
+              type: object
+    PUTImportVirtualMachineRequest:
+      allOf:
+        - type: object
+          properties:
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  hubId:
+                    type: string
+                  hubResource:
+                    type: string
+                  clusterName:
+                    type: string
+                  clusterResource:
+                    type: string
+                  vmProject:
+                    type: string
+                  vmName:
+                    type: string
+                  os:
+                    type: string
+                  vmResource:
+                    type: string
+                  vmDisplayName:
+                    type: string
+                  description:
+                    type: string
+                  locationColors:
+                    type: array
+                    items:
+                      type: string
+                  locationTitles:
+                    type: array
+                    items:
+                      type: string
+                  locationLinks:
+                    type: array
+                    items:
+                      type: string
+                  location:
+                    type: object
+                  gpuDevicesTotal:
+                    type: string
+                  id:
+                    type: string
+                  entityShortId:
+                    type: string
+                  ngsildTenant:
+                    type: string
+                  ngsildPath:
+                    type: string
+                  ngsildContext:
+                    type: string
+                  ngsildData:
+                    type: object
+    PUTImportVirtualMachineResponse:
+      allOf:
+        - type: object
+          properties:
+                  hubId:
+                    type: string
+                  hubResource:
+                    type: string
+                  clusterName:
+                    type: string
+                  clusterResource:
+                    type: string
+                  vmProject:
+                    type: string
+                  vmName:
+                    type: string
+                  os:
+                    type: string
+                  vmResource:
+                    type: string
+                  vmDisplayName:
+                    type: string
+                  description:
+                    type: string
+                  locationColors:
+                    type: array
+                    items:
+                      type: string
+                  locationTitles:
+                    type: array
+                    items:
+                      type: string
+                  locationLinks:
+                    type: array
+                    items:
+                      type: string
+                  location:
+                    type: object
+                  gpuDevicesTotal:
+                    type: string
+                  id:
+                    type: string
+                  entityShortId:
+                    type: string
+                  ngsildTenant:
+                    type: string
+                  ngsildPath:
+                    type: string
+                  ngsildContext:
+                    type: string
+                  ngsildData:
+                    type: object
+    GETVirtualMachineResponse:
+      allOf:
+        - type: object
+          properties:
+            hubId:
+              type: string
+            hubResource:
+              type: string
+            clusterName:
+              type: string
+            clusterResource:
+              type: string
+            vmProject:
+              type: string
+            vmName:
+              type: string
+            os:
+              type: string
+            vmResource:
+              type: string
+            vmDisplayName:
+              type: string
+            description:
+              type: string
+            locationColors:
+              type: array
+              items:
+                type: string
+            locationTitles:
+              type: array
+              items:
+                type: string
+            locationLinks:
+              type: array
+              items:
+                type: string
+            location:
+              type: object
+            gpuDevicesTotal:
+              type: string
+            id:
+              type: string
+            entityShortId:
+              type: string
+            ngsildTenant:
+              type: string
+            ngsildPath:
+              type: string
+            ngsildContext:
+              type: string
+            ngsildData:
+              type: object
+    DELETEVirtualMachineResponse:
+      allOf:
+        - type: object
+          properties:
+            hubId:
+              type: string
+            hubResource:
+              type: string
+            clusterName:
+              type: string
+            clusterResource:
+              type: string
+            vmProject:
+              type: string
+            vmName:
+              type: string
+            os:
+              type: string
+            vmResource:
+              type: string
+            vmDisplayName:
+              type: string
+            description:
+              type: string
+            locationColors:
+              type: array
+              items:
+                type: string
+            locationTitles:
+              type: array
+              items:
+                type: string
+            locationLinks:
+              type: array
+              items:
+                type: string
+            location:
+              type: object
+            gpuDevicesTotal:
+              type: string
+            id:
+              type: string
+            entityShortId:
+              type: string
+            ngsildTenant:
+              type: string
+            ngsildPath:
+              type: string
+            ngsildContext:
+              type: string
+            ngsildData:
+              type: object
+    EditPageVirtualMachineResponse:
+      allOf:
+        - type: string
+    SearchPageVirtualMachineResponse:
+      allOf:
+        - type: string
+    UserPageVirtualMachineResponse:
       allOf:
         - type: string
     SearchSitePageResponse:
