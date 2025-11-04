@@ -674,15 +674,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							JsonObject jsonObject = JsonObject.mapFrom(o);
 							o2 = jsonObject.mapTo(Cluster.class);
 							o2.setSiteRequest_(siteRequest);
+							patchClusterFuture(o2, false).onSuccess(o3 -> {
+								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							}).onFailure(ex -> {
+								eventHandler.handle(Future.failedFuture(ex));
+							});
 						} else {
-							o2 = body.mapTo(Cluster.class);
-							o2.setSiteRequest_(siteRequest);
+							String m = String.format("%s %s not found", "OpenShift cluster", null);
+							eventHandler.handle(Future.failedFuture(m));
 						}
-						patchClusterFuture(o2, false).onSuccess(o3 -> {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-						}).onFailure(ex -> {
-							eventHandler.handle(Future.failedFuture(ex));
-						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchCluster failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -4026,6 +4026,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 					params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
 					params.put("form", new JsonObject());
 					params.put("path", new JsonObject());
+					params.put("scopes", new JsonArray().add("GET").add("PATCH"));
 					JsonObject query = new JsonObject();
 					Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
 					Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);

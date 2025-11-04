@@ -497,15 +497,15 @@ public class SitePageEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 							JsonObject jsonObject = JsonObject.mapFrom(o);
 							o2 = jsonObject.mapTo(SitePage.class);
 							o2.setSiteRequest_(siteRequest);
+							patchSitePageFuture(o2, false).onSuccess(o3 -> {
+								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							}).onFailure(ex -> {
+								eventHandler.handle(Future.failedFuture(ex));
+							});
 						} else {
-							o2 = body.mapTo(SitePage.class);
-							o2.setSiteRequest_(siteRequest);
+							String m = String.format("%s %s not found", "article", null);
+							eventHandler.handle(Future.failedFuture(m));
 						}
-						patchSitePageFuture(o2, false).onSuccess(o3 -> {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-						}).onFailure(ex -> {
-							eventHandler.handle(Future.failedFuture(ex));
-						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchSitePage failed. "), ex);
 						error(siteRequest, eventHandler, ex);

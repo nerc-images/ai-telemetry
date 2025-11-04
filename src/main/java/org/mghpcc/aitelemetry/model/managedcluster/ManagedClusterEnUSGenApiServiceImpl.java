@@ -573,15 +573,15 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							JsonObject jsonObject = JsonObject.mapFrom(o);
 							o2 = jsonObject.mapTo(ManagedCluster.class);
 							o2.setSiteRequest_(siteRequest);
+							patchManagedClusterFuture(o2, false).onSuccess(o3 -> {
+								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							}).onFailure(ex -> {
+								eventHandler.handle(Future.failedFuture(ex));
+							});
 						} else {
-							o2 = body.mapTo(ManagedCluster.class);
-							o2.setSiteRequest_(siteRequest);
+							String m = String.format("%s %s not found", "tenant cluster", null);
+							eventHandler.handle(Future.failedFuture(m));
 						}
-						patchManagedClusterFuture(o2, false).onSuccess(o3 -> {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-						}).onFailure(ex -> {
-							eventHandler.handle(Future.failedFuture(ex));
-						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchManagedCluster failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -3267,6 +3267,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 					params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
 					params.put("form", new JsonObject());
 					params.put("path", new JsonObject());
+					params.put("scopes", new JsonArray().add("GET").add("PATCH"));
 					JsonObject query = new JsonObject();
 					Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
 					Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);

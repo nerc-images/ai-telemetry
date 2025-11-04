@@ -475,15 +475,15 @@ public class SiteUserEnUSGenApiServiceImpl extends BaseApiServiceImpl implements
 							JsonObject jsonObject = JsonObject.mapFrom(o);
 							o2 = jsonObject.mapTo(SiteUser.class);
 							o2.setSiteRequest_(siteRequest);
+							patchSiteUserFuture(o2, false).onSuccess(o3 -> {
+								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							}).onFailure(ex -> {
+								eventHandler.handle(Future.failedFuture(ex));
+							});
 						} else {
-							o2 = body.mapTo(SiteUser.class);
-							o2.setSiteRequest_(siteRequest);
+							String m = String.format("%s %s not found", "site user", null);
+							eventHandler.handle(Future.failedFuture(m));
 						}
-						patchSiteUserFuture(o2, false).onSuccess(o3 -> {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-						}).onFailure(ex -> {
-							eventHandler.handle(Future.failedFuture(ex));
-						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchSiteUser failed. "), ex);
 						error(siteRequest, eventHandler, ex);
