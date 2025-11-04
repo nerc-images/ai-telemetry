@@ -618,7 +618,7 @@ AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(AUTH_CLIENT, true)
 # The Auth openshift secret with the client secret credentials. 
 AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-extra', true) }}"
 # The Auth secret. 
-AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_SECRET | b64decode }}"
+AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_SECRET_SA | b64decode }}"
 
 ###########
 # grafana #
