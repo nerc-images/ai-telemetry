@@ -202,7 +202,7 @@ public abstract class SiteUserGen<DEV> extends BaseModel {
 	public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/user/%s";
 	public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/user/%s";
 
-	public static final String Icon = "<i class=\"fa-duotone fa-regular fa-user-gear\"></i>";
+	public static final String Icon = "<i class=\"fa-duotone fa-solid fa-user-gear\"></i>";
 
 	//////////////
 	// userKeys //

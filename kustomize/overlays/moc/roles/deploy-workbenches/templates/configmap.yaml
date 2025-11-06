@@ -6,6 +6,7 @@ metadata:
 data:
   SITE_SRC: "{{ SITE_SRC }}"
   SOLR_COLLECTION_{{ SITE_SHORT_NAME }}: '{{ SITE_SHORT_NAME }}-{{ USER_NAME }}'
+  DATABASE_SECRET_KEY_{{ SITE_SHORT_NAME }}: "password"
   DATABASE_SECRET_{{ SITE_SHORT_NAME }}: "postgres-pguser-{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
   DATABASE_USERNAME_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
   DATABASE_DATABASE_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
@@ -32,6 +33,7 @@ data:
   KAFKA_GROUP_FULFILL: "esi-fulfill-group-{{ USER_NAME }}"
 
   AUTH_CLIENT_SA: "ai-telemetry-sa"
+  AUTH_OPENSHIFT_SECRET_KEY_SA: "AUTH_SECRET_SA"
   AUTH_OPENSHIFT_SECRET_SA: "keycloak-client-ai-telemetry-sa"
 
   FULFILLMENT_API_SECRET: "fulfillment-api"

@@ -7,12 +7,12 @@ find \
   ~/.local/src/ai-telemetry/bin/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/config/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/BaseModel.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterEnUSGenApiService.java \
@@ -60,20 +60,20 @@ find \
   ~/.local/src/ai-telemetry-static/webawesome/css/ \
   ~/.local/src/ai-telemetry-static/webawesome/fiware/ \
   ~/.local/src/ai-telemetry-static/webawesome/js/ \
-    ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/hub/HubGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/article/SitePageGenEditPage.htm \
+    ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/article/SitePageGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageLocation.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePagePaginationButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/hub/HubGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubSidebar.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/cluster/ClusterGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster/ClusterGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster/ClusterLocation.htm \

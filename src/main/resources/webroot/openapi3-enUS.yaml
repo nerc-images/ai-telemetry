@@ -9057,111 +9057,6 @@ paths:
             text/html; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/SearchPageHubResponse'
-  /en-us/user/hub/{hubId}:
-    get:
-      operationId: userpageHub
-      x-vertx-event-bus: ai-telemetry-enUS-Hub
-      security:
-        - openIdConnect:
-          - openid
-          - profile
-          - customerProfileId
-      description: >+
-      summary: >+
-      tags:
-        - hubs
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
-        - name: hubId
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/UserPageHubResponse'
-  /en-us/view/hub/{hubId}:
-    get:
-      operationId: displaypageHub
-      x-vertx-event-bus: ai-telemetry-enUS-Hub
-      description: >+
-      summary: >+
-      tags:
-        - hubs
-      parameters:
-        - name: vertx-web.session
-          in: cookie
-          schema:
-            type: string
-        - name: sessionIdBefore
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_FONT_SIZE
-          in: cookie
-          schema:
-            type: string
-        - name: SITE_THEME
-          in: cookie
-          schema:
-            type: string
-        - name: WEB_COMPONENTS_THEME
-          in: cookie
-          schema:
-            type: string
-        - in: query
-          name: var
-          description: 'The var parameters are additional optional variables and values to pass into the application. '
-          required: false
-          schema:
-            type: array
-            items:
-                type: string
-        - name: hubId
-          in: path
-          description: >+
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: >+
-          content:
-            text/html; charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/DisplayPageHubResponse'
   /en-us/api/managed-cluster:
     get:
       operationId: searchManagedCluster
@@ -14525,7 +14420,7 @@ components:
   securitySchemes:
     openIdConnect:
       type: openIdConnect
-      openIdConnectUrl: https://keycloak.apps.obs.nerc.mghpcc.org/realms/NERC/.well-known/openid-configuration
+      openIdConnectUrl: https://keycloak.apps-crc.testing/realms/AITELEMETRY/.well-known/openid-configuration
   requestBodies:
     SearchBareMetalNetworkResponse:
       content:
@@ -15137,16 +15032,6 @@ components:
         text/html; charset=utf-8:
           schema:
             $ref: '#/components/schemas/SearchPageHubResponse'
-    UserPageHubResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/UserPageHubResponse'
-    DisplayPageHubResponse:
-      content:
-        text/html; charset=utf-8:
-          schema:
-            $ref: '#/components/schemas/DisplayPageHubResponse'
     SearchManagedClusterResponse:
       content:
         application/json; charset=utf-8:
@@ -20503,12 +20388,6 @@ components:
       allOf:
         - type: string
     SearchPageHubResponse:
-      allOf:
-        - type: string
-    UserPageHubResponse:
-      allOf:
-        - type: string
-    DisplayPageHubResponse:
       allOf:
         - type: string
     SearchManagedClusterResponse:

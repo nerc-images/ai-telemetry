@@ -63,9 +63,9 @@ SITE_BASE_URL: "{{ lookup('env', 'SITE_BASE_URL') | default('http://' + SITE_HOS
 # The public facing URL for the site. 
 SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.{{ DOMAIN_NAME }}"
 # The port of the Zookeeper cluster manager. 
-CLUSTER_PORT: "{{ (SITE_PORT | int) + 1 }}"
+CLUSTER_PORT: "{{ lookup('env', 'CLUSTER_PORT') | default(((SITE_PORT | int) + 1), true) }}"
 # The public port of the Zookeeper cluster manager. 
-CLUSTER_PUBLIC_PORT: "{{ (SITE_PORT | int) + 1 }}"
+CLUSTER_PUBLIC_PORT: "{{ lookup('env', 'CLUSTER_PUBLIC_PORT') | default(((SITE_PORT | int) + 1), true) }}"
 # Zookeeper root path to avoid conflicts with other apps using Zookeeper for clustering. 
 ZOOKEEPER_ROOT_PATH: "{{ lookup('env', 'ZOOKEEPER_ROOT_PATH') | default(SITE_NAME, true) }}"
 # Verify SSL connections. 
@@ -206,7 +206,7 @@ SITE_FONT_SIZE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=W
 # An optional FontAwesome Pro Kit for additional FontAwesome icons. 
 FONTAWESOME_KIT: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.FONTAWESOME_KIT | default('', true) | b64decode | default('', true) }}"
 # A default FontAwesome style. 
-FONTAWESOME_STYLE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.FONTAWESOME_STYLE | default('', true) | b64decode | default('fa-duotone fa-solid', true) }}"
+FONTAWESOME_STYLE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.FONTAWESOME_STYLE | default('', true) | b64decode | default('fa-duotone fa-solid ', true) }}"
 # Site default theme, light or dark. 
 SITE_THEME: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.SITE_THEME | default('', true) | b64decode | default('dark', true) }}"
 # The site logo relative URI
@@ -487,7 +487,7 @@ KAFKA_SSL_KEYSTORE_TYPE: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_TYPE') | default(
 # The Kafka SSL keystore location. 
 KAFKA_SSL_KEYSTORE_LOCATION: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_LOCATION') | default('/opt/app-root/src/kafka/keystore/user.p12', true) }}"
 # The Kafka SSL keystore OpenShift secret. 
-KAFKA_SSL_KEYSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_SECRET') | default(KAFKA_SECRET, true) }}"
+KAFKA_SSL_KEYSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_KEYSTORE_SECRET') | default(KAFKA_KEYSTORE_SECRET, true) }}"
 # The Kafka SSL keystore password. 
 KAFKA_SSL_KEYSTORE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_KEYSTORE_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"user.password\": \"\" } } )).data['user.password'] | b64decode }}"
 # The Kafka SSL truststore type. 
@@ -495,7 +495,7 @@ KAFKA_SSL_TRUSTSTORE_TYPE: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_TYPE') | defa
 # The Kafka SSL truststore location. 
 KAFKA_SSL_TRUSTSTORE_LOCATION: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_LOCATION') | default('/opt/app-root/src/kafka/truststore/ca.p12', true) }}"
 # The Kafka SSL truststore OpenShift secret. 
-KAFKA_SSL_TRUSTSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_SECRET') | default(KAFKA_SECRET, true) }}"
+KAFKA_SSL_TRUSTSTORE_SECRET: "{{ lookup('env', 'KAFKA_SSL_TRUSTSTORE_SECRET') | default(KAFKA_TRUSTSTORE_SECRET, true) }}"
 # The Kafka SSL truststore password. 
 KAFKA_SSL_TRUSTSTORE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=KAFKA_SSL_TRUSTSTORE_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"ca.password\": \"\" } } )).data['ca.password'] | b64decode }}"
 
@@ -606,6 +606,8 @@ WRITE_COMMENTS: true
 # extra vars #
 ##############
 
+HUBS: "{{ lookup('env', 'HUBS') | default('{ \"local-cluster\": { \"hubName\": \"OpenShift Local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
+
 #######################
 # prom-keycloak-proxy #
 #######################
@@ -617,10 +619,12 @@ PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PRO
 PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
 # The Auth client. 
 AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(AUTH_CLIENT, true) }}"
+# The Auth openshift secret key with the client secret credentials. 
+AUTH_OPENSHIFT_SECRET_KEY_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_KEY_SA') | default('AUTH_SECRET', true) }}"
 # The Auth openshift secret with the client secret credentials. 
-AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-extra', true) }}"
+AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-auth', true) }}"
 # The Auth secret. 
-AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_SECRET_SA | b64decode }}"
+AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data[AUTH_OPENSHIFT_SECRET_KEY_SA] | b64decode }}"
 
 ###########
 # grafana #

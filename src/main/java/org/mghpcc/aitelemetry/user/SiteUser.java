@@ -13,7 +13,7 @@ import org.mghpcc.aitelemetry.request.SiteRequest;
  * Order: 1
  * Description: A user record for each site user
  * AName: a site user
- * Icon: <i class="fa-duotone fa-regular fa-user-gear"></i>
+ * Icon: <i class="fa-duotone fa-solid fa-user-gear"></i>
  * 
  * Keyword: classSimpleNameSiteUser
  * Filter: userId

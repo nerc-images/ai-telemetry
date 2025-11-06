@@ -233,7 +233,7 @@ public abstract class SitePageGen<DEV> extends BaseResult {
 	public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/article";
 	public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/article";
 
-	public static final String Icon = "<i class=\"fa-duotone fa-regular fa-newspaper\"></i>";
+	public static final String Icon = "<i class=\"fa-duotone fa-solid fa-newspaper\"></i>";
 	public static final Integer Rows = 100;
 
 	/////////////

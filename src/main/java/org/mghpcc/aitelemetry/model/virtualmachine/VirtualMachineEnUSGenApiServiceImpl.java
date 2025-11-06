@@ -827,14 +827,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							}));
 						});
 						break;
-					case "setCreated":
-							o2.setCreated(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(VirtualMachine.VAR_created + "=$" + num);
-							num++;
-							bParams.add(o2.sqlCreated());
-						break;
 					case "setClusterName":
 							o2.setClusterName(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -842,6 +834,14 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							bSql.append(VirtualMachine.VAR_clusterName + "=$" + num);
 							num++;
 							bParams.add(o2.sqlClusterName());
+						break;
+					case "setCreated":
+							o2.setCreated(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_created + "=$" + num);
+							num++;
+							bParams.add(o2.sqlCreated());
 						break;
 					case "setClusterResource":
 						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -874,14 +874,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							}));
 						});
 						break;
-					case "setArchived":
-							o2.setArchived(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(VirtualMachine.VAR_archived + "=$" + num);
-							num++;
-							bParams.add(o2.sqlArchived());
-						break;
 					case "setVmProject":
 							o2.setVmProject(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -889,6 +881,14 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							bSql.append(VirtualMachine.VAR_vmProject + "=$" + num);
 							num++;
 							bParams.add(o2.sqlVmProject());
+						break;
+					case "setArchived":
+							o2.setArchived(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_archived + "=$" + num);
+							num++;
+							bParams.add(o2.sqlArchived());
 						break;
 					case "setVmName":
 							o2.setVmName(jsonObject.getString(entityVar));
@@ -922,14 +922,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							num++;
 							bParams.add(o2.sqlSessionId());
 						break;
-					case "setUserKey":
-							o2.setUserKey(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(VirtualMachine.VAR_userKey + "=$" + num);
-							num++;
-							bParams.add(o2.sqlUserKey());
-						break;
 					case "setDescription":
 							o2.setDescription(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -937,6 +929,14 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							bSql.append(VirtualMachine.VAR_description + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDescription());
+						break;
+					case "setUserKey":
+							o2.setUserKey(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_userKey + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserKey());
 						break;
 					case "setObjectTitle":
 							o2.setObjectTitle(jsonObject.getString(entityVar));
@@ -946,14 +946,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							num++;
 							bParams.add(o2.sqlObjectTitle());
 						break;
-					case "setDisplayPage":
-							o2.setDisplayPage(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(VirtualMachine.VAR_displayPage + "=$" + num);
-							num++;
-							bParams.add(o2.sqlDisplayPage());
-						break;
 					case "setLocation":
 							o2.setLocation(jsonObject.getJsonObject(entityVar));
 							if(bParams.size() > 0)
@@ -962,13 +954,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							num++;
 							bParams.add(o2.sqlLocation());
 						break;
-					case "setEditPage":
-							o2.setEditPage(jsonObject.getString(entityVar));
+					case "setDisplayPage":
+							o2.setDisplayPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(VirtualMachine.VAR_editPage + "=$" + num);
+							bSql.append(VirtualMachine.VAR_displayPage + "=$" + num);
 							num++;
-							bParams.add(o2.sqlEditPage());
+							bParams.add(o2.sqlDisplayPage());
 						break;
 					case "setGpuDevicesTotal":
 							o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
@@ -978,13 +970,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							num++;
 							bParams.add(o2.sqlGpuDevicesTotal());
 						break;
-					case "setUserPage":
-							o2.setUserPage(jsonObject.getString(entityVar));
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(VirtualMachine.VAR_userPage + "=$" + num);
+							bSql.append(VirtualMachine.VAR_editPage + "=$" + num);
 							num++;
-							bParams.add(o2.sqlUserPage());
+							bParams.add(o2.sqlEditPage());
 						break;
 					case "setId":
 							o2.setId(jsonObject.getString(entityVar));
@@ -993,6 +985,14 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							bSql.append(VirtualMachine.VAR_id + "=$" + num);
 							num++;
 							bParams.add(o2.sqlId());
+						break;
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_userPage + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserPage());
 						break;
 					case "setDownload":
 							o2.setDownload(jsonObject.getString(entityVar));
@@ -1445,15 +1445,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							}));
 						});
 						break;
-					case VirtualMachine.VAR_created:
-						o2.setCreated(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(VirtualMachine.VAR_created + "=$" + num);
-						num++;
-						bParams.add(o2.sqlCreated());
-						break;
 					case VirtualMachine.VAR_clusterName:
 						o2.setClusterName(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1462,6 +1453,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						bSql.append(VirtualMachine.VAR_clusterName + "=$" + num);
 						num++;
 						bParams.add(o2.sqlClusterName());
+						break;
+					case VirtualMachine.VAR_created:
+						o2.setCreated(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_created + "=$" + num);
+						num++;
+						bParams.add(o2.sqlCreated());
 						break;
 					case VirtualMachine.VAR_clusterResource:
 						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -1483,15 +1483,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 							}));
 						});
 						break;
-					case VirtualMachine.VAR_archived:
-						o2.setArchived(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(VirtualMachine.VAR_archived + "=$" + num);
-						num++;
-						bParams.add(o2.sqlArchived());
-						break;
 					case VirtualMachine.VAR_vmProject:
 						o2.setVmProject(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1500,6 +1491,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						bSql.append(VirtualMachine.VAR_vmProject + "=$" + num);
 						num++;
 						bParams.add(o2.sqlVmProject());
+						break;
+					case VirtualMachine.VAR_archived:
+						o2.setArchived(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_archived + "=$" + num);
+						num++;
+						bParams.add(o2.sqlArchived());
 						break;
 					case VirtualMachine.VAR_vmName:
 						o2.setVmName(jsonObject.getString(entityVar));
@@ -1537,15 +1537,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						num++;
 						bParams.add(o2.sqlSessionId());
 						break;
-					case VirtualMachine.VAR_userKey:
-						o2.setUserKey(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(VirtualMachine.VAR_userKey + "=$" + num);
-						num++;
-						bParams.add(o2.sqlUserKey());
-						break;
 					case VirtualMachine.VAR_description:
 						o2.setDescription(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1554,6 +1545,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						bSql.append(VirtualMachine.VAR_description + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDescription());
+						break;
+					case VirtualMachine.VAR_userKey:
+						o2.setUserKey(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_userKey + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserKey());
 						break;
 					case VirtualMachine.VAR_objectTitle:
 						o2.setObjectTitle(jsonObject.getString(entityVar));
@@ -1564,15 +1564,6 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						num++;
 						bParams.add(o2.sqlObjectTitle());
 						break;
-					case VirtualMachine.VAR_displayPage:
-						o2.setDisplayPage(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(VirtualMachine.VAR_displayPage + "=$" + num);
-						num++;
-						bParams.add(o2.sqlDisplayPage());
-						break;
 					case VirtualMachine.VAR_location:
 						o2.setLocation(jsonObject.getJsonObject(entityVar));
 						if(bParams.size() > 0) {
@@ -1582,14 +1573,14 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						num++;
 						bParams.add(o2.sqlLocation());
 						break;
-					case VirtualMachine.VAR_editPage:
-						o2.setEditPage(jsonObject.getString(entityVar));
+					case VirtualMachine.VAR_displayPage:
+						o2.setDisplayPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(VirtualMachine.VAR_editPage + "=$" + num);
+						bSql.append(VirtualMachine.VAR_displayPage + "=$" + num);
 						num++;
-						bParams.add(o2.sqlEditPage());
+						bParams.add(o2.sqlDisplayPage());
 						break;
 					case VirtualMachine.VAR_gpuDevicesTotal:
 						o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
@@ -1600,14 +1591,14 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						num++;
 						bParams.add(o2.sqlGpuDevicesTotal());
 						break;
-					case VirtualMachine.VAR_userPage:
-						o2.setUserPage(jsonObject.getString(entityVar));
+					case VirtualMachine.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(VirtualMachine.VAR_userPage + "=$" + num);
+						bSql.append(VirtualMachine.VAR_editPage + "=$" + num);
 						num++;
-						bParams.add(o2.sqlUserPage());
+						bParams.add(o2.sqlEditPage());
 						break;
 					case VirtualMachine.VAR_id:
 						o2.setId(jsonObject.getString(entityVar));
@@ -1617,6 +1608,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 						bSql.append(VirtualMachine.VAR_id + "=$" + num);
 						num++;
 						bParams.add(o2.sqlId());
+						break;
+					case VirtualMachine.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_userPage + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserPage());
 						break;
 					case VirtualMachine.VAR_download:
 						o2.setDownload(jsonObject.getString(entityVar));
@@ -3887,7 +3887,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, vmProject, vmName, os, vmResource, sessionId, userKey, description, objectTitle, displayPage, location, editPage, gpuDevicesTotal, userPage, id, download, ngsildTenant, ngsildPath, ngsildContext, ngsildData FROM VirtualMachine WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, created, clusterResource, vmProject, archived, vmName, os, vmResource, sessionId, description, userKey, objectTitle, location, displayPage, gpuDevicesTotal, editPage, id, userPage, download, ngsildTenant, ngsildPath, ngsildContext, ngsildData FROM VirtualMachine WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4190,24 +4190,24 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 
 			page.persistForClass(VirtualMachine.VAR_hubId, VirtualMachine.staticSetHubId(siteRequest2, (String)result.get(VirtualMachine.VAR_hubId)));
 			page.persistForClass(VirtualMachine.VAR_hubResource, VirtualMachine.staticSetHubResource(siteRequest2, (String)result.get(VirtualMachine.VAR_hubResource)));
-			page.persistForClass(VirtualMachine.VAR_created, VirtualMachine.staticSetCreated(siteRequest2, (String)result.get(VirtualMachine.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(VirtualMachine.VAR_clusterName, VirtualMachine.staticSetClusterName(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterName)));
+			page.persistForClass(VirtualMachine.VAR_created, VirtualMachine.staticSetCreated(siteRequest2, (String)result.get(VirtualMachine.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(VirtualMachine.VAR_clusterResource, VirtualMachine.staticSetClusterResource(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterResource)));
-			page.persistForClass(VirtualMachine.VAR_archived, VirtualMachine.staticSetArchived(siteRequest2, (String)result.get(VirtualMachine.VAR_archived)));
 			page.persistForClass(VirtualMachine.VAR_vmProject, VirtualMachine.staticSetVmProject(siteRequest2, (String)result.get(VirtualMachine.VAR_vmProject)));
+			page.persistForClass(VirtualMachine.VAR_archived, VirtualMachine.staticSetArchived(siteRequest2, (String)result.get(VirtualMachine.VAR_archived)));
 			page.persistForClass(VirtualMachine.VAR_vmName, VirtualMachine.staticSetVmName(siteRequest2, (String)result.get(VirtualMachine.VAR_vmName)));
 			page.persistForClass(VirtualMachine.VAR_os, VirtualMachine.staticSetOs(siteRequest2, (String)result.get(VirtualMachine.VAR_os)));
 			page.persistForClass(VirtualMachine.VAR_vmResource, VirtualMachine.staticSetVmResource(siteRequest2, (String)result.get(VirtualMachine.VAR_vmResource)));
 			page.persistForClass(VirtualMachine.VAR_sessionId, VirtualMachine.staticSetSessionId(siteRequest2, (String)result.get(VirtualMachine.VAR_sessionId)));
-			page.persistForClass(VirtualMachine.VAR_userKey, VirtualMachine.staticSetUserKey(siteRequest2, (String)result.get(VirtualMachine.VAR_userKey)));
 			page.persistForClass(VirtualMachine.VAR_description, VirtualMachine.staticSetDescription(siteRequest2, (String)result.get(VirtualMachine.VAR_description)));
+			page.persistForClass(VirtualMachine.VAR_userKey, VirtualMachine.staticSetUserKey(siteRequest2, (String)result.get(VirtualMachine.VAR_userKey)));
 			page.persistForClass(VirtualMachine.VAR_objectTitle, VirtualMachine.staticSetObjectTitle(siteRequest2, (String)result.get(VirtualMachine.VAR_objectTitle)));
-			page.persistForClass(VirtualMachine.VAR_displayPage, VirtualMachine.staticSetDisplayPage(siteRequest2, (String)result.get(VirtualMachine.VAR_displayPage)));
 			page.persistForClass(VirtualMachine.VAR_location, VirtualMachine.staticSetLocation(siteRequest2, (String)result.get(VirtualMachine.VAR_location)));
-			page.persistForClass(VirtualMachine.VAR_editPage, VirtualMachine.staticSetEditPage(siteRequest2, (String)result.get(VirtualMachine.VAR_editPage)));
+			page.persistForClass(VirtualMachine.VAR_displayPage, VirtualMachine.staticSetDisplayPage(siteRequest2, (String)result.get(VirtualMachine.VAR_displayPage)));
 			page.persistForClass(VirtualMachine.VAR_gpuDevicesTotal, VirtualMachine.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(VirtualMachine.VAR_gpuDevicesTotal)));
-			page.persistForClass(VirtualMachine.VAR_userPage, VirtualMachine.staticSetUserPage(siteRequest2, (String)result.get(VirtualMachine.VAR_userPage)));
+			page.persistForClass(VirtualMachine.VAR_editPage, VirtualMachine.staticSetEditPage(siteRequest2, (String)result.get(VirtualMachine.VAR_editPage)));
 			page.persistForClass(VirtualMachine.VAR_id, VirtualMachine.staticSetId(siteRequest2, (String)result.get(VirtualMachine.VAR_id)));
+			page.persistForClass(VirtualMachine.VAR_userPage, VirtualMachine.staticSetUserPage(siteRequest2, (String)result.get(VirtualMachine.VAR_userPage)));
 			page.persistForClass(VirtualMachine.VAR_download, VirtualMachine.staticSetDownload(siteRequest2, (String)result.get(VirtualMachine.VAR_download)));
 			page.persistForClass(VirtualMachine.VAR_ngsildTenant, VirtualMachine.staticSetNgsildTenant(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildTenant)));
 			page.persistForClass(VirtualMachine.VAR_ngsildPath, VirtualMachine.staticSetNgsildPath(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildPath)));

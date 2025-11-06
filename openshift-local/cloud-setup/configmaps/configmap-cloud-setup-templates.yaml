@@ -294,7 +294,6 @@ data:
       namespace: {{ SITE_NAMESPACE }}
     type: Opaque
     stringData:
-      HUBS: '{{ HUBS | replace("'", "\\'") }}'
       PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER | replace("'", "\\'") }}'
       PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER | replace("'", "\\'") }}'
       PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER | replace("'", "\\'") }}'
@@ -302,6 +301,7 @@ data:
       AUTH_OPENSHIFT_SECRET_SA: '{{ AUTH_OPENSHIFT_SECRET_SA | replace("'", "\\'") }}'
       AUTH_SECRET_SA: '{{ AUTH_SECRET_SA | replace("'", "\\'") }}'
       GRAFANA_BASE_URL: '{{ GRAFANA_BASE_URL | replace("'", "\\'") }}'
+      FULFILLMENT_API_SECRET: '{{ FULFILLMENT_API_SECRET | replace("'", "\\'") }}'
       FULFILLMENT_API_OPENSHIFT_SECRET: '{{ FULFILLMENT_API_OPENSHIFT_SECRET | replace("'", "\\'") }}'
       FULFILLMENT_API_OPENSHIFT_TOKEN: '{{ FULFILLMENT_API_OPENSHIFT_TOKEN | replace("'", "\\'") }}'
       FULFILLMENT_API_SSL: '{{ FULFILLMENT_API_SSL | replace("'", "\\'") }}'
@@ -311,6 +311,7 @@ data:
       IMPORT_DATA_PERIOD_ClusterOrder: '{{ IMPORT_DATA_PERIOD_ClusterOrder | replace("'", "\\'") }}'
       IMPORT_DATA_START_TIME_ManagedCluster: '{{ IMPORT_DATA_START_TIME_ManagedCluster | replace("'", "\\'") }}'
       IMPORT_DATA_PERIOD_ManagedCluster: '{{ IMPORT_DATA_PERIOD_ManagedCluster | replace("'", "\\'") }}'
+      ESI_API_SECRET: '{{ ESI_API_SECRET | replace("'", "\\'") }}'
       ENABLE_THIN_UI: '{{ ENABLE_THIN_UI | replace("'", "\\'") }}'
       ESI_API_OPENSHIFT_SECRET: '{{ ESI_API_OPENSHIFT_SECRET | replace("'", "\\'") }}'
       ESI_API_OPENSHIFT_TOKEN: '{{ ESI_API_OPENSHIFT_TOKEN | replace("'", "\\'") }}'
