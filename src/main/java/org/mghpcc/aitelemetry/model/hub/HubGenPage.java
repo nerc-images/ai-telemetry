@@ -476,7 +476,7 @@ public class HubGenPage extends HubGenPageGen<PageLayout> {
    * Initialized: false
   **/
   protected void _result(Wrap<Hub> w) {
-    if(resultCount >= 1 && Optional.ofNullable(siteRequest_.getServiceRequest().getParams().getJsonObject("path")).map(o -> o.getString("hubResource")).orElse(null) != null)
+    if(resultCount >= 1 && Optional.ofNullable(siteRequest_.getServiceRequest().getParams().getJsonObject("path")).map(o -> o.getString("hubId")).orElse(null) != null)
       w.o(searchListHub_.get(0));
   }
 

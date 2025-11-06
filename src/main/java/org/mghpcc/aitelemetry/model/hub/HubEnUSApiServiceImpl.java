@@ -123,10 +123,10 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
                     for(Integer i = 0; i < clustersMemoryBytes.size(); i++) {
                       JsonObject clusterMemoryBytesResult = clustersMemoryBytes.get(i);
                       String clusterName = clusterMemoryBytesResult.getJsonObject("metric").getString("cluster");
-                      JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject vmResult = clustersVms.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject vmResult = clustersVms.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
                       futures.add(Future.future(promise1 -> {
                         importCluster(hub, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, clusterMemoryBytesResult, clusterCpuCoresResult, aiNodeResult, gpuDeviceResult, vmResult).onComplete(b -> {
                           promise1.complete();
@@ -341,25 +341,30 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
 
   protected Future<Void> importHubsFromEnv(Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest, String classCanonicalName, String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
     Promise<Void> promise = Promise.promise();
-    JsonObject hubs = new JsonObject(config.getString(ConfigKeys.HUBS));
-    List<Future<?>> futures = new ArrayList<>();
-    for(String hubId : hubs.fieldNames()) {
-      JsonObject hubData = hubs.getJsonObject(hubId);
-      futures.add(Future.future(promise1 -> {
-        importHub(hubData, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, hubId).onComplete(b -> {
-          promise1.complete();
-        }).onFailure(ex -> {
-          LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
-          promise1.fail(ex);
-        });
-      }));
-    }
-    Future.all(futures).onSuccess(b -> {
-      promise.complete();
-    }).onFailure(ex -> {
+    try {
+      JsonObject hubs = new JsonObject(config.getString(ConfigKeys.HUBS));
+      List<Future<?>> futures = new ArrayList<>();
+      for(String hubId : hubs.fieldNames()) {
+        JsonObject hubData = hubs.getJsonObject(hubId);
+        futures.add(Future.future(promise1 -> {
+          importHub(hubData, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, hubId).onComplete(b -> {
+            promise1.complete();
+          }).onFailure(ex -> {
+            LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
+            promise1.fail(ex);
+          });
+        }));
+      }
+      Future.all(futures).onSuccess(b -> {
+        promise.complete();
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
       LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
       promise.fail(ex);
-    });
+    }
     return promise.future();
   }
 

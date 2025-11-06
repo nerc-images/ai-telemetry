@@ -28,8 +28,6 @@ import io.vertx.pgclient.data.Polygon;
  *
  * SearchPageUri: /en-us/search/hub
  * EditPageUri: /en-us/edit/hub/{hubId}
- * DisplayPageUri: /en-us/view/hub/{hubId}
- * UserPageUri: /en-us/user/hub/{hubId}
  * ApiUri: /en-us/api/hub
  * ApiMethod:
  *   Search:
@@ -78,6 +76,7 @@ public class Hub extends HubGen<BaseModel> {
 	 * Description: The ID of this hub
 	 * HtmRow: 3
 	 * HtmCell: 2
+	 * VarId: true
 	 * Facet: true
 	 **/
 	protected void _hubId(Wrap<String> w) {
@@ -91,7 +90,6 @@ public class Hub extends HubGen<BaseModel> {
 	 * DisplayName: hub auth resource
 	 * Description: The unique authorization resource for the hub for multi-tenancy
 	 * Facet: true
-	 * VarId: true
 	 * AuthorizationResource: HUB
 	 **/
 	protected void _hubResource(Wrap<String> w) {

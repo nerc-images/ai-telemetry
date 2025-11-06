@@ -120,7 +120,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 	public void searchHub(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -133,8 +133,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "GET"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -256,8 +256,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			json.put("list", l);
 			response200Search(listHub.getRequest(), listHub.getResponse(), json);
 			if(json == null) {
-				String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-				String m = String.format("%s %s not found", "hub", hubResource);
+				String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
+				String m = String.format("%s %s not found", "hub", hubId);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -311,7 +311,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 	public void getHub(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -324,8 +324,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "GET"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -419,8 +419,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			SiteRequest siteRequest = listHub.getSiteRequest_(SiteRequest.class);
 			JsonObject json = JsonObject.mapFrom(listHub.getList().stream().findFirst().orElse(null));
 			if(json == null) {
-				String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-				String m = String.format("%s %s not found", "hub", hubResource);
+				String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
+				String m = String.format("%s %s not found", "hub", hubId);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -441,7 +441,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		LOG.debug(String.format("patchHub started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -454,8 +454,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "PATCH"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "PATCH"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -521,7 +521,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 								siteRequest.setApiRequest_(apiRequest);
 								if(apiRequest.getNumFound() == 1L)
 									apiRequest.setOriginal(listHub.first());
-								apiRequest.setId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getHubResource().toString()).orElse(null));
+								apiRequest.setId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getHubId().toString()).orElse(null));
 								apiRequest.setSolrId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getSolrId()).orElse(null));
 								eventBus.publish("websocketHub", JsonObject.mapFrom(apiRequest).toString());
 
@@ -649,7 +649,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o3 -> o3.getHubResource().toString()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o3 -> o3.getHubId().toString()).orElse(null));
 							apiRequest.setSolrId(Optional.ofNullable(listHub.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
 							o2 = jsonObject.mapTo(Hub.class);
@@ -930,8 +930,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-				String m = String.format("%s %s not found", "hub", hubResource);
+				String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
+				String m = String.format("%s %s not found", "hub", hubId);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -952,7 +952,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		LOG.debug(String.format("postHub started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -965,8 +965,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "POST"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "POST"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -1143,7 +1143,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		});
 	}
 
-	public Future<Hub> postHubFuture(SiteRequest siteRequest, Boolean hubResource) {
+	public Future<Hub> postHubFuture(SiteRequest siteRequest, Boolean hubId) {
 		Promise<Hub> promise = Promise.promise();
 
 		try {
@@ -1152,7 +1152,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				siteRequest.setSqlConnection(sqlConnection);
 				varsHub(siteRequest).onSuccess(a -> {
 					createHub(siteRequest).onSuccess(hub -> {
-						sqlPOSTHub(hub, hubResource).onSuccess(b -> {
+						sqlPOSTHub(hub, hubId).onSuccess(b -> {
 							persistHub(hub, false).onSuccess(c -> {
 								relateHub(hub).onSuccess(d -> {
 									indexHub(hub).onSuccess(o2 -> {
@@ -1440,8 +1440,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			SiteRequest siteRequest = o.getSiteRequest_();
 			JsonObject json = JsonObject.mapFrom(o);
 			if(json == null) {
-				String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-				String m = String.format("%s %s not found", "hub", hubResource);
+				String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
+				String m = String.format("%s %s not found", "hub", hubId);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -1462,7 +1462,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		LOG.debug(String.format("deleteHub started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -1475,8 +1475,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "DELETE"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "DELETE"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -1668,7 +1668,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							}
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getHubResource().toString()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getHubId().toString()).orElse(null));
 							apiRequest.setSolrId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getSolrId()).orElse(null));
 							deleteHubFuture(o).onSuccess(o2 -> {
 								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
@@ -1818,8 +1818,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-				String m = String.format("%s %s not found", "hub", hubResource);
+				String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
+				String m = String.format("%s %s not found", "hub", hubId);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -1840,7 +1840,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		LOG.debug(String.format("putimportHub started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -1853,8 +1853,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "PUT"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "PUT"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -2030,14 +2030,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				apiRequest.setNumPATCH(0L);
 				apiRequest.initDeepApiRequest(siteRequest);
 				siteRequest.setApiRequest_(apiRequest);
-				String hubResource = Optional.ofNullable(body.getString(Hub.VAR_hubResource)).orElse(body.getString(Hub.VAR_solrId));
+				String hubId = Optional.ofNullable(body.getString(Hub.VAR_hubId)).orElse(body.getString(Hub.VAR_solrId));
 				if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
 					siteRequest.getRequestVars().put( "refresh", "false" );
 				}
 				pgPool.getConnection().onSuccess(sqlConnection -> {
-					String sqlQuery = String.format("select * from %s WHERE hubResource=$1", Hub.CLASS_SIMPLE_NAME);
+					String sqlQuery = String.format("select * from %s WHERE hubId=$1", Hub.CLASS_SIMPLE_NAME);
 					sqlConnection.preparedQuery(sqlQuery)
-							.execute(Tuple.tuple(Arrays.asList(hubResource))
+							.execute(Tuple.tuple(Arrays.asList(hubId))
 							).onSuccess(result -> {
 						sqlConnection.close().onSuccess(a -> {
 							try {
@@ -2087,24 +2087,24 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 										} else {
 											o2.persistForClass(f, bodyVal);
 											o2.relateForClass(f, bodyVal);
-											if(!StringUtils.containsAny(f, "hubResource", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
+											if(!StringUtils.containsAny(f, "hubId", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
 												body2.put("set" + StringUtils.capitalize(f), bodyVal);
 										}
 									}
 									for(String f : Optional.ofNullable(o.getSaves()).orElse(new ArrayList<>())) {
 										if(!body.fieldNames().contains(f)) {
-											if(!StringUtils.containsAny(f, "hubResource", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
+											if(!StringUtils.containsAny(f, "hubId", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
 												body2.putNull("set" + StringUtils.capitalize(f));
 										}
 									}
 									if(result.size() >= 1) {
 										apiRequest.setOriginal(o);
-										apiRequest.setId(Optional.ofNullable(o.getHubResource()).map(v -> v.toString()).orElse(null));
+										apiRequest.setId(Optional.ofNullable(o.getHubId()).map(v -> v.toString()).orElse(null));
 										apiRequest.setSolrId(o.getSolrId());
 									}
 									siteRequest.setJsonObject(body2);
 									patchHubFuture(o, true).onSuccess(b -> {
-										LOG.debug("Import Hub {} succeeded, modified Hub. ", body.getValue(Hub.VAR_hubResource));
+										LOG.debug("Import Hub {} succeeded, modified Hub. ", body.getValue(Hub.VAR_hubId));
 										eventHandler.handle(Future.succeededFuture());
 									}).onFailure(ex -> {
 										LOG.error(String.format("putimportHubFuture failed. "), ex);
@@ -2112,7 +2112,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 									});
 								} else {
 									postHubFuture(siteRequest, true).onSuccess(b -> {
-										LOG.debug("Import Hub {} succeeded, created new Hub. ", body.getValue(Hub.VAR_hubResource));
+										LOG.debug("Import Hub {} succeeded, created new Hub. ", body.getValue(Hub.VAR_hubId));
 										eventHandler.handle(Future.succeededFuture());
 									}).onFailure(ex -> {
 										LOG.error(String.format("putimportHubFuture failed. "), ex);
@@ -2170,8 +2170,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-				String m = String.format("%s %s not found", "hub", hubResource);
+				String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
+				String m = String.format("%s %s not found", "hub", hubId);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -2193,7 +2193,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			serviceRequest.setUser(user.principal());
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -2206,8 +2206,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "GET"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -2412,7 +2412,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 	public void editpageHub(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -2425,9 +2425,9 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			form.add("permission", String.format("%s-%s#%s", Hub.CLASS_AUTH_RESOURCE, hubResource, "GET"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "GET"));
+			form.add("permission", String.format("%s-%s#%s", Hub.CLASS_AUTH_RESOURCE, hubId, "GET"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -2602,398 +2602,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		}
 	}
 
-	// DisplayPage //
-
-	@Override
-	public void displaypageHub(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-		Boolean classPublicRead = false;
-		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
-			MultiMap form = MultiMap.caseInsensitiveMultiMap();
-			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			form.add("permission", String.format("%s-%s#%s", Hub.CLASS_AUTH_RESOURCE, hubResource, "GET"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "GET"));
-			webClient.post(
-					config.getInteger(ComputateConfigKeys.AUTH_PORT)
-					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-					, config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-					)
-					.ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-					.putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-					.sendForm(form)
-					.expecting(HttpResponseExpectation.SC_OK)
-			.onComplete(authorizationDecisionResponse -> {
-				try {
-					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET") && !classPublicRead) {
-						//
-						List<String> fqs = new ArrayList<>();
-						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-						groups.stream().map(group -> {
-									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
-									return mPermission.find() ? mPermission.group(1) : null;
-								}).filter(v -> v != null).forEach(value -> {
-									fqs.add(String.format("%s:%s", "hubResource", value));
-								});
-						JsonObject authParams = siteRequest.getServiceRequest().getParams();
-						JsonObject authQuery = authParams.getJsonObject("query");
-						if(authQuery == null) {
-							authQuery = new JsonObject();
-							authParams.put("query", authQuery);
-						}
-						JsonArray fq = authQuery.getJsonArray("fq");
-						if(fq == null) {
-							fq = new JsonArray();
-							authQuery.put("fq", fq);
-						}
-						if(fqs.size() > 0) {
-							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-							scopes.add("GET");
-							siteRequest.setFilteredScope(true);
-						}
-					}
-					{
-						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-						List<String> scopes2 = siteRequest.getScopes();
-						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
-							response200DisplayPageHub(listHub).onSuccess(response -> {
-								eventHandler.handle(Future.succeededFuture(response));
-								LOG.debug(String.format("displaypageHub succeeded. "));
-							}).onFailure(ex -> {
-								LOG.error(String.format("displaypageHub failed. "), ex);
-								error(siteRequest, eventHandler, ex);
-							});
-						}).onFailure(ex -> {
-							LOG.error(String.format("displaypageHub failed. "), ex);
-							error(siteRequest, eventHandler, ex);
-						});
-					}
-				} catch(Exception ex) {
-					LOG.error(String.format("displaypageHub failed. "), ex);
-					error(null, eventHandler, ex);
-				}
-			});
-		}).onFailure(ex -> {
-			if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
-				try {
-					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
-				} catch(Exception ex2) {
-					LOG.error(String.format("displaypageHub failed. ", ex2));
-					error(null, eventHandler, ex2);
-				}
-			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
-				eventHandler.handle(Future.succeededFuture(
-					new ServiceResponse(401, "UNAUTHORIZED",
-						Buffer.buffer().appendString(
-							new JsonObject()
-								.put("errorCode", "401")
-								.put("errorMessage", "SSO Resource Permission check returned DENY")
-								.encodePrettily()
-							), MultiMap.caseInsensitiveMultiMap()
-							)
-					));
-			} else {
-				LOG.error(String.format("displaypageHub failed. "), ex);
-				error(null, eventHandler, ex);
-			}
-		});
-	}
-
-	public void displaypageHubPageInit(JsonObject ctx, HubPage page, SearchList<Hub> listHub, Promise<Void> promise) {
-		promise.complete();
-	}
-
-	public String templateDisplayPageHub(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
-	}
-	public Future<ServiceResponse> response200DisplayPageHub(SearchList<Hub> listHub) {
-		Promise<ServiceResponse> promise = Promise.promise();
-		try {
-			SiteRequest siteRequest = listHub.getSiteRequest_(SiteRequest.class);
-			String pageTemplateUri = templateDisplayPageHub(siteRequest.getServiceRequest());
-			String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-			Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-			String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-			HubPage page = new HubPage();
-			MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
-			siteRequest.setRequestHeaders(requestHeaders);
-
-			if(listHub.size() >= 1)
-				siteRequest.setRequestPk(listHub.get(0).getPk());
-			page.setSearchListHub_(listHub);
-			page.setSiteRequest_(siteRequest);
-			page.setServiceRequest(siteRequest.getServiceRequest());
-			page.setWebClient(webClient);
-			page.setVertx(vertx);
-			page.promiseDeepHubPage(siteRequest).onSuccess(a -> {
-				try {
-					JsonObject ctx = ConfigKeys.getPageContext(config);
-					ctx.mergeIn(JsonObject.mapFrom(page));
-					Promise<Void> promise1 = Promise.promise();
-					displaypageHubPageInit(ctx, page, listHub, promise1);
-					promise1.future().onSuccess(b -> {
-						String renderedTemplate = jinjava.render(template, ctx.getMap());
-						Buffer buffer = Buffer.buffer(renderedTemplate);
-						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-					}).onFailure(ex -> {
-						promise.fail(ex);
-					});
-				} catch(Exception ex) {
-					LOG.error(String.format("response200DisplayPageHub failed. "), ex);
-					promise.fail(ex);
-				}
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		} catch(Exception ex) {
-			LOG.error(String.format("response200DisplayPageHub failed. "), ex);
-			promise.fail(ex);
-		}
-		return promise.future();
-	}
-	public void responsePivotDisplayPageHub(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
-		if(pivots != null) {
-			for(SolrResponse.Pivot pivotField : pivots) {
-				String entityIndexed = pivotField.getField();
-				String entityVar = StringUtils.substringBefore(entityIndexed, "_docvalues_");
-				JsonObject pivotJson = new JsonObject();
-				pivotArray.add(pivotJson);
-				pivotJson.put("field", entityVar);
-				pivotJson.put("value", pivotField.getValue());
-				pivotJson.put("count", pivotField.getCount());
-				Collection<SolrResponse.PivotRange> pivotRanges = pivotField.getRanges().values();
-				List<SolrResponse.Pivot> pivotFields2 = pivotField.getPivotList();
-				if(pivotRanges != null) {
-					JsonObject rangeJson = new JsonObject();
-					pivotJson.put("ranges", rangeJson);
-					for(SolrResponse.PivotRange rangeFacet : pivotRanges) {
-						JsonObject rangeFacetJson = new JsonObject();
-						String rangeFacetVar = StringUtils.substringBefore(rangeFacet.getName(), "_docvalues_");
-						rangeJson.put(rangeFacetVar, rangeFacetJson);
-						JsonObject rangeFacetCountsObject = new JsonObject();
-						rangeFacetJson.put("counts", rangeFacetCountsObject);
-						rangeFacet.getCounts().forEach((value, count) -> {
-							rangeFacetCountsObject.put(value, count);
-						});
-					}
-				}
-				if(pivotFields2 != null) {
-					JsonArray pivotArray2 = new JsonArray();
-					pivotJson.put("pivot", pivotArray2);
-					responsePivotDisplayPageHub(pivotFields2, pivotArray2);
-				}
-			}
-		}
-	}
-
-	// UserPage //
-
-	@Override
-	public void userpageHub(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-		Boolean classPublicRead = false;
-		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
-			MultiMap form = MultiMap.caseInsensitiveMultiMap();
-			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			form.add("permission", String.format("%s-%s#%s", Hub.CLASS_AUTH_RESOURCE, hubResource, "GET"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "GET"));
-			webClient.post(
-					config.getInteger(ComputateConfigKeys.AUTH_PORT)
-					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-					, config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-					)
-					.ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-					.putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-					.sendForm(form)
-					.expecting(HttpResponseExpectation.SC_OK)
-			.onComplete(authorizationDecisionResponse -> {
-				try {
-					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-					if(!scopes.contains("GET") && !classPublicRead) {
-						//
-						List<String> fqs = new ArrayList<>();
-						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-						groups.stream().map(group -> {
-									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
-									return mPermission.find() ? mPermission.group(1) : null;
-								}).filter(v -> v != null).forEach(value -> {
-									fqs.add(String.format("%s:%s", "hubResource", value));
-								});
-						JsonObject authParams = siteRequest.getServiceRequest().getParams();
-						JsonObject authQuery = authParams.getJsonObject("query");
-						if(authQuery == null) {
-							authQuery = new JsonObject();
-							authParams.put("query", authQuery);
-						}
-						JsonArray fq = authQuery.getJsonArray("fq");
-						if(fq == null) {
-							fq = new JsonArray();
-							authQuery.put("fq", fq);
-						}
-						if(fqs.size() > 0) {
-							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-							scopes.add("GET");
-							siteRequest.setFilteredScope(true);
-						}
-					}
-					{
-						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-						List<String> scopes2 = siteRequest.getScopes();
-						searchHubList(siteRequest, false, true, false).onSuccess(listHub -> {
-							response200UserPageHub(listHub).onSuccess(response -> {
-								eventHandler.handle(Future.succeededFuture(response));
-								LOG.debug(String.format("userpageHub succeeded. "));
-							}).onFailure(ex -> {
-								LOG.error(String.format("userpageHub failed. "), ex);
-								error(siteRequest, eventHandler, ex);
-							});
-						}).onFailure(ex -> {
-							LOG.error(String.format("userpageHub failed. "), ex);
-							error(siteRequest, eventHandler, ex);
-						});
-					}
-				} catch(Exception ex) {
-					LOG.error(String.format("userpageHub failed. "), ex);
-					error(null, eventHandler, ex);
-				}
-			});
-		}).onFailure(ex -> {
-			if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
-				try {
-					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
-				} catch(Exception ex2) {
-					LOG.error(String.format("userpageHub failed. ", ex2));
-					error(null, eventHandler, ex2);
-				}
-			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
-				eventHandler.handle(Future.succeededFuture(
-					new ServiceResponse(401, "UNAUTHORIZED",
-						Buffer.buffer().appendString(
-							new JsonObject()
-								.put("errorCode", "401")
-								.put("errorMessage", "SSO Resource Permission check returned DENY")
-								.encodePrettily()
-							), MultiMap.caseInsensitiveMultiMap()
-							)
-					));
-			} else {
-				LOG.error(String.format("userpageHub failed. "), ex);
-				error(null, eventHandler, ex);
-			}
-		});
-	}
-
-	public void userpageHubPageInit(JsonObject ctx, HubPage page, SearchList<Hub> listHub, Promise<Void> promise) {
-		promise.complete();
-	}
-
-	public String templateUserPageHub(ServiceRequest serviceRequest) {
-		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
-	}
-	public Future<ServiceResponse> response200UserPageHub(SearchList<Hub> listHub) {
-		Promise<ServiceResponse> promise = Promise.promise();
-		try {
-			SiteRequest siteRequest = listHub.getSiteRequest_(SiteRequest.class);
-			String pageTemplateUri = templateUserPageHub(siteRequest.getServiceRequest());
-			String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-			Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-			String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-			HubPage page = new HubPage();
-			MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
-			siteRequest.setRequestHeaders(requestHeaders);
-
-			if(listHub.size() >= 1)
-				siteRequest.setRequestPk(listHub.get(0).getPk());
-			page.setSearchListHub_(listHub);
-			page.setSiteRequest_(siteRequest);
-			page.setServiceRequest(siteRequest.getServiceRequest());
-			page.setWebClient(webClient);
-			page.setVertx(vertx);
-			page.promiseDeepHubPage(siteRequest).onSuccess(a -> {
-				try {
-					JsonObject ctx = ConfigKeys.getPageContext(config);
-					ctx.mergeIn(JsonObject.mapFrom(page));
-					Promise<Void> promise1 = Promise.promise();
-					userpageHubPageInit(ctx, page, listHub, promise1);
-					promise1.future().onSuccess(b -> {
-						String renderedTemplate = jinjava.render(template, ctx.getMap());
-						Buffer buffer = Buffer.buffer(renderedTemplate);
-						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-					}).onFailure(ex -> {
-						promise.fail(ex);
-					});
-				} catch(Exception ex) {
-					LOG.error(String.format("response200UserPageHub failed. "), ex);
-					promise.fail(ex);
-				}
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		} catch(Exception ex) {
-			LOG.error(String.format("response200UserPageHub failed. "), ex);
-			promise.fail(ex);
-		}
-		return promise.future();
-	}
-	public void responsePivotUserPageHub(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
-		if(pivots != null) {
-			for(SolrResponse.Pivot pivotField : pivots) {
-				String entityIndexed = pivotField.getField();
-				String entityVar = StringUtils.substringBefore(entityIndexed, "_docvalues_");
-				JsonObject pivotJson = new JsonObject();
-				pivotArray.add(pivotJson);
-				pivotJson.put("field", entityVar);
-				pivotJson.put("value", pivotField.getValue());
-				pivotJson.put("count", pivotField.getCount());
-				Collection<SolrResponse.PivotRange> pivotRanges = pivotField.getRanges().values();
-				List<SolrResponse.Pivot> pivotFields2 = pivotField.getPivotList();
-				if(pivotRanges != null) {
-					JsonObject rangeJson = new JsonObject();
-					pivotJson.put("ranges", rangeJson);
-					for(SolrResponse.PivotRange rangeFacet : pivotRanges) {
-						JsonObject rangeFacetJson = new JsonObject();
-						String rangeFacetVar = StringUtils.substringBefore(rangeFacet.getName(), "_docvalues_");
-						rangeJson.put(rangeFacetVar, rangeFacetJson);
-						JsonObject rangeFacetCountsObject = new JsonObject();
-						rangeFacetJson.put("counts", rangeFacetCountsObject);
-						rangeFacet.getCounts().forEach((value, count) -> {
-							rangeFacetCountsObject.put(value, count);
-						});
-					}
-				}
-				if(pivotFields2 != null) {
-					JsonArray pivotArray2 = new JsonArray();
-					pivotJson.put("pivot", pivotArray2);
-					responsePivotUserPageHub(pivotFields2, pivotArray2);
-				}
-			}
-		}
-	}
-
 	// DELETEFilter //
 
 	@Override
@@ -3001,7 +2609,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		LOG.debug(String.format("deletefilterHub started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
+			String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
 			String HUB = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("HUB");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
@@ -3014,8 +2622,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "DELETE"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PATCH"));
 			form.add("permission", String.format("%s#%s", Hub.CLASS_AUTH_RESOURCE, "PUT"));
-			if(hubResource != null)
-				form.add("permission", String.format("%s#%s", hubResource, "DELETE"));
+			if(hubId != null)
+				form.add("permission", String.format("%s#%s", hubId, "DELETE"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -3207,7 +2815,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 							}
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getHubResource().toString()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getHubId().toString()).orElse(null));
 							apiRequest.setSolrId(Optional.ofNullable(listHub.first()).map(o2 -> o2.getSolrId()).orElse(null));
 							deletefilterHubFuture(o).onSuccess(o2 -> {
 								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
@@ -3357,8 +2965,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String hubResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubResource");
-				String m = String.format("%s %s not found", "hub", hubResource);
+				String hubId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("hubId");
+				String m = String.format("%s %s not found", "hub", hubId);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -3500,9 +3108,9 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
 				}
 			}
 
-			String hubResource = serviceRequest.getParams().getJsonObject("path").getString("hubResource");
-			if(hubResource != null) {
-				searchList.fq("hubResource_docvalues_string:" + SearchTool.escapeQueryChars(hubResource));
+			String hubId = serviceRequest.getParams().getJsonObject("path").getString("hubId");
+			if(hubId != null) {
+				searchList.fq("hubId_docvalues_string:" + SearchTool.escapeQueryChars(hubId));
 			}
 
 			for(String paramName : serviceRequest.getParams().getJsonObject("query").fieldNames()) {
