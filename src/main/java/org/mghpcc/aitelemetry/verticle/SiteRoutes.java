@@ -32,6 +32,7 @@ import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpResponseExpectation;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -182,8 +183,14 @@ public class SiteRoutes {
           handler.fail(ex);
         }
       }).onFailure(ex -> {
-        LOG.error(String.format("Failed to render page %s", originalUri), ex);
-        handler.fail(ex);
+        try {
+          handler.response().setStatusCode(302).setStatusMessage("Found")
+              .headers().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(handler.request().uri(), "UTF-8"));
+          handler.end();
+        } catch(Exception ex2) {
+          LOG.error(String.format("Failed to render page %s", originalUri), ex);
+          handler.fail(ex);
+        }
       });
     });
   }

@@ -114,34 +114,39 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
               queryAiNodesTotal(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersAiNodesTotal -> {
                 queryVmsTotalForHub(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersVmsTotal -> {
                   queryGpuDevicesTotalForHub(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersGpuDevicesTotal -> {
-                    List<JsonObject> clustersMemoryBytes = clustersMemoryBytesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).map(aiNodeResult -> aiNodeResult.put("clusterName", "local-cluster".equals(aiNodeResult.getJsonObject("metric").getValue("cluster")) ? hub.getLocalClusterName() : aiNodeResult.getJsonObject("metric").getValue("cluster"))).collect(Collectors.toList());
-                    List<JsonObject> clustersCpuCores = clustersCpuCoresTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                    List<JsonObject> clustersAiNodes = clustersAiNodesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                    List<JsonObject> clustersGpuDevices = clustersGpuDevicesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                    List<JsonObject> clustersVms = clustersVmsTotal.stream().filter(vmResult -> !((JsonObject)vmResult).getJsonArray("value").getString(1).equals("0")).map(vmResult -> (JsonObject)vmResult).collect(Collectors.toList());
-                    List<Future<?>> futures = new ArrayList<>();
-                    for(Integer i = 0; i < clustersMemoryBytes.size(); i++) {
-                      JsonObject clusterMemoryBytesResult = clustersMemoryBytes.get(i);
-                      String clusterName = clusterMemoryBytesResult.getJsonObject("metric").getString("cluster");
-                      JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject vmResult = clustersVms.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      futures.add(Future.future(promise1 -> {
-                        importCluster(hub, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, clusterMemoryBytesResult, clusterCpuCoresResult, aiNodeResult, gpuDeviceResult, vmResult).onComplete(b -> {
-                          promise1.complete();
-                        }).onFailure(ex -> {
-                          LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
-                          promise1.fail(ex);
-                        });
-                      }));
-                    }
-                    Future.all(futures).onSuccess(b -> {
-                      promise.complete();
-                    }).onFailure(ex -> {
+                    try {
+                      List<JsonObject> clustersMemoryBytes = clustersMemoryBytesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).map(aiNodeResult -> aiNodeResult.put("clusterName", "local-cluster".equals(aiNodeResult.getJsonObject("metric").getValue("cluster")) ? hub.getLocalClusterName() : aiNodeResult.getJsonObject("metric").getValue("cluster"))).collect(Collectors.toList());
+                      List<JsonObject> clustersCpuCores = clustersCpuCoresTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
+                      List<JsonObject> clustersAiNodes = clustersAiNodesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
+                      List<JsonObject> clustersGpuDevices = clustersGpuDevicesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
+                      List<JsonObject> clustersVms = clustersVmsTotal.stream().filter(vmResult -> !((JsonObject)vmResult).getJsonArray("value").getString(1).equals("0")).map(vmResult -> (JsonObject)vmResult).collect(Collectors.toList());
+                      List<Future<?>> futures = new ArrayList<>();
+                      for(Integer i = 0; i < clustersMemoryBytes.size(); i++) {
+                        JsonObject clusterMemoryBytesResult = clustersMemoryBytes.get(i);
+                        String clusterName = clusterMemoryBytesResult.getJsonObject("metric").getString("cluster");
+                        JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        JsonObject vmResult = clustersVms.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        futures.add(Future.future(promise1 -> {
+                          importCluster(hub, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, clusterMemoryBytesResult, clusterCpuCoresResult, aiNodeResult, gpuDeviceResult, vmResult).onComplete(b -> {
+                            promise1.complete();
+                          }).onFailure(ex -> {
+                            LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
+                            promise1.fail(ex);
+                          });
+                        }));
+                      }
+                      Future.all(futures).onSuccess(b -> {
+                        promise.complete();
+                      }).onFailure(ex -> {
+                        LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
+                        promise.fail(ex);
+                      });
+                    } catch(Throwable ex) {
                       LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
                       promise.fail(ex);
-                    });
+                    }
                   }).onFailure(ex -> {
                     LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
                     promise.fail(ex);
@@ -183,6 +188,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     try {
       String hubName = hubData.getString(Hub.VAR_hubName);
       String hubDescription = hubData.getString(Hub.VAR_description);
+      String localClusterName = hubData.getString(Hub.VAR_localClusterName);
       String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
       JsonObject body = new JsonObject();
       body.put(Hub.VAR_pk, hubResource);
@@ -190,6 +196,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
       body.put(Hub.VAR_hubName, hubName);
       body.put(Hub.VAR_description, hubDescription);
       body.put(Hub.VAR_hubResource, hubResource);
+      body.put(Hub.VAR_localClusterName, localClusterName);
 
       JsonObject pageParams = new JsonObject();
       pageParams.put("body", body);
@@ -424,10 +431,11 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     Promise<JsonArray> promise = Promise.promise();
     try {
       String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      String hubId = hub.getHubId();
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("openshift-local".equals(hubId) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -451,10 +459,11 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     Promise<JsonArray> promise = Promise.promise();
     try {
       String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      String hubId = hub.getHubId();
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("openshift-local".equals(hubId) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))

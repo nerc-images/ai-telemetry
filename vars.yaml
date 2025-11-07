@@ -201,6 +201,8 @@ WEB_COMPONENTS_SECRET: "{{ lookup('env', 'WEB_COMPONENTS_SECRET') | default('loc
 WEB_COMPONENTS_PREFIX: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.WEB_COMPONENTS_PREFIX | default('') | b64decode | default('wa-', true) }}"
 # Web components default theme. 
 WEB_COMPONENTS_THEME: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.WEB_COMPONENTS_THEME | default('', true) | b64decode | default('active', true) }}"
+# An optional Web Awesome Pro Kit for Web Components. 
+WEB_COMPONENTS_KIT: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.WEB_COMPONENTS_KIT | default('', true) | b64decode | default('', true) }}"
 # Site default font size. 
 SITE_FONT_SIZE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.SITE_FONT_SIZE | default('', true) | b64decode | default('m', true) }}"
 # An optional FontAwesome Pro Kit for additional FontAwesome icons. 
@@ -252,7 +254,7 @@ SITE_SYSTEMD: "{{ '/usr/lib/systemd/system' if ansible_distribution_file_variety
 #######################
 
 # The name of the cloud provider where the public site is deployed. 
-SITE_POWERED_BY_NAME: "{{ lookup('env', 'SITE_POWERED_BY_NAME') | default('Open Sovereign AI Cloud', true) }}"
+SITE_POWERED_BY_NAME: "{{ lookup('env', 'SITE_POWERED_BY_NAME') | default('OpenShift Local', true) }}"
 # The URL of the cloud provider where the public site is deployed. 
 SITE_POWERED_BY_URL: "{{ lookup('env', 'SITE_POWERED_BY_URL') | default('https://research.redhat.com/mass-open-cloud/', true) }}"
 # The static path to the logo of the cloud provider where the public site is deployed. 
@@ -606,17 +608,21 @@ WRITE_COMMENTS: true
 # extra vars #
 ##############
 
-HUBS: "{{ lookup('env', 'HUBS') | default('{ \"local-cluster\": { \"hubName\": \"OpenShift Local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
+HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
+
+# Social media
+YOUTUBE_URL: https://www.youtube.com/watch?v=5_y5PFtsTYk&list=PLcVjtgfCeLvQu8KDUjmwHzbFqbg5K70zN
+LINKEDIN_URL: https://www.linkedin.com/in/computate/
 
 #######################
 # prom-keycloak-proxy #
 #######################
 # Whether to use SSL when connecting to the Prometheus Keycloak Proxy. 
-PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | default('true', true) | lower) != 'false' }}"
+PROM_KEYCLOAK_PROXY_SSL_OPENSHIFTLOCAL: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | default('true', true) | lower) != 'false' }}"
 # The host name to connect to the Prometheus Keycloak Proxy in OpenShift. 
-PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('metrics-local-cluster.' + OPENSHIFT_APPS_DOMAIN, true) }}"
+PROM_KEYCLOAK_PROXY_HOST_NAME_OPENSHIFTLOCAL: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('metrics-local-cluster.' + OPENSHIFT_APPS_DOMAIN, true) }}"
 # The default port that the Prometheus Keycloak Proxy runs. 
-PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
+PROM_KEYCLOAK_PROXY_PORT_OPENSHIFTLOCAL: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
 # The Auth client. 
 AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(AUTH_CLIENT, true) }}"
 # The Auth openshift secret key with the client secret credentials. 

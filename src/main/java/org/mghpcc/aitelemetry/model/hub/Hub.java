@@ -52,89 +52,90 @@ import io.vertx.pgclient.data.Polygon;
  **/
 public class Hub extends HubGen<BaseModel> {
 
-	/**
-	 * {@inheritDoc}
-	 * DocValues: true
-	 * Persist: true
-	 * DisplayName: hub name
-	 * Description: The name of this hub
-	 * HtmRow: 3
-	 * HtmCell: 1
-	 * HtmColumn: 1
-	 * HtmRowTitleOpen: hub details
-	 * Facet: true
-	 * VarName: true
-	 **/
-	protected void _hubName(Wrap<String> w) {
-	}
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: hub name
+   * Description: The name of this hub
+   * HtmRow: 3
+   * HtmCell: 1
+   * HtmColumn: 1
+   * HtmRowTitleOpen: hub details
+   * Facet: true
+   * VarName: true
+   **/
+  protected void _hubName(Wrap<String> w) {
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * DocValues: true
-	 * Persist: true
-	 * DisplayName: hub ID
-	 * Description: The ID of this hub
-	 * HtmRow: 3
-	 * HtmCell: 2
-	 * VarId: true
-	 * Facet: true
-	 **/
-	protected void _hubId(Wrap<String> w) {
-		w.o(toId(hubName));
-	}
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: hub ID
+   * Description: The ID of this hub
+   * HtmRow: 3
+   * HtmCell: 2
+   * VarId: true
+   * Facet: true
+   * DefaultFacet: true
+   **/
+  protected void _hubId(Wrap<String> w) {
+    w.o(toId(hubName));
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * DocValues: true
-	 * Persist: true
-	 * DisplayName: hub auth resource
-	 * Description: The unique authorization resource for the hub for multi-tenancy
-	 * Facet: true
-	 * AuthorizationResource: HUB
-	 **/
-	protected void _hubResource(Wrap<String> w) {
-		w.o(String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId));
-	}
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: hub auth resource
+   * Description: The unique authorization resource for the hub for multi-tenancy
+   * Facet: true
+   * AuthorizationResource: HUB
+   **/
+  protected void _hubResource(Wrap<String> w) {
+    w.o(String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId));
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * DocValues: true
-	 * Persist: true
-	 * HtmRowTitleOpen: Useful URLs
-	 * HtmRow: 99
-	 * HtmCell: 1
-	 * Facet: true
-	 * DisplayName: Page ID
-	 * Description: The ID for this page. 
-	 */
-	protected void _pageId(Wrap<String> w) {
-		w.o(hubId);
-	}
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * HtmRowTitleOpen: Useful URLs
+   * HtmRow: 99
+   * HtmCell: 1
+   * Facet: true
+   * DisplayName: Page ID
+   * Description: The ID for this page. 
+   */
+  protected void _pageId(Wrap<String> w) {
+    w.o(hubId);
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * DocValues: true
-	 * Persist: true
-	 * DisplayName: description
-	 * Description: A description of this hub
-	 * HtmRow: 3
-	 * HtmCell: 4
-	 * Facet: true
-	 * HtmColumn: 3
-	 * VarDescription: true
-	 **/
-	protected void _description(Wrap<String> w) {
-	}
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: description
+   * Description: A description of this hub
+   * HtmRow: 3
+   * HtmCell: 4
+   * Facet: true
+   * HtmColumn: 3
+   * VarDescription: true
+   **/
+  protected void _description(Wrap<String> w) {
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * DocValues: true
-	 * Persist: true
-	 * DisplayName: ACM cluster name
-	 * Description: The actual name of the ACM local cluster. 
-	 * Facet: true
-	 * HtmColumn: 2
-	 **/
-	protected void _localClusterName(Wrap<String> w) {
-	}
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: ACM cluster name
+   * Description: The actual name of the ACM local cluster. 
+   * Facet: true
+   * HtmColumn: 2
+   **/
+  protected void _localClusterName(Wrap<String> w) {
+  }
 }

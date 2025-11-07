@@ -69,6 +69,7 @@ public class Cluster extends ClusterGen<BaseModel> {
 	 * HtmColumn: 1
 	 * HtmRowTitleOpen: cluster details
 	 * Facet: true
+   * DefaultFacet: true
 	 **/
 	protected void _hubId(Wrap<String> w) {}
 

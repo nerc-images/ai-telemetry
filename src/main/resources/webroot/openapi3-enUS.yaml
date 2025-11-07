@@ -3697,6 +3697,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -4400,6 +4401,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -7351,6 +7353,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -8054,6 +8057,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -8302,6 +8306,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -8625,7 +8630,7 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/PUTImportHubResponse'
-  /en-us/api/hub/{hubResource}:
+  /en-us/api/hub/{hubId}:
     get:
       operationId: getHub
       x-vertx-event-bus: ai-telemetry-enUS-Hub
@@ -8667,7 +8672,7 @@ paths:
             type: array
             items:
                 type: string
-        - name: hubResource
+        - name: hubId
           in: path
           description: >+
           required: true
@@ -8721,7 +8726,7 @@ paths:
             type: array
             items:
                 type: string
-        - name: hubResource
+        - name: hubId
           in: path
           description: >+
           required: true
@@ -9005,6 +9010,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -10149,6 +10155,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -10852,6 +10859,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -11100,6 +11108,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -11803,6 +11812,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
