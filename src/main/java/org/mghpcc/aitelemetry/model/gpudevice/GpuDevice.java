@@ -69,6 +69,7 @@ public class GpuDevice extends GpuDeviceGen<BaseModel> {
 	 * HtmColumn: 1
 	 * HtmRowTitleOpen: AI node details
 	 * Facet: true
+   * DefaultFacet: true
 	 **/
 	protected void _hubId(Wrap<String> w) {}
 

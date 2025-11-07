@@ -1,5 +1,9 @@
-package org.mghpcc.aitelemetry.model.baremetalnode;
+package org.mghpcc.aitelemetry.model.virtualmachine;
 
+import org.mghpcc.aitelemetry.model.hub.HubEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.hub.Hub;
+import org.mghpcc.aitelemetry.model.cluster.ClusterEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import org.mghpcc.aitelemetry.request.SiteRequest;
 import org.mghpcc.aitelemetry.user.SiteUser;
 import org.computate.vertx.api.ApiRequest;
@@ -103,38 +107,38 @@ import java.util.Base64;
 import java.time.ZonedDateTime;
 import org.apache.commons.lang3.BooleanUtils;
 import org.computate.vertx.search.list.SearchList;
-import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNodePage;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachinePage;
 
 
 /**
  * Translate: false
  * Generated: true
  **/
-public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements BareMetalNodeEnUSGenApiService {
+public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl implements VirtualMachineEnUSGenApiService {
 
-	protected static final Logger LOG = LoggerFactory.getLogger(BareMetalNodeEnUSGenApiServiceImpl.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(VirtualMachineEnUSGenApiServiceImpl.class);
 
 	// Search //
 
 	@Override
-	public void searchBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void searchVirtualMachine(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -148,24 +152,57 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("GET") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-							response200SearchBareMetalNode(listBareMetalNode).onSuccess(response -> {
+						searchVirtualMachineList(siteRequest, false, true, false).onSuccess(listVirtualMachine -> {
+							response200SearchVirtualMachine(listVirtualMachine).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
-								LOG.debug(String.format("searchBareMetalNode succeeded. "));
+								LOG.debug(String.format("searchVirtualMachine succeeded. "));
 							}).onFailure(ex -> {
-								LOG.error(String.format("searchBareMetalNode failed. "), ex);
+								LOG.error(String.format("searchVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							});
 						}).onFailure(ex -> {
-							LOG.error(String.format("searchBareMetalNode failed. "), ex);
+							LOG.error(String.format("searchVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("searchBareMetalNode failed. "), ex);
+					LOG.error(String.format("searchVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -174,7 +211,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("searchBareMetalNode failed. ", ex2));
+					LOG.error(String.format("searchVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -189,27 +226,27 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("searchBareMetalNode failed. "), ex);
+				LOG.error(String.format("searchVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<ServiceResponse> response200SearchBareMetalNode(SearchList<BareMetalNode> listBareMetalNode) {
+	public Future<ServiceResponse> response200SearchVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
-			SiteRequest siteRequest = listBareMetalNode.getSiteRequest_(SiteRequest.class);
-			List<String> fls = listBareMetalNode.getRequest().getFields();
+			SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+			List<String> fls = listVirtualMachine.getRequest().getFields();
 			JsonObject json = new JsonObject();
 			JsonArray l = new JsonArray();
-			listBareMetalNode.getList().stream().forEach(o -> {
+			listVirtualMachine.getList().stream().forEach(o -> {
 				JsonObject json2 = JsonObject.mapFrom(o);
 				if(fls.size() > 0) {
 					Set<String> fieldNames = new HashSet<String>();
 					for(String fieldName : json2.fieldNames()) {
-						String v = BareMetalNode.varIndexedBareMetalNode(fieldName);
+						String v = VirtualMachine.varIndexedVirtualMachine(fieldName);
 						if(v != null)
-							fieldNames.add(BareMetalNode.varIndexedBareMetalNode(fieldName));
+							fieldNames.add(VirtualMachine.varIndexedVirtualMachine(fieldName));
 					}
 					if(fls.size() == 1 && fls.stream().findFirst().orElse(null).equals("saves_docvalues_strings")) {
 						fieldNames.removeAll(Optional.ofNullable(json2.getJsonArray("saves_docvalues_strings")).orElse(new JsonArray()).stream().map(s -> s.toString()).collect(Collectors.toList()));
@@ -227,10 +264,10 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				l.add(json2);
 			});
 			json.put("list", l);
-			response200Search(listBareMetalNode.getRequest(), listBareMetalNode.getResponse(), json);
+			response200Search(listVirtualMachine.getRequest(), listVirtualMachine.getResponse(), json);
 			if(json == null) {
-				String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-				String m = String.format("%s %s not found", "bare metal node", nodeId);
+				String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+				String m = String.format("%s %s not found", "virtual machine", vmResource);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -238,12 +275,12 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("response200SearchBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200SearchVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
-	public void responsePivotSearchBareMetalNode(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
+	public void responsePivotSearchVirtualMachine(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
 		if(pivots != null) {
 			for(SolrResponse.Pivot pivotField : pivots) {
 				String entityIndexed = pivotField.getField();
@@ -272,7 +309,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				if(pivotFields2 != null) {
 					JsonArray pivotArray2 = new JsonArray();
 					pivotJson.put("pivot", pivotArray2);
-					responsePivotSearchBareMetalNode(pivotFields2, pivotArray2);
+					responsePivotSearchVirtualMachine(pivotFields2, pivotArray2);
 				}
 			}
 		}
@@ -281,24 +318,24 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 	// GET //
 
 	@Override
-	public void getBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void getVirtualMachine(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -312,24 +349,57 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("GET") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-							response200GETBareMetalNode(listBareMetalNode).onSuccess(response -> {
+						searchVirtualMachineList(siteRequest, false, true, false).onSuccess(listVirtualMachine -> {
+							response200GETVirtualMachine(listVirtualMachine).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
-								LOG.debug(String.format("getBareMetalNode succeeded. "));
+								LOG.debug(String.format("getVirtualMachine succeeded. "));
 							}).onFailure(ex -> {
-								LOG.error(String.format("getBareMetalNode failed. "), ex);
+								LOG.error(String.format("getVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							});
 						}).onFailure(ex -> {
-							LOG.error(String.format("getBareMetalNode failed. "), ex);
+							LOG.error(String.format("getVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("getBareMetalNode failed. "), ex);
+					LOG.error(String.format("getVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -338,7 +408,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("getBareMetalNode failed. ", ex2));
+					LOG.error(String.format("getVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -353,20 +423,20 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("getBareMetalNode failed. "), ex);
+				LOG.error(String.format("getVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<ServiceResponse> response200GETBareMetalNode(SearchList<BareMetalNode> listBareMetalNode) {
+	public Future<ServiceResponse> response200GETVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
-			SiteRequest siteRequest = listBareMetalNode.getSiteRequest_(SiteRequest.class);
-			JsonObject json = JsonObject.mapFrom(listBareMetalNode.getList().stream().findFirst().orElse(null));
+			SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+			JsonObject json = JsonObject.mapFrom(listVirtualMachine.getList().stream().findFirst().orElse(null));
 			if(json == null) {
-				String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-				String m = String.format("%s %s not found", "bare metal node", nodeId);
+				String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+				String m = String.format("%s %s not found", "virtual machine", vmResource);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -374,7 +444,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("response200GETBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200GETVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
@@ -383,25 +453,25 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 	// PATCH //
 
 	@Override
-	public void patchBareMetalNode(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-		LOG.debug(String.format("patchBareMetalNode started. "));
+	public void patchVirtualMachine(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+		LOG.debug(String.format("patchVirtualMachine started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "PATCH"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -415,6 +485,39 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("PATCH") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(PATCH)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(PATCH)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("PATCH");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
 						String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
 						eventHandler.handle(Future.succeededFuture(
@@ -430,43 +533,43 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+						searchVirtualMachineList(siteRequest, false, true, true).onSuccess(listVirtualMachine -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
-								apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-								apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+								apiRequest.setRows(listVirtualMachine.getRequest().getRows());
+								apiRequest.setNumFound(listVirtualMachine.getResponse().getResponse().getNumFound());
 								apiRequest.setNumPATCH(0L);
 								apiRequest.initDeepApiRequest(siteRequest);
 								siteRequest.setApiRequest_(apiRequest);
 								if(apiRequest.getNumFound() == 1L)
-									apiRequest.setOriginal(listBareMetalNode.first());
-								apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getNodeId().toString()).orElse(null));
-								apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-								eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+									apiRequest.setOriginal(listVirtualMachine.first());
+								apiRequest.setId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getVmResource().toString()).orElse(null));
+								apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getSolrId()).orElse(null));
+								eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 
-								listPATCHBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-									response200PATCHBareMetalNode(siteRequest).onSuccess(response -> {
-										LOG.debug(String.format("patchBareMetalNode succeeded. "));
+								listPATCHVirtualMachine(apiRequest, listVirtualMachine).onSuccess(e -> {
+									response200PATCHVirtualMachine(siteRequest).onSuccess(response -> {
+										LOG.debug(String.format("patchVirtualMachine succeeded. "));
 										eventHandler.handle(Future.succeededFuture(response));
 									}).onFailure(ex -> {
-										LOG.error(String.format("patchBareMetalNode failed. "), ex);
+										LOG.error(String.format("patchVirtualMachine failed. "), ex);
 										error(siteRequest, eventHandler, ex);
 									});
 								}).onFailure(ex -> {
-									LOG.error(String.format("patchBareMetalNode failed. "), ex);
+									LOG.error(String.format("patchVirtualMachine failed. "), ex);
 									error(siteRequest, eventHandler, ex);
 								});
 							} catch(Exception ex) {
-								LOG.error(String.format("patchBareMetalNode failed. "), ex);
+								LOG.error(String.format("patchVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							}
 						}).onFailure(ex -> {
-							LOG.error(String.format("patchBareMetalNode failed. "), ex);
+							LOG.error(String.format("patchVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("patchBareMetalNode failed. "), ex);
+					LOG.error(String.format("patchVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -475,7 +578,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("patchBareMetalNode failed. ", ex2));
+					LOG.error(String.format("patchVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -490,58 +593,58 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("patchBareMetalNode failed. "), ex);
+				LOG.error(String.format("patchVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<Void> listPATCHBareMetalNode(ApiRequest apiRequest, SearchList<BareMetalNode> listBareMetalNode) {
+	public Future<Void> listPATCHVirtualMachine(ApiRequest apiRequest, SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<Void> promise = Promise.promise();
 		List<Future> futures = new ArrayList<>();
-		SiteRequest siteRequest = listBareMetalNode.getSiteRequest_(SiteRequest.class);
-		listBareMetalNode.getList().forEach(o -> {
+		SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+		listVirtualMachine.getList().forEach(o -> {
 			SiteRequest siteRequest2 = generateSiteRequest(siteRequest.getUser(), siteRequest.getUserPrincipal(), siteRequest.getServiceRequest(), siteRequest.getJsonObject(), SiteRequest.class);
 			siteRequest2.setScopes(siteRequest.getScopes());
 			o.setSiteRequest_(siteRequest2);
 			siteRequest2.setApiRequest_(siteRequest.getApiRequest_());
 			JsonObject jsonObject = JsonObject.mapFrom(o);
-			BareMetalNode o2 = jsonObject.mapTo(BareMetalNode.class);
+			VirtualMachine o2 = jsonObject.mapTo(VirtualMachine.class);
 			o2.setSiteRequest_(siteRequest2);
 			futures.add(Future.future(promise1 -> {
-				patchBareMetalNodeFuture(o2, false).onSuccess(a -> {
+				patchVirtualMachineFuture(o2, false).onSuccess(a -> {
 					promise1.complete();
 				}).onFailure(ex -> {
-					LOG.error(String.format("listPATCHBareMetalNode failed. "), ex);
+					LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
 					promise1.fail(ex);
 				});
 			}));
 		});
 		CompositeFuture.all(futures).onSuccess( a -> {
-			listBareMetalNode.next().onSuccess(next -> {
+			listVirtualMachine.next().onSuccess(next -> {
 				if(next) {
-					listPATCHBareMetalNode(apiRequest, listBareMetalNode).onSuccess(b -> {
+					listPATCHVirtualMachine(apiRequest, listVirtualMachine).onSuccess(b -> {
 						promise.complete();
 					}).onFailure(ex -> {
-						LOG.error(String.format("listPATCHBareMetalNode failed. "), ex);
+						LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
 						promise.fail(ex);
 					});
 				} else {
 					promise.complete();
 				}
 			}).onFailure(ex -> {
-				LOG.error(String.format("listPATCHBareMetalNode failed. "), ex);
+				LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		}).onFailure(ex -> {
-			LOG.error(String.format("listPATCHBareMetalNode failed. "), ex);
+			LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		});
 		return promise.future();
 	}
 
 	@Override
-	public void patchBareMetalNodeFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void patchVirtualMachineFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
 			try {
@@ -552,9 +655,9 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						siteRequest.addScopes(scope);
 					});
 				});
-				searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+				searchVirtualMachineList(siteRequest, false, true, true).onSuccess(listVirtualMachine -> {
 					try {
-						BareMetalNode o = listBareMetalNode.first();
+						VirtualMachine o = listVirtualMachine.first();
 						ApiRequest apiRequest = new ApiRequest();
 						apiRequest.setRows(1L);
 						apiRequest.setNumFound(1L);
@@ -564,65 +667,65 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
 							siteRequest.getRequestVars().put( "refresh", "false" );
 						}
-						BareMetalNode o2;
+						VirtualMachine o2;
 						if(o != null) {
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o3 -> o3.getNodeId().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o3 -> o3.getSolrId()).orElse(null));
+							apiRequest.setId(Optional.ofNullable(listVirtualMachine.first()).map(o3 -> o3.getVmResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o3 -> o3.getSolrId()).orElse(null));
 							JsonObject jsonObject = JsonObject.mapFrom(o);
-							o2 = jsonObject.mapTo(BareMetalNode.class);
+							o2 = jsonObject.mapTo(VirtualMachine.class);
 							o2.setSiteRequest_(siteRequest);
-							patchBareMetalNodeFuture(o2, false).onSuccess(o3 -> {
+							patchVirtualMachineFuture(o2, false).onSuccess(o3 -> {
 								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
 							}).onFailure(ex -> {
 								eventHandler.handle(Future.failedFuture(ex));
 							});
 						} else {
-							String m = String.format("%s %s not found", "bare metal node", null);
+							String m = String.format("%s %s not found", "virtual machine", null);
 							eventHandler.handle(Future.failedFuture(m));
 						}
 					} catch(Exception ex) {
-						LOG.error(String.format("patchBareMetalNode failed. "), ex);
+						LOG.error(String.format("patchVirtualMachine failed. "), ex);
 						error(siteRequest, eventHandler, ex);
 					}
 				}).onFailure(ex -> {
-					LOG.error(String.format("patchBareMetalNode failed. "), ex);
+					LOG.error(String.format("patchVirtualMachine failed. "), ex);
 					error(siteRequest, eventHandler, ex);
 				});
 			} catch(Exception ex) {
-				LOG.error(String.format("patchBareMetalNode failed. "), ex);
+				LOG.error(String.format("patchVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		}).onFailure(ex -> {
-			LOG.error(String.format("patchBareMetalNode failed. "), ex);
+			LOG.error(String.format("patchVirtualMachine failed. "), ex);
 			error(null, eventHandler, ex);
 		});
 	}
 
-	public Future<BareMetalNode> patchBareMetalNodeFuture(BareMetalNode o, Boolean inheritPrimaryKey) {
+	public Future<VirtualMachine> patchVirtualMachineFuture(VirtualMachine o, Boolean inheritPrimaryKey) {
 		SiteRequest siteRequest = o.getSiteRequest_();
-		Promise<BareMetalNode> promise = Promise.promise();
+		Promise<VirtualMachine> promise = Promise.promise();
 
 		try {
 			ApiRequest apiRequest = siteRequest.getApiRequest_();
-			Promise<BareMetalNode> promise1 = Promise.promise();
+			Promise<VirtualMachine> promise1 = Promise.promise();
 			pgPool.withTransaction(sqlConnection -> {
 				siteRequest.setSqlConnection(sqlConnection);
-				varsBareMetalNode(siteRequest).onSuccess(a -> {
-					sqlPATCHBareMetalNode(o, inheritPrimaryKey).onSuccess(bareMetalNode -> {
-						persistBareMetalNode(bareMetalNode, true).onSuccess(c -> {
-							relateBareMetalNode(bareMetalNode).onSuccess(d -> {
-								indexBareMetalNode(bareMetalNode).onSuccess(o2 -> {
+				varsVirtualMachine(siteRequest).onSuccess(a -> {
+					sqlPATCHVirtualMachine(o, inheritPrimaryKey).onSuccess(virtualMachine -> {
+						persistVirtualMachine(virtualMachine, true).onSuccess(c -> {
+							relateVirtualMachine(virtualMachine).onSuccess(d -> {
+								indexVirtualMachine(virtualMachine).onSuccess(o2 -> {
 									if(apiRequest != null) {
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-											o2.apiRequestBareMetalNode();
+											o2.apiRequestVirtualMachine();
 											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-												eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+												eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
-									promise1.complete(bareMetalNode);
+									promise1.complete(virtualMachine);
 								}).onFailure(ex -> {
 									promise1.fail(ex);
 								});
@@ -644,28 +747,28 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			}).onFailure(ex -> {
 				siteRequest.setSqlConnection(null);
 				promise.fail(ex);
-			}).compose(bareMetalNode -> {
-				Promise<BareMetalNode> promise2 = Promise.promise();
-				refreshBareMetalNode(bareMetalNode).onSuccess(a -> {
-					promise2.complete(bareMetalNode);
+			}).compose(virtualMachine -> {
+				Promise<VirtualMachine> promise2 = Promise.promise();
+				refreshVirtualMachine(virtualMachine).onSuccess(a -> {
+					promise2.complete(virtualMachine);
 				}).onFailure(ex -> {
 					promise2.fail(ex);
 				});
 				return promise2.future();
-			}).onSuccess(bareMetalNode -> {
-				promise.complete(bareMetalNode);
+			}).onSuccess(virtualMachine -> {
+				promise.complete(virtualMachine);
 			}).onFailure(ex -> {
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("patchBareMetalNodeFuture failed. "), ex);
+			LOG.error(String.format("patchVirtualMachineFuture failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<BareMetalNode> sqlPATCHBareMetalNode(BareMetalNode o, Boolean inheritPrimaryKey) {
-		Promise<BareMetalNode> promise = Promise.promise();
+	public Future<VirtualMachine> sqlPATCHVirtualMachine(VirtualMachine o, Boolean inheritPrimaryKey) {
+		Promise<VirtualMachine> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
 			ApiRequest apiRequest = siteRequest.getApiRequest_();
@@ -673,119 +776,165 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			List<String> classes = Optional.ofNullable(apiRequest).map(r -> r.getClasses()).orElse(new ArrayList<>());
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Integer num = 1;
-			StringBuilder bSql = new StringBuilder("UPDATE BareMetalNode SET ");
+			StringBuilder bSql = new StringBuilder("UPDATE VirtualMachine SET ");
 			List<Object> bParams = new ArrayList<Object>();
 			Long pk = o.getPk();
 			JsonObject jsonObject = siteRequest.getJsonObject();
 			Set<String> methodNames = jsonObject.fieldNames();
-			BareMetalNode o2 = new BareMetalNode();
+			VirtualMachine o2 = new VirtualMachine();
 			o2.setSiteRequest_(siteRequest);
 			List<Future> futures1 = new ArrayList<>();
 			List<Future> futures2 = new ArrayList<>();
 
 			for(String entityVar : methodNames) {
 				switch(entityVar) {
-					case "setLeaseInfo":
-							o2.setLeaseInfo(jsonObject.getJsonArray(entityVar));
+					case "setHubId":
+							o2.setHubId(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_leaseInfo + "=$" + num);
+							bSql.append(VirtualMachine.VAR_hubId + "=$" + num);
 							num++;
-							bParams.add(o2.sqlLeaseInfo());
+							bParams.add(o2.sqlHubId());
 						break;
-					case "setNetworkInfo":
-							o2.setNetworkInfo(jsonObject.getJsonArray(entityVar));
+					case "setHubResource":
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Hub.varIndexedHub(Hub.VAR_hubResource), Hub.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Hub");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, solrId2, val).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
+					case "removeHubResource":
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(solrId2 -> {
+							futures2.add(Future.future(promise2 -> {
+								sql(siteRequest).update(VirtualMachine.class, pk).setToNull(VirtualMachine.VAR_hubResource, Hub.class, null).onSuccess(a -> {
+									promise2.complete();
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
+					case "setClusterName":
+							o2.setClusterName(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_networkInfo + "=$" + num);
+							bSql.append(VirtualMachine.VAR_clusterName + "=$" + num);
 							num++;
-							bParams.add(o2.sqlNetworkInfo());
+							bParams.add(o2.sqlClusterName());
 						break;
 					case "setCreated":
 							o2.setCreated(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_created + "=$" + num);
+							bSql.append(VirtualMachine.VAR_created + "=$" + num);
 							num++;
 							bParams.add(o2.sqlCreated());
 						break;
-					case "setNodeId":
-							o2.setNodeId(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_nodeId + "=$" + num);
-							num++;
-							bParams.add(o2.sqlNodeId());
+					case "setClusterResource":
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Cluster.varIndexedCluster(Cluster.VAR_clusterResource), Cluster.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Cluster");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, solrId2, val).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
 						break;
-					case "setNodeIsMaintenance":
-							o2.setNodeIsMaintenance(jsonObject.getString(entityVar));
+					case "removeClusterResource":
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(solrId2 -> {
+							futures2.add(Future.future(promise2 -> {
+								sql(siteRequest).update(VirtualMachine.class, pk).setToNull(VirtualMachine.VAR_clusterResource, Cluster.class, null).onSuccess(a -> {
+									promise2.complete();
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
+					case "setVmProject":
+							o2.setVmProject(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_nodeIsMaintenance + "=$" + num);
+							bSql.append(VirtualMachine.VAR_vmProject + "=$" + num);
 							num++;
-							bParams.add(o2.sqlNodeIsMaintenance());
+							bParams.add(o2.sqlVmProject());
 						break;
 					case "setArchived":
 							o2.setArchived(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_archived + "=$" + num);
+							bSql.append(VirtualMachine.VAR_archived + "=$" + num);
 							num++;
 							bParams.add(o2.sqlArchived());
 						break;
-					case "setNodeLinks":
-							o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
+					case "setVmName":
+							o2.setVmName(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_nodeLinks + "=$" + num);
+							bSql.append(VirtualMachine.VAR_vmName + "=$" + num);
 							num++;
-							bParams.add(o2.sqlNodeLinks());
+							bParams.add(o2.sqlVmName());
 						break;
-					case "setNodeName":
-							o2.setNodeName(jsonObject.getString(entityVar));
+					case "setOs":
+							o2.setOs(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_nodeName + "=$" + num);
+							bSql.append(VirtualMachine.VAR_os + "=$" + num);
 							num++;
-							bParams.add(o2.sqlNodeName());
+							bParams.add(o2.sqlOs());
 						break;
-					case "setNodePowerState":
-							o2.setNodePowerState(jsonObject.getString(entityVar));
+					case "setVmResource":
+							o2.setVmResource(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_nodePowerState + "=$" + num);
+							bSql.append(VirtualMachine.VAR_vmResource + "=$" + num);
 							num++;
-							bParams.add(o2.sqlNodePowerState());
-						break;
-					case "setNodeProvisionState":
-							o2.setNodeProvisionState(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_nodeProvisionState + "=$" + num);
-							num++;
-							bParams.add(o2.sqlNodeProvisionState());
+							bParams.add(o2.sqlVmResource());
 						break;
 					case "setSessionId":
 							o2.setSessionId(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_sessionId + "=$" + num);
+							bSql.append(VirtualMachine.VAR_sessionId + "=$" + num);
 							num++;
 							bParams.add(o2.sqlSessionId());
 						break;
-					case "setNodeResourceClass":
-							o2.setNodeResourceClass(jsonObject.getString(entityVar));
+					case "setDescription":
+							o2.setDescription(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
+							bSql.append(VirtualMachine.VAR_description + "=$" + num);
 							num++;
-							bParams.add(o2.sqlNodeResourceClass());
+							bParams.add(o2.sqlDescription());
 						break;
 					case "setUserKey":
 							o2.setUserKey(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_userKey + "=$" + num);
+							bSql.append(VirtualMachine.VAR_userKey + "=$" + num);
 							num++;
 							bParams.add(o2.sqlUserKey());
 						break;
@@ -793,31 +942,55 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							o2.setObjectTitle(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_objectTitle + "=$" + num);
+							bSql.append(VirtualMachine.VAR_objectTitle + "=$" + num);
 							num++;
 							bParams.add(o2.sqlObjectTitle());
+						break;
+					case "setLocation":
+							o2.setLocation(jsonObject.getJsonObject(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_location + "=$" + num);
+							num++;
+							bParams.add(o2.sqlLocation());
 						break;
 					case "setDisplayPage":
 							o2.setDisplayPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_displayPage + "=$" + num);
+							bSql.append(VirtualMachine.VAR_displayPage + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDisplayPage());
+						break;
+					case "setGpuDevicesTotal":
+							o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_gpuDevicesTotal + "=$" + num);
+							num++;
+							bParams.add(o2.sqlGpuDevicesTotal());
 						break;
 					case "setEditPage":
 							o2.setEditPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_editPage + "=$" + num);
+							bSql.append(VirtualMachine.VAR_editPage + "=$" + num);
 							num++;
 							bParams.add(o2.sqlEditPage());
+						break;
+					case "setId":
+							o2.setId(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_id + "=$" + num);
+							num++;
+							bParams.add(o2.sqlId());
 						break;
 					case "setUserPage":
 							o2.setUserPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_userPage + "=$" + num);
+							bSql.append(VirtualMachine.VAR_userPage + "=$" + num);
 							num++;
 							bParams.add(o2.sqlUserPage());
 						break;
@@ -825,9 +998,41 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							o2.setDownload(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(BareMetalNode.VAR_download + "=$" + num);
+							bSql.append(VirtualMachine.VAR_download + "=$" + num);
 							num++;
 							bParams.add(o2.sqlDownload());
+						break;
+					case "setNgsildTenant":
+							o2.setNgsildTenant(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_ngsildTenant + "=$" + num);
+							num++;
+							bParams.add(o2.sqlNgsildTenant());
+						break;
+					case "setNgsildPath":
+							o2.setNgsildPath(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_ngsildPath + "=$" + num);
+							num++;
+							bParams.add(o2.sqlNgsildPath());
+						break;
+					case "setNgsildContext":
+							o2.setNgsildContext(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_ngsildContext + "=$" + num);
+							num++;
+							bParams.add(o2.sqlNgsildContext());
+						break;
+					case "setNgsildData":
+							o2.setNgsildData(jsonObject.getJsonObject(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(VirtualMachine.VAR_ngsildData + "=$" + num);
+							num++;
+							bParams.add(o2.sqlNgsildData());
 						break;
 				}
 			}
@@ -841,40 +1046,40 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							).onSuccess(b -> {
 						a.handle(Future.succeededFuture());
 					}).onFailure(ex -> {
-						RuntimeException ex2 = new RuntimeException("value BareMetalNode failed", ex);
-						LOG.error(String.format("relateBareMetalNode failed. "), ex2);
+						RuntimeException ex2 = new RuntimeException("value VirtualMachine failed", ex);
+						LOG.error(String.format("relateVirtualMachine failed. "), ex2);
 						a.handle(Future.failedFuture(ex2));
 					});
 				}));
 			}
 			CompositeFuture.all(futures1).onSuccess(a -> {
 				CompositeFuture.all(futures2).onSuccess(b -> {
-					BareMetalNode o3 = new BareMetalNode();
+					VirtualMachine o3 = new VirtualMachine();
 					o3.setSiteRequest_(o.getSiteRequest_());
 					o3.setPk(pk);
 					promise.complete(o3);
 				}).onFailure(ex -> {
-					LOG.error(String.format("sqlPATCHBareMetalNode failed. "), ex);
+					LOG.error(String.format("sqlPATCHVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				});
 			}).onFailure(ex -> {
-				LOG.error(String.format("sqlPATCHBareMetalNode failed. "), ex);
+				LOG.error(String.format("sqlPATCHVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("sqlPATCHBareMetalNode failed. "), ex);
+			LOG.error(String.format("sqlPATCHVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<ServiceResponse> response200PATCHBareMetalNode(SiteRequest siteRequest) {
+	public Future<ServiceResponse> response200PATCHVirtualMachine(SiteRequest siteRequest) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-				String m = String.format("%s %s not found", "bare metal node", nodeId);
+				String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+				String m = String.format("%s %s not found", "virtual machine", vmResource);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -882,7 +1087,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("response200PATCHBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200PATCHVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
@@ -891,25 +1096,25 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 	// POST //
 
 	@Override
-	public void postBareMetalNode(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-		LOG.debug(String.format("postBareMetalNode started. "));
+	public void postVirtualMachine(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+		LOG.debug(String.format("postVirtualMachine started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "POST"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -923,6 +1128,39 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("POST") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(POST)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(POST)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("POST");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
 						String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
 						eventHandler.handle(Future.succeededFuture(
@@ -944,7 +1182,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						apiRequest.setNumPATCH(0L);
 						apiRequest.initDeepApiRequest(siteRequest);
 						siteRequest.setApiRequest_(apiRequest);
-						eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+						eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 						JsonObject params = new JsonObject();
 						params.put("body", siteRequest.getJsonObject());
 						params.put("path", new JsonObject());
@@ -963,19 +1201,19 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						params.put("query", query);
 						JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
 						JsonObject json = new JsonObject().put("context", context);
-						eventBus.request(BareMetalNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postBareMetalNodeFuture")).onSuccess(a -> {
+						eventBus.request(VirtualMachine.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postVirtualMachineFuture")).onSuccess(a -> {
 							JsonObject responseMessage = (JsonObject)a.body();
 							JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-							apiRequest.setSolrId(responseBody.getString(BareMetalNode.VAR_solrId));
+							apiRequest.setSolrId(responseBody.getString(VirtualMachine.VAR_solrId));
 							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
-							LOG.debug(String.format("postBareMetalNode succeeded. "));
+							LOG.debug(String.format("postVirtualMachine succeeded. "));
 						}).onFailure(ex -> {
-							LOG.error(String.format("postBareMetalNode failed. "), ex);
+							LOG.error(String.format("postVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("postBareMetalNode failed. "), ex);
+					LOG.error(String.format("postVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -984,7 +1222,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("postBareMetalNode failed. ", ex2));
+					LOG.error(String.format("postVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -999,14 +1237,14 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("postBareMetalNode failed. "), ex);
+				LOG.error(String.format("postVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
 	@Override
-	public void postBareMetalNodeFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void postVirtualMachineFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
 			try {
@@ -1024,13 +1262,13 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
 					siteRequest.getRequestVars().put( "refresh", "false" );
 				}
-				postBareMetalNodeFuture(siteRequest, false).onSuccess(o -> {
+				postVirtualMachineFuture(siteRequest, false).onSuccess(o -> {
 					eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(JsonObject.mapFrom(o).encodePrettily()))));
 				}).onFailure(ex -> {
 					eventHandler.handle(Future.failedFuture(ex));
 				});
 			} catch(Throwable ex) {
-				LOG.error(String.format("postBareMetalNode failed. "), ex);
+				LOG.error(String.format("postVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		}).onFailure(ex -> {
@@ -1038,7 +1276,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("postBareMetalNode failed. ", ex2));
+					LOG.error(String.format("postVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -1053,26 +1291,26 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("postBareMetalNode failed. "), ex);
+				LOG.error(String.format("postVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<BareMetalNode> postBareMetalNodeFuture(SiteRequest siteRequest, Boolean nodeId) {
-		Promise<BareMetalNode> promise = Promise.promise();
+	public Future<VirtualMachine> postVirtualMachineFuture(SiteRequest siteRequest, Boolean vmResource) {
+		Promise<VirtualMachine> promise = Promise.promise();
 
 		try {
 			pgPool.withTransaction(sqlConnection -> {
-				Promise<BareMetalNode> promise1 = Promise.promise();
+				Promise<VirtualMachine> promise1 = Promise.promise();
 				siteRequest.setSqlConnection(sqlConnection);
-				varsBareMetalNode(siteRequest).onSuccess(a -> {
-					createBareMetalNode(siteRequest).onSuccess(bareMetalNode -> {
-						sqlPOSTBareMetalNode(bareMetalNode, nodeId).onSuccess(b -> {
-							persistBareMetalNode(bareMetalNode, false).onSuccess(c -> {
-								relateBareMetalNode(bareMetalNode).onSuccess(d -> {
-									indexBareMetalNode(bareMetalNode).onSuccess(o2 -> {
-										promise1.complete(bareMetalNode);
+				varsVirtualMachine(siteRequest).onSuccess(a -> {
+					createVirtualMachine(siteRequest).onSuccess(virtualMachine -> {
+						sqlPOSTVirtualMachine(virtualMachine, vmResource).onSuccess(b -> {
+							persistVirtualMachine(virtualMachine, false).onSuccess(c -> {
+								relateVirtualMachine(virtualMachine).onSuccess(d -> {
+									indexVirtualMachine(virtualMachine).onSuccess(o2 -> {
+										promise1.complete(virtualMachine);
 									}).onFailure(ex -> {
 										promise1.fail(ex);
 									});
@@ -1097,50 +1335,50 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			}).onFailure(ex -> {
 				siteRequest.setSqlConnection(null);
 				promise.fail(ex);
-			}).compose(bareMetalNode -> {
-				Promise<BareMetalNode> promise2 = Promise.promise();
-				refreshBareMetalNode(bareMetalNode).onSuccess(a -> {
+			}).compose(virtualMachine -> {
+				Promise<VirtualMachine> promise2 = Promise.promise();
+				refreshVirtualMachine(virtualMachine).onSuccess(a -> {
 					try {
 						ApiRequest apiRequest = siteRequest.getApiRequest_();
 						if(apiRequest != null) {
 							apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-							bareMetalNode.apiRequestBareMetalNode();
-							eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+							virtualMachine.apiRequestVirtualMachine();
+							eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 						}
-						promise2.complete(bareMetalNode);
+						promise2.complete(virtualMachine);
 					} catch(Exception ex) {
-						LOG.error(String.format("postBareMetalNodeFuture failed. "), ex);
+						LOG.error(String.format("postVirtualMachineFuture failed. "), ex);
 						promise2.fail(ex);
 					}
 				}).onFailure(ex -> {
 					promise2.fail(ex);
 				});
 				return promise2.future();
-			}).onSuccess(bareMetalNode -> {
+			}).onSuccess(virtualMachine -> {
 				try {
 					ApiRequest apiRequest = siteRequest.getApiRequest_();
 					if(apiRequest != null) {
 						apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-						bareMetalNode.apiRequestBareMetalNode();
-						eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+						virtualMachine.apiRequestVirtualMachine();
+						eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 					}
-					promise.complete(bareMetalNode);
+					promise.complete(virtualMachine);
 				} catch(Exception ex) {
-					LOG.error(String.format("postBareMetalNodeFuture failed. "), ex);
+					LOG.error(String.format("postVirtualMachineFuture failed. "), ex);
 					promise.fail(ex);
 				}
 			}).onFailure(ex -> {
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("postBareMetalNodeFuture failed. "), ex);
+			LOG.error(String.format("postVirtualMachineFuture failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<BareMetalNode> sqlPOSTBareMetalNode(BareMetalNode o, Boolean inheritPrimaryKey) {
-		Promise<BareMetalNode> promise = Promise.promise();
+	public Future<VirtualMachine> sqlPOSTVirtualMachine(VirtualMachine o, Boolean inheritPrimaryKey) {
+		Promise<VirtualMachine> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
 			ApiRequest apiRequest = siteRequest.getApiRequest_();
@@ -1148,11 +1386,11 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			List<String> classes = Optional.ofNullable(apiRequest).map(r -> r.getClasses()).orElse(new ArrayList<>());
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Integer num = 1;
-			StringBuilder bSql = new StringBuilder("UPDATE BareMetalNode SET ");
+			StringBuilder bSql = new StringBuilder("UPDATE VirtualMachine SET ");
 			List<Object> bParams = new ArrayList<Object>();
 			Long pk = o.getPk();
 			JsonObject jsonObject = siteRequest.getJsonObject();
-			BareMetalNode o2 = new BareMetalNode();
+			VirtualMachine o2 = new VirtualMachine();
 			o2.setSiteRequest_(siteRequest);
 			List<Future> futures1 = new ArrayList<>();
 			List<Future> futures2 = new ArrayList<>();
@@ -1178,167 +1416,252 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				Set<String> entityVars = jsonObject.fieldNames();
 				for(String entityVar : entityVars) {
 					switch(entityVar) {
-					case BareMetalNode.VAR_leaseInfo:
-						o2.setLeaseInfo(jsonObject.getJsonArray(entityVar));
+					case VirtualMachine.VAR_hubId:
+						o2.setHubId(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_leaseInfo + "=$" + num);
+						bSql.append(VirtualMachine.VAR_hubId + "=$" + num);
 						num++;
-						bParams.add(o2.sqlLeaseInfo());
+						bParams.add(o2.sqlHubId());
 						break;
-					case BareMetalNode.VAR_networkInfo:
-						o2.setNetworkInfo(jsonObject.getJsonArray(entityVar));
+					case VirtualMachine.VAR_hubResource:
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Hub.varIndexedHub(Hub.VAR_hubResource), Hub.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Hub");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, solrId2, val).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
+					case VirtualMachine.VAR_clusterName:
+						o2.setClusterName(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_networkInfo + "=$" + num);
+						bSql.append(VirtualMachine.VAR_clusterName + "=$" + num);
 						num++;
-						bParams.add(o2.sqlNetworkInfo());
+						bParams.add(o2.sqlClusterName());
 						break;
-					case BareMetalNode.VAR_created:
+					case VirtualMachine.VAR_created:
 						o2.setCreated(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_created + "=$" + num);
+						bSql.append(VirtualMachine.VAR_created + "=$" + num);
 						num++;
 						bParams.add(o2.sqlCreated());
 						break;
-					case BareMetalNode.VAR_nodeId:
-						o2.setNodeId(jsonObject.getString(entityVar));
+					case VirtualMachine.VAR_clusterResource:
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Cluster.varIndexedCluster(Cluster.VAR_clusterResource), Cluster.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Cluster");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, solrId2, val).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
+					case VirtualMachine.VAR_vmProject:
+						o2.setVmProject(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_nodeId + "=$" + num);
+						bSql.append(VirtualMachine.VAR_vmProject + "=$" + num);
 						num++;
-						bParams.add(o2.sqlNodeId());
+						bParams.add(o2.sqlVmProject());
 						break;
-					case BareMetalNode.VAR_nodeIsMaintenance:
-						o2.setNodeIsMaintenance(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(BareMetalNode.VAR_nodeIsMaintenance + "=$" + num);
-						num++;
-						bParams.add(o2.sqlNodeIsMaintenance());
-						break;
-					case BareMetalNode.VAR_archived:
+					case VirtualMachine.VAR_archived:
 						o2.setArchived(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_archived + "=$" + num);
+						bSql.append(VirtualMachine.VAR_archived + "=$" + num);
 						num++;
 						bParams.add(o2.sqlArchived());
 						break;
-					case BareMetalNode.VAR_nodeLinks:
-						o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
+					case VirtualMachine.VAR_vmName:
+						o2.setVmName(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_nodeLinks + "=$" + num);
+						bSql.append(VirtualMachine.VAR_vmName + "=$" + num);
 						num++;
-						bParams.add(o2.sqlNodeLinks());
+						bParams.add(o2.sqlVmName());
 						break;
-					case BareMetalNode.VAR_nodeName:
-						o2.setNodeName(jsonObject.getString(entityVar));
+					case VirtualMachine.VAR_os:
+						o2.setOs(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_nodeName + "=$" + num);
+						bSql.append(VirtualMachine.VAR_os + "=$" + num);
 						num++;
-						bParams.add(o2.sqlNodeName());
+						bParams.add(o2.sqlOs());
 						break;
-					case BareMetalNode.VAR_nodePowerState:
-						o2.setNodePowerState(jsonObject.getString(entityVar));
+					case VirtualMachine.VAR_vmResource:
+						o2.setVmResource(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_nodePowerState + "=$" + num);
+						bSql.append(VirtualMachine.VAR_vmResource + "=$" + num);
 						num++;
-						bParams.add(o2.sqlNodePowerState());
+						bParams.add(o2.sqlVmResource());
 						break;
-					case BareMetalNode.VAR_nodeProvisionState:
-						o2.setNodeProvisionState(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(BareMetalNode.VAR_nodeProvisionState + "=$" + num);
-						num++;
-						bParams.add(o2.sqlNodeProvisionState());
-						break;
-					case BareMetalNode.VAR_sessionId:
+					case VirtualMachine.VAR_sessionId:
 						o2.setSessionId(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_sessionId + "=$" + num);
+						bSql.append(VirtualMachine.VAR_sessionId + "=$" + num);
 						num++;
 						bParams.add(o2.sqlSessionId());
 						break;
-					case BareMetalNode.VAR_nodeResourceClass:
-						o2.setNodeResourceClass(jsonObject.getString(entityVar));
+					case VirtualMachine.VAR_description:
+						o2.setDescription(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
+						bSql.append(VirtualMachine.VAR_description + "=$" + num);
 						num++;
-						bParams.add(o2.sqlNodeResourceClass());
+						bParams.add(o2.sqlDescription());
 						break;
-					case BareMetalNode.VAR_userKey:
+					case VirtualMachine.VAR_userKey:
 						o2.setUserKey(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_userKey + "=$" + num);
+						bSql.append(VirtualMachine.VAR_userKey + "=$" + num);
 						num++;
 						bParams.add(o2.sqlUserKey());
 						break;
-					case BareMetalNode.VAR_objectTitle:
+					case VirtualMachine.VAR_objectTitle:
 						o2.setObjectTitle(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_objectTitle + "=$" + num);
+						bSql.append(VirtualMachine.VAR_objectTitle + "=$" + num);
 						num++;
 						bParams.add(o2.sqlObjectTitle());
 						break;
-					case BareMetalNode.VAR_displayPage:
+					case VirtualMachine.VAR_location:
+						o2.setLocation(jsonObject.getJsonObject(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_location + "=$" + num);
+						num++;
+						bParams.add(o2.sqlLocation());
+						break;
+					case VirtualMachine.VAR_displayPage:
 						o2.setDisplayPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_displayPage + "=$" + num);
+						bSql.append(VirtualMachine.VAR_displayPage + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDisplayPage());
 						break;
-					case BareMetalNode.VAR_editPage:
+					case VirtualMachine.VAR_gpuDevicesTotal:
+						o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_gpuDevicesTotal + "=$" + num);
+						num++;
+						bParams.add(o2.sqlGpuDevicesTotal());
+						break;
+					case VirtualMachine.VAR_editPage:
 						o2.setEditPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_editPage + "=$" + num);
+						bSql.append(VirtualMachine.VAR_editPage + "=$" + num);
 						num++;
 						bParams.add(o2.sqlEditPage());
 						break;
-					case BareMetalNode.VAR_userPage:
+					case VirtualMachine.VAR_id:
+						o2.setId(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_id + "=$" + num);
+						num++;
+						bParams.add(o2.sqlId());
+						break;
+					case VirtualMachine.VAR_userPage:
 						o2.setUserPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_userPage + "=$" + num);
+						bSql.append(VirtualMachine.VAR_userPage + "=$" + num);
 						num++;
 						bParams.add(o2.sqlUserPage());
 						break;
-					case BareMetalNode.VAR_download:
+					case VirtualMachine.VAR_download:
 						o2.setDownload(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(BareMetalNode.VAR_download + "=$" + num);
+						bSql.append(VirtualMachine.VAR_download + "=$" + num);
 						num++;
 						bParams.add(o2.sqlDownload());
+						break;
+					case VirtualMachine.VAR_ngsildTenant:
+						o2.setNgsildTenant(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_ngsildTenant + "=$" + num);
+						num++;
+						bParams.add(o2.sqlNgsildTenant());
+						break;
+					case VirtualMachine.VAR_ngsildPath:
+						o2.setNgsildPath(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_ngsildPath + "=$" + num);
+						num++;
+						bParams.add(o2.sqlNgsildPath());
+						break;
+					case VirtualMachine.VAR_ngsildContext:
+						o2.setNgsildContext(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_ngsildContext + "=$" + num);
+						num++;
+						bParams.add(o2.sqlNgsildContext());
+						break;
+					case VirtualMachine.VAR_ngsildData:
+						o2.setNgsildData(jsonObject.getJsonObject(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(VirtualMachine.VAR_ngsildData + "=$" + num);
+						num++;
+						bParams.add(o2.sqlNgsildData());
 						break;
 					}
 				}
@@ -1353,8 +1676,8 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							).onSuccess(b -> {
 						a.handle(Future.succeededFuture());
 					}).onFailure(ex -> {
-						RuntimeException ex2 = new RuntimeException("value BareMetalNode failed", ex);
-						LOG.error(String.format("relateBareMetalNode failed. "), ex2);
+						RuntimeException ex2 = new RuntimeException("value VirtualMachine failed", ex);
+						LOG.error(String.format("relateVirtualMachine failed. "), ex2);
 						a.handle(Future.failedFuture(ex2));
 					});
 				}));
@@ -1363,28 +1686,28 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				CompositeFuture.all(futures2).onSuccess(b -> {
 					promise.complete(o2);
 				}).onFailure(ex -> {
-					LOG.error(String.format("sqlPOSTBareMetalNode failed. "), ex);
+					LOG.error(String.format("sqlPOSTVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				});
 			}).onFailure(ex -> {
-				LOG.error(String.format("sqlPOSTBareMetalNode failed. "), ex);
+				LOG.error(String.format("sqlPOSTVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("sqlPOSTBareMetalNode failed. "), ex);
+			LOG.error(String.format("sqlPOSTVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<ServiceResponse> response200POSTBareMetalNode(BareMetalNode o) {
+	public Future<ServiceResponse> response200POSTVirtualMachine(VirtualMachine o) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
 			JsonObject json = JsonObject.mapFrom(o);
 			if(json == null) {
-				String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-				String m = String.format("%s %s not found", "bare metal node", nodeId);
+				String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+				String m = String.format("%s %s not found", "virtual machine", vmResource);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -1392,7 +1715,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("response200POSTBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200POSTVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
@@ -1401,25 +1724,25 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 	// DELETE //
 
 	@Override
-	public void deleteBareMetalNode(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-		LOG.debug(String.format("deleteBareMetalNode started. "));
+	public void deleteVirtualMachine(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+		LOG.debug(String.format("deleteVirtualMachine started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "DELETE"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -1433,6 +1756,39 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("DELETE") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(DELETE)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(DELETE)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
 						String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
 						eventHandler.handle(Future.succeededFuture(
@@ -1448,42 +1804,42 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+						searchVirtualMachineList(siteRequest, false, true, true).onSuccess(listVirtualMachine -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
-								apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-								apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+								apiRequest.setRows(listVirtualMachine.getRequest().getRows());
+								apiRequest.setNumFound(listVirtualMachine.getResponse().getResponse().getNumFound());
 								apiRequest.setNumPATCH(0L);
 								apiRequest.initDeepApiRequest(siteRequest);
 								siteRequest.setApiRequest_(apiRequest);
 								if(apiRequest.getNumFound() == 1L)
-									apiRequest.setOriginal(listBareMetalNode.first());
-								apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-								eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+									apiRequest.setOriginal(listVirtualMachine.first());
+								apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getSolrId()).orElse(null));
+								eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 
-								listDELETEBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-									response200DELETEBareMetalNode(siteRequest).onSuccess(response -> {
-										LOG.debug(String.format("deleteBareMetalNode succeeded. "));
+								listDELETEVirtualMachine(apiRequest, listVirtualMachine).onSuccess(e -> {
+									response200DELETEVirtualMachine(siteRequest).onSuccess(response -> {
+										LOG.debug(String.format("deleteVirtualMachine succeeded. "));
 										eventHandler.handle(Future.succeededFuture(response));
 									}).onFailure(ex -> {
-										LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+										LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 										error(siteRequest, eventHandler, ex);
 									});
 								}).onFailure(ex -> {
-									LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+									LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 									error(siteRequest, eventHandler, ex);
 								});
 							} catch(Exception ex) {
-								LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+								LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							}
 						}).onFailure(ex -> {
-							LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+							LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+					LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -1492,7 +1848,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("deleteBareMetalNode failed. ", ex2));
+					LOG.error(String.format("deleteVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -1507,58 +1863,58 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+				LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<Void> listDELETEBareMetalNode(ApiRequest apiRequest, SearchList<BareMetalNode> listBareMetalNode) {
+	public Future<Void> listDELETEVirtualMachine(ApiRequest apiRequest, SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<Void> promise = Promise.promise();
 		List<Future> futures = new ArrayList<>();
-		SiteRequest siteRequest = listBareMetalNode.getSiteRequest_(SiteRequest.class);
-		listBareMetalNode.getList().forEach(o -> {
+		SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+		listVirtualMachine.getList().forEach(o -> {
 			SiteRequest siteRequest2 = generateSiteRequest(siteRequest.getUser(), siteRequest.getUserPrincipal(), siteRequest.getServiceRequest(), siteRequest.getJsonObject(), SiteRequest.class);
 			siteRequest2.setScopes(siteRequest.getScopes());
 			o.setSiteRequest_(siteRequest2);
 			siteRequest2.setApiRequest_(siteRequest.getApiRequest_());
 			JsonObject jsonObject = JsonObject.mapFrom(o);
-			BareMetalNode o2 = jsonObject.mapTo(BareMetalNode.class);
+			VirtualMachine o2 = jsonObject.mapTo(VirtualMachine.class);
 			o2.setSiteRequest_(siteRequest2);
 			futures.add(Future.future(promise1 -> {
-				deleteBareMetalNodeFuture(o).onSuccess(a -> {
+				deleteVirtualMachineFuture(o).onSuccess(a -> {
 					promise1.complete();
 				}).onFailure(ex -> {
-					LOG.error(String.format("listDELETEBareMetalNode failed. "), ex);
+					LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
 					promise1.fail(ex);
 				});
 			}));
 		});
 		CompositeFuture.all(futures).onSuccess( a -> {
-			listBareMetalNode.next().onSuccess(next -> {
+			listVirtualMachine.next().onSuccess(next -> {
 				if(next) {
-					listDELETEBareMetalNode(apiRequest, listBareMetalNode).onSuccess(b -> {
+					listDELETEVirtualMachine(apiRequest, listVirtualMachine).onSuccess(b -> {
 						promise.complete();
 					}).onFailure(ex -> {
-						LOG.error(String.format("listDELETEBareMetalNode failed. "), ex);
+						LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
 						promise.fail(ex);
 					});
 				} else {
 					promise.complete();
 				}
 			}).onFailure(ex -> {
-				LOG.error(String.format("listDELETEBareMetalNode failed. "), ex);
+				LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		}).onFailure(ex -> {
-			LOG.error(String.format("listDELETEBareMetalNode failed. "), ex);
+			LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		});
 		return promise.future();
 	}
 
 	@Override
-	public void deleteBareMetalNodeFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void deleteVirtualMachineFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
 			try {
@@ -1569,10 +1925,10 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						siteRequest.addScopes(scope);
 					});
 				});
-				searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+				searchVirtualMachineList(siteRequest, false, true, true).onSuccess(listVirtualMachine -> {
 					try {
-						BareMetalNode o = listBareMetalNode.first();
-						if(o != null && listBareMetalNode.getResponse().getResponse().getNumFound() == 1) {
+						VirtualMachine o = listVirtualMachine.first();
+						if(o != null && listVirtualMachine.getResponse().getResponse().getNumFound() == 1) {
 							ApiRequest apiRequest = new ApiRequest();
 							apiRequest.setRows(1L);
 							apiRequest.setNumFound(1L);
@@ -1584,9 +1940,9 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							}
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getNodeId().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-							deleteBareMetalNodeFuture(o).onSuccess(o2 -> {
+							apiRequest.setId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getVmResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							deleteVirtualMachineFuture(o).onSuccess(o2 -> {
 								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
 							}).onFailure(ex -> {
 								eventHandler.handle(Future.failedFuture(ex));
@@ -1595,42 +1951,42 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
 						}
 					} catch(Exception ex) {
-						LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+						LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 						error(siteRequest, eventHandler, ex);
 					}
 				}).onFailure(ex -> {
-					LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+					LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 					error(siteRequest, eventHandler, ex);
 				});
 			} catch(Exception ex) {
-				LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+				LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		}).onFailure(ex -> {
-			LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+			LOG.error(String.format("deleteVirtualMachine failed. "), ex);
 			error(null, eventHandler, ex);
 		});
 	}
 
-	public Future<BareMetalNode> deleteBareMetalNodeFuture(BareMetalNode o) {
+	public Future<VirtualMachine> deleteVirtualMachineFuture(VirtualMachine o) {
 		SiteRequest siteRequest = o.getSiteRequest_();
-		Promise<BareMetalNode> promise = Promise.promise();
+		Promise<VirtualMachine> promise = Promise.promise();
 
 		try {
 			ApiRequest apiRequest = siteRequest.getApiRequest_();
-			Promise<BareMetalNode> promise1 = Promise.promise();
+			Promise<VirtualMachine> promise1 = Promise.promise();
 			pgPool.withTransaction(sqlConnection -> {
 				siteRequest.setSqlConnection(sqlConnection);
-				varsBareMetalNode(siteRequest).onSuccess(a -> {
-					sqlDELETEBareMetalNode(o).onSuccess(bareMetalNode -> {
-						relateBareMetalNode(o).onSuccess(d -> {
-							unindexBareMetalNode(o).onSuccess(o2 -> {
+				varsVirtualMachine(siteRequest).onSuccess(a -> {
+					sqlDELETEVirtualMachine(o).onSuccess(virtualMachine -> {
+						relateVirtualMachine(o).onSuccess(d -> {
+							unindexVirtualMachine(o).onSuccess(o2 -> {
 								if(apiRequest != null) {
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-										o2.apiRequestBareMetalNode();
+										o2.apiRequestVirtualMachine();
 										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-											eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+											eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
 								promise1.complete();
@@ -1652,27 +2008,27 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			}).onFailure(ex -> {
 				siteRequest.setSqlConnection(null);
 				promise.fail(ex);
-			}).compose(bareMetalNode -> {
-				Promise<BareMetalNode> promise2 = Promise.promise();
-				refreshBareMetalNode(o).onSuccess(a -> {
+			}).compose(virtualMachine -> {
+				Promise<VirtualMachine> promise2 = Promise.promise();
+				refreshVirtualMachine(o).onSuccess(a -> {
 					promise2.complete(o);
 				}).onFailure(ex -> {
 					promise2.fail(ex);
 				});
 				return promise2.future();
-			}).onSuccess(bareMetalNode -> {
-				promise.complete(bareMetalNode);
+			}).onSuccess(virtualMachine -> {
+				promise.complete(virtualMachine);
 			}).onFailure(ex -> {
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("deleteBareMetalNodeFuture failed. "), ex);
+			LOG.error(String.format("deleteVirtualMachineFuture failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<Void> sqlDELETEBareMetalNode(BareMetalNode o) {
+	public Future<Void> sqlDELETEVirtualMachine(VirtualMachine o) {
 		Promise<Void> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
@@ -1681,11 +2037,11 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			List<String> classes = Optional.ofNullable(apiRequest).map(r -> r.getClasses()).orElse(new ArrayList<>());
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Integer num = 1;
-			StringBuilder bSql = new StringBuilder("DELETE FROM BareMetalNode ");
+			StringBuilder bSql = new StringBuilder("DELETE FROM VirtualMachine ");
 			List<Object> bParams = new ArrayList<Object>();
 			Long pk = o.getPk();
 			JsonObject jsonObject = siteRequest.getJsonObject();
-			BareMetalNode o2 = new BareMetalNode();
+			VirtualMachine o2 = new VirtualMachine();
 			o2.setSiteRequest_(siteRequest);
 			List<Future> futures1 = new ArrayList<>();
 			List<Future> futures2 = new ArrayList<>();
@@ -1694,6 +2050,46 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				Set<String> entityVars = jsonObject.fieldNames();
 				for(String entityVar : entityVars) {
 					switch(entityVar) {
+					case VirtualMachine.VAR_hubResource:
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Hub.varIndexedHub(Hub.VAR_hubResource), Hub.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Hub");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, null, null).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
+					case VirtualMachine.VAR_clusterResource:
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Cluster.varIndexedCluster(Cluster.VAR_clusterResource), Cluster.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Cluster");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, null, null).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
 					}
 				}
 			}
@@ -1706,8 +2102,8 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						).onSuccess(b -> {
 					a.handle(Future.succeededFuture());
 				}).onFailure(ex -> {
-					RuntimeException ex2 = new RuntimeException("value BareMetalNode failed", ex);
-					LOG.error(String.format("unrelateBareMetalNode failed. "), ex2);
+					RuntimeException ex2 = new RuntimeException("value VirtualMachine failed", ex);
+					LOG.error(String.format("unrelateVirtualMachine failed. "), ex2);
 					a.handle(Future.failedFuture(ex2));
 				});
 			}));
@@ -1715,27 +2111,27 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				CompositeFuture.all(futures2).onSuccess(b -> {
 					promise.complete();
 				}).onFailure(ex -> {
-					LOG.error(String.format("sqlDELETEBareMetalNode failed. "), ex);
+					LOG.error(String.format("sqlDELETEVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				});
 			}).onFailure(ex -> {
-				LOG.error(String.format("sqlDELETEBareMetalNode failed. "), ex);
+				LOG.error(String.format("sqlDELETEVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("sqlDELETEBareMetalNode failed. "), ex);
+			LOG.error(String.format("sqlDELETEVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<ServiceResponse> response200DELETEBareMetalNode(SiteRequest siteRequest) {
+	public Future<ServiceResponse> response200DELETEVirtualMachine(SiteRequest siteRequest) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-				String m = String.format("%s %s not found", "bare metal node", nodeId);
+				String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+				String m = String.format("%s %s not found", "virtual machine", vmResource);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -1743,7 +2139,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("response200DELETEBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200DELETEVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
@@ -1752,25 +2148,25 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 	// PUTImport //
 
 	@Override
-	public void putimportBareMetalNode(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-		LOG.debug(String.format("putimportBareMetalNode started. "));
+	public void putimportVirtualMachine(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+		LOG.debug(String.format("putimportVirtualMachine started. "));
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "PUT"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "PUT"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -1784,6 +2180,39 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("PUT") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(PUT)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(PUT)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("PUT");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
 						String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
 						eventHandler.handle(Future.succeededFuture(
@@ -1806,27 +2235,27 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						apiRequest.setNumPATCH(0L);
 						apiRequest.initDeepApiRequest(siteRequest);
 						siteRequest.setApiRequest_(apiRequest);
-						eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
-						varsBareMetalNode(siteRequest).onSuccess(d -> {
-							listPUTImportBareMetalNode(apiRequest, siteRequest).onSuccess(e -> {
-								response200PUTImportBareMetalNode(siteRequest).onSuccess(response -> {
-									LOG.debug(String.format("putimportBareMetalNode succeeded. "));
+						eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
+						varsVirtualMachine(siteRequest).onSuccess(d -> {
+							listPUTImportVirtualMachine(apiRequest, siteRequest).onSuccess(e -> {
+								response200PUTImportVirtualMachine(siteRequest).onSuccess(response -> {
+									LOG.debug(String.format("putimportVirtualMachine succeeded. "));
 									eventHandler.handle(Future.succeededFuture(response));
 								}).onFailure(ex -> {
-									LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+									LOG.error(String.format("putimportVirtualMachine failed. "), ex);
 									error(siteRequest, eventHandler, ex);
 								});
 							}).onFailure(ex -> {
-								LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+								LOG.error(String.format("putimportVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							});
 						}).onFailure(ex -> {
-							LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+							LOG.error(String.format("putimportVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+					LOG.error(String.format("putimportVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -1835,7 +2264,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("putimportBareMetalNode failed. ", ex2));
+					LOG.error(String.format("putimportVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -1850,13 +2279,13 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+				LOG.error(String.format("putimportVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<Void> listPUTImportBareMetalNode(ApiRequest apiRequest, SiteRequest siteRequest) {
+	public Future<Void> listPUTImportVirtualMachine(ApiRequest apiRequest, SiteRequest siteRequest) {
 		Promise<Void> promise = Promise.promise();
 		List<Future> futures = new ArrayList<>();
 		JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
@@ -1881,10 +2310,10 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					params.put("query", query);
 					JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
 					JsonObject json = new JsonObject().put("context", context);
-					eventBus.request(BareMetalNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "putimportBareMetalNodeFuture")).onSuccess(a -> {
+					eventBus.request(VirtualMachine.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "putimportVirtualMachineFuture")).onSuccess(a -> {
 						promise1.complete();
 					}).onFailure(ex -> {
-						LOG.error(String.format("listPUTImportBareMetalNode failed. "), ex);
+						LOG.error(String.format("listPUTImportVirtualMachine failed. "), ex);
 						promise1.fail(ex);
 					});
 				}));
@@ -1893,18 +2322,18 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 				promise.complete();
 			}).onFailure(ex -> {
-				LOG.error(String.format("listPUTImportBareMetalNode failed. "), ex);
+				LOG.error(String.format("listPUTImportVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("listPUTImportBareMetalNode failed. "), ex);
+			LOG.error(String.format("listPUTImportVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
 	@Override
-	public void putimportBareMetalNodeFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void putimportVirtualMachineFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
 			try {
@@ -1919,19 +2348,19 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				apiRequest.setNumPATCH(0L);
 				apiRequest.initDeepApiRequest(siteRequest);
 				siteRequest.setApiRequest_(apiRequest);
-				String nodeId = Optional.ofNullable(body.getString(BareMetalNode.VAR_nodeId)).orElse(body.getString(BareMetalNode.VAR_solrId));
+				String vmResource = Optional.ofNullable(body.getString(VirtualMachine.VAR_vmResource)).orElse(body.getString(VirtualMachine.VAR_solrId));
 				if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
 					siteRequest.getRequestVars().put( "refresh", "false" );
 				}
 				pgPool.getConnection().onSuccess(sqlConnection -> {
-					String sqlQuery = String.format("select * from %s WHERE nodeId=$1", BareMetalNode.CLASS_SIMPLE_NAME);
+					String sqlQuery = String.format("select * from %s WHERE vmResource=$1", VirtualMachine.CLASS_SIMPLE_NAME);
 					sqlConnection.preparedQuery(sqlQuery)
-							.execute(Tuple.tuple(Arrays.asList(nodeId))
+							.execute(Tuple.tuple(Arrays.asList(vmResource))
 							).onSuccess(result -> {
 						sqlConnection.close().onSuccess(a -> {
 							try {
 								if(result.size() >= 1) {
-									BareMetalNode o = new BareMetalNode();
+									VirtualMachine o = new VirtualMachine();
 									o.setSiteRequest_(siteRequest);
 									for(Row definition : result.value()) {
 										for(Integer i = 0; i < definition.size(); i++) {
@@ -1940,11 +2369,11 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 												Object columnValue = definition.getValue(i);
 												o.persistForClass(columnName, columnValue);
 											} catch(Exception e) {
-												LOG.error(String.format("persistBareMetalNode failed. "), e);
+												LOG.error(String.format("persistVirtualMachine failed. "), e);
 											}
 										}
 									}
-									BareMetalNode o2 = new BareMetalNode();
+									VirtualMachine o2 = new VirtualMachine();
 									o2.setSiteRequest_(siteRequest);
 									JsonObject body2 = new JsonObject();
 									for(String f : body.fieldNames()) {
@@ -1976,56 +2405,56 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 										} else {
 											o2.persistForClass(f, bodyVal);
 											o2.relateForClass(f, bodyVal);
-											if(!StringUtils.containsAny(f, "nodeId", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
+											if(!StringUtils.containsAny(f, "vmResource", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
 												body2.put("set" + StringUtils.capitalize(f), bodyVal);
 										}
 									}
 									for(String f : Optional.ofNullable(o.getSaves()).orElse(new ArrayList<>())) {
 										if(!body.fieldNames().contains(f)) {
-											if(!StringUtils.containsAny(f, "nodeId", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
+											if(!StringUtils.containsAny(f, "vmResource", "created", "setCreated") && !Objects.equals(o.obtainForClass(f), o2.obtainForClass(f)))
 												body2.putNull("set" + StringUtils.capitalize(f));
 										}
 									}
 									if(result.size() >= 1) {
 										apiRequest.setOriginal(o);
-										apiRequest.setId(Optional.ofNullable(o.getNodeId()).map(v -> v.toString()).orElse(null));
+										apiRequest.setId(Optional.ofNullable(o.getVmResource()).map(v -> v.toString()).orElse(null));
 										apiRequest.setSolrId(o.getSolrId());
 									}
 									siteRequest.setJsonObject(body2);
-									patchBareMetalNodeFuture(o, true).onSuccess(b -> {
-										LOG.debug("Import BareMetalNode {} succeeded, modified BareMetalNode. ", body.getValue(BareMetalNode.VAR_nodeId));
+									patchVirtualMachineFuture(o, true).onSuccess(b -> {
+										LOG.debug("Import VirtualMachine {} succeeded, modified VirtualMachine. ", body.getValue(VirtualMachine.VAR_vmResource));
 										eventHandler.handle(Future.succeededFuture());
 									}).onFailure(ex -> {
-										LOG.error(String.format("putimportBareMetalNodeFuture failed. "), ex);
+										LOG.error(String.format("putimportVirtualMachineFuture failed. "), ex);
 										eventHandler.handle(Future.failedFuture(ex));
 									});
 								} else {
-									postBareMetalNodeFuture(siteRequest, true).onSuccess(b -> {
-										LOG.debug("Import BareMetalNode {} succeeded, created new BareMetalNode. ", body.getValue(BareMetalNode.VAR_nodeId));
+									postVirtualMachineFuture(siteRequest, true).onSuccess(b -> {
+										LOG.debug("Import VirtualMachine {} succeeded, created new VirtualMachine. ", body.getValue(VirtualMachine.VAR_vmResource));
 										eventHandler.handle(Future.succeededFuture());
 									}).onFailure(ex -> {
-										LOG.error(String.format("putimportBareMetalNodeFuture failed. "), ex);
+										LOG.error(String.format("putimportVirtualMachineFuture failed. "), ex);
 										eventHandler.handle(Future.failedFuture(ex));
 									});
 								}
 							} catch(Exception ex) {
-								LOG.error(String.format("putimportBareMetalNodeFuture failed. "), ex);
+								LOG.error(String.format("putimportVirtualMachineFuture failed. "), ex);
 								eventHandler.handle(Future.failedFuture(ex));
 							}
 						}).onFailure(ex -> {
-							LOG.error(String.format("putimportBareMetalNodeFuture failed. "), ex);
+							LOG.error(String.format("putimportVirtualMachineFuture failed. "), ex);
 							eventHandler.handle(Future.failedFuture(ex));
 						});
 					}).onFailure(ex -> {
-						LOG.error(String.format("putimportBareMetalNodeFuture failed. "), ex);
+						LOG.error(String.format("putimportVirtualMachineFuture failed. "), ex);
 						eventHandler.handle(Future.failedFuture(ex));
 					});
 				}).onFailure(ex -> {
-					LOG.error(String.format("putimportBareMetalNodeFuture failed. "), ex);
+					LOG.error(String.format("putimportVirtualMachineFuture failed. "), ex);
 					eventHandler.handle(Future.failedFuture(ex));
 				});
 			} catch(Exception ex) {
-				LOG.error(String.format("putimportBareMetalNodeFuture failed. "), ex);
+				LOG.error(String.format("putimportVirtualMachineFuture failed. "), ex);
 				eventHandler.handle(Future.failedFuture(ex));
 			}
 		}).onFailure(ex -> {
@@ -2033,7 +2462,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("putimportBareMetalNode failed. ", ex2));
+					LOG.error(String.format("putimportVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -2048,19 +2477,19 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+				LOG.error(String.format("putimportVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<ServiceResponse> response200PUTImportBareMetalNode(SiteRequest siteRequest) {
+	public Future<ServiceResponse> response200PUTImportVirtualMachine(SiteRequest siteRequest) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-				String m = String.format("%s %s not found", "bare metal node", nodeId);
+				String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+				String m = String.format("%s %s not found", "virtual machine", vmResource);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -2068,7 +2497,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("response200PUTImportBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200PUTImportVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
@@ -2077,24 +2506,26 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 	// SearchPage //
 
 	@Override
-	public void searchpageBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void searchpageVirtualMachine(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+		oauth2AuthenticationProvider.refresh(User.create(serviceRequest.getUser())).onSuccess(user -> {
+			serviceRequest.setUser(user.principal());
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -2108,24 +2539,57 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("GET") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-							response200SearchPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
+						searchVirtualMachineList(siteRequest, false, true, false).onSuccess(listVirtualMachine -> {
+							response200SearchPageVirtualMachine(listVirtualMachine).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
-								LOG.debug(String.format("searchpageBareMetalNode succeeded. "));
+								LOG.debug(String.format("searchpageVirtualMachine succeeded. "));
 							}).onFailure(ex -> {
-								LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+								LOG.error(String.format("searchpageVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							});
 						}).onFailure(ex -> {
-							LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+							LOG.error(String.format("searchpageVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+					LOG.error(String.format("searchpageVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -2134,7 +2598,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("searchpageBareMetalNode failed. ", ex2));
+					LOG.error(String.format("searchpageVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -2149,44 +2613,68 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+				LOG.error(String.format("searchpageVirtualMachine failed. "), ex);
+				error(null, eventHandler, ex);
+			}
+		});
+		}).onFailure(ex -> {
+			if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
+				try {
+					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
+				} catch(Exception ex2) {
+					LOG.error(String.format("searchpageVirtualMachine failed. ", ex2));
+					error(null, eventHandler, ex2);
+				}
+			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
+				eventHandler.handle(Future.succeededFuture(
+					new ServiceResponse(401, "UNAUTHORIZED",
+						Buffer.buffer().appendString(
+							new JsonObject()
+								.put("errorCode", "401")
+								.put("errorMessage", "SSO Resource Permission check returned DENY")
+								.encodePrettily()
+							), MultiMap.caseInsensitiveMultiMap()
+							)
+					));
+			} else {
+				LOG.error(String.format("searchpageVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public void searchpageBareMetalNodePageInit(JsonObject ctx, BareMetalNodePage page, SearchList<BareMetalNode> listBareMetalNode, Promise<Void> promise) {
+	public void searchpageVirtualMachinePageInit(JsonObject ctx, VirtualMachinePage page, SearchList<VirtualMachine> listVirtualMachine, Promise<Void> promise) {
 		promise.complete();
 	}
 
-	public String templateSearchPageBareMetalNode(ServiceRequest serviceRequest) {
-		return "en-us/search/bare-metal-node/BareMetalNodeSearchPage.htm";
+	public String templateSearchPageVirtualMachine(ServiceRequest serviceRequest) {
+		return "en-us/search/vm/VirtualMachineSearchPage.htm";
 	}
-	public Future<ServiceResponse> response200SearchPageBareMetalNode(SearchList<BareMetalNode> listBareMetalNode) {
+	public Future<ServiceResponse> response200SearchPageVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
-			SiteRequest siteRequest = listBareMetalNode.getSiteRequest_(SiteRequest.class);
-			String pageTemplateUri = templateSearchPageBareMetalNode(siteRequest.getServiceRequest());
+			SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+			String pageTemplateUri = templateSearchPageVirtualMachine(siteRequest.getServiceRequest());
 			String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
 			Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
 			String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-			BareMetalNodePage page = new BareMetalNodePage();
+			VirtualMachinePage page = new VirtualMachinePage();
 			MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
 			siteRequest.setRequestHeaders(requestHeaders);
 
-			if(listBareMetalNode.size() >= 1)
-				siteRequest.setRequestPk(listBareMetalNode.get(0).getPk());
-			page.setSearchListBareMetalNode_(listBareMetalNode);
+			if(listVirtualMachine.size() >= 1)
+				siteRequest.setRequestPk(listVirtualMachine.get(0).getPk());
+			page.setSearchListVirtualMachine_(listVirtualMachine);
 			page.setSiteRequest_(siteRequest);
 			page.setServiceRequest(siteRequest.getServiceRequest());
 			page.setWebClient(webClient);
 			page.setVertx(vertx);
-			page.promiseDeepBareMetalNodePage(siteRequest).onSuccess(a -> {
+			page.promiseDeepVirtualMachinePage(siteRequest).onSuccess(a -> {
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
 					Promise<Void> promise1 = Promise.promise();
-					searchpageBareMetalNodePageInit(ctx, page, listBareMetalNode, promise1);
+					searchpageVirtualMachinePageInit(ctx, page, listVirtualMachine, promise1);
 					promise1.future().onSuccess(b -> {
 						String renderedTemplate = jinjava.render(template, ctx.getMap());
 						Buffer buffer = Buffer.buffer(renderedTemplate);
@@ -2195,19 +2683,19 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						promise.fail(ex);
 					});
 				} catch(Exception ex) {
-					LOG.error(String.format("response200SearchPageBareMetalNode failed. "), ex);
+					LOG.error(String.format("response200SearchPageVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				}
 			}).onFailure(ex -> {
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("response200SearchPageBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200SearchPageVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
-	public void responsePivotSearchPageBareMetalNode(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
+	public void responsePivotSearchPageVirtualMachine(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
 		if(pivots != null) {
 			for(SolrResponse.Pivot pivotField : pivots) {
 				String entityIndexed = pivotField.getField();
@@ -2236,7 +2724,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				if(pivotFields2 != null) {
 					JsonArray pivotArray2 = new JsonArray();
 					pivotJson.put("pivot", pivotArray2);
-					responsePivotSearchPageBareMetalNode(pivotFields2, pivotArray2);
+					responsePivotSearchPageVirtualMachine(pivotFields2, pivotArray2);
 				}
 			}
 		}
@@ -2245,25 +2733,25 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 	// EditPage //
 
 	@Override
-	public void editpageBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void editpageVirtualMachine(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "GET"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, vmResource, "GET"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -2277,24 +2765,57 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("GET") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					{
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-							response200EditPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
+						searchVirtualMachineList(siteRequest, false, true, false).onSuccess(listVirtualMachine -> {
+							response200EditPageVirtualMachine(listVirtualMachine).onSuccess(response -> {
 								eventHandler.handle(Future.succeededFuture(response));
-								LOG.debug(String.format("editpageBareMetalNode succeeded. "));
+								LOG.debug(String.format("editpageVirtualMachine succeeded. "));
 							}).onFailure(ex -> {
-								LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+								LOG.error(String.format("editpageVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							});
 						}).onFailure(ex -> {
-							LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+							LOG.error(String.format("editpageVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+					LOG.error(String.format("editpageVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -2303,7 +2824,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("editpageBareMetalNode failed. ", ex2));
+					LOG.error(String.format("editpageVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -2318,44 +2839,44 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+				LOG.error(String.format("editpageVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public void editpageBareMetalNodePageInit(JsonObject ctx, BareMetalNodePage page, SearchList<BareMetalNode> listBareMetalNode, Promise<Void> promise) {
+	public void editpageVirtualMachinePageInit(JsonObject ctx, VirtualMachinePage page, SearchList<VirtualMachine> listVirtualMachine, Promise<Void> promise) {
 		promise.complete();
 	}
 
-	public String templateEditPageBareMetalNode(ServiceRequest serviceRequest) {
-		return "en-us/edit/bare-metal-node/BareMetalNodeEditPage.htm";
+	public String templateEditPageVirtualMachine(ServiceRequest serviceRequest) {
+		return "en-us/edit/vm/VirtualMachineEditPage.htm";
 	}
-	public Future<ServiceResponse> response200EditPageBareMetalNode(SearchList<BareMetalNode> listBareMetalNode) {
+	public Future<ServiceResponse> response200EditPageVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
-			SiteRequest siteRequest = listBareMetalNode.getSiteRequest_(SiteRequest.class);
-			String pageTemplateUri = templateEditPageBareMetalNode(siteRequest.getServiceRequest());
+			SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+			String pageTemplateUri = templateEditPageVirtualMachine(siteRequest.getServiceRequest());
 			String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
 			Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
 			String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-			BareMetalNodePage page = new BareMetalNodePage();
+			VirtualMachinePage page = new VirtualMachinePage();
 			MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
 			siteRequest.setRequestHeaders(requestHeaders);
 
-			if(listBareMetalNode.size() >= 1)
-				siteRequest.setRequestPk(listBareMetalNode.get(0).getPk());
-			page.setSearchListBareMetalNode_(listBareMetalNode);
+			if(listVirtualMachine.size() >= 1)
+				siteRequest.setRequestPk(listVirtualMachine.get(0).getPk());
+			page.setSearchListVirtualMachine_(listVirtualMachine);
 			page.setSiteRequest_(siteRequest);
 			page.setServiceRequest(siteRequest.getServiceRequest());
 			page.setWebClient(webClient);
 			page.setVertx(vertx);
-			page.promiseDeepBareMetalNodePage(siteRequest).onSuccess(a -> {
+			page.promiseDeepVirtualMachinePage(siteRequest).onSuccess(a -> {
 				try {
 					JsonObject ctx = ConfigKeys.getPageContext(config);
 					ctx.mergeIn(JsonObject.mapFrom(page));
 					Promise<Void> promise1 = Promise.promise();
-					editpageBareMetalNodePageInit(ctx, page, listBareMetalNode, promise1);
+					editpageVirtualMachinePageInit(ctx, page, listVirtualMachine, promise1);
 					promise1.future().onSuccess(b -> {
 						String renderedTemplate = jinjava.render(template, ctx.getMap());
 						Buffer buffer = Buffer.buffer(renderedTemplate);
@@ -2364,19 +2885,19 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						promise.fail(ex);
 					});
 				} catch(Exception ex) {
-					LOG.error(String.format("response200EditPageBareMetalNode failed. "), ex);
+					LOG.error(String.format("response200EditPageVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				}
 			}).onFailure(ex -> {
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("response200EditPageBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200EditPageVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
-	public void responsePivotEditPageBareMetalNode(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
+	public void responsePivotEditPageVirtualMachine(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
 		if(pivots != null) {
 			for(SolrResponse.Pivot pivotField : pivots) {
 				String entityIndexed = pivotField.getField();
@@ -2405,34 +2926,34 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				if(pivotFields2 != null) {
 					JsonArray pivotArray2 = new JsonArray();
 					pivotJson.put("pivot", pivotArray2);
-					responsePivotEditPageBareMetalNode(pivotFields2, pivotArray2);
+					responsePivotEditPageVirtualMachine(pivotFields2, pivotArray2);
 				}
 			}
 		}
 	}
 
-	// DELETEFilter //
+	// UserPage //
 
 	@Override
-	public void deletefilterBareMetalNode(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-		LOG.debug(String.format("deletefilterBareMetalNode started. "));
+	public void userpageVirtualMachine(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-			String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-			String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
 			MultiMap form = MultiMap.caseInsensitiveMultiMap();
 			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
 			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
 			form.add("response_mode", "permissions");
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-			form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-			if(nodeId != null)
-				form.add("permission", String.format("%s#%s", nodeId, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			form.add("permission", String.format("%s-%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, vmResource, "GET"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "GET"));
 			webClient.post(
 					config.getInteger(ComputateConfigKeys.AUTH_PORT)
 					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
@@ -2446,6 +2967,241 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
 					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("GET") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("GET");
+							siteRequest.setFilteredScope(true);
+						}
+					}
+					{
+						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+						List<String> scopes2 = siteRequest.getScopes();
+						searchVirtualMachineList(siteRequest, false, true, false).onSuccess(listVirtualMachine -> {
+							response200UserPageVirtualMachine(listVirtualMachine).onSuccess(response -> {
+								eventHandler.handle(Future.succeededFuture(response));
+								LOG.debug(String.format("userpageVirtualMachine succeeded. "));
+							}).onFailure(ex -> {
+								LOG.error(String.format("userpageVirtualMachine failed. "), ex);
+								error(siteRequest, eventHandler, ex);
+							});
+						}).onFailure(ex -> {
+							LOG.error(String.format("userpageVirtualMachine failed. "), ex);
+							error(siteRequest, eventHandler, ex);
+						});
+					}
+				} catch(Exception ex) {
+					LOG.error(String.format("userpageVirtualMachine failed. "), ex);
+					error(null, eventHandler, ex);
+				}
+			});
+		}).onFailure(ex -> {
+			if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
+				try {
+					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
+				} catch(Exception ex2) {
+					LOG.error(String.format("userpageVirtualMachine failed. ", ex2));
+					error(null, eventHandler, ex2);
+				}
+			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
+				eventHandler.handle(Future.succeededFuture(
+					new ServiceResponse(401, "UNAUTHORIZED",
+						Buffer.buffer().appendString(
+							new JsonObject()
+								.put("errorCode", "401")
+								.put("errorMessage", "SSO Resource Permission check returned DENY")
+								.encodePrettily()
+							), MultiMap.caseInsensitiveMultiMap()
+							)
+					));
+			} else {
+				LOG.error(String.format("userpageVirtualMachine failed. "), ex);
+				error(null, eventHandler, ex);
+			}
+		});
+	}
+
+	public void userpageVirtualMachinePageInit(JsonObject ctx, VirtualMachinePage page, SearchList<VirtualMachine> listVirtualMachine, Promise<Void> promise) {
+		promise.complete();
+	}
+
+	public String templateUserPageVirtualMachine(ServiceRequest serviceRequest) {
+		return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
+	}
+	public Future<ServiceResponse> response200UserPageVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
+		Promise<ServiceResponse> promise = Promise.promise();
+		try {
+			SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+			String pageTemplateUri = templateUserPageVirtualMachine(siteRequest.getServiceRequest());
+			String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+			Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+			String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+			VirtualMachinePage page = new VirtualMachinePage();
+			MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
+			siteRequest.setRequestHeaders(requestHeaders);
+
+			if(listVirtualMachine.size() >= 1)
+				siteRequest.setRequestPk(listVirtualMachine.get(0).getPk());
+			page.setSearchListVirtualMachine_(listVirtualMachine);
+			page.setSiteRequest_(siteRequest);
+			page.setServiceRequest(siteRequest.getServiceRequest());
+			page.setWebClient(webClient);
+			page.setVertx(vertx);
+			page.promiseDeepVirtualMachinePage(siteRequest).onSuccess(a -> {
+				try {
+					JsonObject ctx = ConfigKeys.getPageContext(config);
+					ctx.mergeIn(JsonObject.mapFrom(page));
+					Promise<Void> promise1 = Promise.promise();
+					userpageVirtualMachinePageInit(ctx, page, listVirtualMachine, promise1);
+					promise1.future().onSuccess(b -> {
+						String renderedTemplate = jinjava.render(template, ctx.getMap());
+						Buffer buffer = Buffer.buffer(renderedTemplate);
+						promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+					}).onFailure(ex -> {
+						promise.fail(ex);
+					});
+				} catch(Exception ex) {
+					LOG.error(String.format("response200UserPageVirtualMachine failed. "), ex);
+					promise.fail(ex);
+				}
+			}).onFailure(ex -> {
+				promise.fail(ex);
+			});
+		} catch(Exception ex) {
+			LOG.error(String.format("response200UserPageVirtualMachine failed. "), ex);
+			promise.fail(ex);
+		}
+		return promise.future();
+	}
+	public void responsePivotUserPageVirtualMachine(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
+		if(pivots != null) {
+			for(SolrResponse.Pivot pivotField : pivots) {
+				String entityIndexed = pivotField.getField();
+				String entityVar = StringUtils.substringBefore(entityIndexed, "_docvalues_");
+				JsonObject pivotJson = new JsonObject();
+				pivotArray.add(pivotJson);
+				pivotJson.put("field", entityVar);
+				pivotJson.put("value", pivotField.getValue());
+				pivotJson.put("count", pivotField.getCount());
+				Collection<SolrResponse.PivotRange> pivotRanges = pivotField.getRanges().values();
+				List<SolrResponse.Pivot> pivotFields2 = pivotField.getPivotList();
+				if(pivotRanges != null) {
+					JsonObject rangeJson = new JsonObject();
+					pivotJson.put("ranges", rangeJson);
+					for(SolrResponse.PivotRange rangeFacet : pivotRanges) {
+						JsonObject rangeFacetJson = new JsonObject();
+						String rangeFacetVar = StringUtils.substringBefore(rangeFacet.getName(), "_docvalues_");
+						rangeJson.put(rangeFacetVar, rangeFacetJson);
+						JsonObject rangeFacetCountsObject = new JsonObject();
+						rangeFacetJson.put("counts", rangeFacetCountsObject);
+						rangeFacet.getCounts().forEach((value, count) -> {
+							rangeFacetCountsObject.put(value, count);
+						});
+					}
+				}
+				if(pivotFields2 != null) {
+					JsonArray pivotArray2 = new JsonArray();
+					pivotJson.put("pivot", pivotArray2);
+					responsePivotUserPageVirtualMachine(pivotFields2, pivotArray2);
+				}
+			}
+		}
+	}
+
+	// DELETEFilter //
+
+	@Override
+	public void deletefilterVirtualMachine(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+		LOG.debug(String.format("deletefilterVirtualMachine started. "));
+		Boolean classPublicRead = false;
+		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
+			String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+			String VIRTUALMACHINE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("VIRTUALMACHINE");
+			MultiMap form = MultiMap.caseInsensitiveMultiMap();
+			form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+			form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+			form.add("response_mode", "permissions");
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "GET"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "POST"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "DELETE"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PATCH"));
+			form.add("permission", String.format("%s#%s", VirtualMachine.CLASS_AUTH_RESOURCE, "PUT"));
+			if(vmResource != null)
+				form.add("permission", String.format("%s#%s", vmResource, "DELETE"));
+			webClient.post(
+					config.getInteger(ComputateConfigKeys.AUTH_PORT)
+					, config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+					, config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+					)
+					.ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+					.putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+					.sendForm(form)
+					.expecting(HttpResponseExpectation.SC_OK)
+			.onComplete(authorizationDecisionResponse -> {
+				try {
+					HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+					JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+					if(!scopes.contains("DELETE") && !classPublicRead) {
+						//
+						List<String> fqs = new ArrayList<>();
+						List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(DELETE)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "hubResource", value));
+								});
+						groups.stream().map(group -> {
+									Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(DELETE)$").matcher(group);
+									return mPermission.find() ? mPermission.group(1) : null;
+								}).filter(v -> v != null).forEach(value -> {
+									fqs.add(String.format("%s:%s", "clusterResource", value));
+								});
+						JsonObject authParams = siteRequest.getServiceRequest().getParams();
+						JsonObject authQuery = authParams.getJsonObject("query");
+						if(authQuery == null) {
+							authQuery = new JsonObject();
+							authParams.put("query", authQuery);
+						}
+						JsonArray fq = authQuery.getJsonArray("fq");
+						if(fq == null) {
+							fq = new JsonArray();
+							authQuery.put("fq", fq);
+						}
+						if(fqs.size() > 0) {
+							fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+							scopes.add("DELETE");
+							siteRequest.setFilteredScope(true);
+						}
+					}
 					if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
 						String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
 						eventHandler.handle(Future.succeededFuture(
@@ -2461,42 +3217,42 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					} else {
 						siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
 						List<String> scopes2 = siteRequest.getScopes();
-						searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+						searchVirtualMachineList(siteRequest, false, true, true).onSuccess(listVirtualMachine -> {
 							try {
 								ApiRequest apiRequest = new ApiRequest();
-								apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-								apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+								apiRequest.setRows(listVirtualMachine.getRequest().getRows());
+								apiRequest.setNumFound(listVirtualMachine.getResponse().getResponse().getNumFound());
 								apiRequest.setNumPATCH(0L);
 								apiRequest.initDeepApiRequest(siteRequest);
 								siteRequest.setApiRequest_(apiRequest);
 								if(apiRequest.getNumFound() == 1L)
-									apiRequest.setOriginal(listBareMetalNode.first());
-								apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-								eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+									apiRequest.setOriginal(listVirtualMachine.first());
+								apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getSolrId()).orElse(null));
+								eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 
-								listDELETEFilterBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-									response200DELETEFilterBareMetalNode(siteRequest).onSuccess(response -> {
-										LOG.debug(String.format("deletefilterBareMetalNode succeeded. "));
+								listDELETEFilterVirtualMachine(apiRequest, listVirtualMachine).onSuccess(e -> {
+									response200DELETEFilterVirtualMachine(siteRequest).onSuccess(response -> {
+										LOG.debug(String.format("deletefilterVirtualMachine succeeded. "));
 										eventHandler.handle(Future.succeededFuture(response));
 									}).onFailure(ex -> {
-										LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+										LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 										error(siteRequest, eventHandler, ex);
 									});
 								}).onFailure(ex -> {
-									LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+									LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 									error(siteRequest, eventHandler, ex);
 								});
 							} catch(Exception ex) {
-								LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+								LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 								error(siteRequest, eventHandler, ex);
 							}
 						}).onFailure(ex -> {
-							LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+							LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 							error(siteRequest, eventHandler, ex);
 						});
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+					LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 					error(null, eventHandler, ex);
 				}
 			});
@@ -2505,7 +3261,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				try {
 					eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
 				} catch(Exception ex2) {
-					LOG.error(String.format("deletefilterBareMetalNode failed. ", ex2));
+					LOG.error(String.format("deletefilterVirtualMachine failed. ", ex2));
 					error(null, eventHandler, ex2);
 				}
 			} else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
@@ -2520,58 +3276,58 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							)
 					));
 			} else {
-				LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+				LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		});
 	}
 
-	public Future<Void> listDELETEFilterBareMetalNode(ApiRequest apiRequest, SearchList<BareMetalNode> listBareMetalNode) {
+	public Future<Void> listDELETEFilterVirtualMachine(ApiRequest apiRequest, SearchList<VirtualMachine> listVirtualMachine) {
 		Promise<Void> promise = Promise.promise();
 		List<Future> futures = new ArrayList<>();
-		SiteRequest siteRequest = listBareMetalNode.getSiteRequest_(SiteRequest.class);
-		listBareMetalNode.getList().forEach(o -> {
+		SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+		listVirtualMachine.getList().forEach(o -> {
 			SiteRequest siteRequest2 = generateSiteRequest(siteRequest.getUser(), siteRequest.getUserPrincipal(), siteRequest.getServiceRequest(), siteRequest.getJsonObject(), SiteRequest.class);
 			siteRequest2.setScopes(siteRequest.getScopes());
 			o.setSiteRequest_(siteRequest2);
 			siteRequest2.setApiRequest_(siteRequest.getApiRequest_());
 			JsonObject jsonObject = JsonObject.mapFrom(o);
-			BareMetalNode o2 = jsonObject.mapTo(BareMetalNode.class);
+			VirtualMachine o2 = jsonObject.mapTo(VirtualMachine.class);
 			o2.setSiteRequest_(siteRequest2);
 			futures.add(Future.future(promise1 -> {
-				deletefilterBareMetalNodeFuture(o).onSuccess(a -> {
+				deletefilterVirtualMachineFuture(o).onSuccess(a -> {
 					promise1.complete();
 				}).onFailure(ex -> {
-					LOG.error(String.format("listDELETEFilterBareMetalNode failed. "), ex);
+					LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
 					promise1.fail(ex);
 				});
 			}));
 		});
 		CompositeFuture.all(futures).onSuccess( a -> {
-			listBareMetalNode.next().onSuccess(next -> {
+			listVirtualMachine.next().onSuccess(next -> {
 				if(next) {
-					listDELETEFilterBareMetalNode(apiRequest, listBareMetalNode).onSuccess(b -> {
+					listDELETEFilterVirtualMachine(apiRequest, listVirtualMachine).onSuccess(b -> {
 						promise.complete();
 					}).onFailure(ex -> {
-						LOG.error(String.format("listDELETEFilterBareMetalNode failed. "), ex);
+						LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
 						promise.fail(ex);
 					});
 				} else {
 					promise.complete();
 				}
 			}).onFailure(ex -> {
-				LOG.error(String.format("listDELETEFilterBareMetalNode failed. "), ex);
+				LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		}).onFailure(ex -> {
-			LOG.error(String.format("listDELETEFilterBareMetalNode failed. "), ex);
+			LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		});
 		return promise.future();
 	}
 
 	@Override
-	public void deletefilterBareMetalNodeFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+	public void deletefilterVirtualMachineFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
 		Boolean classPublicRead = false;
 		user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
 			try {
@@ -2582,10 +3338,10 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						siteRequest.addScopes(scope);
 					});
 				});
-				searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+				searchVirtualMachineList(siteRequest, false, true, true).onSuccess(listVirtualMachine -> {
 					try {
-						BareMetalNode o = listBareMetalNode.first();
-						if(o != null && listBareMetalNode.getResponse().getResponse().getNumFound() == 1) {
+						VirtualMachine o = listVirtualMachine.first();
+						if(o != null && listVirtualMachine.getResponse().getResponse().getNumFound() == 1) {
 							ApiRequest apiRequest = new ApiRequest();
 							apiRequest.setRows(1L);
 							apiRequest.setNumFound(1L);
@@ -2597,9 +3353,9 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							}
 							if(apiRequest.getNumFound() == 1L)
 								apiRequest.setOriginal(o);
-							apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getNodeId().toString()).orElse(null));
-							apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-							deletefilterBareMetalNodeFuture(o).onSuccess(o2 -> {
+							apiRequest.setId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getVmResource().toString()).orElse(null));
+							apiRequest.setSolrId(Optional.ofNullable(listVirtualMachine.first()).map(o2 -> o2.getSolrId()).orElse(null));
+							deletefilterVirtualMachineFuture(o).onSuccess(o2 -> {
 								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
 							}).onFailure(ex -> {
 								eventHandler.handle(Future.failedFuture(ex));
@@ -2608,42 +3364,42 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
 						}
 					} catch(Exception ex) {
-						LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+						LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 						error(siteRequest, eventHandler, ex);
 					}
 				}).onFailure(ex -> {
-					LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+					LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 					error(siteRequest, eventHandler, ex);
 				});
 			} catch(Exception ex) {
-				LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+				LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 				error(null, eventHandler, ex);
 			}
 		}).onFailure(ex -> {
-			LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+			LOG.error(String.format("deletefilterVirtualMachine failed. "), ex);
 			error(null, eventHandler, ex);
 		});
 	}
 
-	public Future<BareMetalNode> deletefilterBareMetalNodeFuture(BareMetalNode o) {
+	public Future<VirtualMachine> deletefilterVirtualMachineFuture(VirtualMachine o) {
 		SiteRequest siteRequest = o.getSiteRequest_();
-		Promise<BareMetalNode> promise = Promise.promise();
+		Promise<VirtualMachine> promise = Promise.promise();
 
 		try {
 			ApiRequest apiRequest = siteRequest.getApiRequest_();
-			Promise<BareMetalNode> promise1 = Promise.promise();
+			Promise<VirtualMachine> promise1 = Promise.promise();
 			pgPool.withTransaction(sqlConnection -> {
 				siteRequest.setSqlConnection(sqlConnection);
-				varsBareMetalNode(siteRequest).onSuccess(a -> {
-					sqlDELETEFilterBareMetalNode(o).onSuccess(bareMetalNode -> {
-						relateBareMetalNode(o).onSuccess(d -> {
-							unindexBareMetalNode(o).onSuccess(o2 -> {
+				varsVirtualMachine(siteRequest).onSuccess(a -> {
+					sqlDELETEFilterVirtualMachine(o).onSuccess(virtualMachine -> {
+						relateVirtualMachine(o).onSuccess(d -> {
+							unindexVirtualMachine(o).onSuccess(o2 -> {
 								if(apiRequest != null) {
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-										o2.apiRequestBareMetalNode();
+										o2.apiRequestVirtualMachine();
 										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-											eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+											eventBus.publish("websocketVirtualMachine", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
 								promise1.complete();
@@ -2665,27 +3421,27 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			}).onFailure(ex -> {
 				siteRequest.setSqlConnection(null);
 				promise.fail(ex);
-			}).compose(bareMetalNode -> {
-				Promise<BareMetalNode> promise2 = Promise.promise();
-				refreshBareMetalNode(o).onSuccess(a -> {
+			}).compose(virtualMachine -> {
+				Promise<VirtualMachine> promise2 = Promise.promise();
+				refreshVirtualMachine(o).onSuccess(a -> {
 					promise2.complete(o);
 				}).onFailure(ex -> {
 					promise2.fail(ex);
 				});
 				return promise2.future();
-			}).onSuccess(bareMetalNode -> {
-				promise.complete(bareMetalNode);
+			}).onSuccess(virtualMachine -> {
+				promise.complete(virtualMachine);
 			}).onFailure(ex -> {
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("deletefilterBareMetalNodeFuture failed. "), ex);
+			LOG.error(String.format("deletefilterVirtualMachineFuture failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<Void> sqlDELETEFilterBareMetalNode(BareMetalNode o) {
+	public Future<Void> sqlDELETEFilterVirtualMachine(VirtualMachine o) {
 		Promise<Void> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
@@ -2694,11 +3450,11 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			List<String> classes = Optional.ofNullable(apiRequest).map(r -> r.getClasses()).orElse(new ArrayList<>());
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Integer num = 1;
-			StringBuilder bSql = new StringBuilder("DELETE FROM BareMetalNode ");
+			StringBuilder bSql = new StringBuilder("DELETE FROM VirtualMachine ");
 			List<Object> bParams = new ArrayList<Object>();
 			Long pk = o.getPk();
 			JsonObject jsonObject = siteRequest.getJsonObject();
-			BareMetalNode o2 = new BareMetalNode();
+			VirtualMachine o2 = new VirtualMachine();
 			o2.setSiteRequest_(siteRequest);
 			List<Future> futures1 = new ArrayList<>();
 			List<Future> futures2 = new ArrayList<>();
@@ -2707,6 +3463,46 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				Set<String> entityVars = jsonObject.fieldNames();
 				for(String entityVar : entityVars) {
 					switch(entityVar) {
+					case VirtualMachine.VAR_hubResource:
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Hub.varIndexedHub(Hub.VAR_hubResource), Hub.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Hub");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, null, null).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
+					case VirtualMachine.VAR_clusterResource:
+						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
+							futures1.add(Future.future(promise2 -> {
+								searchModel(siteRequest).query(Cluster.varIndexedCluster(Cluster.VAR_clusterResource), Cluster.class, val).onSuccess(o3 -> {
+									String solrId2 = Optional.ofNullable(o3).map(o4 -> o4.getSolrId()).filter(solrId3 -> !solrIds.contains(solrId3)).orElse(null);
+									if(solrId2 != null) {
+										solrIds.add(solrId2);
+										classes.add("Cluster");
+									}
+									sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, null, null).onSuccess(a -> {
+										promise2.complete();
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}).onFailure(ex -> {
+									promise2.fail(ex);
+								});
+							}));
+						});
+						break;
 					}
 				}
 			}
@@ -2719,8 +3515,8 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						).onSuccess(b -> {
 					a.handle(Future.succeededFuture());
 				}).onFailure(ex -> {
-					RuntimeException ex2 = new RuntimeException("value BareMetalNode failed", ex);
-					LOG.error(String.format("unrelateBareMetalNode failed. "), ex2);
+					RuntimeException ex2 = new RuntimeException("value VirtualMachine failed", ex);
+					LOG.error(String.format("unrelateVirtualMachine failed. "), ex2);
 					a.handle(Future.failedFuture(ex2));
 				});
 			}));
@@ -2728,27 +3524,27 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				CompositeFuture.all(futures2).onSuccess(b -> {
 					promise.complete();
 				}).onFailure(ex -> {
-					LOG.error(String.format("sqlDELETEFilterBareMetalNode failed. "), ex);
+					LOG.error(String.format("sqlDELETEFilterVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				});
 			}).onFailure(ex -> {
-				LOG.error(String.format("sqlDELETEFilterBareMetalNode failed. "), ex);
+				LOG.error(String.format("sqlDELETEFilterVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("sqlDELETEFilterBareMetalNode failed. "), ex);
+			LOG.error(String.format("sqlDELETEFilterVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<ServiceResponse> response200DELETEFilterBareMetalNode(SiteRequest siteRequest) {
+	public Future<ServiceResponse> response200DELETEFilterVirtualMachine(SiteRequest siteRequest) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
 			JsonObject json = new JsonObject();
 			if(json == null) {
-				String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-				String m = String.format("%s %s not found", "bare metal node", nodeId);
+				String vmResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("vmResource");
+				String m = String.format("%s %s not found", "virtual machine", vmResource);
 				promise.complete(new ServiceResponse(404
 						, m
 						, Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
@@ -2756,7 +3552,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("response200DELETEFilterBareMetalNode failed. "), ex);
+			LOG.error(String.format("response200DELETEFilterVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
@@ -2764,78 +3560,78 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 
 	// General //
 
-	public Future<BareMetalNode> createBareMetalNode(SiteRequest siteRequest) {
-		Promise<BareMetalNode> promise = Promise.promise();
+	public Future<VirtualMachine> createVirtualMachine(SiteRequest siteRequest) {
+		Promise<VirtualMachine> promise = Promise.promise();
 		try {
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			String userId = siteRequest.getUserId();
 			Long userKey = siteRequest.getUserKey();
 			ZonedDateTime created = Optional.ofNullable(siteRequest.getJsonObject()).map(j -> j.getString("created")).map(s -> ZonedDateTime.parse(s, ComputateZonedDateTimeSerializer.ZONED_DATE_TIME_FORMATTER.withZone(ZoneId.of(config.getString(ConfigKeys.SITE_ZONE))))).orElse(ZonedDateTime.now(ZoneId.of(config.getString(ConfigKeys.SITE_ZONE))));
 
-			sqlConnection.preparedQuery("INSERT INTO BareMetalNode(created, userKey) VALUES($1, $2) RETURNING pk")
+			sqlConnection.preparedQuery("INSERT INTO VirtualMachine(created, userKey) VALUES($1, $2) RETURNING pk")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(created.toOffsetDateTime(), userKey)).onSuccess(result -> {
 				Row createLine = result.value().stream().findFirst().orElseGet(() -> null);
 				Long pk = createLine.getLong(0);
-				BareMetalNode o = new BareMetalNode();
+				VirtualMachine o = new VirtualMachine();
 				o.setPk(pk);
 				o.setSiteRequest_(siteRequest);
 				promise.complete(o);
 			}).onFailure(ex -> {
 				RuntimeException ex2 = new RuntimeException(ex);
-				LOG.error("createBareMetalNode failed. ", ex2);
+				LOG.error("createVirtualMachine failed. ", ex2);
 				promise.fail(ex2);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("createBareMetalNode failed. "), ex);
+			LOG.error(String.format("createVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public void searchBareMetalNodeQ(SearchList<BareMetalNode> searchList, String entityVar, String valueIndexed, String varIndexed) {
+	public void searchVirtualMachineQ(SearchList<VirtualMachine> searchList, String entityVar, String valueIndexed, String varIndexed) {
 		searchList.q(varIndexed + ":" + ("*".equals(valueIndexed) ? valueIndexed : SearchTool.escapeQueryChars(valueIndexed)));
 		if(!"*".equals(entityVar)) {
 		}
 	}
 
-	public String searchBareMetalNodeFq(SearchList<BareMetalNode> searchList, String entityVar, String valueIndexed, String varIndexed) {
+	public String searchVirtualMachineFq(SearchList<VirtualMachine> searchList, String entityVar, String valueIndexed, String varIndexed) {
 		if(varIndexed == null)
 			throw new RuntimeException(String.format("\"%s\" is not an indexed entity. ", entityVar));
 		if(StringUtils.startsWith(valueIndexed, "[")) {
 			String[] fqs = StringUtils.substringAfter(StringUtils.substringBeforeLast(valueIndexed, "]"), "[").split(" TO ");
 			if(fqs.length != 2)
 				throw new RuntimeException(String.format("\"%s\" invalid range query. ", valueIndexed));
-			String fq1 = fqs[0].equals("*") ? fqs[0] : BareMetalNode.staticSearchFqForClass(entityVar, searchList.getSiteRequest_(SiteRequest.class), fqs[0]);
-			String fq2 = fqs[1].equals("*") ? fqs[1] : BareMetalNode.staticSearchFqForClass(entityVar, searchList.getSiteRequest_(SiteRequest.class), fqs[1]);
+			String fq1 = fqs[0].equals("*") ? fqs[0] : VirtualMachine.staticSearchFqForClass(entityVar, searchList.getSiteRequest_(SiteRequest.class), fqs[0]);
+			String fq2 = fqs[1].equals("*") ? fqs[1] : VirtualMachine.staticSearchFqForClass(entityVar, searchList.getSiteRequest_(SiteRequest.class), fqs[1]);
 			 return varIndexed + ":[" + fq1 + " TO " + fq2 + "]";
 		} else {
-			return varIndexed + ":" + SearchTool.escapeQueryChars(BareMetalNode.staticSearchFqForClass(entityVar, searchList.getSiteRequest_(SiteRequest.class), valueIndexed)).replace("\\", "\\\\");
+			return varIndexed + ":" + SearchTool.escapeQueryChars(VirtualMachine.staticSearchFqForClass(entityVar, searchList.getSiteRequest_(SiteRequest.class), valueIndexed)).replace("\\", "\\\\");
 		}
 	}
 
-	public void searchBareMetalNodeSort(SearchList<BareMetalNode> searchList, String entityVar, String valueIndexed, String varIndexed) {
+	public void searchVirtualMachineSort(SearchList<VirtualMachine> searchList, String entityVar, String valueIndexed, String varIndexed) {
 		if(varIndexed == null)
 			throw new RuntimeException(String.format("\"%s\" is not an indexed entity. ", entityVar));
 		searchList.sort(varIndexed, valueIndexed);
 	}
 
-	public void searchBareMetalNodeRows(SearchList<BareMetalNode> searchList, Long valueRows) {
+	public void searchVirtualMachineRows(SearchList<VirtualMachine> searchList, Long valueRows) {
 			searchList.rows(valueRows != null ? valueRows : 10L);
 	}
 
-	public void searchBareMetalNodeStart(SearchList<BareMetalNode> searchList, Long valueStart) {
+	public void searchVirtualMachineStart(SearchList<VirtualMachine> searchList, Long valueStart) {
 		searchList.start(valueStart);
 	}
 
-	public void searchBareMetalNodeVar(SearchList<BareMetalNode> searchList, String var, String value) {
+	public void searchVirtualMachineVar(SearchList<VirtualMachine> searchList, String var, String value) {
 		searchList.getSiteRequest_(SiteRequest.class).getRequestVars().put(var, value);
 	}
 
-	public void searchBareMetalNodeUri(SearchList<BareMetalNode> searchList) {
+	public void searchVirtualMachineUri(SearchList<VirtualMachine> searchList) {
 	}
 
-	public Future<ServiceResponse> varsBareMetalNode(SiteRequest siteRequest) {
+	public Future<ServiceResponse> varsVirtualMachine(SiteRequest siteRequest) {
 		Promise<ServiceResponse> promise = Promise.promise();
 		try {
 			ServiceRequest serviceRequest = siteRequest.getServiceRequest();
@@ -2853,25 +3649,25 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 						siteRequest.getRequestVars().put(entityVar, valueIndexed);
 					}
 				} catch(Exception ex) {
-					LOG.error(String.format("searchBareMetalNode failed. "), ex);
+					LOG.error(String.format("searchVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				}
 			});
 			promise.complete();
 		} catch(Exception ex) {
-			LOG.error(String.format("searchBareMetalNode failed. "), ex);
+			LOG.error(String.format("searchVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<SearchList<BareMetalNode>> searchBareMetalNodeList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify) {
-		Promise<SearchList<BareMetalNode>> promise = Promise.promise();
+	public Future<SearchList<VirtualMachine>> searchVirtualMachineList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify) {
+		Promise<SearchList<VirtualMachine>> promise = Promise.promise();
 		try {
 			ServiceRequest serviceRequest = siteRequest.getServiceRequest();
 			String entityListStr = siteRequest.getServiceRequest().getParams().getJsonObject("query").getString("fl");
 			String[] entityList = entityListStr == null ? null : entityListStr.split(",\\s*");
-			SearchList<BareMetalNode> searchList = new SearchList<BareMetalNode>();
+			SearchList<VirtualMachine> searchList = new SearchList<VirtualMachine>();
 			String facetRange = null;
 			Date facetRangeStart = null;
 			Date facetRangeEnd = null;
@@ -2881,18 +3677,18 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			searchList.setPopulate(populate);
 			searchList.setStore(store);
 			searchList.q("*:*");
-			searchList.setC(BareMetalNode.class);
+			searchList.setC(VirtualMachine.class);
 			searchList.setSiteRequest_(siteRequest);
 			searchList.facetMinCount(1);
 			if(entityList != null) {
 				for(String v : entityList) {
-					searchList.fl(BareMetalNode.varIndexedBareMetalNode(v));
+					searchList.fl(VirtualMachine.varIndexedVirtualMachine(v));
 				}
 			}
 
-			String nodeId = serviceRequest.getParams().getJsonObject("path").getString("nodeId");
-			if(nodeId != null) {
-				searchList.fq("nodeId_docvalues_string:" + SearchTool.escapeQueryChars(nodeId));
+			String vmResource = serviceRequest.getParams().getJsonObject("path").getString("vmResource");
+			if(vmResource != null) {
+				searchList.fq("vmResource_docvalues_string:" + SearchTool.escapeQueryChars(vmResource));
 			}
 
 			for(String paramName : serviceRequest.getParams().getJsonObject("query").fieldNames()) {
@@ -2915,7 +3711,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							String[] varsIndexed = new String[entityVars.length];
 							for(Integer i = 0; i < entityVars.length; i++) {
 								entityVar = entityVars[i];
-								varsIndexed[i] = BareMetalNode.varIndexedBareMetalNode(entityVar);
+								varsIndexed[i] = VirtualMachine.varIndexedVirtualMachine(entityVar);
 							}
 							searchList.facetPivot((solrLocalParams == null ? "" : solrLocalParams) + StringUtils.join(varsIndexed, ","));
 						}
@@ -2927,8 +3723,8 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 								while(mQ.find()) {
 									entityVar = mQ.group(1).trim();
 									valueIndexed = mQ.group(2).trim();
-									varIndexed = BareMetalNode.varIndexedBareMetalNode(entityVar);
-									String entityQ = searchBareMetalNodeFq(searchList, entityVar, valueIndexed, varIndexed);
+									varIndexed = VirtualMachine.varIndexedVirtualMachine(entityVar);
+									String entityQ = searchVirtualMachineFq(searchList, entityVar, valueIndexed, varIndexed);
 									mQ.appendReplacement(sb, entityQ);
 								}
 								if(!sb.isEmpty()) {
@@ -2941,8 +3737,8 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 								while(mFq.find()) {
 									entityVar = mFq.group(1).trim();
 									valueIndexed = mFq.group(2).trim();
-									varIndexed = BareMetalNode.varIndexedBareMetalNode(entityVar);
-									String entityFq = searchBareMetalNodeFq(searchList, entityVar, valueIndexed, varIndexed);
+									varIndexed = VirtualMachine.varIndexedVirtualMachine(entityVar);
+									String entityFq = searchVirtualMachineFq(searchList, entityVar, valueIndexed, varIndexed);
 									mFq.appendReplacement(sb, entityFq);
 								}
 								if(!sb.isEmpty()) {
@@ -2952,14 +3748,14 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 							} else if(paramName.equals("sort")) {
 								entityVar = StringUtils.trim(StringUtils.substringBefore((String)paramObject, " "));
 								valueIndexed = StringUtils.trim(StringUtils.substringAfter((String)paramObject, " "));
-								varIndexed = BareMetalNode.varIndexedBareMetalNode(entityVar);
-								searchBareMetalNodeSort(searchList, entityVar, valueIndexed, varIndexed);
+								varIndexed = VirtualMachine.varIndexedVirtualMachine(entityVar);
+								searchVirtualMachineSort(searchList, entityVar, valueIndexed, varIndexed);
 							} else if(paramName.equals("start")) {
 								valueStart = paramObject instanceof Long ? (Long)paramObject : Long.parseLong(paramObject.toString());
-								searchBareMetalNodeStart(searchList, valueStart);
+								searchVirtualMachineStart(searchList, valueStart);
 							} else if(paramName.equals("rows")) {
 								valueRows = paramObject instanceof Long ? (Long)paramObject : Long.parseLong(paramObject.toString());
-								searchBareMetalNodeRows(searchList, valueRows);
+								searchVirtualMachineRows(searchList, valueRows);
 							} else if(paramName.equals("stats")) {
 								searchList.stats((Boolean)paramObject);
 							} else if(paramName.equals("stats.field")) {
@@ -2967,7 +3763,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 								if(mStats.find()) {
 									String solrLocalParams = mStats.group(1);
 									entityVar = mStats.group(2).trim();
-									varIndexed = BareMetalNode.varIndexedBareMetalNode(entityVar);
+									varIndexed = VirtualMachine.varIndexedVirtualMachine(entityVar);
 									searchList.statsField((solrLocalParams == null ? "" : solrLocalParams) + varIndexed);
 									statsField = entityVar;
 									statsFieldIndexed = varIndexed;
@@ -2993,32 +3789,36 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 								if(mFacetRange.find()) {
 									String solrLocalParams = mFacetRange.group(1);
 									entityVar = mFacetRange.group(2).trim();
-									varIndexed = BareMetalNode.varIndexedBareMetalNode(entityVar);
+									varIndexed = VirtualMachine.varIndexedVirtualMachine(entityVar);
 									searchList.facetRange((solrLocalParams == null ? "" : solrLocalParams) + varIndexed);
 									facetRange = entityVar;
 								}
 							} else if(paramName.equals("facet.field")) {
 								entityVar = (String)paramObject;
-								varIndexed = BareMetalNode.varIndexedBareMetalNode(entityVar);
+								varIndexed = VirtualMachine.varIndexedVirtualMachine(entityVar);
 								if(varIndexed != null)
 									searchList.facetField(varIndexed);
 							} else if(paramName.equals("var")) {
 								entityVar = StringUtils.trim(StringUtils.substringBefore((String)paramObject, ":"));
 								valueIndexed = URLDecoder.decode(StringUtils.trim(StringUtils.substringAfter((String)paramObject, ":")), "UTF-8");
-								searchBareMetalNodeVar(searchList, entityVar, valueIndexed);
+								searchVirtualMachineVar(searchList, entityVar, valueIndexed);
 							} else if(paramName.equals("cursorMark")) {
 								valueCursorMark = (String)paramObject;
 								searchList.cursorMark((String)paramObject);
 							}
 						}
-						searchBareMetalNodeUri(searchList);
+						searchVirtualMachineUri(searchList);
 					}
 				} catch(Exception e) {
 					ExceptionUtils.rethrow(e);
 				}
 			}
 			if("*:*".equals(searchList.getQuery()) && searchList.getSorts().size() == 0) {
-				searchList.sort("created_docvalues_date", "desc");
+				searchList.sort("hubId_docvalues_string", "asc");
+				searchList.sort("clusterName_docvalues_string", "asc");
+				searchList.sort("vmProject_docvalues_string", "asc");
+				searchList.sort("vmName_docvalues_string", "asc");
+				searchList.setDefaultSort(true);
 			}
 			String facetRange2 = facetRange;
 			Date facetRangeStart2 = facetRangeStart;
@@ -3026,7 +3826,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			String facetRangeGap2 = facetRangeGap;
 			String statsField2 = statsField;
 			String statsFieldIndexed2 = statsFieldIndexed;
-			searchBareMetalNode2(siteRequest, populate, store, modify, searchList);
+			searchVirtualMachine2(siteRequest, populate, store, modify, searchList);
 			searchList.promiseDeepForClass(siteRequest).onSuccess(searchList2 -> {
 				if(facetRange2 != null && statsField2 != null && facetRange2.equals(statsField2)) {
 					StatsField stats = searchList.getResponse().getStats().getStatsFields().get(statsFieldIndexed2);
@@ -3062,32 +3862,32 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					searchList.query().onSuccess(b -> {
 						promise.complete(searchList);
 					}).onFailure(ex -> {
-						LOG.error(String.format("searchBareMetalNode failed. "), ex);
+						LOG.error(String.format("searchVirtualMachine failed. "), ex);
 						promise.fail(ex);
 					});
 				} else {
 					promise.complete(searchList);
 				}
 			}).onFailure(ex -> {
-				LOG.error(String.format("searchBareMetalNode failed. "), ex);
+				LOG.error(String.format("searchVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("searchBareMetalNode failed. "), ex);
+			LOG.error(String.format("searchVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
-	public void searchBareMetalNode2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<BareMetalNode> searchList) {
+	public void searchVirtualMachine2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<VirtualMachine> searchList) {
 	}
 
-	public Future<Void> persistBareMetalNode(BareMetalNode o, Boolean patch) {
+	public Future<Void> persistVirtualMachine(VirtualMachine o, Boolean patch) {
 		Promise<Void> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT leaseInfo, networkInfo, created, nodeId, nodeIsMaintenance, archived, nodeLinks, nodeName, nodePowerState, nodeProvisionState, sessionId, nodeResourceClass, userKey, objectTitle, displayPage, editPage, userPage, download FROM BareMetalNode WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, created, clusterResource, vmProject, archived, vmName, os, vmResource, sessionId, description, userKey, objectTitle, location, displayPage, gpuDevicesTotal, editPage, id, userPage, download, ngsildTenant, ngsildPath, ngsildContext, ngsildData FROM VirtualMachine WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -3100,7 +3900,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 								try {
 									o.persistForClass(columnName, columnValue);
 								} catch(Exception e) {
-									LOG.error(String.format("persistBareMetalNode failed. "), e);
+									LOG.error(String.format("persistVirtualMachine failed. "), e);
 								}
 							}
 						}
@@ -3108,42 +3908,68 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					o.promiseDeepForClass(siteRequest).onSuccess(a -> {
 						promise.complete();
 					}).onFailure(ex -> {
-						LOG.error(String.format("persistBareMetalNode failed. "), ex);
+						LOG.error(String.format("persistVirtualMachine failed. "), ex);
 						promise.fail(ex);
 					});
 				} catch(Exception ex) {
-					LOG.error(String.format("persistBareMetalNode failed. "), ex);
+					LOG.error(String.format("persistVirtualMachine failed. "), ex);
 					promise.fail(ex);
 				}
 			}).onFailure(ex -> {
 				RuntimeException ex2 = new RuntimeException(ex);
-				LOG.error(String.format("persistBareMetalNode failed. "), ex2);
+				LOG.error(String.format("persistVirtualMachine failed. "), ex2);
 				promise.fail(ex2);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("persistBareMetalNode failed. "), ex);
+			LOG.error(String.format("persistVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<Void> relateBareMetalNode(BareMetalNode o) {
+	public Future<Void> relateVirtualMachine(VirtualMachine o) {
 		Promise<Void> promise = Promise.promise();
-		promise.complete();
+		try {
+			SiteRequest siteRequest = o.getSiteRequest_();
+			SqlConnection sqlConnection = siteRequest.getSqlConnection();
+			sqlConnection.preparedQuery("SELECT hubResource as pk2, 'hubResource' from Hub where hubResource=$1 UNION SELECT clusterResource as pk2, 'clusterResource' from Cluster where clusterResource=$2")
+					.collecting(Collectors.toList())
+					.execute(Tuple.of(o.getHubResource(), o.getClusterResource())
+					).onSuccess(result -> {
+				try {
+					if(result != null) {
+						for(Row definition : result.value()) {
+							o.relateForClass(definition.getString(1), definition.getValue(0));
+						}
+					}
+					promise.complete();
+				} catch(Exception ex) {
+					LOG.error(String.format("relateVirtualMachine failed. "), ex);
+					promise.fail(ex);
+				}
+			}).onFailure(ex -> {
+				RuntimeException ex2 = new RuntimeException(ex);
+				LOG.error(String.format("relateVirtualMachine failed. "), ex2);
+				promise.fail(ex2);
+			});
+		} catch(Exception ex) {
+			LOG.error(String.format("relateVirtualMachine failed. "), ex);
+			promise.fail(ex);
+		}
 		return promise.future();
 	}
 
 	public String searchVar(String varIndexed) {
-		return BareMetalNode.searchVarBareMetalNode(varIndexed);
+		return VirtualMachine.searchVarVirtualMachine(varIndexed);
 	}
 
 	@Override
 	public String getClassApiAddress() {
-		return BareMetalNode.CLASS_API_ADDRESS_BareMetalNode;
+		return VirtualMachine.CLASS_API_ADDRESS_VirtualMachine;
 	}
 
-	public Future<BareMetalNode> indexBareMetalNode(BareMetalNode o) {
-		Promise<BareMetalNode> promise = Promise.promise();
+	public Future<VirtualMachine> indexVirtualMachine(VirtualMachine o) {
+		Promise<VirtualMachine> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
 			ApiRequest apiRequest = siteRequest.getApiRequest_();
@@ -3152,7 +3978,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			json.put("add", add);
 			JsonObject doc = new JsonObject();
 			add.put("doc", doc);
-			o.indexBareMetalNode(doc);
+			o.indexVirtualMachine(doc);
 			String solrUsername = siteRequest.getConfig().getString(ConfigKeys.SOLR_USERNAME);
 			String solrPassword = siteRequest.getConfig().getString(ConfigKeys.SOLR_PASSWORD);
 			String solrHostName = siteRequest.getConfig().getString(ConfigKeys.SOLR_HOST_NAME);
@@ -3169,18 +3995,18 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			webClient.post(solrPort, solrHostName, solrRequestUri).ssl(solrSsl).authentication(new UsernamePasswordCredentials(solrUsername, solrPassword)).putHeader("Content-Type", "application/json").sendBuffer(json.toBuffer()).expecting(HttpResponseExpectation.SC_OK).onSuccess(b -> {
 				promise.complete(o);
 			}).onFailure(ex -> {
-				LOG.error(String.format("indexBareMetalNode failed. "), new RuntimeException(ex));
+				LOG.error(String.format("indexVirtualMachine failed. "), new RuntimeException(ex));
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("indexBareMetalNode failed. "), ex);
+			LOG.error(String.format("indexVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<BareMetalNode> unindexBareMetalNode(BareMetalNode o) {
-		Promise<BareMetalNode> promise = Promise.promise();
+	public Future<VirtualMachine> unindexVirtualMachine(VirtualMachine o) {
+		Promise<VirtualMachine> promise = Promise.promise();
 		try {
 			SiteRequest siteRequest = o.getSiteRequest_();
 			ApiRequest apiRequest = siteRequest.getApiRequest_();
@@ -3188,7 +4014,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				JsonObject json = new JsonObject();
 				JsonObject delete = new JsonObject();
 				json.put("delete", delete);
-				String query = String.format("filter(%s:%s)", BareMetalNode.VAR_solrId, o.obtainForClass(BareMetalNode.VAR_solrId));
+				String query = String.format("filter(%s:%s)", VirtualMachine.VAR_solrId, o.obtainForClass(VirtualMachine.VAR_solrId));
 				delete.put("query", query);
 				String solrUsername = siteRequest.getConfig().getString(ConfigKeys.SOLR_USERNAME);
 				String solrPassword = siteRequest.getConfig().getString(ConfigKeys.SOLR_PASSWORD);
@@ -3206,21 +4032,21 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				webClient.post(solrPort, solrHostName, solrRequestUri).ssl(solrSsl).authentication(new UsernamePasswordCredentials(solrUsername, solrPassword)).putHeader("Content-Type", "application/json").sendBuffer(json.toBuffer()).expecting(HttpResponseExpectation.SC_OK).onSuccess(b -> {
 					promise.complete(o);
 				}).onFailure(ex -> {
-					LOG.error(String.format("unindexBareMetalNode failed. "), new RuntimeException(ex));
+					LOG.error(String.format("unindexVirtualMachine failed. "), new RuntimeException(ex));
 					promise.fail(ex);
 				});
 			}).onFailure(ex -> {
-				LOG.error(String.format("unindexBareMetalNode failed. "), ex);
+				LOG.error(String.format("unindexVirtualMachine failed. "), ex);
 				promise.fail(ex);
 			});
 		} catch(Exception ex) {
-			LOG.error(String.format("unindexBareMetalNode failed. "), ex);
+			LOG.error(String.format("unindexVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
 	}
 
-	public Future<Void> refreshBareMetalNode(BareMetalNode o) {
+	public Future<Void> refreshVirtualMachine(VirtualMachine o) {
 		Promise<Void> promise = Promise.promise();
 		SiteRequest siteRequest = o.getSiteRequest_();
 		try {
@@ -3234,6 +4060,76 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				for(int i=0; i < solrIds.size(); i++) {
 					String solrId2 = solrIds.get(i);
 					String classSimpleName2 = classes.get(i);
+
+					if("Hub".equals(classSimpleName2) && solrId2 != null) {
+						SearchList<Hub> searchList2 = new SearchList<Hub>();
+						searchList2.setStore(true);
+						searchList2.q("*:*");
+						searchList2.setC(Hub.class);
+						searchList2.fq("solrId:" + solrId2);
+						searchList2.rows(1L);
+						futures.add(Future.future(promise2 -> {
+							searchList2.promiseDeepSearchList(siteRequest).onSuccess(b -> {
+								Hub o2 = searchList2.getList().stream().findFirst().orElse(null);
+								if(o2 != null) {
+									JsonObject params = new JsonObject();
+									params.put("body", new JsonObject());
+									params.put("cookie", new JsonObject());
+									params.put("path", new JsonObject());
+									params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
+									JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
+									JsonObject json = new JsonObject().put("context", context);
+									eventBus.request("ai-telemetry-enUS-Hub", json, new DeliveryOptions().addHeader("action", "patchHubFuture")).onSuccess(c -> {
+										JsonObject responseMessage = (JsonObject)c.body();
+										Integer statusCode = responseMessage.getInteger("statusCode");
+										if(statusCode.equals(200))
+											promise2.complete();
+										else
+											promise2.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}
+							}).onFailure(ex -> {
+								promise2.fail(ex);
+							});
+						}));
+					}
+
+					if("Cluster".equals(classSimpleName2) && solrId2 != null) {
+						SearchList<Cluster> searchList2 = new SearchList<Cluster>();
+						searchList2.setStore(true);
+						searchList2.q("*:*");
+						searchList2.setC(Cluster.class);
+						searchList2.fq("solrId:" + solrId2);
+						searchList2.rows(1L);
+						futures.add(Future.future(promise2 -> {
+							searchList2.promiseDeepSearchList(siteRequest).onSuccess(b -> {
+								Cluster o2 = searchList2.getList().stream().findFirst().orElse(null);
+								if(o2 != null) {
+									JsonObject params = new JsonObject();
+									params.put("body", new JsonObject());
+									params.put("cookie", new JsonObject());
+									params.put("path", new JsonObject());
+									params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
+									JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
+									JsonObject json = new JsonObject().put("context", context);
+									eventBus.request("ai-telemetry-enUS-Cluster", json, new DeliveryOptions().addHeader("action", "patchClusterFuture")).onSuccess(c -> {
+										JsonObject responseMessage = (JsonObject)c.body();
+										Integer statusCode = responseMessage.getInteger("statusCode");
+										if(statusCode.equals(200))
+											promise2.complete();
+										else
+											promise2.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+									}).onFailure(ex -> {
+										promise2.fail(ex);
+									});
+								}
+							}).onFailure(ex -> {
+								promise2.fail(ex);
+							});
+						}));
+					}
 				}
 
 				CompositeFuture.all(futures).onSuccess(b -> {
@@ -3257,7 +4153,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 					params.put("query", query);
 					JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
 					JsonObject json = new JsonObject().put("context", context);
-					eventBus.request(BareMetalNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "patchBareMetalNodeFuture")).onSuccess(c -> {
+					eventBus.request(VirtualMachine.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "patchVirtualMachineFuture")).onSuccess(c -> {
 						JsonObject responseMessage = (JsonObject)c.body();
 						Integer statusCode = responseMessage.getInteger("statusCode");
 						if(statusCode.equals(200))
@@ -3276,7 +4172,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 				promise.complete();
 			}
 		} catch(Exception ex) {
-			LOG.error(String.format("refreshBareMetalNode failed. "), ex);
+			LOG.error(String.format("refreshVirtualMachine failed. "), ex);
 			promise.fail(ex);
 		}
 		return promise.future();
@@ -3289,27 +4185,34 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 			Map<String, Object> result = (Map<String, Object>)ctx.get("result");
 			SiteRequest siteRequest2 = (SiteRequest)siteRequest;
 			String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-			BareMetalNode page = new BareMetalNode();
+			VirtualMachine page = new VirtualMachine();
 			page.setSiteRequest_((SiteRequest)siteRequest);
 
-			page.persistForClass(BareMetalNode.VAR_leaseInfo, BareMetalNode.staticSetLeaseInfo(siteRequest2, (String)result.get(BareMetalNode.VAR_leaseInfo)));
-			page.persistForClass(BareMetalNode.VAR_networkInfo, BareMetalNode.staticSetNetworkInfo(siteRequest2, (String)result.get(BareMetalNode.VAR_networkInfo)));
-			page.persistForClass(BareMetalNode.VAR_created, BareMetalNode.staticSetCreated(siteRequest2, (String)result.get(BareMetalNode.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-			page.persistForClass(BareMetalNode.VAR_nodeId, BareMetalNode.staticSetNodeId(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeId)));
-			page.persistForClass(BareMetalNode.VAR_nodeIsMaintenance, BareMetalNode.staticSetNodeIsMaintenance(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeIsMaintenance)));
-			page.persistForClass(BareMetalNode.VAR_archived, BareMetalNode.staticSetArchived(siteRequest2, (String)result.get(BareMetalNode.VAR_archived)));
-			page.persistForClass(BareMetalNode.VAR_nodeLinks, BareMetalNode.staticSetNodeLinks(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeLinks)));
-			page.persistForClass(BareMetalNode.VAR_nodeName, BareMetalNode.staticSetNodeName(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeName)));
-			page.persistForClass(BareMetalNode.VAR_nodePowerState, BareMetalNode.staticSetNodePowerState(siteRequest2, (String)result.get(BareMetalNode.VAR_nodePowerState)));
-			page.persistForClass(BareMetalNode.VAR_nodeProvisionState, BareMetalNode.staticSetNodeProvisionState(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeProvisionState)));
-			page.persistForClass(BareMetalNode.VAR_sessionId, BareMetalNode.staticSetSessionId(siteRequest2, (String)result.get(BareMetalNode.VAR_sessionId)));
-			page.persistForClass(BareMetalNode.VAR_nodeResourceClass, BareMetalNode.staticSetNodeResourceClass(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeResourceClass)));
-			page.persistForClass(BareMetalNode.VAR_userKey, BareMetalNode.staticSetUserKey(siteRequest2, (String)result.get(BareMetalNode.VAR_userKey)));
-			page.persistForClass(BareMetalNode.VAR_objectTitle, BareMetalNode.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalNode.VAR_objectTitle)));
-			page.persistForClass(BareMetalNode.VAR_displayPage, BareMetalNode.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalNode.VAR_displayPage)));
-			page.persistForClass(BareMetalNode.VAR_editPage, BareMetalNode.staticSetEditPage(siteRequest2, (String)result.get(BareMetalNode.VAR_editPage)));
-			page.persistForClass(BareMetalNode.VAR_userPage, BareMetalNode.staticSetUserPage(siteRequest2, (String)result.get(BareMetalNode.VAR_userPage)));
-			page.persistForClass(BareMetalNode.VAR_download, BareMetalNode.staticSetDownload(siteRequest2, (String)result.get(BareMetalNode.VAR_download)));
+			page.persistForClass(VirtualMachine.VAR_hubId, VirtualMachine.staticSetHubId(siteRequest2, (String)result.get(VirtualMachine.VAR_hubId)));
+			page.persistForClass(VirtualMachine.VAR_hubResource, VirtualMachine.staticSetHubResource(siteRequest2, (String)result.get(VirtualMachine.VAR_hubResource)));
+			page.persistForClass(VirtualMachine.VAR_clusterName, VirtualMachine.staticSetClusterName(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterName)));
+			page.persistForClass(VirtualMachine.VAR_created, VirtualMachine.staticSetCreated(siteRequest2, (String)result.get(VirtualMachine.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+			page.persistForClass(VirtualMachine.VAR_clusterResource, VirtualMachine.staticSetClusterResource(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterResource)));
+			page.persistForClass(VirtualMachine.VAR_vmProject, VirtualMachine.staticSetVmProject(siteRequest2, (String)result.get(VirtualMachine.VAR_vmProject)));
+			page.persistForClass(VirtualMachine.VAR_archived, VirtualMachine.staticSetArchived(siteRequest2, (String)result.get(VirtualMachine.VAR_archived)));
+			page.persistForClass(VirtualMachine.VAR_vmName, VirtualMachine.staticSetVmName(siteRequest2, (String)result.get(VirtualMachine.VAR_vmName)));
+			page.persistForClass(VirtualMachine.VAR_os, VirtualMachine.staticSetOs(siteRequest2, (String)result.get(VirtualMachine.VAR_os)));
+			page.persistForClass(VirtualMachine.VAR_vmResource, VirtualMachine.staticSetVmResource(siteRequest2, (String)result.get(VirtualMachine.VAR_vmResource)));
+			page.persistForClass(VirtualMachine.VAR_sessionId, VirtualMachine.staticSetSessionId(siteRequest2, (String)result.get(VirtualMachine.VAR_sessionId)));
+			page.persistForClass(VirtualMachine.VAR_description, VirtualMachine.staticSetDescription(siteRequest2, (String)result.get(VirtualMachine.VAR_description)));
+			page.persistForClass(VirtualMachine.VAR_userKey, VirtualMachine.staticSetUserKey(siteRequest2, (String)result.get(VirtualMachine.VAR_userKey)));
+			page.persistForClass(VirtualMachine.VAR_objectTitle, VirtualMachine.staticSetObjectTitle(siteRequest2, (String)result.get(VirtualMachine.VAR_objectTitle)));
+			page.persistForClass(VirtualMachine.VAR_location, VirtualMachine.staticSetLocation(siteRequest2, (String)result.get(VirtualMachine.VAR_location)));
+			page.persistForClass(VirtualMachine.VAR_displayPage, VirtualMachine.staticSetDisplayPage(siteRequest2, (String)result.get(VirtualMachine.VAR_displayPage)));
+			page.persistForClass(VirtualMachine.VAR_gpuDevicesTotal, VirtualMachine.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(VirtualMachine.VAR_gpuDevicesTotal)));
+			page.persistForClass(VirtualMachine.VAR_editPage, VirtualMachine.staticSetEditPage(siteRequest2, (String)result.get(VirtualMachine.VAR_editPage)));
+			page.persistForClass(VirtualMachine.VAR_id, VirtualMachine.staticSetId(siteRequest2, (String)result.get(VirtualMachine.VAR_id)));
+			page.persistForClass(VirtualMachine.VAR_userPage, VirtualMachine.staticSetUserPage(siteRequest2, (String)result.get(VirtualMachine.VAR_userPage)));
+			page.persistForClass(VirtualMachine.VAR_download, VirtualMachine.staticSetDownload(siteRequest2, (String)result.get(VirtualMachine.VAR_download)));
+			page.persistForClass(VirtualMachine.VAR_ngsildTenant, VirtualMachine.staticSetNgsildTenant(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildTenant)));
+			page.persistForClass(VirtualMachine.VAR_ngsildPath, VirtualMachine.staticSetNgsildPath(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildPath)));
+			page.persistForClass(VirtualMachine.VAR_ngsildContext, VirtualMachine.staticSetNgsildContext(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildContext)));
+			page.persistForClass(VirtualMachine.VAR_ngsildData, VirtualMachine.staticSetNgsildData(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildData)));
 
 			page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
 				try {

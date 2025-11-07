@@ -36,6 +36,7 @@ import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import org.mghpcc.aitelemetry.model.gpudevice.GpuDevice;
 import org.mghpcc.aitelemetry.model.node.AiNode;
 import org.mghpcc.aitelemetry.model.project.Project;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
 import org.mghpcc.aitelemetry.request.SiteRequest;
 
 import io.vertx.kafka.client.producer.KafkaProducer;
@@ -111,29 +112,41 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           queryClusterCapacityMemoryBytes(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersMemoryBytesTotal -> {
             queryClusterCapacityCpuCores(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersCpuCoresTotal -> {
               queryAiNodesTotal(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersAiNodesTotal -> {
-                queryGpuDevicesTotalForHub(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersGpuDevicesTotal -> {
-                  List<JsonObject> clustersMemoryBytes = clustersMemoryBytesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).map(aiNodeResult -> aiNodeResult.put("clusterName", "local-cluster".equals(aiNodeResult.getJsonObject("metric").getValue("cluster")) ? hub.getLocalClusterName() : aiNodeResult.getJsonObject("metric").getValue("cluster"))).collect(Collectors.toList());
-                  List<JsonObject> clustersCpuCores = clustersCpuCoresTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                  List<JsonObject> clustersAiNodes = clustersAiNodesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                  List<JsonObject> clustersGpuDevices = clustersGpuDevicesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                  List<Future<?>> futures = new ArrayList<>();
-                  for(Integer i = 0; i < clustersMemoryBytes.size(); i++) {
-                    JsonObject clusterMemoryBytesResult = clustersMemoryBytes.get(i);
-                    String clusterName = clusterMemoryBytesResult.getJsonObject("metric").getString("cluster");
-                    JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> clusterName == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                    JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> clusterName == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                    JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> clusterName == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                    futures.add(Future.future(promise1 -> {
-                      importCluster(hub, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, clusterMemoryBytesResult, clusterCpuCoresResult, aiNodeResult, gpuDeviceResult).onComplete(b -> {
-                        promise1.complete();
+                queryVmsTotalForHub(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersVmsTotal -> {
+                  queryGpuDevicesTotalForHub(hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersGpuDevicesTotal -> {
+                    try {
+                      List<JsonObject> clustersMemoryBytes = clustersMemoryBytesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).map(aiNodeResult -> aiNodeResult.put("clusterName", "local-cluster".equals(aiNodeResult.getJsonObject("metric").getValue("cluster")) ? hub.getLocalClusterName() : aiNodeResult.getJsonObject("metric").getValue("cluster"))).collect(Collectors.toList());
+                      List<JsonObject> clustersCpuCores = clustersCpuCoresTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
+                      List<JsonObject> clustersAiNodes = clustersAiNodesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
+                      List<JsonObject> clustersGpuDevices = clustersGpuDevicesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
+                      List<JsonObject> clustersVms = clustersVmsTotal.stream().filter(vmResult -> !((JsonObject)vmResult).getJsonArray("value").getString(1).equals("0")).map(vmResult -> (JsonObject)vmResult).collect(Collectors.toList());
+                      List<Future<?>> futures = new ArrayList<>();
+                      for(Integer i = 0; i < clustersMemoryBytes.size(); i++) {
+                        JsonObject clusterMemoryBytesResult = clustersMemoryBytes.get(i);
+                        String clusterName = clusterMemoryBytesResult.getJsonObject("metric").getString("cluster");
+                        JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        JsonObject vmResult = clustersVms.stream().filter(cluster -> cluster.getJsonObject("metric").getString("cluster") == null || clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                        futures.add(Future.future(promise1 -> {
+                          importCluster(hub, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, clusterMemoryBytesResult, clusterCpuCoresResult, aiNodeResult, gpuDeviceResult, vmResult).onComplete(b -> {
+                            promise1.complete();
+                          }).onFailure(ex -> {
+                            LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
+                            promise1.fail(ex);
+                          });
+                        }));
+                      }
+                      Future.all(futures).onSuccess(b -> {
+                        promise.complete();
                       }).onFailure(ex -> {
                         LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
-                        promise1.fail(ex);
+                        promise.fail(ex);
                       });
-                    }));
-                  }
-                  Future.all(futures).onSuccess(b -> {
-                    promise.complete();
+                    } catch(Throwable ex) {
+                      LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
+                      promise.fail(ex);
+                    }
                   }).onFailure(ex -> {
                     LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
                     promise.fail(ex);
@@ -175,6 +188,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     try {
       String hubName = hubData.getString(Hub.VAR_hubName);
       String hubDescription = hubData.getString(Hub.VAR_description);
+      String localClusterName = hubData.getString(Hub.VAR_localClusterName);
       String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
       JsonObject body = new JsonObject();
       body.put(Hub.VAR_pk, hubResource);
@@ -182,6 +196,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
       body.put(Hub.VAR_hubName, hubName);
       body.put(Hub.VAR_description, hubDescription);
       body.put(Hub.VAR_hubResource, hubResource);
+      body.put(Hub.VAR_localClusterName, localClusterName);
 
       JsonObject pageParams = new JsonObject();
       pageParams.put("body", body);
@@ -333,25 +348,30 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
 
   protected Future<Void> importHubsFromEnv(Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest, String classCanonicalName, String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
     Promise<Void> promise = Promise.promise();
-    JsonObject hubs = new JsonObject(config.getString(ConfigKeys.HUBS));
-    List<Future<?>> futures = new ArrayList<>();
-    for(String hubId : hubs.fieldNames()) {
-      JsonObject hubData = hubs.getJsonObject(hubId);
-      futures.add(Future.future(promise1 -> {
-        importHub(hubData, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, hubId).onComplete(b -> {
-          promise1.complete();
-        }).onFailure(ex -> {
-          LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
-          promise1.fail(ex);
-        });
-      }));
-    }
-    Future.all(futures).onSuccess(b -> {
-      promise.complete();
-    }).onFailure(ex -> {
+    try {
+      JsonObject hubs = new JsonObject(config.getString(ConfigKeys.HUBS));
+      List<Future<?>> futures = new ArrayList<>();
+      for(String hubId : hubs.fieldNames()) {
+        JsonObject hubData = hubs.getJsonObject(hubId);
+        futures.add(Future.future(promise1 -> {
+          importHub(hubData, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, hubId).onComplete(b -> {
+            promise1.complete();
+          }).onFailure(ex -> {
+            LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
+            promise1.fail(ex);
+          });
+        }));
+      }
+      Future.all(futures).onSuccess(b -> {
+        promise.complete();
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
       LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
       promise.fail(ex);
-    });
+    }
     return promise.future();
   }
 
@@ -411,10 +431,11 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     Promise<JsonArray> promise = Promise.promise();
     try {
       String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      String hubId = hub.getHubId();
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("openshift-local".equals(hubId) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -438,10 +459,11 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     Promise<JsonArray> promise = Promise.promise();
     try {
       String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      String hubId = hub.getHubId();
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("openshift-local".equals(hubId) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -515,7 +537,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     return promise.future();
   }
 
-  public Future<Void> importCluster(Hub hub, String classSimpleName, String classApiAddress, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult) {
+  public Future<Void> importCluster(Hub hub, String classSimpleName, String classApiAddress, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult, JsonObject vmResult) {
     Promise<Void> promise = Promise.promise();
     try {
       String hubId = hub.getHubId();
@@ -550,8 +572,13 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           importProjectData(body).onSuccess(b -> {
             importAiNodeData(body).onSuccess(c -> {
               importGpuDeviceData(body).onSuccess(d -> {
-                LOG.info(String.format("Imported %s AI cluster in %s", clusterName, hubId));
-                promise.complete();
+                importVirtualMachineData(body).onSuccess(e -> {
+                  LOG.info(String.format("Imported %s AI cluster in %s", clusterName, hubId));
+                  promise.complete();
+                }).onFailure(ex -> {
+                  LOG.error(String.format(importDataFail, classSimpleName), ex);
+                  promise.fail(ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format(importDataFail, classSimpleName), ex);
                 promise.fail(ex);
@@ -1322,6 +1349,252 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           }
           Future.all(futures).onSuccess(b -> {
             promise.complete();
+          }).onFailure(ex -> {
+            LOG.error(String.format(importDataFail, classSimpleName), ex);
+            promise.fail(ex);
+          });
+        } catch(Throwable ex) {
+          LOG.error(String.format(importDataFail, classSimpleName), ex);
+          promise.fail(ex);
+        }
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  ///////////////////////////
+  // VirtualMachine import //
+  ///////////////////////////
+
+  public Future<Void> importVirtualMachine(JsonObject clusterJson, String classSimpleName, String classApiAddress, JsonObject gpuDeviceResult) {
+    Promise<Void> promise = Promise.promise();
+    try {
+      String clusterName = gpuDeviceResult.getJsonObject("metric").getString("cluster");
+      String vmName = gpuDeviceResult.getJsonObject("metric").getString("name");
+      String vmProject = gpuDeviceResult.getJsonObject("metric").getString("namespace");
+      String hubId = clusterJson.getString(VirtualMachine.VAR_hubId);
+      String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
+      String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
+      String nodeResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, VirtualMachine.CLASS_AUTH_RESOURCE, vmName);
+      JsonObject body = new JsonObject();
+      body.put(VirtualMachine.VAR_pk, nodeResource);
+      body.put(VirtualMachine.VAR_hubId, hubId);
+      body.put(VirtualMachine.VAR_hubResource, hubResource);
+      body.put(VirtualMachine.VAR_clusterName, clusterName);
+      body.put(VirtualMachine.VAR_clusterResource, clusterResource);
+      body.put(VirtualMachine.VAR_vmProject, vmProject);
+      body.put(VirtualMachine.VAR_vmName, vmName);
+      body.put(VirtualMachine.VAR_vmResource, nodeResource);
+      body.put(VirtualMachine.VAR_gpuDevicesTotal, gpuDeviceResult.getJsonArray("value").getString(1));
+
+      JsonObject pageParams = new JsonObject();
+      pageParams.put("body", body);
+      pageParams.put("path", new JsonObject());
+      pageParams.put("cookie", new JsonObject());
+      pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
+      JsonObject pageContext = new JsonObject().put("params", pageParams);
+      JsonObject pageRequest = new JsonObject().put("context", pageContext);
+
+      vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
+          .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
+          .addHeader("action", String.format("putimport%sFuture", classSimpleName))
+          ).onSuccess(message -> {
+        LOG.info(String.format("Imported %s-%s AI node", clusterName, vmName));
+        promise.complete();
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        promise.fail(ex);
+      });
+    } catch(Exception ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  protected Future<JsonArray> queryVmsTotal(Hub hub, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=kubevirt_vmi_info");
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  protected Future<JsonArray> queryVmsTotalForHub(Hub hub, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster) (kubevirt_vmi_info)"));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  protected Future<JsonArray> queryVmsTotalForCluster(JsonObject clusterJson, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubId = clusterJson.getString(Cluster.VAR_hubId);
+      String clusterName = clusterJson.getString(Cluster.VAR_clusterName);
+      String hubIdEnv = hubId.toUpperCase().replace("-", "");
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("sum by (cluster) (kubevirt_vmi_info{cluster=\"%s\"})", clusterName)));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  protected Future<Void> importVirtualMachineData(JsonObject clusterJson) {
+    Promise<Void> promise = Promise.promise();
+    String classSimpleName = VirtualMachine.CLASS_SIMPLE_NAME;
+    String classApiAddress = VirtualMachine.CLASS_API_ADDRESS_VirtualMachine;
+    String hubId = clusterJson.getString(Cluster.VAR_hubId);
+    String clusterName = clusterJson.getString(Cluster.VAR_clusterName);
+    try {
+      String authHostName = config.getString(ConfigKeys.AUTH_HOST_NAME);
+      Integer authPort = Integer.parseInt(config.getString(ConfigKeys.AUTH_PORT));
+      String authTokenUri = config.getString(ConfigKeys.AUTH_TOKEN_URI);
+      Boolean authSsl = Boolean.parseBoolean(config.getString(ConfigKeys.AUTH_SSL));
+      String authClient = config.getString(ConfigKeys.AUTH_CLIENT_SA);
+      String authSecret = config.getString(ConfigKeys.AUTH_SECRET_SA);
+      MultiMap form = MultiMap.caseInsensitiveMultiMap();
+      form.add("grant_type", "client_credentials");
+      UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(authClient, authSecret);
+      webClient.post(authPort, authHostName, authTokenUri).ssl(authSsl).authentication(credentials)
+          .putHeader("Content-Type", "application/json")
+          .sendForm(form)
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(requestAuthResponse -> {
+        try {
+          String accessToken = requestAuthResponse.bodyAsJsonObject().getString("access_token");
+          String hubIdEnv = hubId.toUpperCase().replace("-", "");
+          Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+          String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+          Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+          String promKeycloakProxyUri = String.format("/api/v1/query?query=kubevirt_vmi_info{cluster=\"%s\"}", clusterName);
+
+          webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+              .putHeader("Authorization", String.format("Bearer %s", accessToken))
+              .send()
+              .expecting(HttpResponseExpectation.SC_OK)
+              .onSuccess(metricsResponse -> {
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            JsonArray dataResult = metricsBody.getJsonObject("data").getJsonArray("result");
+            List<Future<?>> futures = new ArrayList<>();
+            dataResult.stream().map(o -> (JsonObject)o).forEach(clusterResult -> {
+              futures.add(Future.future(promise1 -> {
+                try {
+                  JsonObject clusterMetric = clusterResult.getJsonObject("metric");
+                  JsonArray clusterValue = clusterResult.getJsonArray("value");
+                  String vmName = clusterMetric.getString("name");
+                  String vmProject = clusterMetric.getString("namespace");
+                  String os = clusterMetric.getString("os");
+                  String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
+                  String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
+                  String vmResource = String.format("%s-%s-%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, vmProject, AiNode.CLASS_AUTH_RESOURCE, vmName);
+                  JsonObject body = new JsonObject();
+                  body.put(VirtualMachine.VAR_pk, vmResource);
+                  body.put(VirtualMachine.VAR_hubId, hubId);
+                  body.put(VirtualMachine.VAR_hubResource, hubResource);
+                  body.put(VirtualMachine.VAR_clusterName, clusterName);
+                  body.put(VirtualMachine.VAR_clusterResource, clusterResource);
+                  body.put(VirtualMachine.VAR_vmProject, vmProject);
+                  body.put(VirtualMachine.VAR_vmName, vmName);
+                  body.put(VirtualMachine.VAR_vmResource, vmResource);
+                  body.put(VirtualMachine.VAR_os, os);
+
+                  JsonObject pageParams = new JsonObject();
+                  pageParams.put("body", body);
+                  pageParams.put("path", new JsonObject());
+                  pageParams.put("cookie", new JsonObject());
+                  pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
+                  JsonObject pageContext = new JsonObject().put("params", pageParams);
+                  JsonObject pageRequest = new JsonObject().put("context", pageContext);
+
+                  vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
+                      .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
+                      .addHeader("action", String.format("putimport%sFuture", classSimpleName))
+                      ).onSuccess(message -> {
+                    LOG.info(String.format("Imported %s virtual machine", vmResource));
+                    promise1.complete();
+                  }).onFailure(ex -> {
+                    LOG.error(String.format(importDataFail, classSimpleName), ex);
+                    promise1.fail(ex);
+                  });
+                } catch(Exception ex) {
+                  LOG.error(String.format(importDataFail, classSimpleName), ex);
+                  promise1.fail(ex);
+                }
+              }));
+            });
+            Future.all(futures).onSuccess(b -> {
+              // cleanupVirtualMachines(siteRequest, dateTimeStarted, classSimpleName, accessToken).onSuccess(oldAiNodes -> {
+                promise.complete();
+              // }).onFailure(ex -> {
+              //   LOG.error(String.format(importDataFail, classSimpleName), ex);
+              //   promise.fail(ex);
+              // });
+            }).onFailure(ex -> {
+              LOG.error(String.format(importDataFail, classSimpleName), ex);
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
             LOG.error(String.format(importDataFail, classSimpleName), ex);
             promise.fail(ex);

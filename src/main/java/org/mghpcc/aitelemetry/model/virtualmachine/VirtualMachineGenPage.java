@@ -1,18 +1,18 @@
-package org.mghpcc.aitelemetry.page;
+package org.mghpcc.aitelemetry.model.virtualmachine;
 
-import org.mghpcc.aitelemetry.page.SitePage;
-import java.lang.Boolean;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
 import java.lang.String;
-import java.lang.Integer;
-import org.computate.vertx.search.list.SearchList;
-import io.vertx.core.json.JsonArray;
 import java.util.List;
+import io.vertx.pgclient.data.Point;
+import java.lang.Integer;
+import io.vertx.core.json.JsonObject;
 import org.mghpcc.aitelemetry.page.PageLayout;
 import org.mghpcc.aitelemetry.request.SiteRequest;
 import org.mghpcc.aitelemetry.user.SiteUser;
 import java.io.IOException;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import org.computate.vertx.search.list.SearchList;
 import org.computate.search.wrap.Wrap;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,8 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.core.json.JsonArray;
 import java.net.URLDecoder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,44 +44,43 @@ import java.util.HashMap;
 import org.computate.search.tool.TimeTool;
 import org.computate.search.tool.SearchTool;
 import java.time.ZoneId;
-import io.vertx.pgclient.data.Point;
 
 
 /**
  * Translate: false
  * Generated: true
  **/
-public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
+public class VirtualMachineGenPage extends VirtualMachineGenPageGen<PageLayout> {
 
   /**
    * {@inheritDoc}
    * Ignore: true
    **/
-  protected void _searchListSitePage_(Wrap<SearchList<SitePage>> w) {
+  protected void _searchListVirtualMachine_(Wrap<SearchList<VirtualMachine>> w) {
   }
 
   @Override
   protected void _pageResponse(Wrap<String> w) {
-    if(searchListSitePage_ != null)
-      w.o(Optional.ofNullable(searchListSitePage_.getResponse()).map(response -> JsonObject.mapFrom(response).toString()).orElse(null));
+    if(searchListVirtualMachine_ != null)
+      w.o(Optional.ofNullable(searchListVirtualMachine_.getResponse()).map(response -> JsonObject.mapFrom(response).toString()).orElse(null));
   }
 
   @Override
   protected void _stats(Wrap<SolrResponse.Stats> w) {
-    w.o(Optional.ofNullable(searchListSitePage_.getResponse()).map(response -> response.getStats()).orElse(null));
+    w.o(Optional.ofNullable(searchListVirtualMachine_.getResponse()).map(response -> response.getStats()).orElse(null));
   }
 
   @Override
   protected void _facetCounts(Wrap<SolrResponse.FacetCounts> w) {
-    w.o(Optional.ofNullable(searchListSitePage_.getResponse()).map(response -> response.getFacetCounts()).orElse(null));
+    w.o(Optional.ofNullable(searchListVirtualMachine_.getResponse()).map(response -> response.getFacetCounts()).orElse(null));
   }
 
   @Override
   protected void _pagination(JsonObject pagination) {
     JsonArray pages = new JsonArray();
-    Long start = searchListSitePage_.getStart().longValue();
-    Long rows = searchListSitePage_.getRows().longValue();
-    Long foundNum = Optional.ofNullable(searchListSitePage_.getResponse()).map(response -> response.getResponse().getNumFound().longValue()).orElse(Long.valueOf(searchListSitePage_.getList().size()));
+    Long start = searchListVirtualMachine_.getStart().longValue();
+    Long rows = searchListVirtualMachine_.getRows().longValue();
+    Long foundNum = Optional.ofNullable(searchListVirtualMachine_.getResponse()).map(response -> response.getResponse().getNumFound().longValue()).orElse(Long.valueOf(searchListVirtualMachine_.getList().size()));
     Long startNum = start + 1L;
     Long endNum = start + rows;
     Long floorMod = (rows == 0L ? 0L : Math.floorMod(foundNum, rows));
@@ -123,12 +122,12 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _varsQ(JsonObject vars) {
-    SitePage.varsQForClass().forEach(var -> {
+    VirtualMachine.varsQForClass().forEach(var -> {
       JsonObject json = new JsonObject();
       json.put("var", var);
-      json.put("displayName", Optional.ofNullable(SitePage.displayNameSitePage(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
-      json.put("classSimpleName", Optional.ofNullable(SitePage.classSimpleNameSitePage(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
-      json.put("val", Optional.ofNullable(searchListSitePage_.getRequest().getQuery()).filter(fq -> fq.startsWith(SitePage.varIndexedSitePage(var) + ":")).map(s -> SearchTool.unescapeQueryChars(StringUtils.substringAfter(s, ":"))).orElse(null));
+      json.put("displayName", Optional.ofNullable(VirtualMachine.displayNameVirtualMachine(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
+      json.put("classSimpleName", Optional.ofNullable(VirtualMachine.classSimpleNameVirtualMachine(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
+      json.put("val", Optional.ofNullable(searchListVirtualMachine_.getRequest().getQuery()).filter(fq -> fq.startsWith(VirtualMachine.varIndexedVirtualMachine(var) + ":")).map(s -> SearchTool.unescapeQueryChars(StringUtils.substringAfter(s, ":"))).orElse(null));
       vars.put(var, json);
     });
   }
@@ -141,17 +140,17 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
   protected void _varsFq(JsonObject vars) {
     Map<String, SolrResponse.FacetField> facetFields = Optional.ofNullable(facetCounts).map(c -> c.getFacetFields()).map(f -> f.getFacets()).orElse(new HashMap<String,SolrResponse.FacetField>());
     varsFqCount = 0;
-    for(String var : SitePage.varsFqForClass()) {
-      String varIndexed = SitePage.varIndexedSitePage(var);
-      String varStored = SitePage.varStoredSitePage(var);
+    for(String var : VirtualMachine.varsFqForClass()) {
+      String varIndexed = VirtualMachine.varIndexedVirtualMachine(var);
+      String varStored = VirtualMachine.varStoredVirtualMachine(var);
       JsonObject json = new JsonObject();
       json.put("var", var);
       json.put("varStored", varStored);
       json.put("varIndexed", varIndexed);
       String type = StringUtils.substringAfterLast(varIndexed, "_");
-      json.put("displayName", Optional.ofNullable(SitePage.displayNameSitePage(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
-      json.put("classSimpleName", Optional.ofNullable(SitePage.classSimpleNameSitePage(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
-      Object v = searchListSitePage_.getRequest().getFilterQueries().stream().filter(fq -> fq.startsWith(SitePage.varIndexedSitePage(var) + ":")).findFirst().map(s -> SearchTool.unescapeQueryChars(StringUtils.substringAfter(s, ":"))).orElse(null);
+      json.put("displayName", Optional.ofNullable(VirtualMachine.displayNameVirtualMachine(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
+      json.put("classSimpleName", Optional.ofNullable(VirtualMachine.classSimpleNameVirtualMachine(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
+      Object v = searchListVirtualMachine_.getRequest().getFilterQueries().stream().filter(fq -> fq.startsWith(VirtualMachine.varIndexedVirtualMachine(var) + ":")).findFirst().map(s -> SearchTool.unescapeQueryChars(StringUtils.substringAfter(s, ":"))).orElse(null);
       if(v != null) {
         json.put("val", v);
         varsFqCount++;
@@ -222,13 +221,13 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _varsRange(JsonObject vars) {
-    SitePage.varsRangeForClass().forEach(var -> {
-      String varIndexed = SitePage.varIndexedSitePage(var);
+    VirtualMachine.varsRangeForClass().forEach(var -> {
+      String varIndexed = VirtualMachine.varIndexedVirtualMachine(var);
       JsonObject json = new JsonObject();
       json.put("var", var);
-      json.put("displayName", Optional.ofNullable(SitePage.displayNameSitePage(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
-      json.put("classSimpleName", Optional.ofNullable(SitePage.classSimpleNameSitePage(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
-      json.put("val", searchListSitePage_.getRequest().getFilterQueries().stream().filter(fq -> fq.startsWith(SitePage.varIndexedSitePage(var) + ":")).findFirst().map(s -> SearchTool.unescapeQueryChars(StringUtils.substringAfter(s, ":"))).orElse(null));
+      json.put("displayName", Optional.ofNullable(VirtualMachine.displayNameVirtualMachine(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
+      json.put("classSimpleName", Optional.ofNullable(VirtualMachine.classSimpleNameVirtualMachine(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
+      json.put("val", searchListVirtualMachine_.getRequest().getFilterQueries().stream().filter(fq -> fq.startsWith(VirtualMachine.varIndexedVirtualMachine(var) + ":")).findFirst().map(s -> SearchTool.unescapeQueryChars(StringUtils.substringAfter(s, ":"))).orElse(null));
       vars.put(var, json);
     });
   }
@@ -239,7 +238,7 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
     JsonObject params = serviceRequest.getParams();
 
     JsonObject queryParams = Optional.ofNullable(serviceRequest).map(ServiceRequest::getParams).map(or -> or.getJsonObject("query")).orElse(new JsonObject());
-    Long num = Optional.ofNullable(searchListSitePage_.getResponse()).map(response -> response.getResponse().getNumFound().longValue()).orElse(Long.valueOf(searchListSitePage_.getList().size()));
+    Long num = Optional.ofNullable(searchListVirtualMachine_.getResponse()).map(response -> response.getResponse().getNumFound().longValue()).orElse(Long.valueOf(searchListVirtualMachine_.getList().size()));
     String q = "*:*";
     String q1 = "objectText";
     String q2 = "";
@@ -267,28 +266,28 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
     }
     query.put("q", q);
 
-    Long rows1 = Optional.ofNullable(searchListSitePage_).map(l -> l.getRows()).orElse(10L);
-    Long start1 = Optional.ofNullable(searchListSitePage_).map(l -> l.getStart()).orElse(1L);
+    Long rows1 = Optional.ofNullable(searchListVirtualMachine_).map(l -> l.getRows()).orElse(10L);
+    Long start1 = Optional.ofNullable(searchListVirtualMachine_).map(l -> l.getStart()).orElse(1L);
     Long start2 = start1 - rows1;
     Long start3 = start1 + rows1;
     Long rows2 = rows1 / 2;
     Long rows3 = rows1 * 2;
     start2 = start2 < 0 ? 0 : start2;
     JsonObject fqs = new JsonObject();
-    for(String fq : Optional.ofNullable(searchListSitePage_).map(l -> l.getFilterQueries()).orElse(Arrays.asList())) {
+    for(String fq : Optional.ofNullable(searchListVirtualMachine_).map(l -> l.getFilterQueries()).orElse(Arrays.asList())) {
       if(!StringUtils.contains(fq, "(")) {
-        String fq1 = SitePage.searchVarSitePage(StringUtils.substringBefore(fq, ":"));
+        String fq1 = VirtualMachine.searchVarVirtualMachine(StringUtils.substringBefore(fq, ":"));
         String fq2 = StringUtils.substringAfter(fq, ":");
         if(!StringUtils.startsWithAny(fq, "classCanonicalNames_", "archived_", "sessionId", "userKeys"))
-          fqs.put(fq1, new JsonObject().put("var", fq1).put("val", fq2).put("displayName", SitePage.displayNameForClass(fq1)));
+          fqs.put(fq1, new JsonObject().put("var", fq1).put("val", fq2).put("displayName", VirtualMachine.displayNameForClass(fq1)));
         }
       }
     query.put("fq", fqs);
 
     JsonArray sorts = new JsonArray();
-    for(String sort : Optional.ofNullable(searchListSitePage_).map(l -> l.getSorts()).orElse(Arrays.asList())) {
-      String sort1 = SitePage.searchVarSitePage(StringUtils.substringBefore(sort, " "));
-      sorts.add(new JsonObject().put("var", sort1).put("order", StringUtils.substringAfter(sort, " ")).put("displayName", SitePage.displayNameForClass(sort1)));
+    for(String sort : Optional.ofNullable(searchListVirtualMachine_).map(l -> l.getSorts()).orElse(Arrays.asList())) {
+      String sort1 = VirtualMachine.searchVarVirtualMachine(StringUtils.substringBefore(sort, " "));
+      sorts.add(new JsonObject().put("var", sort1).put("order", StringUtils.substringAfter(sort, " ")).put("displayName", VirtualMachine.displayNameForClass(sort1)));
     }
     query.put("sort", sorts);
   }
@@ -322,31 +321,31 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
   @Override
   protected void _rows(Wrap<Long> w) {
     if(serviceRequest.getParams().getJsonObject("query").getString("rows", null) != null)
-      w.o(searchListSitePage_.getRows());
+      w.o(searchListVirtualMachine_.getRows());
   }
 
   @Override
   protected void _start(Wrap<Long> w) {
     if(serviceRequest.getParams().getJsonObject("query").getString("start", null) != null)
-      w.o(searchListSitePage_.getStart());
+      w.o(searchListVirtualMachine_.getStart());
   }
 
   @Override
   protected void _rangeGap(Wrap<String> w) {
     if(serviceRequest.getParams().getJsonObject("query").getString("facet.range.gap", null) != null)
-      w.o(Optional.ofNullable(searchListSitePage_.getFacetRangeGap()).orElse(null));
+      w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetRangeGap()).orElse(null));
   }
 
   @Override
   protected void _rangeEnd(Wrap<ZonedDateTime> w) {
     if(serviceRequest.getParams().getJsonObject("query").getString("facet.range.end", null) != null)
-      w.o(Optional.ofNullable(searchListSitePage_.getFacetRangeEnd()).map(s -> TimeTool.parseZonedDateTime(defaultTimeZone, s)).orElse(null));
+      w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetRangeEnd()).map(s -> TimeTool.parseZonedDateTime(defaultTimeZone, s)).orElse(null));
   }
 
   @Override
   protected void _rangeStart(Wrap<ZonedDateTime> w) {
     if(serviceRequest.getParams().getJsonObject("query").getString("facet.range.start", null) != null)
-      w.o(Optional.ofNullable(searchListSitePage_.getFacetRangeStart()).map(s -> TimeTool.parseZonedDateTime(defaultTimeZone, s)).orElse(null));
+      w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetRangeStart()).map(s -> TimeTool.parseZonedDateTime(defaultTimeZone, s)).orElse(null));
   }
 
   @Override
@@ -366,31 +365,33 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _defaultRangeVar(Wrap<String> w) {
-    w.o(Optional.ofNullable(searchListSitePage_.getFacetRanges()).orElse(Optional.ofNullable(defaultRangeStats).map(s -> Arrays.asList(s.getString("defaultRangeVar"))).orElse(Arrays.asList())).stream().findFirst().map(v -> { if(v.contains("}")) return StringUtils.substringBefore(StringUtils.substringAfterLast(v, "}"), "_"); else return SitePage.searchVarSitePage(v); }).orElse("created"));
+    w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetRanges()).orElse(Optional.ofNullable(defaultRangeStats).map(s -> Arrays.asList(s.getString("defaultRangeVar"))).orElse(Arrays.asList())).stream().findFirst().map(v -> { if(v.contains("}")) return StringUtils.substringBefore(StringUtils.substringAfterLast(v, "}"), "_"); else return VirtualMachine.searchVarVirtualMachine(v); }).orElse("created"));
   }
 
   @Override
   protected void _defaultFacetSort(Wrap<String> w) {
-    w.o(Optional.ofNullable(searchListSitePage_.getFacetSort()).orElse("index"));
+    w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetSort()).orElse("index"));
   }
 
   @Override
   protected void _defaultFacetLimit(Wrap<Integer> w) {
-    w.o(Optional.ofNullable(searchListSitePage_.getFacetLimit()).orElse(1));
+    w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetLimit()).orElse(1));
   }
 
   @Override
   protected void _defaultFacetMinCount(Wrap<Integer> w) {
-    w.o(Optional.ofNullable(searchListSitePage_.getFacetMinCount()).orElse(1));
+    w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetMinCount()).orElse(1));
   }
 
   @Override
   protected void _defaultPivotMinCount(Wrap<Integer> w) {
-    w.o(Optional.ofNullable(searchListSitePage_.getFacetPivotMinCount()).orElse(0));
+    w.o(Optional.ofNullable(searchListVirtualMachine_.getFacetPivotMinCount()).orElse(0));
   }
 
   @Override
   protected void _DEFAULT_MAP_LOCATION(Wrap<JsonObject> w) {
+    Point point = VirtualMachine.staticSetLocation(siteRequest_, Optional.ofNullable(siteRequest_.getRequestVars().get(VAR_DEFAULT_MAP_LOCATION)).orElse(siteRequest_.getConfig().getString(ConfigKeys.DEFAULT_MAP_LOCATION)));
+    w.o(new JsonObject().put("type", "Point").put("coordinates", new JsonArray().add(Double.valueOf(point.getX())).add(Double.valueOf(point.getY()))));
   }
 
   @Override
@@ -402,10 +403,10 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _defaultSortVars(List<String> l) {
-    if(!searchListSitePage_.getDefaultSort()) {
-      Optional.ofNullable(searchListSitePage_.getSorts()).orElse(Arrays.asList()).forEach(varSortStr -> {
+    if(!searchListVirtualMachine_.getDefaultSort()) {
+      Optional.ofNullable(searchListVirtualMachine_.getSorts()).orElse(Arrays.asList()).forEach(varSortStr -> {
         String varSortParts[] = varSortStr.split(" ");
-        String varSort = SitePage.searchVarSitePage(varSortParts[0]);
+        String varSort = VirtualMachine.searchVarVirtualMachine(varSortParts[0]);
         String varSortDirection = varSortParts[1];
         l.add(String.format("%s %s", varSort, varSortDirection));
       });
@@ -414,14 +415,14 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _defaultFieldListVars(List<String> l) {
-    Optional.ofNullable(searchListSitePage_.getFields()).orElse(Arrays.asList()).forEach(varStored -> {
+    Optional.ofNullable(searchListVirtualMachine_.getFields()).orElse(Arrays.asList()).forEach(varStored -> {
       String varStored2 = varStored;
       if(StringUtils.contains(varStored2, "}"))
         varStored2 = StringUtils.substringAfterLast(varStored2, "}");
       String[] parts = varStored2.split(",");
       for(String part : parts) {
         if(StringUtils.isNotBlank(part)) {
-          String var = SitePage.searchVarSitePage(part);
+          String var = VirtualMachine.searchVarVirtualMachine(part);
           if(StringUtils.isNotBlank(var))
             l.add(var);
         }
@@ -431,14 +432,14 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _defaultStatsVars(List<String> l) {
-    Optional.ofNullable(searchListSitePage_.getStatsFields()).orElse(Arrays.asList()).forEach(varIndexed -> {
+    Optional.ofNullable(searchListVirtualMachine_.getStatsFields()).orElse(Arrays.asList()).forEach(varIndexed -> {
       String varIndexed2 = varIndexed;
       if(StringUtils.contains(varIndexed2, "}"))
         varIndexed2 = StringUtils.substringAfterLast(varIndexed2, "}");
       String[] parts = varIndexed2.split(",");
       for(String part : parts) {
         if(StringUtils.isNotBlank(part)) {
-          String var = SitePage.searchVarSitePage(part);
+          String var = VirtualMachine.searchVarVirtualMachine(part);
           if(StringUtils.isNotBlank(var))
             l.add(var);
         }
@@ -448,14 +449,14 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _defaultPivotVars(List<String> l) {
-    Optional.ofNullable(searchListSitePage_.getFacetPivots()).orElse(Arrays.asList()).forEach(facetPivot -> {
+    Optional.ofNullable(searchListVirtualMachine_.getFacetPivots()).orElse(Arrays.asList()).forEach(facetPivot -> {
       String facetPivot2 = facetPivot;
       if(StringUtils.contains(facetPivot2, "}"))
         facetPivot2 = StringUtils.substringAfterLast(facetPivot2, "}");
       String[] parts = facetPivot2.split(",");
       for(String part : parts) {
         if(StringUtils.isNotBlank(part)) {
-          String var = SitePage.searchVarSitePage(part);
+          String var = VirtualMachine.searchVarVirtualMachine(part);
           if(StringUtils.isNotBlank(var))
             l.add(var);
         }
@@ -466,20 +467,25 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
   /**
    * {@inheritDoc}
    **/
-  protected void _listSitePage(JsonArray l) {
-    Optional.ofNullable(searchListSitePage_).map(o -> o.getList()).orElse(Arrays.asList()).stream().map(o -> JsonObject.mapFrom(o)).forEach(o -> l.add(o));
+  protected void _listVirtualMachine(JsonArray l) {
+    Optional.ofNullable(searchListVirtualMachine_).map(o -> o.getList()).orElse(Arrays.asList()).stream().map(o -> JsonObject.mapFrom(o)).forEach(o -> l.add(o));
   }
 
   protected void _resultCount(Wrap<Integer> w) {
-    w.o(searchListSitePage_ == null ? 0 : searchListSitePage_.size());
+    w.o(searchListVirtualMachine_ == null ? 0 : searchListVirtualMachine_.size());
   }
 
   /**
    * Initialized: false
   **/
-  protected void _result(Wrap<SitePage> w) {
-    if(resultCount >= 1 && Optional.ofNullable(siteRequest_.getServiceRequest().getParams().getJsonObject("path")).map(o -> o.getString("pageId")).orElse(null) != null)
-      w.o(searchListSitePage_.get(0));
+  protected void _result(Wrap<VirtualMachine> w) {
+    if(resultCount >= 1 && Optional.ofNullable(siteRequest_.getServiceRequest().getParams().getJsonObject("path")).map(o -> o.getString("vmResource")).orElse(null) != null)
+      w.o(searchListVirtualMachine_.get(0));
+  }
+
+  protected void _pk(Wrap<Long> w) {
+    if(result != null)
+      w.o(result.getPk());
   }
 
   protected void _solrId(Wrap<String> w) {
@@ -494,7 +500,7 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _classSimpleName(Wrap<String> w) {
-    w.o("SitePage");
+    w.o("VirtualMachine");
   }
 
   @Override
@@ -502,21 +508,21 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
     if(result != null && result.getObjectTitle() != null)
       c.o(result.getObjectTitle());
     else if(result != null)
-      c.o("articles");
-    else if(searchListSitePage_ == null || resultCount == 0)
-      c.o("no article found");
+      c.o("virtual machines");
+    else if(searchListVirtualMachine_ == null || resultCount == 0)
+      c.o("no virtual machine found");
     else
-      c.o("articles");
+      c.o("virtual machines");
   }
 
   @Override
   protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/article");
+    c.o("/en-us/search/vm");
   }
 
   @Override
   protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/article");
+    c.o("/en-us/api/vm");
   }
 
   @Override
@@ -526,20 +532,20 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _pageDescription(Wrap<String> c) {
-      c.o("Read the latest articles to learn more");
+      c.o("A Red Hat OpenShift virtual machine");
   }
 
   @Override
   protected void _pageImageUri(Wrap<String> c) {
-      c.o("/png/en-us/search/article-999.png");
+      c.o("/png/en-us/search/vm-999.png");
   }
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-duotone fa-solid fa-newspaper\"></i>");
+      c.o("<i class=\"fa-regular fa-sidebar\"></i>");
   }
 
-  protected void _pageUriSitePage(Wrap<String> c) {
-      c.o("/en-us/search/article");
+  protected void _pageUriVirtualMachine(Wrap<String> c) {
+      c.o("/en-us/search/vm");
   }
 }

@@ -555,13 +555,6 @@ data:
     # extra vars #
     ##############
 
-    ########
-    # hubs #
-    ########
-
-    # Describes the available hubs as a JSON object. 
-    HUBS: '{ "local-cluster": { "hubName": "OpenShift Local", "description": "OpenShift Local on your own computer. " } }'
-
     #######################
     # prom-keycloak-proxy #
     #######################
@@ -576,7 +569,7 @@ data:
     # The Auth openshift secret with the client secret credentials. 
     AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('cloud-extra', true) }}"
     # The Auth secret. 
-    AUTH_SECRET_SA: "{{ lookup('env', 'AUTH_SECRET_SA') | default(AUTH_SECRET, true) }}"
+    AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_SECRET_SA | b64decode }}"
 
     ###########
     # grafana #
@@ -587,8 +580,10 @@ data:
     # Fulfillment API #
     ###################
 
+    # The fulfillment API secret name. 
+    FULFILLMENT_API_SECRET: "{{ lookup('env', 'FULFILLMENT_API_SECRET') | default('fulfillment-api', true) }}"
     # The Auth openshift secret with the admin credentials. 
-    FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default('cloud-extra', true) }}"
+    FULFILLMENT_API_OPENSHIFT_SECRET: "{{ lookup('env', 'FULFILLMENT_API_OPENSHIFT_SECRET') | default(FULFILLMENT_API_SECRET, true) }}"
     # The Auth admin username. 
     FULFILLMENT_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=FULFILLMENT_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\" } } )).data['token'] | b64decode }}"
     # Whether to use SSL when connecting to the fulfillment API. 
@@ -607,10 +602,12 @@ data:
     # ESI API #
     ###########
 
+    # The ESI API secret name. 
+    ESI_API_SECRET: "{{ lookup('env', 'ESI_API_SECRET') | default('esi-uitest-cloud-config', true) }}"
     # Enable thin UI
     ENABLE_THIN_UI: "{{ lookup('env', 'ENABLE_THIN_UI') | default('false', true) | bool }}"
     # The Auth openshift secret with the admin credentials. 
-    ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default('cloud-extra', true) }}"
+    ESI_API_OPENSHIFT_SECRET: "{{ lookup('env', 'ESI_API_OPENSHIFT_SECRET') | default(ESI_API_SECRET, true) }}"
     # The Auth admin username. 
     ESI_API_OPENSHIFT_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=ESI_API_OPENSHIFT_SECRET, namespace=SITE_NAMESPACE) | first | default({\"data\": {\"token\": \"\" } } )).data['token'] | b64decode }}"
     # Whether to use SSL when connecting to the fulfillment API. 

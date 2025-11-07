@@ -68,6 +68,7 @@ public class Project extends ProjectGen<BaseModel> {
 	 * HtmColumn: 1
 	 * HtmRowTitleOpen: project details
 	 * Facet: true
+   * DefaultFacet: true
 	 **/
 	protected void _hubId(Wrap<String> w) {}
 
@@ -95,6 +96,7 @@ public class Project extends ProjectGen<BaseModel> {
 	 * HtmCell: 3
 	 * HtmColumn: 2
 	 * Facet: true
+   * DefaultFacet: true
 	 **/
 	protected void _clusterName(Wrap<String> w) {}
 

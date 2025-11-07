@@ -66,6 +66,7 @@ public class AiNode extends AiNodeGen<BaseModel> {
 	 * HtmColumn: 1
 	 * HtmRowTitleOpen: AI node details
 	 * Facet: true
+   * DefaultFacet: true
 	 **/
 	protected void _hubId(Wrap<String> w) {}
 

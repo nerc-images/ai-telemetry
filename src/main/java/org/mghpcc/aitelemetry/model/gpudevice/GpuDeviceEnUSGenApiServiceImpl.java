@@ -678,15 +678,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							JsonObject jsonObject = JsonObject.mapFrom(o);
 							o2 = jsonObject.mapTo(GpuDevice.class);
 							o2.setSiteRequest_(siteRequest);
+							patchGpuDeviceFuture(o2, false).onSuccess(o3 -> {
+								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							}).onFailure(ex -> {
+								eventHandler.handle(Future.failedFuture(ex));
+							});
 						} else {
-							o2 = body.mapTo(GpuDevice.class);
-							o2.setSiteRequest_(siteRequest);
+							String m = String.format("%s %s not found", "GPU device", null);
+							eventHandler.handle(Future.failedFuture(m));
 						}
-						patchGpuDeviceFuture(o2, false).onSuccess(o3 -> {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-						}).onFailure(ex -> {
-							eventHandler.handle(Future.failedFuture(ex));
-						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchGpuDevice failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -723,7 +723,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestGpuDevice();
-											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 												eventBus.publish("websocketGpuDevice", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -2038,7 +2038,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestGpuDevice();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketGpuDevice", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -3471,7 +3471,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestGpuDevice();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketGpuDevice", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -4267,6 +4267,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 					params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
 					params.put("form", new JsonObject());
 					params.put("path", new JsonObject());
+					params.put("scopes", new JsonArray().add("GET").add("PATCH"));
 					JsonObject query = new JsonObject();
 					Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
 					Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);

@@ -674,15 +674,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							JsonObject jsonObject = JsonObject.mapFrom(o);
 							o2 = jsonObject.mapTo(Cluster.class);
 							o2.setSiteRequest_(siteRequest);
+							patchClusterFuture(o2, false).onSuccess(o3 -> {
+								eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
+							}).onFailure(ex -> {
+								eventHandler.handle(Future.failedFuture(ex));
+							});
 						} else {
-							o2 = body.mapTo(Cluster.class);
-							o2.setSiteRequest_(siteRequest);
+							String m = String.format("%s %s not found", "OpenShift cluster", null);
+							eventHandler.handle(Future.failedFuture(m));
 						}
-						patchClusterFuture(o2, false).onSuccess(o3 -> {
-							eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
-						}).onFailure(ex -> {
-							eventHandler.handle(Future.failedFuture(ex));
-						});
 					} catch(Exception ex) {
 						LOG.error(String.format("patchCluster failed. "), ex);
 						error(siteRequest, eventHandler, ex);
@@ -719,7 +719,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 										apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 										if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 											o2.apiRequestCluster();
-											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+											if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 												eventBus.publish("websocketCluster", JsonObject.mapFrom(apiRequest).toString());
 										}
 									}
@@ -984,6 +984,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							bSql.append(Cluster.VAR_gpuDevicesTotal + "=$" + num);
 							num++;
 							bParams.add(o2.sqlGpuDevicesTotal());
+						break;
+					case "setVmsTotal":
+							o2.setVmsTotal(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Cluster.VAR_vmsTotal + "=$" + num);
+							num++;
+							bParams.add(o2.sqlVmsTotal());
 						break;
 					case "setCpuCoresTotal":
 							o2.setCpuCoresTotal(jsonObject.getString(entityVar));
@@ -1592,6 +1600,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlGpuDevicesTotal());
 						break;
+					case Cluster.VAR_vmsTotal:
+						o2.setVmsTotal(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Cluster.VAR_vmsTotal + "=$" + num);
+						num++;
+						bParams.add(o2.sqlVmsTotal());
+						break;
 					case Cluster.VAR_cpuCoresTotal:
 						o2.setCpuCoresTotal(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1932,7 +1949,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestCluster();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketCluster", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -3325,7 +3342,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 									apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
 									if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
 										o2.apiRequestCluster();
-										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(false))
+										if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
 											eventBus.publish("websocketCluster", JsonObject.mapFrom(apiRequest).toString());
 									}
 								}
@@ -3792,7 +3809,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, description, sessionId, userKey, location, id, objectTitle, ngsildTenant, displayPage, ngsildPath, editPage, ngsildContext, userPage, ngsildData, download, aiNodesTotal, gpuDevicesTotal, cpuCoresTotal, memoryBytesTotal FROM Cluster WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, description, sessionId, userKey, location, id, objectTitle, ngsildTenant, displayPage, ngsildPath, editPage, ngsildContext, userPage, ngsildData, download, aiNodesTotal, gpuDevicesTotal, vmsTotal, cpuCoresTotal, memoryBytesTotal FROM Cluster WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4009,6 +4026,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 					params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
 					params.put("form", new JsonObject());
 					params.put("path", new JsonObject());
+					params.put("scopes", new JsonArray().add("GET").add("PATCH"));
 					JsonObject query = new JsonObject();
 					Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
 					Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -4079,6 +4097,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			page.persistForClass(Cluster.VAR_download, Cluster.staticSetDownload(siteRequest2, (String)result.get(Cluster.VAR_download)));
 			page.persistForClass(Cluster.VAR_aiNodesTotal, Cluster.staticSetAiNodesTotal(siteRequest2, (String)result.get(Cluster.VAR_aiNodesTotal)));
 			page.persistForClass(Cluster.VAR_gpuDevicesTotal, Cluster.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(Cluster.VAR_gpuDevicesTotal)));
+			page.persistForClass(Cluster.VAR_vmsTotal, Cluster.staticSetVmsTotal(siteRequest2, (String)result.get(Cluster.VAR_vmsTotal)));
 			page.persistForClass(Cluster.VAR_cpuCoresTotal, Cluster.staticSetCpuCoresTotal(siteRequest2, (String)result.get(Cluster.VAR_cpuCoresTotal)));
 			page.persistForClass(Cluster.VAR_memoryBytesTotal, Cluster.staticSetMemoryBytesTotal(siteRequest2, (String)result.get(Cluster.VAR_memoryBytesTotal)));
 

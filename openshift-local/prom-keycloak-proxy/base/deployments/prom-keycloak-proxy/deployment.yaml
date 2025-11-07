@@ -19,9 +19,9 @@ spec:
           env:
             - name: PROXY_ACM_HUB
               value: REPLACE_IN_OVERLAY
-            - name: PROXY_PROMETHEUS_CA_CRT
+            - name: PROXY_PROMETHEUS_CA_CERT
               value: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
-            - name: PROXY_PROMETHEUS_TLS_CRT
+            - name: PROXY_PROMETHEUS_TLS_CERT
               value: /opt/prom-keycloak-proxy-certs/tls.crt
             - name: PROXY_PROMETHEUS_TLS_KEY
               value: /opt/prom-keycloak-proxy-certs/tls.key

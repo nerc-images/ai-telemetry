@@ -59,6 +59,16 @@
         value: >-
           local {{ DATABASE_DATABASE }} {{ DATABASE_USERNAME }} trust
   ignore_errors: true
+- name: "Configure launch.json for workbench {{ WORKBENCH_NAME }}"
+  kubernetes.core.k8s_cp:
+    state: to_pod
+    namespace: "{{ WORKBENCH_NAMESPACE }}"
+    pod: "{{ WORKBENCH_NAME }}-0"
+    container: "{{ WORKBENCH_NAME }}"
+    remote_path: /opt/app-root/src/.vscode/launch.json
+    content: |
+      {{ lookup('template', 'launch.json', convert_data=false) | from_json | to_nice_json }}
+    validate_certs: false
 - name: "Configure vscode extensions for workbench {{ WORKBENCH_NAME }}"
   kubernetes.core.k8s_cp:
     state: to_pod
@@ -234,16 +244,6 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'route.yaml') }}"
-    validate_certs: false
-- name: "Configure launch.json for workbench {{ WORKBENCH_NAME }}"
-  kubernetes.core.k8s_cp:
-    state: to_pod
-    namespace: "{{ WORKBENCH_NAMESPACE }}"
-    pod: "{{ WORKBENCH_NAME }}-0"
-    container: "{{ WORKBENCH_NAME }}"
-    remote_path: /opt/app-root/src/.vscode/launch.json
-    content: |
-      {{ lookup('template', 'launch.json', convert_data=false) | from_json | to_nice_json }}
     validate_certs: false
 - name: "Configure generate.sh for workbench {{ WORKBENCH_NAME }}"
   kubernetes.core.k8s_cp:

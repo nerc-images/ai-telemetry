@@ -3,12 +3,12 @@ find \
   ~/.local/src/ai-telemetry/vars.yaml \
   ~/.local/src/ai-telemetry/README.md \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/verticle/SiteRoutes.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/Hub.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePagePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/Hub.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/Cluster.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterEnUSApiServiceImpl.java \

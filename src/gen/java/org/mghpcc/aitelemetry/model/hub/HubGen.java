@@ -94,12 +94,6 @@ import org.computate.search.response.solr.SolrResponse;
  * <h2>ApiMethode: EditPage</h2>
  * <p>This class contains a comment <b>"ApiMethod: EditPage"</b>, which creates an API "EditPage". 
  * </p>
- * <h2>ApiMethode: DisplayPage</h2>
- * <p>This class contains a comment <b>"ApiMethod: DisplayPage"</b>, which creates an API "DisplayPage". 
- * </p>
- * <h2>ApiMethode: UserPage</h2>
- * <p>This class contains a comment <b>"ApiMethod: UserPage"</b>, which creates an API "UserPage". 
- * </p>
  * <h2>ApiMethode: DELETEFilter</h2>
  * <p>This class contains a comment <b>"ApiMethod: DELETEFilter"</b>, which creates an API "DELETEFilter". 
  * </p>
@@ -205,7 +199,7 @@ public abstract class HubGen<DEV> extends BaseModel {
 	public static final String Search_enUS_OpenApiUri = "/en-us/api/hub";
 	public static final String Search_enUS_StringFormatUri = "/en-us/api/hub";
 	public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/hub";
-	public static final String GET_enUS_OpenApiUri = "/en-us/api/hub/{hubResource}";
+	public static final String GET_enUS_OpenApiUri = "/en-us/api/hub/{hubId}";
 	public static final String GET_enUS_StringFormatUri = "/en-us/api/hub/%s";
 	public static final String GET_enUS_StringFormatUrl = "%s/en-us/api/hub/%s";
 	public static final String PATCH_enUS_OpenApiUri = "/en-us/api/hub";
@@ -214,7 +208,7 @@ public abstract class HubGen<DEV> extends BaseModel {
 	public static final String POST_enUS_OpenApiUri = "/en-us/api/hub";
 	public static final String POST_enUS_StringFormatUri = "/en-us/api/hub";
 	public static final String POST_enUS_StringFormatUrl = "%s/en-us/api/hub";
-	public static final String DELETE_enUS_OpenApiUri = "/en-us/api/hub/{hubResource}";
+	public static final String DELETE_enUS_OpenApiUri = "/en-us/api/hub/{hubId}";
 	public static final String DELETE_enUS_StringFormatUri = "/en-us/api/hub/%s";
 	public static final String DELETE_enUS_StringFormatUrl = "%s/en-us/api/hub/%s";
 	public static final String PUTImport_enUS_OpenApiUri = "/en-us/api/hub-import";
@@ -226,12 +220,6 @@ public abstract class HubGen<DEV> extends BaseModel {
 	public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/hub/{hubId}";
 	public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/hub/%s";
 	public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/hub/%s";
-	public static final String DisplayPage_enUS_OpenApiUri = "/en-us/view/hub/{hubId}";
-	public static final String DisplayPage_enUS_StringFormatUri = "/en-us/view/hub/%s";
-	public static final String DisplayPage_enUS_StringFormatUrl = "%s/en-us/view/hub/%s";
-	public static final String UserPage_enUS_OpenApiUri = "/en-us/user/hub/{hubId}";
-	public static final String UserPage_enUS_StringFormatUri = "/en-us/user/hub/%s";
-	public static final String UserPage_enUS_StringFormatUrl = "%s/en-us/user/hub/%s";
 	public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/hub";
 	public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/hub";
 	public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/hub";
@@ -1131,7 +1119,7 @@ public abstract class HubGen<DEV> extends BaseModel {
 
 	@Override
 	public String idForClass() {
-		return hubResource;
+		return hubId;
 	}
 
 	@Override
@@ -1161,12 +1149,12 @@ public abstract class HubGen<DEV> extends BaseModel {
 
 	@Override
 	public String classStringFormatUrlDisplayPageForClass() {
-		return "%s/en-us/view/hub/%s";
+		return null;
 	}
 
 	@Override
 	public String classStringFormatUrlUserPageForClass() {
-		return "%s/en-us/user/hub/%s";
+		return null;
 	}
 
 	@Override

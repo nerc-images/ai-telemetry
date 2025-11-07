@@ -51,9 +51,9 @@ KAFKA_SSL_TRUSTSTORE_PASSWORD: "{{ query('kubernetes.core.k8s', kind='Secret', r
 WORKBENCH_NAMES:
   - USER_NAME: computate
     WORKBENCH_ADMIN: true
-  - USER_NAME: tzumainn
-  - USER_NAME: isaiahstapleton
-  - USER_NAME: danniesh
-  - USER_NAME: schwesig
-  - USER_NAME: tsisodia10
-  - USER_NAME: ajamias
+#  - USER_NAME: tzumainn
+#  - USER_NAME: isaiahstapleton
+#  - USER_NAME: danniesh
+#  - USER_NAME: schwesig
+#  - USER_NAME: tsisodia10
+#  - USER_NAME: ajamias

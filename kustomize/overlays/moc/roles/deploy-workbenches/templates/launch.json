@@ -26,5 +26,38 @@
         , "RUN_AUTHORIZATION_GENERATOR": "true"
       }
     }
+    , {
+      "name": "MOC prom-keycloak-proxy"
+      , "type": "go"
+      , "request": "launch"
+      , "mode": "debug"
+      , "program": "${workspaceFolder}/prom-keycloak-proxy"
+      , "env": {
+          "PROXY_AUTH_CLIENT_ID": "ai-telemetry-sa"
+          , "PROXY_HUB_KEY": "HUB"
+          , "PROXY_CLUSTER_KEY": "CLUSTER"
+          , "PROXY_PROJECT_KEY": "PROJECT"
+          , "PROXY_AUTH_CLIENT_SECRET": "${env:AUTH_SECRET_SA}"
+          , "PROXY_ACM_HUB": "moc"
+          , "PROXY_AUTH_REALM": "NERC"
+          , "PROXY_AUTH_BASE_URL": "https://keycloak.apps.obs.nerc.mghpcc.org"
+          , "PROXY_AUTH_TLS_VERIFY": "true"
+          , "PROXY_PROMETHEUS_BASE_URL": "https://observatorium-api-open-cluster-management-observability.apps.infra.nerc.mghpcc.org/api/metrics/v1/default"
+          , "PROXY_PROMETHEUS_CA_CERT": "/opt/app-root/src/proxy/moc/ca.crt"
+          , "PROXY_PROMETHEUS_TLS_CERT": "/opt/app-root/src/proxy/moc/tls.crt"
+          , "PROXY_PROMETHEUS_TLS_KEY": "/opt/app-root/src/proxy/moc/tls.key"
+          , "GOMODCACHE": "/opt/app-root/src/.gocache"
+      }
+    }
+    , {
+      "name": "Test prom-keycloak-proxy"
+      , "type": "go"
+      , "request": "launch"
+      , "mode": "test"
+      , "program": "${workspaceFolder}/prom-keycloak-proxy/queriestest/parse_test.go"
+      , "env": {
+          "GOMODCACHE": "/opt/app-root/src/.gocache"
+      }
+    }
   ]
 }
