@@ -829,14 +829,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							}));
 						});
 						break;
-					case "setCreated":
-							o2.setCreated(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(GpuDevice.VAR_created + "=$" + num);
-							num++;
-							bParams.add(o2.sqlCreated());
-						break;
 					case "setClusterName":
 							o2.setClusterName(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -844,6 +836,14 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							bSql.append(GpuDevice.VAR_clusterName + "=$" + num);
 							num++;
 							bParams.add(o2.sqlClusterName());
+						break;
+					case "setCreated":
+							o2.setCreated(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(GpuDevice.VAR_created + "=$" + num);
+							num++;
+							bParams.add(o2.sqlCreated());
 						break;
 					case "setClusterResource":
 						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -876,14 +876,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							}));
 						});
 						break;
-					case "setArchived":
-							o2.setArchived(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(GpuDevice.VAR_archived + "=$" + num);
-							num++;
-							bParams.add(o2.sqlArchived());
-						break;
 					case "setNodeName":
 							o2.setNodeName(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -891,6 +883,14 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							bSql.append(GpuDevice.VAR_nodeName + "=$" + num);
 							num++;
 							bParams.add(o2.sqlNodeName());
+						break;
+					case "setArchived":
+							o2.setArchived(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(GpuDevice.VAR_archived + "=$" + num);
+							num++;
+							bParams.add(o2.sqlArchived());
 						break;
 					case "setNodeResource":
 						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -947,14 +947,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							num++;
 							bParams.add(o2.sqlSessionId());
 						break;
-					case "setUserKey":
-							o2.setUserKey(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(GpuDevice.VAR_userKey + "=$" + num);
-							num++;
-							bParams.add(o2.sqlUserKey());
-						break;
 					case "setModelName":
 							o2.setModelName(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -962,6 +954,14 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							bSql.append(GpuDevice.VAR_modelName + "=$" + num);
 							num++;
 							bParams.add(o2.sqlModelName());
+						break;
+					case "setUserKey":
+							o2.setUserKey(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(GpuDevice.VAR_userKey + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserKey());
 						break;
 					case "setGpuDeviceUtilization":
 							o2.setGpuDeviceUtilization(jsonObject.getString(entityVar));
@@ -1003,14 +1003,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							num++;
 							bParams.add(o2.sqlEditPage());
 						break;
-					case "setUserPage":
-							o2.setUserPage(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(GpuDevice.VAR_userPage + "=$" + num);
-							num++;
-							bParams.add(o2.sqlUserPage());
-						break;
 					case "setLocation":
 							o2.setLocation(jsonObject.getJsonObject(entityVar));
 							if(bParams.size() > 0)
@@ -1019,13 +1011,13 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							num++;
 							bParams.add(o2.sqlLocation());
 						break;
-					case "setDownload":
-							o2.setDownload(jsonObject.getString(entityVar));
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(GpuDevice.VAR_download + "=$" + num);
+							bSql.append(GpuDevice.VAR_userPage + "=$" + num);
 							num++;
-							bParams.add(o2.sqlDownload());
+							bParams.add(o2.sqlUserPage());
 						break;
 					case "setId":
 							o2.setId(jsonObject.getString(entityVar));
@@ -1034,6 +1026,14 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							bSql.append(GpuDevice.VAR_id + "=$" + num);
 							num++;
 							bParams.add(o2.sqlId());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(GpuDevice.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 					case "setNgsildTenant":
 							o2.setNgsildTenant(jsonObject.getString(entityVar));
@@ -1478,15 +1478,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							}));
 						});
 						break;
-					case GpuDevice.VAR_created:
-						o2.setCreated(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(GpuDevice.VAR_created + "=$" + num);
-						num++;
-						bParams.add(o2.sqlCreated());
-						break;
 					case GpuDevice.VAR_clusterName:
 						o2.setClusterName(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1495,6 +1486,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 						bSql.append(GpuDevice.VAR_clusterName + "=$" + num);
 						num++;
 						bParams.add(o2.sqlClusterName());
+						break;
+					case GpuDevice.VAR_created:
+						o2.setCreated(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(GpuDevice.VAR_created + "=$" + num);
+						num++;
+						bParams.add(o2.sqlCreated());
 						break;
 					case GpuDevice.VAR_clusterResource:
 						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -1516,15 +1516,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 							}));
 						});
 						break;
-					case GpuDevice.VAR_archived:
-						o2.setArchived(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(GpuDevice.VAR_archived + "=$" + num);
-						num++;
-						bParams.add(o2.sqlArchived());
-						break;
 					case GpuDevice.VAR_nodeName:
 						o2.setNodeName(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1533,6 +1524,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 						bSql.append(GpuDevice.VAR_nodeName + "=$" + num);
 						num++;
 						bParams.add(o2.sqlNodeName());
+						break;
+					case GpuDevice.VAR_archived:
+						o2.setArchived(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(GpuDevice.VAR_archived + "=$" + num);
+						num++;
+						bParams.add(o2.sqlArchived());
 						break;
 					case GpuDevice.VAR_nodeResource:
 						Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -1581,15 +1581,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 						num++;
 						bParams.add(o2.sqlSessionId());
 						break;
-					case GpuDevice.VAR_userKey:
-						o2.setUserKey(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(GpuDevice.VAR_userKey + "=$" + num);
-						num++;
-						bParams.add(o2.sqlUserKey());
-						break;
 					case GpuDevice.VAR_modelName:
 						o2.setModelName(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1598,6 +1589,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 						bSql.append(GpuDevice.VAR_modelName + "=$" + num);
 						num++;
 						bParams.add(o2.sqlModelName());
+						break;
+					case GpuDevice.VAR_userKey:
+						o2.setUserKey(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(GpuDevice.VAR_userKey + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserKey());
 						break;
 					case GpuDevice.VAR_gpuDeviceUtilization:
 						o2.setGpuDeviceUtilization(jsonObject.getString(entityVar));
@@ -1644,15 +1644,6 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 						num++;
 						bParams.add(o2.sqlEditPage());
 						break;
-					case GpuDevice.VAR_userPage:
-						o2.setUserPage(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(GpuDevice.VAR_userPage + "=$" + num);
-						num++;
-						bParams.add(o2.sqlUserPage());
-						break;
 					case GpuDevice.VAR_location:
 						o2.setLocation(jsonObject.getJsonObject(entityVar));
 						if(bParams.size() > 0) {
@@ -1662,14 +1653,14 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 						num++;
 						bParams.add(o2.sqlLocation());
 						break;
-					case GpuDevice.VAR_download:
-						o2.setDownload(jsonObject.getString(entityVar));
+					case GpuDevice.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(GpuDevice.VAR_download + "=$" + num);
+						bSql.append(GpuDevice.VAR_userPage + "=$" + num);
 						num++;
-						bParams.add(o2.sqlDownload());
+						bParams.add(o2.sqlUserPage());
 						break;
 					case GpuDevice.VAR_id:
 						o2.setId(jsonObject.getString(entityVar));
@@ -1679,6 +1670,15 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 						bSql.append(GpuDevice.VAR_id + "=$" + num);
 						num++;
 						bParams.add(o2.sqlId());
+						break;
+					case GpuDevice.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(GpuDevice.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					case GpuDevice.VAR_ngsildTenant:
 						o2.setNgsildTenant(jsonObject.getString(entityVar));
@@ -3980,7 +3980,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, nodeName, nodeResource, gpuDeviceNumber, gpuDeviceResource, sessionId, userKey, modelName, gpuDeviceUtilization, description, objectTitle, displayPage, editPage, userPage, location, download, id, ngsildTenant, ngsildPath, ngsildContext, ngsildData FROM GpuDevice WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, created, clusterResource, nodeName, archived, nodeResource, gpuDeviceNumber, gpuDeviceResource, sessionId, modelName, userKey, gpuDeviceUtilization, description, objectTitle, displayPage, editPage, location, userPage, id, download, ngsildTenant, ngsildPath, ngsildContext, ngsildData FROM GpuDevice WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4318,26 +4318,26 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
 
 			page.persistForClass(GpuDevice.VAR_hubId, GpuDevice.staticSetHubId(siteRequest2, (String)result.get(GpuDevice.VAR_hubId)));
 			page.persistForClass(GpuDevice.VAR_hubResource, GpuDevice.staticSetHubResource(siteRequest2, (String)result.get(GpuDevice.VAR_hubResource)));
-			page.persistForClass(GpuDevice.VAR_created, GpuDevice.staticSetCreated(siteRequest2, (String)result.get(GpuDevice.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(GpuDevice.VAR_clusterName, GpuDevice.staticSetClusterName(siteRequest2, (String)result.get(GpuDevice.VAR_clusterName)));
+			page.persistForClass(GpuDevice.VAR_created, GpuDevice.staticSetCreated(siteRequest2, (String)result.get(GpuDevice.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(GpuDevice.VAR_clusterResource, GpuDevice.staticSetClusterResource(siteRequest2, (String)result.get(GpuDevice.VAR_clusterResource)));
-			page.persistForClass(GpuDevice.VAR_archived, GpuDevice.staticSetArchived(siteRequest2, (String)result.get(GpuDevice.VAR_archived)));
 			page.persistForClass(GpuDevice.VAR_nodeName, GpuDevice.staticSetNodeName(siteRequest2, (String)result.get(GpuDevice.VAR_nodeName)));
+			page.persistForClass(GpuDevice.VAR_archived, GpuDevice.staticSetArchived(siteRequest2, (String)result.get(GpuDevice.VAR_archived)));
 			page.persistForClass(GpuDevice.VAR_nodeResource, GpuDevice.staticSetNodeResource(siteRequest2, (String)result.get(GpuDevice.VAR_nodeResource)));
 			page.persistForClass(GpuDevice.VAR_gpuDeviceNumber, GpuDevice.staticSetGpuDeviceNumber(siteRequest2, (String)result.get(GpuDevice.VAR_gpuDeviceNumber)));
 			page.persistForClass(GpuDevice.VAR_gpuDeviceResource, GpuDevice.staticSetGpuDeviceResource(siteRequest2, (String)result.get(GpuDevice.VAR_gpuDeviceResource)));
 			page.persistForClass(GpuDevice.VAR_sessionId, GpuDevice.staticSetSessionId(siteRequest2, (String)result.get(GpuDevice.VAR_sessionId)));
-			page.persistForClass(GpuDevice.VAR_userKey, GpuDevice.staticSetUserKey(siteRequest2, (String)result.get(GpuDevice.VAR_userKey)));
 			page.persistForClass(GpuDevice.VAR_modelName, GpuDevice.staticSetModelName(siteRequest2, (String)result.get(GpuDevice.VAR_modelName)));
+			page.persistForClass(GpuDevice.VAR_userKey, GpuDevice.staticSetUserKey(siteRequest2, (String)result.get(GpuDevice.VAR_userKey)));
 			page.persistForClass(GpuDevice.VAR_gpuDeviceUtilization, GpuDevice.staticSetGpuDeviceUtilization(siteRequest2, (String)result.get(GpuDevice.VAR_gpuDeviceUtilization)));
 			page.persistForClass(GpuDevice.VAR_description, GpuDevice.staticSetDescription(siteRequest2, (String)result.get(GpuDevice.VAR_description)));
 			page.persistForClass(GpuDevice.VAR_objectTitle, GpuDevice.staticSetObjectTitle(siteRequest2, (String)result.get(GpuDevice.VAR_objectTitle)));
 			page.persistForClass(GpuDevice.VAR_displayPage, GpuDevice.staticSetDisplayPage(siteRequest2, (String)result.get(GpuDevice.VAR_displayPage)));
 			page.persistForClass(GpuDevice.VAR_editPage, GpuDevice.staticSetEditPage(siteRequest2, (String)result.get(GpuDevice.VAR_editPage)));
-			page.persistForClass(GpuDevice.VAR_userPage, GpuDevice.staticSetUserPage(siteRequest2, (String)result.get(GpuDevice.VAR_userPage)));
 			page.persistForClass(GpuDevice.VAR_location, GpuDevice.staticSetLocation(siteRequest2, (String)result.get(GpuDevice.VAR_location)));
-			page.persistForClass(GpuDevice.VAR_download, GpuDevice.staticSetDownload(siteRequest2, (String)result.get(GpuDevice.VAR_download)));
+			page.persistForClass(GpuDevice.VAR_userPage, GpuDevice.staticSetUserPage(siteRequest2, (String)result.get(GpuDevice.VAR_userPage)));
 			page.persistForClass(GpuDevice.VAR_id, GpuDevice.staticSetId(siteRequest2, (String)result.get(GpuDevice.VAR_id)));
+			page.persistForClass(GpuDevice.VAR_download, GpuDevice.staticSetDownload(siteRequest2, (String)result.get(GpuDevice.VAR_download)));
 			page.persistForClass(GpuDevice.VAR_ngsildTenant, GpuDevice.staticSetNgsildTenant(siteRequest2, (String)result.get(GpuDevice.VAR_ngsildTenant)));
 			page.persistForClass(GpuDevice.VAR_ngsildPath, GpuDevice.staticSetNgsildPath(siteRequest2, (String)result.get(GpuDevice.VAR_ngsildPath)));
 			page.persistForClass(GpuDevice.VAR_ngsildContext, GpuDevice.staticSetNgsildContext(siteRequest2, (String)result.get(GpuDevice.VAR_ngsildContext)));

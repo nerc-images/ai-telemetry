@@ -825,14 +825,6 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							}));
 						});
 						break;
-					case "setCreated":
-							o2.setCreated(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(Cluster.VAR_created + "=$" + num);
-							num++;
-							bParams.add(o2.sqlCreated());
-						break;
 					case "setClusterName":
 							o2.setClusterName(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -840,6 +832,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							bSql.append(Cluster.VAR_clusterName + "=$" + num);
 							num++;
 							bParams.add(o2.sqlClusterName());
+						break;
+					case "setCreated":
+							o2.setCreated(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Cluster.VAR_created + "=$" + num);
+							num++;
+							bParams.add(o2.sqlCreated());
 						break;
 					case "setClusterResource":
 							o2.setClusterResource(jsonObject.getString(entityVar));
@@ -873,14 +873,6 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlSessionId());
 						break;
-					case "setUserKey":
-							o2.setUserKey(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(Cluster.VAR_userKey + "=$" + num);
-							num++;
-							bParams.add(o2.sqlUserKey());
-						break;
 					case "setLocation":
 							o2.setLocation(jsonObject.getJsonObject(entityVar));
 							if(bParams.size() > 0)
@@ -888,6 +880,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							bSql.append(Cluster.VAR_location + "=$" + num);
 							num++;
 							bParams.add(o2.sqlLocation());
+						break;
+					case "setUserKey":
+							o2.setUserKey(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Cluster.VAR_userKey + "=$" + num);
+							num++;
+							bParams.add(o2.sqlUserKey());
 						break;
 					case "setId":
 							o2.setId(jsonObject.getString(entityVar));
@@ -897,14 +897,6 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlId());
 						break;
-					case "setObjectTitle":
-							o2.setObjectTitle(jsonObject.getString(entityVar));
-							if(bParams.size() > 0)
-								bSql.append(", ");
-							bSql.append(Cluster.VAR_objectTitle + "=$" + num);
-							num++;
-							bParams.add(o2.sqlObjectTitle());
-						break;
 					case "setNgsildTenant":
 							o2.setNgsildTenant(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -913,13 +905,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlNgsildTenant());
 						break;
-					case "setDisplayPage":
-							o2.setDisplayPage(jsonObject.getString(entityVar));
+					case "setObjectTitle":
+							o2.setObjectTitle(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(Cluster.VAR_displayPage + "=$" + num);
+							bSql.append(Cluster.VAR_objectTitle + "=$" + num);
 							num++;
-							bParams.add(o2.sqlDisplayPage());
+							bParams.add(o2.sqlObjectTitle());
 						break;
 					case "setNgsildPath":
 							o2.setNgsildPath(jsonObject.getString(entityVar));
@@ -929,13 +921,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlNgsildPath());
 						break;
-					case "setEditPage":
-							o2.setEditPage(jsonObject.getString(entityVar));
+					case "setDisplayPage":
+							o2.setDisplayPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(Cluster.VAR_editPage + "=$" + num);
+							bSql.append(Cluster.VAR_displayPage + "=$" + num);
 							num++;
-							bParams.add(o2.sqlEditPage());
+							bParams.add(o2.sqlDisplayPage());
 						break;
 					case "setNgsildContext":
 							o2.setNgsildContext(jsonObject.getString(entityVar));
@@ -945,13 +937,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlNgsildContext());
 						break;
-					case "setUserPage":
-							o2.setUserPage(jsonObject.getString(entityVar));
+					case "setEditPage":
+							o2.setEditPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(Cluster.VAR_userPage + "=$" + num);
+							bSql.append(Cluster.VAR_editPage + "=$" + num);
 							num++;
-							bParams.add(o2.sqlUserPage());
+							bParams.add(o2.sqlEditPage());
 						break;
 					case "setNgsildData":
 							o2.setNgsildData(jsonObject.getJsonObject(entityVar));
@@ -961,13 +953,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlNgsildData());
 						break;
-					case "setDownload":
-							o2.setDownload(jsonObject.getString(entityVar));
+					case "setUserPage":
+							o2.setUserPage(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
 								bSql.append(", ");
-							bSql.append(Cluster.VAR_download + "=$" + num);
+							bSql.append(Cluster.VAR_userPage + "=$" + num);
 							num++;
-							bParams.add(o2.sqlDownload());
+							bParams.add(o2.sqlUserPage());
 						break;
 					case "setAiNodesTotal":
 							o2.setAiNodesTotal(jsonObject.getString(entityVar));
@@ -976,6 +968,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							bSql.append(Cluster.VAR_aiNodesTotal + "=$" + num);
 							num++;
 							bParams.add(o2.sqlAiNodesTotal());
+						break;
+					case "setDownload":
+							o2.setDownload(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Cluster.VAR_download + "=$" + num);
+							num++;
+							bParams.add(o2.sqlDownload());
 						break;
 					case "setGpuDevicesTotal":
 							o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
@@ -1420,15 +1420,6 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							}));
 						});
 						break;
-					case Cluster.VAR_created:
-						o2.setCreated(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(Cluster.VAR_created + "=$" + num);
-						num++;
-						bParams.add(o2.sqlCreated());
-						break;
 					case Cluster.VAR_clusterName:
 						o2.setClusterName(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1437,6 +1428,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						bSql.append(Cluster.VAR_clusterName + "=$" + num);
 						num++;
 						bParams.add(o2.sqlClusterName());
+						break;
+					case Cluster.VAR_created:
+						o2.setCreated(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Cluster.VAR_created + "=$" + num);
+						num++;
+						bParams.add(o2.sqlCreated());
 						break;
 					case Cluster.VAR_clusterResource:
 						o2.setClusterResource(jsonObject.getString(entityVar));
@@ -1474,15 +1474,6 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlSessionId());
 						break;
-					case Cluster.VAR_userKey:
-						o2.setUserKey(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(Cluster.VAR_userKey + "=$" + num);
-						num++;
-						bParams.add(o2.sqlUserKey());
-						break;
 					case Cluster.VAR_location:
 						o2.setLocation(jsonObject.getJsonObject(entityVar));
 						if(bParams.size() > 0) {
@@ -1491,6 +1482,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						bSql.append(Cluster.VAR_location + "=$" + num);
 						num++;
 						bParams.add(o2.sqlLocation());
+						break;
+					case Cluster.VAR_userKey:
+						o2.setUserKey(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Cluster.VAR_userKey + "=$" + num);
+						num++;
+						bParams.add(o2.sqlUserKey());
 						break;
 					case Cluster.VAR_id:
 						o2.setId(jsonObject.getString(entityVar));
@@ -1501,15 +1501,6 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlId());
 						break;
-					case Cluster.VAR_objectTitle:
-						o2.setObjectTitle(jsonObject.getString(entityVar));
-						if(bParams.size() > 0) {
-							bSql.append(", ");
-						}
-						bSql.append(Cluster.VAR_objectTitle + "=$" + num);
-						num++;
-						bParams.add(o2.sqlObjectTitle());
-						break;
 					case Cluster.VAR_ngsildTenant:
 						o2.setNgsildTenant(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
@@ -1519,14 +1510,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlNgsildTenant());
 						break;
-					case Cluster.VAR_displayPage:
-						o2.setDisplayPage(jsonObject.getString(entityVar));
+					case Cluster.VAR_objectTitle:
+						o2.setObjectTitle(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(Cluster.VAR_displayPage + "=$" + num);
+						bSql.append(Cluster.VAR_objectTitle + "=$" + num);
 						num++;
-						bParams.add(o2.sqlDisplayPage());
+						bParams.add(o2.sqlObjectTitle());
 						break;
 					case Cluster.VAR_ngsildPath:
 						o2.setNgsildPath(jsonObject.getString(entityVar));
@@ -1537,14 +1528,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlNgsildPath());
 						break;
-					case Cluster.VAR_editPage:
-						o2.setEditPage(jsonObject.getString(entityVar));
+					case Cluster.VAR_displayPage:
+						o2.setDisplayPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(Cluster.VAR_editPage + "=$" + num);
+						bSql.append(Cluster.VAR_displayPage + "=$" + num);
 						num++;
-						bParams.add(o2.sqlEditPage());
+						bParams.add(o2.sqlDisplayPage());
 						break;
 					case Cluster.VAR_ngsildContext:
 						o2.setNgsildContext(jsonObject.getString(entityVar));
@@ -1555,14 +1546,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlNgsildContext());
 						break;
-					case Cluster.VAR_userPage:
-						o2.setUserPage(jsonObject.getString(entityVar));
+					case Cluster.VAR_editPage:
+						o2.setEditPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(Cluster.VAR_userPage + "=$" + num);
+						bSql.append(Cluster.VAR_editPage + "=$" + num);
 						num++;
-						bParams.add(o2.sqlUserPage());
+						bParams.add(o2.sqlEditPage());
 						break;
 					case Cluster.VAR_ngsildData:
 						o2.setNgsildData(jsonObject.getJsonObject(entityVar));
@@ -1573,14 +1564,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						num++;
 						bParams.add(o2.sqlNgsildData());
 						break;
-					case Cluster.VAR_download:
-						o2.setDownload(jsonObject.getString(entityVar));
+					case Cluster.VAR_userPage:
+						o2.setUserPage(jsonObject.getString(entityVar));
 						if(bParams.size() > 0) {
 							bSql.append(", ");
 						}
-						bSql.append(Cluster.VAR_download + "=$" + num);
+						bSql.append(Cluster.VAR_userPage + "=$" + num);
 						num++;
-						bParams.add(o2.sqlDownload());
+						bParams.add(o2.sqlUserPage());
 						break;
 					case Cluster.VAR_aiNodesTotal:
 						o2.setAiNodesTotal(jsonObject.getString(entityVar));
@@ -1590,6 +1581,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						bSql.append(Cluster.VAR_aiNodesTotal + "=$" + num);
 						num++;
 						bParams.add(o2.sqlAiNodesTotal());
+						break;
+					case Cluster.VAR_download:
+						o2.setDownload(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Cluster.VAR_download + "=$" + num);
+						num++;
+						bParams.add(o2.sqlDownload());
 						break;
 					case Cluster.VAR_gpuDevicesTotal:
 						o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
@@ -3809,7 +3809,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, description, sessionId, userKey, location, id, objectTitle, ngsildTenant, displayPage, ngsildPath, editPage, ngsildContext, userPage, ngsildData, download, aiNodesTotal, gpuDevicesTotal, vmsTotal, cpuCoresTotal, memoryBytesTotal FROM Cluster WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, created, clusterResource, archived, description, sessionId, location, userKey, id, ngsildTenant, objectTitle, ngsildPath, displayPage, ngsildContext, editPage, ngsildData, userPage, aiNodesTotal, download, gpuDevicesTotal, vmsTotal, cpuCoresTotal, memoryBytesTotal FROM Cluster WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4077,25 +4077,25 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 
 			page.persistForClass(Cluster.VAR_hubId, Cluster.staticSetHubId(siteRequest2, (String)result.get(Cluster.VAR_hubId)));
 			page.persistForClass(Cluster.VAR_hubResource, Cluster.staticSetHubResource(siteRequest2, (String)result.get(Cluster.VAR_hubResource)));
-			page.persistForClass(Cluster.VAR_created, Cluster.staticSetCreated(siteRequest2, (String)result.get(Cluster.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(Cluster.VAR_clusterName, Cluster.staticSetClusterName(siteRequest2, (String)result.get(Cluster.VAR_clusterName)));
+			page.persistForClass(Cluster.VAR_created, Cluster.staticSetCreated(siteRequest2, (String)result.get(Cluster.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
 			page.persistForClass(Cluster.VAR_clusterResource, Cluster.staticSetClusterResource(siteRequest2, (String)result.get(Cluster.VAR_clusterResource)));
 			page.persistForClass(Cluster.VAR_archived, Cluster.staticSetArchived(siteRequest2, (String)result.get(Cluster.VAR_archived)));
 			page.persistForClass(Cluster.VAR_description, Cluster.staticSetDescription(siteRequest2, (String)result.get(Cluster.VAR_description)));
 			page.persistForClass(Cluster.VAR_sessionId, Cluster.staticSetSessionId(siteRequest2, (String)result.get(Cluster.VAR_sessionId)));
-			page.persistForClass(Cluster.VAR_userKey, Cluster.staticSetUserKey(siteRequest2, (String)result.get(Cluster.VAR_userKey)));
 			page.persistForClass(Cluster.VAR_location, Cluster.staticSetLocation(siteRequest2, (String)result.get(Cluster.VAR_location)));
+			page.persistForClass(Cluster.VAR_userKey, Cluster.staticSetUserKey(siteRequest2, (String)result.get(Cluster.VAR_userKey)));
 			page.persistForClass(Cluster.VAR_id, Cluster.staticSetId(siteRequest2, (String)result.get(Cluster.VAR_id)));
-			page.persistForClass(Cluster.VAR_objectTitle, Cluster.staticSetObjectTitle(siteRequest2, (String)result.get(Cluster.VAR_objectTitle)));
 			page.persistForClass(Cluster.VAR_ngsildTenant, Cluster.staticSetNgsildTenant(siteRequest2, (String)result.get(Cluster.VAR_ngsildTenant)));
-			page.persistForClass(Cluster.VAR_displayPage, Cluster.staticSetDisplayPage(siteRequest2, (String)result.get(Cluster.VAR_displayPage)));
+			page.persistForClass(Cluster.VAR_objectTitle, Cluster.staticSetObjectTitle(siteRequest2, (String)result.get(Cluster.VAR_objectTitle)));
 			page.persistForClass(Cluster.VAR_ngsildPath, Cluster.staticSetNgsildPath(siteRequest2, (String)result.get(Cluster.VAR_ngsildPath)));
-			page.persistForClass(Cluster.VAR_editPage, Cluster.staticSetEditPage(siteRequest2, (String)result.get(Cluster.VAR_editPage)));
+			page.persistForClass(Cluster.VAR_displayPage, Cluster.staticSetDisplayPage(siteRequest2, (String)result.get(Cluster.VAR_displayPage)));
 			page.persistForClass(Cluster.VAR_ngsildContext, Cluster.staticSetNgsildContext(siteRequest2, (String)result.get(Cluster.VAR_ngsildContext)));
-			page.persistForClass(Cluster.VAR_userPage, Cluster.staticSetUserPage(siteRequest2, (String)result.get(Cluster.VAR_userPage)));
+			page.persistForClass(Cluster.VAR_editPage, Cluster.staticSetEditPage(siteRequest2, (String)result.get(Cluster.VAR_editPage)));
 			page.persistForClass(Cluster.VAR_ngsildData, Cluster.staticSetNgsildData(siteRequest2, (String)result.get(Cluster.VAR_ngsildData)));
-			page.persistForClass(Cluster.VAR_download, Cluster.staticSetDownload(siteRequest2, (String)result.get(Cluster.VAR_download)));
+			page.persistForClass(Cluster.VAR_userPage, Cluster.staticSetUserPage(siteRequest2, (String)result.get(Cluster.VAR_userPage)));
 			page.persistForClass(Cluster.VAR_aiNodesTotal, Cluster.staticSetAiNodesTotal(siteRequest2, (String)result.get(Cluster.VAR_aiNodesTotal)));
+			page.persistForClass(Cluster.VAR_download, Cluster.staticSetDownload(siteRequest2, (String)result.get(Cluster.VAR_download)));
 			page.persistForClass(Cluster.VAR_gpuDevicesTotal, Cluster.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(Cluster.VAR_gpuDevicesTotal)));
 			page.persistForClass(Cluster.VAR_vmsTotal, Cluster.staticSetVmsTotal(siteRequest2, (String)result.get(Cluster.VAR_vmsTotal)));
 			page.persistForClass(Cluster.VAR_cpuCoresTotal, Cluster.staticSetCpuCoresTotal(siteRequest2, (String)result.get(Cluster.VAR_cpuCoresTotal)));

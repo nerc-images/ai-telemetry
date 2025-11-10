@@ -14430,7 +14430,7 @@ components:
   securitySchemes:
     openIdConnect:
       type: openIdConnect
-      openIdConnectUrl: https://keycloak.apps-crc.testing/realms/AITELEMETRY/.well-known/openid-configuration
+      openIdConnectUrl: https://keycloak.apps.obs.nerc.mghpcc.org/realms/NERC/.well-known/openid-configuration
   requestBodies:
     SearchBareMetalNetworkResponse:
       content:
@@ -21703,8 +21703,6 @@ components:
                       type: string
                   location:
                     type: object
-                  gpuDevicesTotal:
-                    type: string
                   id:
                     type: string
                   entityShortId:
@@ -21849,13 +21847,6 @@ components:
               type: object
             removeAllLocation:
               type: object
-            setGpuDevicesTotal:
-              type: string
-              nullable: true
-            removeGpuDevicesTotal:
-              type: string
-            removeAllGpuDevicesTotal:
-              type: string
             setId:
               type: string
               nullable: true
@@ -22030,13 +22021,6 @@ components:
               type: object
             removeAllLocation:
               type: object
-            setGpuDevicesTotal:
-              type: string
-              nullable: true
-            removeGpuDevicesTotal:
-              type: string
-            removeAllGpuDevicesTotal:
-              type: string
             setId:
               type: string
               nullable: true
@@ -22117,8 +22101,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22169,8 +22151,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22221,8 +22201,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22278,8 +22256,6 @@ components:
                       type: string
                   location:
                     type: object
-                  gpuDevicesTotal:
-                    type: string
                   id:
                     type: string
                   entityShortId:
@@ -22330,8 +22306,6 @@ components:
                       type: string
                   location:
                     type: object
-                  gpuDevicesTotal:
-                    type: string
                   id:
                     type: string
                   entityShortId:
@@ -22382,8 +22356,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22434,8 +22406,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:

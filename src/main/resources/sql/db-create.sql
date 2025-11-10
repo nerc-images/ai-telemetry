@@ -332,7 +332,6 @@ ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS os text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS vmResource text UNIQUE;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS description text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS location point;
-ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS gpuDevicesTotal integer;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS id text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS ngsildTenant text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS ngsildPath text;

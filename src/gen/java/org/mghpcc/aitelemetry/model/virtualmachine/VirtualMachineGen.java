@@ -50,7 +50,6 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.BeanDescription;
 import java.util.stream.Collectors;
 import io.vertx.core.json.Json;
-import java.lang.Integer;
 import org.computate.vertx.serialize.vertx.JsonObjectDeserializer;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
@@ -1133,70 +1132,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 		return location;
 	}
 
-	/////////////////////
-	// gpuDevicesTotal //
-	/////////////////////
-
-
-	/**	 The entity gpuDevicesTotal
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Integer gpuDevicesTotal;
-
-	/**	<br> The entity gpuDevicesTotal
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine&fq=entiteVar_enUS_indexed_string:gpuDevicesTotal">Find the entity gpuDevicesTotal in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _gpuDevicesTotal(Wrap<Integer> w);
-
-	public Integer getGpuDevicesTotal() {
-		return gpuDevicesTotal;
-	}
-
-	public void setGpuDevicesTotal(Integer gpuDevicesTotal) {
-		this.gpuDevicesTotal = gpuDevicesTotal;
-	}
-	@JsonIgnore
-	public void setGpuDevicesTotal(String o) {
-		this.gpuDevicesTotal = VirtualMachine.staticSetGpuDevicesTotal(siteRequest_, o);
-	}
-	public static Integer staticSetGpuDevicesTotal(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Integer.parseInt(o);
-		return null;
-	}
-	protected VirtualMachine gpuDevicesTotalInit() {
-		Wrap<Integer> gpuDevicesTotalWrap = new Wrap<Integer>().var("gpuDevicesTotal");
-		if(gpuDevicesTotal == null) {
-			_gpuDevicesTotal(gpuDevicesTotalWrap);
-			Optional.ofNullable(gpuDevicesTotalWrap.getO()).ifPresent(o -> {
-				setGpuDevicesTotal(o);
-			});
-		}
-		return (VirtualMachine)this;
-	}
-
-	public static Integer staticSearchGpuDevicesTotal(SiteRequest siteRequest_, Integer o) {
-		return o;
-	}
-
-	public static String staticSearchStrGpuDevicesTotal(SiteRequest siteRequest_, Integer o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqGpuDevicesTotal(SiteRequest siteRequest_, String o) {
-		return VirtualMachine.staticSearchGpuDevicesTotal(siteRequest_, VirtualMachine.staticSetGpuDevicesTotal(siteRequest_, o)).toString();
-	}
-
-	public Integer sqlGpuDevicesTotal() {
-		return gpuDevicesTotal;
-	}
-
 	////////
 	// id //
 	////////
@@ -1581,7 +1516,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 				locationTitlesInit();
 				locationLinksInit();
 				locationInit();
-				gpuDevicesTotalInit();
 				idInit();
 				entityShortIdInit();
 				ngsildTenantInit();
@@ -1669,8 +1603,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 				return oVirtualMachine.locationLinks;
 			case "location":
 				return oVirtualMachine.location;
-			case "gpuDevicesTotal":
-				return oVirtualMachine.gpuDevicesTotal;
 			case "id":
 				return oVirtualMachine.id;
 			case "entityShortId":
@@ -1762,8 +1694,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return VirtualMachine.staticSetLocationLinks(siteRequest_, v);
 		case "location":
 			return VirtualMachine.staticSetLocation(siteRequest_, v);
-		case "gpuDevicesTotal":
-			return VirtualMachine.staticSetGpuDevicesTotal(siteRequest_, v);
 		case "id":
 			return VirtualMachine.staticSetId(siteRequest_, v);
 		case "entityShortId":
@@ -1818,8 +1748,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return VirtualMachine.staticSearchLocationLinks(siteRequest_, (String)o);
 		case "location":
 			return VirtualMachine.staticSearchLocation(siteRequest_, (Point)o);
-		case "gpuDevicesTotal":
-			return VirtualMachine.staticSearchGpuDevicesTotal(siteRequest_, (Integer)o);
 		case "id":
 			return VirtualMachine.staticSearchId(siteRequest_, (String)o);
 		case "entityShortId":
@@ -1874,8 +1802,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return VirtualMachine.staticSearchStrLocationLinks(siteRequest_, (String)o);
 		case "location":
 			return VirtualMachine.staticSearchStrLocation(siteRequest_, (Point)o);
-		case "gpuDevicesTotal":
-			return VirtualMachine.staticSearchStrGpuDevicesTotal(siteRequest_, (Integer)o);
 		case "id":
 			return VirtualMachine.staticSearchStrId(siteRequest_, (String)o);
 		case "entityShortId":
@@ -1930,8 +1856,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return VirtualMachine.staticSearchFqLocationLinks(siteRequest_, o);
 		case "location":
 			return VirtualMachine.staticSearchFqLocation(siteRequest_, o);
-		case "gpuDevicesTotal":
-			return VirtualMachine.staticSearchFqGpuDevicesTotal(siteRequest_, o);
 		case "id":
 			return VirtualMachine.staticSearchFqId(siteRequest_, o);
 		case "entityShortId":
@@ -2031,14 +1955,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 					setLocation((Point)val);
 				}
 				saves.add("location");
-				return val;
-			} else if("gpudevicestotal".equals(varLower)) {
-				if(val instanceof Integer) {
-					setGpuDevicesTotal((Integer)val);
-				} else {
-					setGpuDevicesTotal(val == null ? null : val.toString());
-				}
-				saves.add("gpuDevicesTotal");
 				return val;
 			} else if("id".equals(varLower)) {
 				if(val instanceof String) {
@@ -2178,12 +2094,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 					oVirtualMachine.setLocation(location);
 			}
 
-			if(saves.contains("gpuDevicesTotal")) {
-				Integer gpuDevicesTotal = (Integer)doc.get("gpuDevicesTotal_docvalues_int");
-				if(gpuDevicesTotal != null)
-					oVirtualMachine.setGpuDevicesTotal(gpuDevicesTotal);
-			}
-
 			if(saves.contains("id")) {
 				String id = (String)doc.get("id_docvalues_string");
 				if(id != null)
@@ -2279,9 +2189,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 		if(location != null) {
 			doc.put("location_docvalues_location", String.format("%s,%s", location.getY(), location.getX()));
 		}
-		if(gpuDevicesTotal != null) {
-			doc.put("gpuDevicesTotal_docvalues_int", gpuDevicesTotal);
-		}
 		if(id != null) {
 			doc.put("id_docvalues_string", id);
 		}
@@ -2334,8 +2241,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 				return "locationLinks_indexedstored_strings";
 			case "location":
 				return "location_docvalues_location";
-			case "gpuDevicesTotal":
-				return "gpuDevicesTotal_docvalues_int";
 			case "id":
 				return "id_docvalues_string";
 			case "entityShortId":
@@ -2383,8 +2288,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 				return "locationLinks_indexedstored_strings";
 			case "location":
 				return "location_docvalues_location";
-			case "gpuDevicesTotal":
-				return "gpuDevicesTotal_docvalues_int";
 			case "id":
 				return "id_docvalues_string";
 			case "entityShortId":
@@ -2432,8 +2335,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 				return "locationLinks";
 			case "location_docvalues_location":
 				return "location";
-			case "gpuDevicesTotal_docvalues_int":
-				return "gpuDevicesTotal";
 			case "id_docvalues_string":
 				return "id";
 			case "entityShortId_docvalues_string":
@@ -2496,7 +2397,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			oVirtualMachine.addLocationLinks(VirtualMachine.staticSetLocationLinks(siteRequest, v.toString()));
 		});
 		oVirtualMachine.setLocation(Optional.ofNullable(doc.get("location_docvalues_location")).map(v -> v.toString()).orElse(null));
-		oVirtualMachine.setGpuDevicesTotal(Optional.ofNullable(doc.get("gpuDevicesTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
 		oVirtualMachine.setId(Optional.ofNullable(doc.get("id_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oVirtualMachine.setEntityShortId(Optional.ofNullable(doc.get("entityShortId_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oVirtualMachine.setNgsildTenant(Optional.ofNullable(doc.get("ngsildTenant_docvalues_string")).map(v -> v.toString()).orElse(null));
@@ -2544,8 +2444,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 				apiRequest.addVars("locationLinks");
 			if(!Objects.equals(location, original.getLocation()))
 				apiRequest.addVars("location");
-			if(!Objects.equals(gpuDevicesTotal, original.getGpuDevicesTotal()))
-				apiRequest.addVars("gpuDevicesTotal");
 			if(!Objects.equals(id, original.getId()))
 				apiRequest.addVars("id");
 			if(!Objects.equals(entityShortId, original.getEntityShortId()))
@@ -2583,7 +2481,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 		sb.append(Optional.ofNullable(locationTitles).map(v -> "locationTitles: " + v + "\n").orElse(""));
 		sb.append(Optional.ofNullable(locationLinks).map(v -> "locationLinks: " + v + "\n").orElse(""));
 		sb.append(Optional.ofNullable(location).map(v -> "location: " + v + "\n").orElse(""));
-		sb.append(Optional.ofNullable(gpuDevicesTotal).map(v -> "gpuDevicesTotal: " + v + "\n").orElse(""));
 		sb.append(Optional.ofNullable(id).map(v -> "id: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(entityShortId).map(v -> "entityShortId: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(ngsildTenant).map(v -> "ngsildTenant: \"" + v + "\"\n" ).orElse(""));
@@ -2614,7 +2511,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 	public static final String VAR_locationTitles = "locationTitles";
 	public static final String VAR_locationLinks = "locationLinks";
 	public static final String VAR_location = "location";
-	public static final String VAR_gpuDevicesTotal = "gpuDevicesTotal";
 	public static final String VAR_id = "id";
 	public static final String VAR_entityShortId = "entityShortId";
 	public static final String VAR_ngsildTenant = "ngsildTenant";
@@ -2644,7 +2540,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 		vars.add(VAR_vmResource);
 		vars.add(VAR_vmDisplayName);
 		vars.add(VAR_location);
-		vars.add(VAR_gpuDevicesTotal);
 		vars.add(VAR_id);
 		vars.add(VAR_entityShortId);
 		vars.add(VAR_ngsildTenant);
@@ -2660,7 +2555,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 	}
 	public static List<String> varsRangeVirtualMachine(List<String> vars) {
 		vars.add(VAR_location);
-		vars.add(VAR_gpuDevicesTotal);
 		vars.add(VAR_ngsildData);
 		BaseModel.varsRangeBaseModel(vars);
 		return vars;
@@ -2680,7 +2574,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 	public static final String DISPLAY_NAME_locationTitles = "area served titles";
 	public static final String DISPLAY_NAME_locationLinks = "area served links";
 	public static final String DISPLAY_NAME_location = "location";
-	public static final String DISPLAY_NAME_gpuDevicesTotal = "GPU devices total";
 	public static final String DISPLAY_NAME_id = "entity ID";
 	public static final String DISPLAY_NAME_entityShortId = "short entity ID";
 	public static final String DISPLAY_NAME_ngsildTenant = "NGSILD-Tenant";
@@ -2766,8 +2659,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return DISPLAY_NAME_locationLinks;
 		case VAR_location:
 			return DISPLAY_NAME_location;
-		case VAR_gpuDevicesTotal:
-			return DISPLAY_NAME_gpuDevicesTotal;
 		case VAR_id:
 			return DISPLAY_NAME_id;
 		case VAR_entityShortId:
@@ -2817,8 +2708,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return "The links of each location Paths. ";
 		case VAR_location:
 			return "Geojson reference to the item. It can be Point, LineString, Polygon, MultiPoint, MultiLineString or MultiPolygon";
-		case VAR_gpuDevicesTotal:
-			return "The total number of GPU devices on this cluster. ";
 		case VAR_id:
 			return "A unique ID for this Smart Data Model";
 		case VAR_entityShortId:
@@ -2866,8 +2755,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return "List";
 		case VAR_location:
 			return "Point";
-		case VAR_gpuDevicesTotal:
-			return "Integer";
 		case VAR_id:
 			return "String";
 		case VAR_entityShortId:
@@ -2918,8 +2805,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return 3;
 		case VAR_location:
 			return 10;
-		case VAR_gpuDevicesTotal:
-			return 3;
 		case VAR_id:
 			return 3;
 		case VAR_ngsildTenant:
@@ -2951,8 +2836,6 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return 2;
 		case VAR_location:
 			return 1;
-		case VAR_gpuDevicesTotal:
-			return 6;
 		case VAR_id:
 			return 4;
 		case VAR_ngsildTenant:

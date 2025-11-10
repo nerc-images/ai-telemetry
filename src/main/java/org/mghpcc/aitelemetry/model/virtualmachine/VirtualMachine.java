@@ -247,18 +247,6 @@ public class VirtualMachine extends VirtualMachineGen<BaseModel> {
 	 * {@inheritDoc}
 	 * DocValues: true
 	 * Persist: true
-	 * DisplayName: GPU devices total
-	 * Description: The total number of GPU devices on this cluster. 
-	 * HtmRow: 3
-	 * HtmCell: 6
-	 * Facet: true
-	 */
-	protected void _gpuDevicesTotal(Wrap<Integer> w) {}
-
-	/**
-	 * {@inheritDoc}
-	 * DocValues: true
-	 * Persist: true
 	 * DisplayName: entity ID
 	 * Description: A unique ID for this Smart Data Model
 	 * HtmRow: 3
