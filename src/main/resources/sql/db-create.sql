@@ -55,6 +55,7 @@ ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS download text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS hubId text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS hubResource text references Hub(hubResource);
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS clusterName text;
+ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS hubCluster boolean;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS clusterResource text UNIQUE;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS description text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS location point;
@@ -142,6 +143,7 @@ ALTER TABLE Project ADD COLUMN IF NOT EXISTS clusterResource text references Clu
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectName text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectResource text UNIQUE;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS description text;
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS gpuEnabled boolean;
 
 CREATE TABLE IF NOT EXISTS ClusterTemplate();
 ALTER TABLE ClusterTemplate ADD COLUMN IF NOT EXISTS pk bigserial primary key;
@@ -332,7 +334,6 @@ ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS os text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS vmResource text UNIQUE;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS description text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS location point;
-ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS gpuDevicesTotal integer;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS id text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS ngsildTenant text;
 ALTER TABLE VirtualMachine ADD COLUMN IF NOT EXISTS ngsildPath text;

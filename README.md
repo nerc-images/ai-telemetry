@@ -81,7 +81,7 @@ These dashboards will be useful to researchers and managers of research projects
   - Backend and frontend software development of OpenAPI and dashboards for GPU enabled OpenShift AI clusters for reporting AI workload telemetry backed by Keycloak by Red Hat Software Quality Engineer, [Dheeraj Jodha](https://github.com/dheerajodha)
   - Using OpenShift Observability GPU metrics and Alert Manager to start and stop telemetry traces for GPU enabled OpenShift clusters in the New England Research Cloud by Red Hat Technical Support Engineer, [Cristiano Saggin](https://github.com/rh-csaggin)
 
-The [AI Telemetry project is already public open source on GitHub](https://github.com/OCP-on-NERC/ai-telemetry) and under development and local deployment by the Red Hat Research and Red Hat Gig participants. 
+The [AI Telemetry project is already public open source on GitHub](https://github.com/nerc-images/ai-telemetry) and under development and local deployment by the Red Hat Research and Red Hat Gig participants. 
 
 Other Red Hatters, Mass Open Cloud Researchers, and members of the Computate Open Source Community are welcome to join our one of our daily webinars regularly in APAC, EMEA, and Americas timezones throughout the week. 
 The [AI Telemetry Zoom webinar is provided by Christopher Tate and computate.org](https://www.computate.org/en-us/webinar/ai-telemetry-webinar) to facilitate the creation of a healthy open source community for AI Telmetry. 

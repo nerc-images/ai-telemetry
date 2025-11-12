@@ -1,5 +1,5 @@
 ---
-GITHUB_ORG: OCP-on-NERC
+GITHUB_ORG: nerc-images
 CLUSTER_ADMIN_GROUP: nerc-ops
 SITE_NAMESPACE: ai-telemetry-cbca60
 AUTH_NAMESPACE: "{{ SITE_NAMESPACE }}"

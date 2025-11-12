@@ -29,7 +29,7 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/OCP-on-NERC/ai-telemetry/issues</url>
+    <url>https://github.com/nerc-images/ai-telemetry/issues</url>
   </issueManagement>
 
   <organization>
@@ -46,9 +46,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/OCP-on-NERC/ai-telemetry.git</connection>
-    <developerConnection>scm:git:ssh://github.com:OCP-on-NERC/ai-telemetry.git</developerConnection>
-    <url>http://github.com/OCP-on-NERC/ai-telemetry/tree/master</url>
+    <connection>scm:git:git://github.com/nerc-images/ai-telemetry.git</connection>
+    <developerConnection>scm:git:ssh://github.com:nerc-images/ai-telemetry.git</developerConnection>
+    <url>http://github.com/nerc-images/ai-telemetry/tree/master</url>
   </scm>
 
   <repositories>

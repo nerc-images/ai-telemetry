@@ -37,6 +37,7 @@ import java.math.RoundingMode;
 import java.util.Map;
 import java.lang.String;
 import org.mghpcc.aitelemetry.model.hub.Hub;
+import java.lang.Boolean;
 import io.vertx.core.json.JsonArray;
 import io.vertx.pgclient.data.Point;
 import org.computate.vertx.serialize.pgclient.PgClientPointSerializer;
@@ -424,6 +425,119 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 
 	public String sqlClusterName() {
 		return clusterName;
+	}
+
+	////////////////
+	// hubCluster //
+	////////////////
+
+
+	/**	 The entity hubCluster
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonInclude(Include.NON_NULL)
+	protected Boolean hubCluster;
+
+	/**	<br> The entity hubCluster
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:hubCluster">Find the entity hubCluster in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _hubCluster(Wrap<Boolean> w);
+
+	public Boolean getHubCluster() {
+		return hubCluster;
+	}
+
+	public void setHubCluster(Boolean hubCluster) {
+		this.hubCluster = hubCluster;
+	}
+	@JsonIgnore
+	public void setHubCluster(String o) {
+		this.hubCluster = Cluster.staticSetHubCluster(siteRequest_, o);
+	}
+	public static Boolean staticSetHubCluster(SiteRequest siteRequest_, String o) {
+		return Boolean.parseBoolean(o);
+	}
+	protected Cluster hubClusterInit() {
+		Wrap<Boolean> hubClusterWrap = new Wrap<Boolean>().var("hubCluster");
+		if(hubCluster == null) {
+			_hubCluster(hubClusterWrap);
+			Optional.ofNullable(hubClusterWrap.getO()).ifPresent(o -> {
+				setHubCluster(o);
+			});
+		}
+		return (Cluster)this;
+	}
+
+	public static Boolean staticSearchHubCluster(SiteRequest siteRequest_, Boolean o) {
+		return o;
+	}
+
+	public static String staticSearchStrHubCluster(SiteRequest siteRequest_, Boolean o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqHubCluster(SiteRequest siteRequest_, String o) {
+		return Cluster.staticSearchHubCluster(siteRequest_, Cluster.staticSetHubCluster(siteRequest_, o)).toString();
+	}
+
+	public Boolean sqlHubCluster() {
+		return hubCluster;
+	}
+
+	////////////////////////
+	// clusterNameMetrics //
+	////////////////////////
+
+
+	/**	 The entity clusterNameMetrics
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonInclude(Include.NON_NULL)
+	protected String clusterNameMetrics;
+
+	/**	<br> The entity clusterNameMetrics
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:clusterNameMetrics">Find the entity clusterNameMetrics in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _clusterNameMetrics(Wrap<String> w);
+
+	public String getClusterNameMetrics() {
+		return clusterNameMetrics;
+	}
+	public void setClusterNameMetrics(String o) {
+		this.clusterNameMetrics = Cluster.staticSetClusterNameMetrics(siteRequest_, o);
+	}
+	public static String staticSetClusterNameMetrics(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	protected Cluster clusterNameMetricsInit() {
+		Wrap<String> clusterNameMetricsWrap = new Wrap<String>().var("clusterNameMetrics");
+		if(clusterNameMetrics == null) {
+			_clusterNameMetrics(clusterNameMetricsWrap);
+			Optional.ofNullable(clusterNameMetricsWrap.getO()).ifPresent(o -> {
+				setClusterNameMetrics(o);
+			});
+		}
+		return (Cluster)this;
+	}
+
+	public static String staticSearchClusterNameMetrics(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrClusterNameMetrics(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqClusterNameMetrics(SiteRequest siteRequest_, String o) {
+		return Cluster.staticSearchClusterNameMetrics(siteRequest_, Cluster.staticSetClusterNameMetrics(siteRequest_, o)).toString();
 	}
 
 	/////////////////////
@@ -1664,6 +1778,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 				hubIdInit();
 				hubResourceInit();
 				clusterNameInit();
+				hubClusterInit();
+				clusterNameMetricsInit();
 				clusterResourceInit();
 				uniqueNameInit();
 				descriptionInit();
@@ -1742,6 +1858,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 				return oCluster.hubResource;
 			case "clusterName":
 				return oCluster.clusterName;
+			case "hubCluster":
+				return oCluster.hubCluster;
+			case "clusterNameMetrics":
+				return oCluster.clusterNameMetrics;
 			case "clusterResource":
 				return oCluster.clusterResource;
 			case "uniqueName":
@@ -1831,6 +1951,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return Cluster.staticSetHubResource(siteRequest_, v);
 		case "clusterName":
 			return Cluster.staticSetClusterName(siteRequest_, v);
+		case "hubCluster":
+			return Cluster.staticSetHubCluster(siteRequest_, v);
+		case "clusterNameMetrics":
+			return Cluster.staticSetClusterNameMetrics(siteRequest_, v);
 		case "clusterResource":
 			return Cluster.staticSetClusterResource(siteRequest_, v);
 		case "uniqueName":
@@ -1889,6 +2013,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return Cluster.staticSearchHubResource(siteRequest_, (String)o);
 		case "clusterName":
 			return Cluster.staticSearchClusterName(siteRequest_, (String)o);
+		case "hubCluster":
+			return Cluster.staticSearchHubCluster(siteRequest_, (Boolean)o);
+		case "clusterNameMetrics":
+			return Cluster.staticSearchClusterNameMetrics(siteRequest_, (String)o);
 		case "clusterResource":
 			return Cluster.staticSearchClusterResource(siteRequest_, (String)o);
 		case "uniqueName":
@@ -1947,6 +2075,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return Cluster.staticSearchStrHubResource(siteRequest_, (String)o);
 		case "clusterName":
 			return Cluster.staticSearchStrClusterName(siteRequest_, (String)o);
+		case "hubCluster":
+			return Cluster.staticSearchStrHubCluster(siteRequest_, (Boolean)o);
+		case "clusterNameMetrics":
+			return Cluster.staticSearchStrClusterNameMetrics(siteRequest_, (String)o);
 		case "clusterResource":
 			return Cluster.staticSearchStrClusterResource(siteRequest_, (String)o);
 		case "uniqueName":
@@ -2005,6 +2137,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return Cluster.staticSearchFqHubResource(siteRequest_, o);
 		case "clusterName":
 			return Cluster.staticSearchFqClusterName(siteRequest_, o);
+		case "hubCluster":
+			return Cluster.staticSearchFqHubCluster(siteRequest_, o);
+		case "clusterNameMetrics":
+			return Cluster.staticSearchFqClusterNameMetrics(siteRequest_, o);
 		case "clusterResource":
 			return Cluster.staticSearchFqClusterResource(siteRequest_, o);
 		case "uniqueName":
@@ -2086,6 +2222,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 					setClusterName((String)val);
 				}
 				saves.add("clusterName");
+				return val;
+			} else if("hubcluster".equals(varLower)) {
+				if(val instanceof Boolean) {
+					setHubCluster((Boolean)val);
+				} else {
+					setHubCluster(val == null ? null : val.toString());
+				}
+				saves.add("hubCluster");
 				return val;
 			} else if("clusterresource".equals(varLower)) {
 				if(val instanceof String) {
@@ -2210,6 +2354,18 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 				String clusterName = (String)doc.get("clusterName_docvalues_string");
 				if(clusterName != null)
 					oCluster.setClusterName(clusterName);
+			}
+
+			if(saves.contains("hubCluster")) {
+				Boolean hubCluster = (Boolean)doc.get("hubCluster_docvalues_boolean");
+				if(hubCluster != null)
+					oCluster.setHubCluster(hubCluster);
+			}
+
+			if(saves.contains("clusterNameMetrics")) {
+				String clusterNameMetrics = (String)doc.get("clusterNameMetrics_docvalues_string");
+				if(clusterNameMetrics != null)
+					oCluster.setClusterNameMetrics(clusterNameMetrics);
 			}
 
 			if(saves.contains("clusterResource")) {
@@ -2349,6 +2505,12 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 		if(clusterName != null) {
 			doc.put("clusterName_docvalues_string", clusterName);
 		}
+		if(hubCluster != null) {
+			doc.put("hubCluster_docvalues_boolean", hubCluster);
+		}
+		if(clusterNameMetrics != null) {
+			doc.put("clusterNameMetrics_docvalues_string", clusterNameMetrics);
+		}
 		if(clusterResource != null) {
 			doc.put("clusterResource_docvalues_string", clusterResource);
 		}
@@ -2430,6 +2592,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 				return "hubResource_docvalues_string";
 			case "clusterName":
 				return "clusterName_docvalues_string";
+			case "hubCluster":
+				return "hubCluster_docvalues_boolean";
+			case "clusterNameMetrics":
+				return "clusterNameMetrics_docvalues_string";
 			case "clusterResource":
 				return "clusterResource_docvalues_string";
 			case "uniqueName":
@@ -2481,6 +2647,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 				return "hubResource_docvalues_string";
 			case "clusterName":
 				return "clusterName_docvalues_string";
+			case "hubCluster":
+				return "hubCluster_docvalues_boolean";
+			case "clusterNameMetrics":
+				return "clusterNameMetrics_docvalues_string";
 			case "clusterResource":
 				return "clusterResource_docvalues_string";
 			case "uniqueName":
@@ -2532,6 +2702,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 				return "hubResource";
 			case "clusterName_docvalues_string":
 				return "clusterName";
+			case "hubCluster_docvalues_boolean":
+				return "hubCluster";
+			case "clusterNameMetrics_docvalues_string":
+				return "clusterNameMetrics";
 			case "clusterResource_docvalues_string":
 				return "clusterResource";
 			case "uniqueName_docvalues_string":
@@ -2603,6 +2777,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 		oCluster.setHubId(Optional.ofNullable(doc.get("hubId_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oCluster.setHubResource(Optional.ofNullable(doc.get("hubResource_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oCluster.setClusterName(Optional.ofNullable(doc.get("clusterName_docvalues_string")).map(v -> v.toString()).orElse(null));
+		oCluster.setHubCluster(Optional.ofNullable(doc.get("hubCluster_docvalues_boolean")).map(v -> v.toString()).orElse(null));
+		oCluster.setClusterNameMetrics(Optional.ofNullable(doc.get("clusterNameMetrics_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oCluster.setClusterResource(Optional.ofNullable(doc.get("clusterResource_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oCluster.setUniqueName(Optional.ofNullable(doc.get("uniqueName_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oCluster.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
@@ -2647,6 +2823,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 				apiRequest.addVars("hubResource");
 			if(!Objects.equals(clusterName, original.getClusterName()))
 				apiRequest.addVars("clusterName");
+			if(!Objects.equals(hubCluster, original.getHubCluster()))
+				apiRequest.addVars("hubCluster");
+			if(!Objects.equals(clusterNameMetrics, original.getClusterNameMetrics()))
+				apiRequest.addVars("clusterNameMetrics");
 			if(!Objects.equals(clusterResource, original.getClusterResource()))
 				apiRequest.addVars("clusterResource");
 			if(!Objects.equals(uniqueName, original.getUniqueName()))
@@ -2699,6 +2879,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 		sb.append(Optional.ofNullable(hubId).map(v -> "hubId: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(hubResource).map(v -> "hubResource: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(clusterName).map(v -> "clusterName: \"" + v + "\"\n" ).orElse(""));
+		sb.append(Optional.ofNullable(hubCluster).map(v -> "hubCluster: " + v + "\n").orElse(""));
+		sb.append(Optional.ofNullable(clusterNameMetrics).map(v -> "clusterNameMetrics: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(clusterResource).map(v -> "clusterResource: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(uniqueName).map(v -> "uniqueName: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
@@ -2731,6 +2913,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	public static final String VAR_hubId = "hubId";
 	public static final String VAR_hubResource = "hubResource";
 	public static final String VAR_clusterName = "clusterName";
+	public static final String VAR_hubCluster = "hubCluster";
+	public static final String VAR_clusterNameMetrics = "clusterNameMetrics";
 	public static final String VAR_clusterResource = "clusterResource";
 	public static final String VAR_uniqueName = "uniqueName";
 	public static final String VAR_description = "description";
@@ -2766,6 +2950,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 		vars.add(VAR_hubId);
 		vars.add(VAR_hubResource);
 		vars.add(VAR_clusterName);
+		vars.add(VAR_hubCluster);
+		vars.add(VAR_clusterNameMetrics);
 		vars.add(VAR_clusterResource);
 		vars.add(VAR_uniqueName);
 		vars.add(VAR_location);
@@ -2803,6 +2989,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	public static final String DISPLAY_NAME_hubId = "ACM Hub";
 	public static final String DISPLAY_NAME_hubResource = "hub auth resource";
 	public static final String DISPLAY_NAME_clusterName = "cluster name";
+	public static final String DISPLAY_NAME_hubCluster = "hub cluster";
+	public static final String DISPLAY_NAME_clusterNameMetrics = "cluster name for metrics";
 	public static final String DISPLAY_NAME_clusterResource = "cluster auth resource";
 	public static final String DISPLAY_NAME_uniqueName = "unique name";
 	public static final String DISPLAY_NAME_description = "description";
@@ -2879,6 +3067,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return DISPLAY_NAME_hubResource;
 		case VAR_clusterName:
 			return DISPLAY_NAME_clusterName;
+		case VAR_hubCluster:
+			return DISPLAY_NAME_hubCluster;
+		case VAR_clusterNameMetrics:
+			return DISPLAY_NAME_clusterNameMetrics;
 		case VAR_clusterResource:
 			return DISPLAY_NAME_clusterResource;
 		case VAR_uniqueName:
@@ -2932,6 +3124,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return "The unique authorization resource for the hub for multi-tenancy";
 		case VAR_clusterName:
 			return "The name of this cluster";
+		case VAR_hubCluster:
+			return "Whether this cluster is a hub cluster";
+		case VAR_clusterNameMetrics:
+			return "The name of this cluster in ACM Observability metrics";
 		case VAR_clusterResource:
 			return "The unique authorization resource for the cluster for multi-tenancy";
 		case VAR_uniqueName:
@@ -2982,6 +3178,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 		case VAR_hubResource:
 			return "String";
 		case VAR_clusterName:
+			return "String";
+		case VAR_hubCluster:
+			return "Boolean";
+		case VAR_clusterNameMetrics:
 			return "String";
 		case VAR_clusterResource:
 			return "String";
@@ -3043,6 +3243,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return 3;
 		case VAR_clusterName:
 			return 3;
+		case VAR_hubCluster:
+			return 3;
+		case VAR_clusterNameMetrics:
+			return 3;
 		case VAR_uniqueName:
 			return 3;
 		case VAR_description:
@@ -3082,12 +3286,16 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 			return 1;
 		case VAR_clusterName:
 			return 3;
+		case VAR_hubCluster:
+			return 4;
+		case VAR_clusterNameMetrics:
+			return 5;
 		case VAR_uniqueName:
-			return 5;
-		case VAR_description:
 			return 6;
+		case VAR_description:
+			return 7;
 		case VAR_location:
-			return 5;
+			return 8;
 		case VAR_id:
 			return 1;
 		case VAR_ngsildTenant:

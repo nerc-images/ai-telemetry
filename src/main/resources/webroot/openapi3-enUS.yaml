@@ -12061,6 +12061,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -12764,6 +12765,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -14430,7 +14432,7 @@ components:
   securitySchemes:
     openIdConnect:
       type: openIdConnect
-      openIdConnectUrl: https://keycloak.apps-crc.testing/realms/AITELEMETRY/.well-known/openid-configuration
+      openIdConnectUrl: https://keycloak.apps.obs.nerc.mghpcc.org/realms/NERC/.well-known/openid-configuration
   requestBodies:
     SearchBareMetalNetworkResponse:
       content:
@@ -17835,6 +17837,8 @@ components:
                     type: string
                   clusterName:
                     type: string
+                  hubCluster:
+                    type: boolean
                   clusterResource:
                     type: string
                   uniqueName:
@@ -17906,6 +17910,13 @@ components:
               type: string
             removeAllClusterName:
               type: string
+            setHubCluster:
+              type: boolean
+              nullable: true
+            removeHubCluster:
+              type: boolean
+            removeAllHubCluster:
+              type: boolean
             setClusterResource:
               type: string
               nullable: true
@@ -18101,6 +18112,13 @@ components:
               type: string
             removeAllClusterName:
               type: string
+            setHubCluster:
+              type: boolean
+              nullable: true
+            removeHubCluster:
+              type: boolean
+            removeAllHubCluster:
+              type: boolean
             setClusterResource:
               type: string
               nullable: true
@@ -18281,6 +18299,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18337,6 +18357,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18393,6 +18415,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18454,6 +18478,8 @@ components:
                     type: string
                   clusterName:
                     type: string
+                  hubCluster:
+                    type: boolean
                   clusterResource:
                     type: string
                   uniqueName:
@@ -18510,6 +18536,8 @@ components:
                     type: string
                   clusterName:
                     type: string
+                  hubCluster:
+                    type: boolean
                   clusterResource:
                     type: string
                   uniqueName:
@@ -18566,6 +18594,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18622,6 +18652,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -21377,6 +21409,8 @@ components:
                     type: string
                   description:
                     type: string
+                  gpuEnabled:
+                    type: boolean
     PATCHProjectRequest:
       allOf:
         - type: object
@@ -21437,6 +21471,13 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setGpuEnabled:
+              type: boolean
+              nullable: true
+            removeGpuEnabled:
+              type: boolean
+            removeAllGpuEnabled:
+              type: boolean
     PATCHProjectResponse:
       allOf:
         - type: object
@@ -21497,6 +21538,13 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setGpuEnabled:
+              type: boolean
+              nullable: true
+            removeGpuEnabled:
+              type: boolean
+            removeAllGpuEnabled:
+              type: boolean
     POSTProjectRequest:
       allOf:
         - type: object
@@ -21517,6 +21565,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     POSTProjectResponse:
       allOf:
         - type: object
@@ -21537,6 +21587,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     DELETEFilterProjectResponse:
       allOf:
         - type: object
@@ -21557,6 +21609,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     PUTImportProjectRequest:
       allOf:
         - type: object
@@ -21582,6 +21636,8 @@ components:
                     type: string
                   description:
                     type: string
+                  gpuEnabled:
+                    type: boolean
     PUTImportProjectResponse:
       allOf:
         - type: object
@@ -21602,6 +21658,8 @@ components:
                     type: string
                   description:
                     type: string
+                  gpuEnabled:
+                    type: boolean
     GETProjectResponse:
       allOf:
         - type: object
@@ -21622,6 +21680,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     DELETEProjectResponse:
       allOf:
         - type: object
@@ -21642,6 +21702,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     EditPageProjectResponse:
       allOf:
         - type: string
@@ -21703,8 +21765,6 @@ components:
                       type: string
                   location:
                     type: object
-                  gpuDevicesTotal:
-                    type: string
                   id:
                     type: string
                   entityShortId:
@@ -21849,13 +21909,6 @@ components:
               type: object
             removeAllLocation:
               type: object
-            setGpuDevicesTotal:
-              type: string
-              nullable: true
-            removeGpuDevicesTotal:
-              type: string
-            removeAllGpuDevicesTotal:
-              type: string
             setId:
               type: string
               nullable: true
@@ -22030,13 +22083,6 @@ components:
               type: object
             removeAllLocation:
               type: object
-            setGpuDevicesTotal:
-              type: string
-              nullable: true
-            removeGpuDevicesTotal:
-              type: string
-            removeAllGpuDevicesTotal:
-              type: string
             setId:
               type: string
               nullable: true
@@ -22117,8 +22163,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22169,8 +22213,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22221,8 +22263,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22278,8 +22318,6 @@ components:
                       type: string
                   location:
                     type: object
-                  gpuDevicesTotal:
-                    type: string
                   id:
                     type: string
                   entityShortId:
@@ -22330,8 +22368,6 @@ components:
                       type: string
                   location:
                     type: object
-                  gpuDevicesTotal:
-                    type: string
                   id:
                     type: string
                   entityShortId:
@@ -22382,8 +22418,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:
@@ -22434,8 +22468,6 @@ components:
                 type: string
             location:
               type: object
-            gpuDevicesTotal:
-              type: string
             id:
               type: string
             entityShortId:

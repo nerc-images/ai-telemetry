@@ -4,7 +4,6 @@ import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
 import java.lang.String;
 import java.util.List;
 import io.vertx.pgclient.data.Point;
-import java.lang.Integer;
 import io.vertx.core.json.JsonObject;
 import org.mghpcc.aitelemetry.page.PageLayout;
 import org.mghpcc.aitelemetry.request.SiteRequest;

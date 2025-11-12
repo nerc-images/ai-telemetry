@@ -50,7 +50,7 @@ data:
     # The GitHub organization for this project. 
     GITHUB_ORG: "OCP-on-NERC"
     # The main git repository for the project. 
-    SITE_REPO: "git@github.com:OCP-on-NERC/ai-telemetry.git"
+    SITE_REPO: "git@github.com:nerc-images/ai-telemetry.git"
     # The main git repository for the project via ssh. 
     SITE_REPO_HTTPS: "{{ SITE_REPO | replace('git@github.com:', 'https://github.com/') }}"
     # The port of the site. 
@@ -209,7 +209,7 @@ data:
     # The name of the repository containing the web static content. 
     SITE_STATIC_NAME: "ai-telemetry-static"
     # The static files git repository for the project. 
-    SITE_STATIC_REPO: "git@github.com:OCP-on-NERC/ai-telemetry-static.git"
+    SITE_STATIC_REPO: "git@github.com:nerc-images/ai-telemetry-static.git"
     # The base URL to the static files. 
     STATIC_BASE_URL: "{{ SITE_BASE_URL }}/static"
     # The path to the static files. 
