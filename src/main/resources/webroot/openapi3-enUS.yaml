@@ -12061,6 +12061,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -12764,6 +12765,7 @@ paths:
             type: array
             items:
               type: string
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
