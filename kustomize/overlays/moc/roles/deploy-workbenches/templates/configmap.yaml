@@ -47,16 +47,19 @@ data:
   HUBS: >-
     { 
     "moc": { 
-    "hubName": "Mass Open Cloud", 
-    "description": "This active partnership between higher education, medical research centers, government, and industry provides structure and resources that enable a close collaboration between research, development, and operations in a series of interconnected projects. The goal of this collaboration is to provide predictable low cost resources and facilitator support for domain researchers, and more broadly, innovation in the public cloud. " 
+      "hubName": "Mass Open Cloud"
+      , "localClusterName": "nerc-ocp-infra"
+      , "description": "This active partnership between higher education, medical research centers, government, and industry provides structure and resources that enable a close collaboration between research, development, and operations in a series of interconnected projects. The goal of this collaboration is to provide predictable low cost resources and facilitator support for domain researchers, and more broadly, innovation in the public cloud. "
     }
     , "innabox-dev": { 
-    "hubName": "Innabox development environment", 
-    "description": "The open source development environment for organizations standing up their own clouds. " 
+      "hubName": "Innabox development environment"
+      , "localClusterName": "hypershift1"
+      , "description": "The open source development environment for organizations standing up their own clouds. "
     }
     , "open-sovereign-ai-cloud": { 
-    "hubName": "Open Sovereign AI Cloud", 
-    "description": "An open source solution for organizations standing up their own clouds. " 
+      "hubName": "Open Sovereign AI Cloud"
+      , "localClusterName": "hypershift2"
+      , "description": "An open source solution for organizations standing up their own clouds. "
     }
     }
   PROM_KEYCLOAK_PROXY_PORT_MOC: "443"
