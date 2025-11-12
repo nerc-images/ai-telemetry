@@ -2795,6 +2795,8 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return 3;
 		case VAR_clusterName:
 			return 3;
+		case VAR_clusterResource:
+			return 3;
 		case VAR_vmProject:
 			return 3;
 		case VAR_vmName:
@@ -2826,6 +2828,8 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
 			return 1;
 		case VAR_clusterName:
 			return 1;
+		case VAR_clusterResource:
+			return 2;
 		case VAR_vmProject:
 			return 2;
 		case VAR_vmName:

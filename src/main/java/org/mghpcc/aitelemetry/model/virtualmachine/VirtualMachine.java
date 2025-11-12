@@ -108,6 +108,8 @@ public class VirtualMachine extends VirtualMachineGen<BaseModel> {
    * Description: The unique authorization resource for the cluster for multi-tenancy
    * Facet: true
    * AuthorizationResource: CLUSTER
+   * HtmRow: 3
+   * HtmCell: 2
    * Relate: Cluster.clusterResource
    **/
   protected void _clusterResource(Wrap<String> w) {
