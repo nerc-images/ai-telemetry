@@ -4,6 +4,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.computate.vertx.config.ComputateConfigKeys;
 import org.mghpcc.aitelemetry.config.ConfigKeys;
@@ -53,60 +54,70 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .onSuccess(requestAuthResponse -> {
         try {
           String accessToken = requestAuthResponse.bodyAsJsonObject().getString("access_token");
-          ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(gpuDevicesTotal -> {
-            List<Future<?>> futures = new ArrayList<>();
-            for(Integer i = 0; i < gpuDevicesTotal.size(); i++) {
-              JsonObject gpuDeviceResult = gpuDevicesTotal.getJsonObject(i);
-              String clusterName = gpuDeviceResult.getJsonObject("metric").getString("cluster");
-              String projectName = gpuDeviceResult.getJsonObject("metric").getString("exported_namespace");
-              if(projectName != null) {
-                futures.add(Future.future(promise1 -> {
-                  try {
-                    String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
-                    String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
-                    String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
-                    JsonObject body = new JsonObject();
-                    body.put(Project.VAR_pk, projectResource);
-                    body.put(Project.VAR_hubId, hubId);
-                    body.put(Project.VAR_hubResource, hubResource);
-                    body.put(Project.VAR_clusterName, clusterName);
-                    body.put(Project.VAR_clusterResource, clusterResource);
-                    body.put(Project.VAR_projectResource, projectResource);
-                    body.put(Project.VAR_projectName, projectName);
+          ProjectEnUSApiServiceImpl.queryNonOpenShiftProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(nonOpenShiftNamespacesTotal -> {
+            ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(gpuDevicesTotal -> {
+              List<Future<?>> futures = new ArrayList<>();
+              for(Integer i = 0; i < nonOpenShiftNamespacesTotal.size(); i++) {
+                JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
+                String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
+                String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
+                JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                    clusterName.equals(metrics.getJsonObject("metric").getString("cluster")) 
+                    && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
+                    ).findFirst().orElse(null);
+                if(projectName != null) {
+                  futures.add(Future.future(promise1 -> {
+                    try {
+                      String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
+                      String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
+                      String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
+                      JsonObject body = new JsonObject();
+                      body.put(Project.VAR_pk, projectResource);
+                      body.put(Project.VAR_hubId, hubId);
+                      body.put(Project.VAR_hubResource, hubResource);
+                      body.put(Project.VAR_clusterName, clusterName);
+                      body.put(Project.VAR_clusterResource, clusterResource);
+                      body.put(Project.VAR_projectResource, projectResource);
+                      body.put(Project.VAR_projectName, projectName);
+                      body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
 
-                    JsonObject pageParams = new JsonObject();
-                    pageParams.put("body", body);
-                    pageParams.put("path", new JsonObject());
-                    pageParams.put("cookie", new JsonObject());
-                    pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
-                    pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
-                    JsonObject pageContext = new JsonObject().put("params", pageParams);
-                    JsonObject pageRequest = new JsonObject().put("context", pageContext);
+                      JsonObject pageParams = new JsonObject();
+                      pageParams.put("body", body);
+                      pageParams.put("path", new JsonObject());
+                      pageParams.put("cookie", new JsonObject());
+                      pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
+                      pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
+                      JsonObject pageContext = new JsonObject().put("params", pageParams);
+                      JsonObject pageRequest = new JsonObject().put("context", pageContext);
 
-                    vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
-                        .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
-                        .addHeader("action", String.format("putimport%sFuture", classSimpleName))
-                        ).onSuccess(message -> {
-                      ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
-                        LOG.info(String.format("Imported %s project", projectResource));
-                        promise1.complete();
+                      vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
+                          .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
+                          .addHeader("action", String.format("putimport%sFuture", classSimpleName))
+                          ).onSuccess(message -> {
+                        ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
+                          LOG.info(String.format("Imported %s project", projectResource));
+                          promise1.complete();
+                        }).onFailure(ex -> {
+                          LOG.error(String.format(importDataFail, classSimpleName), ex);
+                          promise1.fail(ex);
+                        });
                       }).onFailure(ex -> {
                         LOG.error(String.format(importDataFail, classSimpleName), ex);
                         promise1.fail(ex);
                       });
-                    }).onFailure(ex -> {
+                    } catch(Exception ex) {
                       LOG.error(String.format(importDataFail, classSimpleName), ex);
                       promise1.fail(ex);
-                    });
-                  } catch(Exception ex) {
-                    LOG.error(String.format(importDataFail, classSimpleName), ex);
-                    promise1.fail(ex);
-                  }
-                }));
+                    }
+                  }));
+                }
               }
-            }
-            Future.all(futures).onSuccess(b -> {
-              promise.complete();
+              Future.all(futures).onSuccess(b -> {
+                promise.complete();
+              }).onFailure(ex -> {
+                LOG.error(String.format(importDataFail, classSimpleName), ex);
+                promise.fail(ex);
+              });
             }).onFailure(ex -> {
               LOG.error(String.format(importDataFail, classSimpleName), ex);
               promise.fail(ex);
@@ -244,6 +255,41 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       });
     } catch(Throwable ex) {
       LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for %s", classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<JsonArray> queryNonOpenShiftProjects(Vertx vertx, WebClient webClient, JsonObject config, JsonObject clusterJson, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubId = clusterJson.getString(Cluster.VAR_hubId);
+      String hubIdEnv = hubId.toUpperCase().replace("-", "");
+      String clusterName = clusterJson.getString(Cluster.VAR_clusterName);
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("namespace:container_memory_usage_bytes:sum{cluster='%s'}", clusterName)));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        JsonArray results = new JsonArray();
+        Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()).stream()
+            .map(o -> (JsonObject)o).filter(metrics -> 
+            !metrics.getJsonObject("metric").getString("namespace").startsWith("openshift-")
+            && !metrics.getJsonObject("metric").getString("namespace").startsWith("open-cluster-management")
+            ).forEach(metrics -> results.add(metrics));
+        promise.complete(results);
+      }).onFailure(ex -> {
+        LOG.error(String.format("Querying non-openshift namespaces failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
       promise.fail(ex);
     }
     return promise.future();

@@ -142,6 +142,7 @@ ALTER TABLE Project ADD COLUMN IF NOT EXISTS clusterResource text references Clu
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectName text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectResource text UNIQUE;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS description text;
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS gpuEnabled boolean;
 
 CREATE TABLE IF NOT EXISTS ClusterTemplate();
 ALTER TABLE ClusterTemplate ADD COLUMN IF NOT EXISTS pk bigserial primary key;

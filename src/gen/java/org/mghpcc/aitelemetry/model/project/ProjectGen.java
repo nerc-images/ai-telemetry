@@ -38,6 +38,7 @@ import java.util.Map;
 import java.lang.String;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
+import java.lang.Boolean;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
@@ -679,6 +680,67 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		return description;
 	}
 
+	////////////////
+	// gpuEnabled //
+	////////////////
+
+
+	/**	 The entity gpuEnabled
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonInclude(Include.NON_NULL)
+	protected Boolean gpuEnabled;
+
+	/**	<br> The entity gpuEnabled
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:gpuEnabled">Find the entity gpuEnabled in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _gpuEnabled(Wrap<Boolean> w);
+
+	public Boolean getGpuEnabled() {
+		return gpuEnabled;
+	}
+
+	public void setGpuEnabled(Boolean gpuEnabled) {
+		this.gpuEnabled = gpuEnabled;
+	}
+	@JsonIgnore
+	public void setGpuEnabled(String o) {
+		this.gpuEnabled = Project.staticSetGpuEnabled(siteRequest_, o);
+	}
+	public static Boolean staticSetGpuEnabled(SiteRequest siteRequest_, String o) {
+		return Boolean.parseBoolean(o);
+	}
+	protected Project gpuEnabledInit() {
+		Wrap<Boolean> gpuEnabledWrap = new Wrap<Boolean>().var("gpuEnabled");
+		if(gpuEnabled == null) {
+			_gpuEnabled(gpuEnabledWrap);
+			Optional.ofNullable(gpuEnabledWrap.getO()).ifPresent(o -> {
+				setGpuEnabled(o);
+			});
+		}
+		return (Project)this;
+	}
+
+	public static Boolean staticSearchGpuEnabled(SiteRequest siteRequest_, Boolean o) {
+		return o;
+	}
+
+	public static String staticSearchStrGpuEnabled(SiteRequest siteRequest_, Boolean o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqGpuEnabled(SiteRequest siteRequest_, String o) {
+		return Project.staticSearchGpuEnabled(siteRequest_, Project.staticSetGpuEnabled(siteRequest_, o)).toString();
+	}
+
+	public Boolean sqlGpuEnabled() {
+		return gpuEnabled;
+	}
+
 	//////////////
 	// initDeep //
 	//////////////
@@ -716,6 +778,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				projectResourceInit();
 				projectDisplayNameInit();
 				descriptionInit();
+				gpuEnabledInit();
 				promise2.complete();
 			} catch(Exception ex) {
 				promise2.fail(ex);
@@ -785,6 +848,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return oProject.projectDisplayName;
 			case "description":
 				return oProject.description;
+			case "gpuEnabled":
+				return oProject.gpuEnabled;
 			default:
 				return super.obtainBaseModel(var);
 		}
@@ -852,6 +917,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSetProjectDisplayName(siteRequest_, v);
 		case "description":
 			return Project.staticSetDescription(siteRequest_, v);
+		case "gpuEnabled":
+			return Project.staticSetGpuEnabled(siteRequest_, v);
 			default:
 				return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
 		}
@@ -882,6 +949,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchProjectDisplayName(siteRequest_, (String)o);
 		case "description":
 			return Project.staticSearchDescription(siteRequest_, (String)o);
+		case "gpuEnabled":
+			return Project.staticSearchGpuEnabled(siteRequest_, (Boolean)o);
 			default:
 				return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -912,6 +981,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchStrProjectDisplayName(siteRequest_, (String)o);
 		case "description":
 			return Project.staticSearchStrDescription(siteRequest_, (String)o);
+		case "gpuEnabled":
+			return Project.staticSearchStrGpuEnabled(siteRequest_, (Boolean)o);
 			default:
 				return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -942,6 +1013,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchFqProjectDisplayName(siteRequest_, o);
 		case "description":
 			return Project.staticSearchFqDescription(siteRequest_, o);
+		case "gpuEnabled":
+			return Project.staticSearchFqGpuEnabled(siteRequest_, o);
 			default:
 				return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -1010,6 +1083,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				}
 				saves.add("description");
 				return val;
+			} else if("gpuenabled".equals(varLower)) {
+				if(val instanceof Boolean) {
+					setGpuEnabled((Boolean)val);
+				} else {
+					setGpuEnabled(val == null ? null : val.toString());
+				}
+				saves.add("gpuEnabled");
+				return val;
 		} else {
 			return super.persistBaseModel(var, val);
 		}
@@ -1070,6 +1151,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				if(description != null)
 					oProject.setDescription(description);
 			}
+
+			if(saves.contains("gpuEnabled")) {
+				Boolean gpuEnabled = (Boolean)doc.get("gpuEnabled_docvalues_boolean");
+				if(gpuEnabled != null)
+					oProject.setGpuEnabled(gpuEnabled);
+			}
 		}
 
 		super.populateBaseModel(doc);
@@ -1100,6 +1187,9 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		if(description != null) {
 			doc.put("description_docvalues_string", description);
 		}
+		if(gpuEnabled != null) {
+			doc.put("gpuEnabled_docvalues_boolean", gpuEnabled);
+		}
 		super.indexBaseModel(doc);
 
 	}
@@ -1122,6 +1212,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "projectDisplayName_docvalues_string";
 			case "description":
 				return "description_docvalues_string";
+			case "gpuEnabled":
+				return "gpuEnabled_docvalues_boolean";
 			default:
 				return BaseModel.varStoredBaseModel(entityVar);
 		}
@@ -1145,6 +1237,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "projectDisplayName_docvalues_string";
 			case "description":
 				return "description_docvalues_string";
+			case "gpuEnabled":
+				return "gpuEnabled_docvalues_boolean";
 			default:
 				return BaseModel.varIndexedBaseModel(entityVar);
 		}
@@ -1168,6 +1262,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "projectDisplayName";
 			case "description_docvalues_string":
 				return "description";
+			case "gpuEnabled_docvalues_boolean":
+				return "gpuEnabled";
 			default:
 				return BaseModel.searchVarBaseModel(searchVar);
 		}
@@ -1206,6 +1302,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		oProject.setProjectResource(Optional.ofNullable(doc.get("projectResource_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oProject.setProjectDisplayName(Optional.ofNullable(doc.get("projectDisplayName_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oProject.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
+		oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
 
 		super.storeBaseModel(doc);
 	}
@@ -1235,6 +1332,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				apiRequest.addVars("projectDisplayName");
 			if(!Objects.equals(description, original.getDescription()))
 				apiRequest.addVars("description");
+			if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
+				apiRequest.addVars("gpuEnabled");
 			super.apiRequestBaseModel();
 		}
 	}
@@ -1254,6 +1353,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		sb.append(Optional.ofNullable(projectResource).map(v -> "projectResource: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(projectDisplayName).map(v -> "projectDisplayName: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
+		sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
 		return sb.toString();
 	}
 
@@ -1272,6 +1372,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String VAR_projectResource = "projectResource";
 	public static final String VAR_projectDisplayName = "projectDisplayName";
 	public static final String VAR_description = "description";
+	public static final String VAR_gpuEnabled = "gpuEnabled";
 
 	public static List<String> varsQForClass() {
 		return Project.varsQProject(new ArrayList<String>());
@@ -1293,6 +1394,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		vars.add(VAR_projectResource);
 		vars.add(VAR_projectDisplayName);
 		vars.add(VAR_description);
+		vars.add(VAR_gpuEnabled);
 		BaseModel.varsFqBaseModel(vars);
 		return vars;
 	}
@@ -1313,6 +1415,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String DISPLAY_NAME_projectResource = "project auth resource";
 	public static final String DISPLAY_NAME_projectDisplayName = "project display name";
 	public static final String DISPLAY_NAME_description = "description";
+	public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
 
 	@Override
 	public String idForClass() {
@@ -1380,6 +1483,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return DISPLAY_NAME_projectDisplayName;
 		case VAR_description:
 			return DISPLAY_NAME_description;
+		case VAR_gpuEnabled:
+			return DISPLAY_NAME_gpuEnabled;
 		default:
 			return BaseModel.displayNameBaseModel(var);
 		}
@@ -1405,6 +1510,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return "The display name of this project";
 		case VAR_description:
 			return "A description of this project";
+		case VAR_gpuEnabled:
+			return "Whether GPUs are enabled for this project. ";
 			default:
 				return BaseModel.descriptionBaseModel(var);
 		}
@@ -1428,6 +1535,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return "String";
 		case VAR_description:
 			return "String";
+		case VAR_gpuEnabled:
+			return "Boolean";
 			default:
 				return BaseModel.classSimpleNameBaseModel(var);
 		}
@@ -1456,6 +1565,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return 3;
 		case VAR_description:
 			return 3;
+		case VAR_gpuEnabled:
+			return 3;
 			default:
 				return BaseModel.htmRowBaseModel(var);
 		}
@@ -1470,6 +1581,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		case VAR_projectName:
 			return 5;
 		case VAR_description:
+			return 7;
+		case VAR_gpuEnabled:
 			return 7;
 			default:
 				return BaseModel.htmCellBaseModel(var);

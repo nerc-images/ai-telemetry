@@ -932,6 +932,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlSessionId());
 						break;
+					case "setGpuEnabled":
+							o2.setGpuEnabled(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Project.VAR_gpuEnabled + "=$" + num);
+							num++;
+							bParams.add(o2.sqlGpuEnabled());
+						break;
 					case "setUserKey":
 							o2.setUserKey(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -1479,6 +1487,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						bSql.append(Project.VAR_sessionId + "=$" + num);
 						num++;
 						bParams.add(o2.sqlSessionId());
+						break;
+					case Project.VAR_gpuEnabled:
+						o2.setGpuEnabled(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Project.VAR_gpuEnabled + "=$" + num);
+						num++;
+						bParams.add(o2.sqlGpuEnabled());
 						break;
 					case Project.VAR_userKey:
 						o2.setUserKey(jsonObject.getString(entityVar));
@@ -3793,7 +3810,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, objectTitle, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4104,6 +4121,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			page.persistForClass(Project.VAR_projectResource, Project.staticSetProjectResource(siteRequest2, (String)result.get(Project.VAR_projectResource)));
 			page.persistForClass(Project.VAR_description, Project.staticSetDescription(siteRequest2, (String)result.get(Project.VAR_description)));
 			page.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
+			page.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
 			page.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
 			page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
 			page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));

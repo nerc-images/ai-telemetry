@@ -21379,6 +21379,8 @@ components:
                     type: string
                   description:
                     type: string
+                  gpuEnabled:
+                    type: boolean
     PATCHProjectRequest:
       allOf:
         - type: object
@@ -21439,6 +21441,13 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setGpuEnabled:
+              type: boolean
+              nullable: true
+            removeGpuEnabled:
+              type: boolean
+            removeAllGpuEnabled:
+              type: boolean
     PATCHProjectResponse:
       allOf:
         - type: object
@@ -21499,6 +21508,13 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setGpuEnabled:
+              type: boolean
+              nullable: true
+            removeGpuEnabled:
+              type: boolean
+            removeAllGpuEnabled:
+              type: boolean
     POSTProjectRequest:
       allOf:
         - type: object
@@ -21519,6 +21535,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     POSTProjectResponse:
       allOf:
         - type: object
@@ -21539,6 +21557,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     DELETEFilterProjectResponse:
       allOf:
         - type: object
@@ -21559,6 +21579,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     PUTImportProjectRequest:
       allOf:
         - type: object
@@ -21584,6 +21606,8 @@ components:
                     type: string
                   description:
                     type: string
+                  gpuEnabled:
+                    type: boolean
     PUTImportProjectResponse:
       allOf:
         - type: object
@@ -21604,6 +21628,8 @@ components:
                     type: string
                   description:
                     type: string
+                  gpuEnabled:
+                    type: boolean
     GETProjectResponse:
       allOf:
         - type: object
@@ -21624,6 +21650,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     DELETEProjectResponse:
       allOf:
         - type: object
@@ -21644,6 +21672,8 @@ components:
               type: string
             description:
               type: string
+            gpuEnabled:
+              type: boolean
     EditPageProjectResponse:
       allOf:
         - type: string
