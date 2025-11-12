@@ -92,6 +92,7 @@ public class Hub extends HubGen<BaseModel> {
    * Description: The unique authorization resource for the hub for multi-tenancy
    * Facet: true
    * AuthorizationResource: HUB
+   * Unique: true
    **/
   protected void _hubResource(Wrap<String> w) {
     w.o(String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId));

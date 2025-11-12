@@ -134,772 +134,772 @@ import io.vertx.core.Future;
  * Generated: true
  **/
 public abstract class HubGenPageGen<DEV> extends PageLayout {
-	protected static final Logger LOG = LoggerFactory.getLogger(HubGenPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(HubGenPage.class);
 
 	////////////////////
-	// searchListHub_ //
+  // searchListHub_ //
 	////////////////////
 
 
-	/**	 The entity searchListHub_
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonIgnore
-	@JsonInclude(Include.NON_NULL)
-	protected SearchList<Hub> searchListHub_;
+  /**   The entity searchListHub_
+   *	 is defined as null before being initialized. 
+   */
+  @JsonIgnore
+  @JsonInclude(Include.NON_NULL)
+  protected SearchList<Hub> searchListHub_;
 
-	/**	<br> The entity searchListHub_
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:searchListHub_">Find the entity searchListHub_ in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _searchListHub_(Wrap<SearchList<Hub>> w);
+  /**  <br> The entity searchListHub_
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:searchListHub_">Find the entity searchListHub_ in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _searchListHub_(Wrap<SearchList<Hub>> w);
 
-	public SearchList<Hub> getSearchListHub_() {
-		return searchListHub_;
-	}
+  public SearchList<Hub> getSearchListHub_() {
+    return searchListHub_;
+  }
 
-	public void setSearchListHub_(SearchList<Hub> searchListHub_) {
-		this.searchListHub_ = searchListHub_;
-	}
-	public static SearchList<Hub> staticSetSearchListHub_(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected HubGenPage searchListHub_Init() {
-		Wrap<SearchList<Hub>> searchListHub_Wrap = new Wrap<SearchList<Hub>>().var("searchListHub_");
-		if(searchListHub_ == null) {
-			_searchListHub_(searchListHub_Wrap);
-			Optional.ofNullable(searchListHub_Wrap.getO()).ifPresent(o -> {
-				setSearchListHub_(o);
-			});
-		}
-		return (HubGenPage)this;
-	}
+  public void setSearchListHub_(SearchList<Hub> searchListHub_) {
+    this.searchListHub_ = searchListHub_;
+  }
+  public static SearchList<Hub> staticSetSearchListHub_(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected HubGenPage searchListHub_Init() {
+    Wrap<SearchList<Hub>> searchListHub_Wrap = new Wrap<SearchList<Hub>>().var("searchListHub_");
+    if(searchListHub_ == null) {
+      _searchListHub_(searchListHub_Wrap);
+      Optional.ofNullable(searchListHub_Wrap.getO()).ifPresent(o -> {
+        setSearchListHub_(o);
+      });
+    }
+    return (HubGenPage)this;
+  }
 
 	/////////////
-	// listHub //
+  // listHub //
 	/////////////
 
 
-	/**	 The entity listHub
-	 *	 It is constructed before being initialized with the constructor by default. 
-	 */
-	@JsonProperty
-	@JsonDeserialize(using = JsonArrayDeserializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected JsonArray listHub = new JsonArray();
+  /**   The entity listHub
+   *	 It is constructed before being initialized with the constructor by default. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = JsonArrayDeserializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected JsonArray listHub = new JsonArray();
 
-	/**	<br> The entity listHub
-	 *  It is constructed before being initialized with the constructor by default. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:listHub">Find the entity listHub in Solr</a>
-	 * <br>
-	 * @param l is the entity already constructed. 
-	 **/
-	protected abstract void _listHub(JsonArray l);
+  /**  <br> The entity listHub
+   *  It is constructed before being initialized with the constructor by default. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:listHub">Find the entity listHub in Solr</a>
+   * <br>
+   * @param l is the entity already constructed. 
+   **/
+  protected abstract void _listHub(JsonArray l);
 
-	public JsonArray getListHub() {
-		return listHub;
-	}
+  public JsonArray getListHub() {
+    return listHub;
+  }
 
-	public void setListHub(JsonArray listHub) {
-		this.listHub = listHub;
-	}
-	@JsonIgnore
-	public void setListHub(String o) {
-		this.listHub = HubGenPage.staticSetListHub(siteRequest_, o);
-	}
-	public static JsonArray staticSetListHub(SiteRequest siteRequest_, String o) {
-		if(o != null) {
-				return new JsonArray(o);
-		}
-		return null;
-	}
-	protected HubGenPage listHubInit() {
-		_listHub(listHub);
-		return (HubGenPage)this;
-	}
+  public void setListHub(JsonArray listHub) {
+    this.listHub = listHub;
+  }
+  @JsonIgnore
+  public void setListHub(String o) {
+    this.listHub = HubGenPage.staticSetListHub(siteRequest_, o);
+  }
+  public static JsonArray staticSetListHub(SiteRequest siteRequest_, String o) {
+    if(o != null) {
+        return new JsonArray(o);
+    }
+    return null;
+  }
+  protected HubGenPage listHubInit() {
+    _listHub(listHub);
+    return (HubGenPage)this;
+  }
 
-	public static String staticSearchListHub(SiteRequest siteRequest_, JsonArray o) {
-		return o.toString();
-	}
+  public static String staticSearchListHub(SiteRequest siteRequest_, JsonArray o) {
+    return o.toString();
+  }
 
-	public static String staticSearchStrListHub(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrListHub(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqListHub(SiteRequest siteRequest_, String o) {
-		return HubGenPage.staticSearchListHub(siteRequest_, HubGenPage.staticSetListHub(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqListHub(SiteRequest siteRequest_, String o) {
+    return HubGenPage.staticSearchListHub(siteRequest_, HubGenPage.staticSetListHub(siteRequest_, o)).toString();
+  }
 
 	/////////////////
-	// resultCount //
+  // resultCount //
 	/////////////////
 
 
-	/**	 The entity resultCount
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Integer resultCount;
+  /**   The entity resultCount
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer resultCount;
 
-	/**	<br> The entity resultCount
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _resultCount(Wrap<Integer> w);
+  /**  <br> The entity resultCount
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _resultCount(Wrap<Integer> w);
 
-	public Integer getResultCount() {
-		return resultCount;
-	}
+  public Integer getResultCount() {
+    return resultCount;
+  }
 
-	public void setResultCount(Integer resultCount) {
-		this.resultCount = resultCount;
-	}
-	@JsonIgnore
-	public void setResultCount(String o) {
-		this.resultCount = HubGenPage.staticSetResultCount(siteRequest_, o);
-	}
-	public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Integer.parseInt(o);
-		return null;
-	}
-	protected HubGenPage resultCountInit() {
-		Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
-		if(resultCount == null) {
-			_resultCount(resultCountWrap);
-			Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
-				setResultCount(o);
-			});
-		}
-		return (HubGenPage)this;
-	}
+  public void setResultCount(Integer resultCount) {
+    this.resultCount = resultCount;
+  }
+  @JsonIgnore
+  public void setResultCount(String o) {
+    this.resultCount = HubGenPage.staticSetResultCount(siteRequest_, o);
+  }
+  public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected HubGenPage resultCountInit() {
+    Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
+    if(resultCount == null) {
+      _resultCount(resultCountWrap);
+      Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
+        setResultCount(o);
+      });
+    }
+    return (HubGenPage)this;
+  }
 
-	public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
-		return o;
-	}
+  public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
 
-	public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
-		return HubGenPage.staticSearchResultCount(siteRequest_, HubGenPage.staticSetResultCount(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
+    return HubGenPage.staticSearchResultCount(siteRequest_, HubGenPage.staticSetResultCount(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// result //
+  // result //
 	////////////
 
 
-	/**	 The entity result
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected Hub result;
+  /**   The entity result
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Hub result;
 
-	/**	<br> The entity result
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _result(Wrap<Hub> w);
+  /**  <br> The entity result
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _result(Wrap<Hub> w);
 
-	public Hub getResult() {
-		return result;
-	}
+  public Hub getResult() {
+    return result;
+  }
 
-	public void setResult(Hub result) {
-		this.result = result;
-	}
-	public static Hub staticSetResult(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected HubGenPage resultInit() {
-		Wrap<Hub> resultWrap = new Wrap<Hub>().var("result");
-		if(result == null) {
-			_result(resultWrap);
-			Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
-				setResult(o);
-			});
-		}
-		return (HubGenPage)this;
-	}
+  public void setResult(Hub result) {
+    this.result = result;
+  }
+  public static Hub staticSetResult(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected HubGenPage resultInit() {
+    Wrap<Hub> resultWrap = new Wrap<Hub>().var("result");
+    if(result == null) {
+      _result(resultWrap);
+      Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
+        setResult(o);
+      });
+    }
+    return (HubGenPage)this;
+  }
 
 	////////
-	// pk //
+  // pk //
 	////////
 
 
-	/**	 The entity pk
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Long pk;
+  /**   The entity pk
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Long pk;
 
-	/**	<br> The entity pk
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pk(Wrap<Long> w);
+  /**  <br> The entity pk
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pk(Wrap<Long> w);
 
-	public Long getPk() {
-		return pk;
-	}
+  public Long getPk() {
+    return pk;
+  }
 
-	public void setPk(Long pk) {
-		this.pk = pk;
-	}
-	@JsonIgnore
-	public void setPk(String o) {
-		this.pk = HubGenPage.staticSetPk(siteRequest_, o);
-	}
-	public static Long staticSetPk(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Long.parseLong(o);
-		return null;
-	}
-	protected HubGenPage pkInit() {
-		Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
-		if(pk == null) {
-			_pk(pkWrap);
-			Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
-				setPk(o);
-			});
-		}
-		return (HubGenPage)this;
-	}
+  public void setPk(Long pk) {
+    this.pk = pk;
+  }
+  @JsonIgnore
+  public void setPk(String o) {
+    this.pk = HubGenPage.staticSetPk(siteRequest_, o);
+  }
+  public static Long staticSetPk(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Long.parseLong(o);
+    return null;
+  }
+  protected HubGenPage pkInit() {
+    Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
+    if(pk == null) {
+      _pk(pkWrap);
+      Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
+        setPk(o);
+      });
+    }
+    return (HubGenPage)this;
+  }
 
-	public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
-		return o;
-	}
+  public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
+    return o;
+  }
 
-	public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
-		return HubGenPage.staticSearchPk(siteRequest_, HubGenPage.staticSetPk(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
+    return HubGenPage.staticSearchPk(siteRequest_, HubGenPage.staticSetPk(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// solrId //
+  // solrId //
 	////////////
 
 
-	/**	 The entity solrId
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String solrId;
+  /**   The entity solrId
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String solrId;
 
-	/**	<br> The entity solrId
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _solrId(Wrap<String> w);
+  /**  <br> The entity solrId
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _solrId(Wrap<String> w);
 
-	public String getSolrId() {
-		return solrId;
-	}
-	public void setSolrId(String o) {
-		this.solrId = HubGenPage.staticSetSolrId(siteRequest_, o);
-	}
-	public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected HubGenPage solrIdInit() {
-		Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
-		if(solrId == null) {
-			_solrId(solrIdWrap);
-			Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
-				setSolrId(o);
-			});
-		}
-		return (HubGenPage)this;
-	}
+  public String getSolrId() {
+    return solrId;
+  }
+  public void setSolrId(String o) {
+    this.solrId = HubGenPage.staticSetSolrId(siteRequest_, o);
+  }
+  public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected HubGenPage solrIdInit() {
+    Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
+    if(solrId == null) {
+      _solrId(solrIdWrap);
+      Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
+        setSolrId(o);
+      });
+    }
+    return (HubGenPage)this;
+  }
 
-	public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
-		return HubGenPage.staticSearchSolrId(siteRequest_, HubGenPage.staticSetSolrId(siteRequest_, o)).toString();
-	}
-
-	////////////////
-	// pageUriHub //
-	////////////////
-
-
-	/**	 The entity pageUriHub
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String pageUriHub;
-
-	/**	<br> The entity pageUriHub
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:pageUriHub">Find the entity pageUriHub in Solr</a>
-	 * <br>
-	 * @param c is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pageUriHub(Wrap<String> c);
-
-	public String getPageUriHub() {
-		return pageUriHub;
-	}
-	public void setPageUriHub(String o) {
-		this.pageUriHub = HubGenPage.staticSetPageUriHub(siteRequest_, o);
-	}
-	public static String staticSetPageUriHub(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected HubGenPage pageUriHubInit() {
-		Wrap<String> pageUriHubWrap = new Wrap<String>().var("pageUriHub");
-		if(pageUriHub == null) {
-			_pageUriHub(pageUriHubWrap);
-			Optional.ofNullable(pageUriHubWrap.getO()).ifPresent(o -> {
-				setPageUriHub(o);
-			});
-		}
-		return (HubGenPage)this;
-	}
-
-	public static String staticSearchPageUriHub(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-
-	public static String staticSearchStrPageUriHub(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqPageUriHub(SiteRequest siteRequest_, String o) {
-		return HubGenPage.staticSearchPageUriHub(siteRequest_, HubGenPage.staticSetPageUriHub(siteRequest_, o)).toString();
-	}
-
-	//////////////
-	// initDeep //
-	//////////////
-
-	public Future<HubGenPageGen<DEV>> promiseDeepHubGenPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepHubGenPage();
-	}
-
-	public Future<HubGenPageGen<DEV>> promiseDeepHubGenPage() {
-		Promise<HubGenPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseHubGenPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	public Future<Void> promiseHubGenPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				searchListHub_Init();
-				listHubInit();
-				resultCountInit();
-				resultInit();
-				pkInit();
-				solrIdInit();
-				pageUriHubInit();
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	@Override public Future<? extends HubGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepHubGenPage(siteRequest_);
-	}
-
-	/////////////////
-	// siteRequest //
-	/////////////////
-
-	public void siteRequestHubGenPage(SiteRequest siteRequest_) {
-			super.siteRequestPageLayout(siteRequest_);
-	}
-
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestHubGenPage(siteRequest_);
-	}
-
-	/////////////
-	// obtain //
-	/////////////
-
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainHubGenPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainHubGenPage(String var) {
-		HubGenPage oHubGenPage = (HubGenPage)this;
-		switch(var) {
-			case "searchListHub_":
-				return oHubGenPage.searchListHub_;
-			case "listHub":
-				return oHubGenPage.listHub;
-			case "resultCount":
-				return oHubGenPage.resultCount;
-			case "result":
-				return oHubGenPage.result;
-			case "pk":
-				return oHubGenPage.pk;
-			case "solrId":
-				return oHubGenPage.solrId;
-			case "pageUriHub":
-				return oHubGenPage.pageUriHub;
-			default:
-				return super.obtainPageLayout(var);
-		}
-	}
-
-	///////////////
-	// relate //
-	///////////////
-
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateHubGenPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateHubGenPage(String var, Object val) {
-		HubGenPage oHubGenPage = (HubGenPage)this;
-		switch(var) {
-			default:
-				return super.relatePageLayout(var, val);
-		}
-	}
-
-	///////////////
-	// staticSet //
-	///////////////
-
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, HubGenPage o) {
-		return staticSetHubGenPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetHubGenPage(String entityVar, SiteRequest siteRequest_, String v, HubGenPage o) {
-		switch(entityVar) {
-		case "listHub":
-			return HubGenPage.staticSetListHub(siteRequest_, v);
-		case "resultCount":
-			return HubGenPage.staticSetResultCount(siteRequest_, v);
-		case "pk":
-			return HubGenPage.staticSetPk(siteRequest_, v);
-		case "solrId":
-			return HubGenPage.staticSetSolrId(siteRequest_, v);
-		case "pageUriHub":
-			return HubGenPage.staticSetPageUriHub(siteRequest_, v);
-			default:
-				return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
+    return HubGenPage.staticSearchSolrId(siteRequest_, HubGenPage.staticSetSolrId(siteRequest_, o)).toString();
+  }
 
 	////////////////
-	// staticSearch //
+  // pageUriHub //
 	////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchHubGenPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchHubGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listHub":
-			return HubGenPage.staticSearchListHub(siteRequest_, (JsonArray)o);
-		case "resultCount":
-			return HubGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return HubGenPage.staticSearchPk(siteRequest_, (Long)o);
-		case "solrId":
-			return HubGenPage.staticSearchSolrId(siteRequest_, (String)o);
-		case "pageUriHub":
-			return HubGenPage.staticSearchPageUriHub(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  /**   The entity pageUriHub
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String pageUriHub;
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrHubGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrHubGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listHub":
-			return HubGenPage.staticSearchStrListHub(siteRequest_, (String)o);
-		case "resultCount":
-			return HubGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return HubGenPage.staticSearchStrPk(siteRequest_, (Long)o);
-		case "solrId":
-			return HubGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
-		case "pageUriHub":
-			return HubGenPage.staticSearchStrPageUriHub(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  /**  <br> The entity pageUriHub
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.HubGenPage&fq=entiteVar_enUS_indexed_string:pageUriHub">Find the entity pageUriHub in Solr</a>
+   * <br>
+   * @param c is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pageUriHub(Wrap<String> c);
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  public String getPageUriHub() {
+    return pageUriHub;
+  }
+  public void setPageUriHub(String o) {
+    this.pageUriHub = HubGenPage.staticSetPageUriHub(siteRequest_, o);
+  }
+  public static String staticSetPageUriHub(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected HubGenPage pageUriHubInit() {
+    Wrap<String> pageUriHubWrap = new Wrap<String>().var("pageUriHub");
+    if(pageUriHub == null) {
+      _pageUriHub(pageUriHubWrap);
+      Optional.ofNullable(pageUriHubWrap.getO()).ifPresent(o -> {
+        setPageUriHub(o);
+      });
+    }
+    return (HubGenPage)this;
+  }
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqHubGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqHubGenPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-		case "listHub":
-			return HubGenPage.staticSearchFqListHub(siteRequest_, o);
-		case "resultCount":
-			return HubGenPage.staticSearchFqResultCount(siteRequest_, o);
-		case "pk":
-			return HubGenPage.staticSearchFqPk(siteRequest_, o);
-		case "solrId":
-			return HubGenPage.staticSearchFqSolrId(siteRequest_, o);
-		case "pageUriHub":
-			return HubGenPage.staticSearchFqPageUriHub(siteRequest_, o);
-			default:
-				return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchPageUriHub(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  public static String staticSearchStrPageUriHub(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  public static String staticSearchFqPageUriHub(SiteRequest siteRequest_, String o) {
+    return HubGenPage.staticSearchPageUriHub(siteRequest_, HubGenPage.staticSetPageUriHub(siteRequest_, o)).toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "HubGenPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.hub.HubGenPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
-	public static final String VAR_searchListHub_ = "searchListHub_";
-	public static final String VAR_listHub = "listHub";
-	public static final String VAR_resultCount = "resultCount";
-	public static final String VAR_result = "result";
-	public static final String VAR_pk = "pk";
-	public static final String VAR_solrId = "solrId";
-	public static final String VAR_pageUriHub = "pageUriHub";
+  //////////////
+  // initDeep //
+  //////////////
 
-	public static final String DISPLAY_NAME_searchListHub_ = "";
-	public static final String DISPLAY_NAME_listHub = "";
-	public static final String DISPLAY_NAME_resultCount = "";
-	public static final String DISPLAY_NAME_result = "";
-	public static final String DISPLAY_NAME_pk = "";
-	public static final String DISPLAY_NAME_solrId = "";
-	public static final String DISPLAY_NAME_pageUriHub = "";
+  public Future<HubGenPageGen<DEV>> promiseDeepHubGenPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepHubGenPage();
+  }
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  public Future<HubGenPageGen<DEV>> promiseDeepHubGenPage() {
+    Promise<HubGenPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseHubGenPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  public Future<Void> promiseHubGenPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        searchListHub_Init();
+        listHubInit();
+        resultCountInit();
+        resultInit();
+        pkInit();
+        solrIdInit();
+        pageUriHubInit();
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override public Future<? extends HubGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepHubGenPage(siteRequest_);
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  public void siteRequestHubGenPage(SiteRequest siteRequest_) {
+      super.siteRequestPageLayout(siteRequest_);
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestHubGenPage(siteRequest_);
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainHubGenPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainHubGenPage(String var) {
+    HubGenPage oHubGenPage = (HubGenPage)this;
+    switch(var) {
+      case "searchListHub_":
+        return oHubGenPage.searchListHub_;
+      case "listHub":
+        return oHubGenPage.listHub;
+      case "resultCount":
+        return oHubGenPage.resultCount;
+      case "result":
+        return oHubGenPage.result;
+      case "pk":
+        return oHubGenPage.pk;
+      case "solrId":
+        return oHubGenPage.solrId;
+      case "pageUriHub":
+        return oHubGenPage.pageUriHub;
+      default:
+        return super.obtainPageLayout(var);
+    }
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  ///////////////
+  // relate //
+  ///////////////
 
-	public static String displayNameForClass(String var) {
-		return HubGenPage.displayNameHubGenPage(var);
-	}
-	public static String displayNameHubGenPage(String var) {
-		switch(var) {
-		case VAR_searchListHub_:
-			return DISPLAY_NAME_searchListHub_;
-		case VAR_listHub:
-			return DISPLAY_NAME_listHub;
-		case VAR_resultCount:
-			return DISPLAY_NAME_resultCount;
-		case VAR_result:
-			return DISPLAY_NAME_result;
-		case VAR_pk:
-			return DISPLAY_NAME_pk;
-		case VAR_solrId:
-			return DISPLAY_NAME_solrId;
-		case VAR_pageUriHub:
-			return DISPLAY_NAME_pageUriHub;
-		default:
-			return PageLayout.displayNamePageLayout(var);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateHubGenPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateHubGenPage(String var, Object val) {
+    HubGenPage oHubGenPage = (HubGenPage)this;
+    switch(var) {
+      default:
+        return super.relatePageLayout(var, val);
+    }
+  }
 
-	public static String descriptionHubGenPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return PageLayout.descriptionPageLayout(var);
-		}
-	}
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static String classSimpleNameHubGenPage(String var) {
-		switch(var) {
-		case VAR_searchListHub_:
-			return "SearchList";
-		case VAR_listHub:
-			return "JsonArray";
-		case VAR_resultCount:
-			return "Integer";
-		case VAR_result:
-			return "Hub";
-		case VAR_pk:
-			return "Long";
-		case VAR_solrId:
-			return "String";
-		case VAR_pageUriHub:
-			return "String";
-			default:
-				return PageLayout.classSimpleNamePageLayout(var);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, HubGenPage o) {
+    return staticSetHubGenPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetHubGenPage(String entityVar, SiteRequest siteRequest_, String v, HubGenPage o) {
+    switch(entityVar) {
+    case "listHub":
+      return HubGenPage.staticSetListHub(siteRequest_, v);
+    case "resultCount":
+      return HubGenPage.staticSetResultCount(siteRequest_, v);
+    case "pk":
+      return HubGenPage.staticSetPk(siteRequest_, v);
+    case "solrId":
+      return HubGenPage.staticSetSolrId(siteRequest_, v);
+    case "pageUriHub":
+      return HubGenPage.staticSetPageUriHub(siteRequest_, v);
+      default:
+        return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	public static Integer htmColumnHubGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmColumnPageLayout(var);
-		}
-	}
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Integer htmRowHubGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmRowPageLayout(var);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchHubGenPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchHubGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listHub":
+      return HubGenPage.staticSearchListHub(siteRequest_, (JsonArray)o);
+    case "resultCount":
+      return HubGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return HubGenPage.staticSearchPk(siteRequest_, (Long)o);
+    case "solrId":
+      return HubGenPage.staticSearchSolrId(siteRequest_, (String)o);
+    case "pageUriHub":
+      return HubGenPage.staticSearchPageUriHub(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	public static Integer htmCellHubGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmCellPageLayout(var);
-		}
-	}
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static Integer lengthMinHubGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMinPageLayout(var);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrHubGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrHubGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listHub":
+      return HubGenPage.staticSearchStrListHub(siteRequest_, (String)o);
+    case "resultCount":
+      return HubGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return HubGenPage.staticSearchStrPk(siteRequest_, (Long)o);
+    case "solrId":
+      return HubGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
+    case "pageUriHub":
+      return HubGenPage.staticSearchStrPageUriHub(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	public static Integer lengthMaxHubGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMaxPageLayout(var);
-		}
-	}
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static Integer maxHubGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.maxPageLayout(var);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqHubGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqHubGenPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+    case "listHub":
+      return HubGenPage.staticSearchFqListHub(siteRequest_, o);
+    case "resultCount":
+      return HubGenPage.staticSearchFqResultCount(siteRequest_, o);
+    case "pk":
+      return HubGenPage.staticSearchFqPk(siteRequest_, o);
+    case "solrId":
+      return HubGenPage.staticSearchFqSolrId(siteRequest_, o);
+    case "pageUriHub":
+      return HubGenPage.staticSearchFqPageUriHub(siteRequest_, o);
+      default:
+        return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	public static Integer minHubGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.minPageLayout(var);
-		}
-	}
+  //////////////
+  // toString //
+  //////////////
+
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
+
+  public static final String CLASS_SIMPLE_NAME = "HubGenPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.hub.HubGenPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String VAR_searchListHub_ = "searchListHub_";
+  public static final String VAR_listHub = "listHub";
+  public static final String VAR_resultCount = "resultCount";
+  public static final String VAR_result = "result";
+  public static final String VAR_pk = "pk";
+  public static final String VAR_solrId = "solrId";
+  public static final String VAR_pageUriHub = "pageUriHub";
+
+  public static final String DISPLAY_NAME_searchListHub_ = "";
+  public static final String DISPLAY_NAME_listHub = "";
+  public static final String DISPLAY_NAME_resultCount = "";
+  public static final String DISPLAY_NAME_result = "";
+  public static final String DISPLAY_NAME_pk = "";
+  public static final String DISPLAY_NAME_solrId = "";
+  public static final String DISPLAY_NAME_pageUriHub = "";
+
+  @Override
+  public String idForClass() {
+    return null;
+  }
+
+  @Override
+  public String titleForClass() {
+    return null;
+  }
+
+  @Override
+  public String nameForClass() {
+    return null;
+  }
+
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
+
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
+
+  public static String displayNameForClass(String var) {
+    return HubGenPage.displayNameHubGenPage(var);
+  }
+  public static String displayNameHubGenPage(String var) {
+    switch(var) {
+    case VAR_searchListHub_:
+      return DISPLAY_NAME_searchListHub_;
+    case VAR_listHub:
+      return DISPLAY_NAME_listHub;
+    case VAR_resultCount:
+      return DISPLAY_NAME_resultCount;
+    case VAR_result:
+      return DISPLAY_NAME_result;
+    case VAR_pk:
+      return DISPLAY_NAME_pk;
+    case VAR_solrId:
+      return DISPLAY_NAME_solrId;
+    case VAR_pageUriHub:
+      return DISPLAY_NAME_pageUriHub;
+    default:
+      return PageLayout.displayNamePageLayout(var);
+    }
+  }
+
+  public static String descriptionHubGenPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return PageLayout.descriptionPageLayout(var);
+    }
+  }
+
+  public static String classSimpleNameHubGenPage(String var) {
+    switch(var) {
+    case VAR_searchListHub_:
+      return "SearchList";
+    case VAR_listHub:
+      return "JsonArray";
+    case VAR_resultCount:
+      return "Integer";
+    case VAR_result:
+      return "Hub";
+    case VAR_pk:
+      return "Long";
+    case VAR_solrId:
+      return "String";
+    case VAR_pageUriHub:
+      return "String";
+      default:
+        return PageLayout.classSimpleNamePageLayout(var);
+    }
+  }
+
+  public static Integer htmColumnHubGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmColumnPageLayout(var);
+    }
+  }
+
+  public static Integer htmRowHubGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmRowPageLayout(var);
+    }
+  }
+
+  public static Integer htmCellHubGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmCellPageLayout(var);
+    }
+  }
+
+  public static Integer lengthMinHubGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMinPageLayout(var);
+    }
+  }
+
+  public static Integer lengthMaxHubGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMaxPageLayout(var);
+    }
+  }
+
+  public static Integer maxHubGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.maxPageLayout(var);
+    }
+  }
+
+  public static Integer minHubGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.minPageLayout(var);
+    }
+  }
 }
