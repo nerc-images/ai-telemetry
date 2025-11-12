@@ -51,7 +51,7 @@ oc create rolebinding $OPENSHIFT_AI_WORKBENCH-edit-rolebindings --role=$OPENSHIF
 
 ## Fork ai-telemetry repo
 
-You will want to create your own fork of the [ai-telemetry repo](https://github.com/OCP-on-NERC/ai-telemetry) here to do development. 
+You will want to create your own fork of the [ai-telemetry repo](https://github.com/nerc-images/ai-telemetry) here to do development. 
 
 ## Setting up a GitHub personal access token for ai-telemetry development in RHODS
 
@@ -95,5 +95,5 @@ There are inlay hints in the Java code editor that are really annoying and not u
 
 ## Next...
 If you have successfully ran all of the commands above, congratulations, you are ready to move on to the next notebook in the course. 
-- If you have additional questions or issues, please [create an issue for the course here](https://github.com/OCP-on-NERC/ai-telemetry/issues). 
+- If you have additional questions or issues, please [create an issue for the course here](https://github.com/nerc-images/ai-telemetry/issues). 
 - Otherwise, please continue to the next document [00-build-your-vars.ipynb](00-build-your-vars.ipynb). 

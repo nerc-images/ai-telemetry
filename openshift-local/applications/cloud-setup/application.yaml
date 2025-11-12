@@ -10,7 +10,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/OCP-on-NERC/ai-telemetry.git
+    repoURL: https://github.com/nerc-images/ai-telemetry.git
     targetRevision: HEAD
     path: openshift-local/cloud-setup/
   destination:

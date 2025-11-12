@@ -35,7 +35,7 @@ SITE_ZONE: "America/New_York"
 # The domain name of the site. 
 DOMAIN_NAME: mghpcc.org
 # The GitHub organization for this project. 
-GITHUB_ORG: OCP-on-NERC
+GITHUB_ORG: nerc-images
 # The main git repository for the project. 
 SITE_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_NAME }}.git"
 # The main git repository for the project via ssh. 

@@ -49,7 +49,7 @@ SITE_ZONE: "{{ lookup('env', 'SITE_ZONE') | default('America/New_York', true) }}
 # The domain name of the site. 
 DOMAIN_NAME: mghpcc.org
 # The GitHub organization for this project. 
-GITHUB_ORG: OCP-on-NERC
+GITHUB_ORG: nerc-images
 # The main git repository for the project. 
 SITE_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_NAME }}.git"
 # The main git repository for the project via ssh. 
@@ -80,7 +80,7 @@ USER_SEARCH_URI: "/user-search"
 #########################
 
 # The URL to sign up for the mailing list. 
-MAILING_LIST_URL: https://computate.topicbox.com/groups/computate
+MAILING_LIST_URL: https://computate.topicbox.com/groups/aitelemetry
 # The email address of the mailing list. 
 MAILING_LIST_EMAIL: aitelemetry@group.computate.org
 

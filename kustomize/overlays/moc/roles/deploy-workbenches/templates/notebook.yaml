@@ -3,7 +3,7 @@ kind: Notebook
 metadata:
   annotations:
     notebooks.opendatahub.io/inject-oauth: 'true'
-    opendatahub.io/image-display-name: VSCode IJava java-17-openjdk
+    opendatahub.io/image-display-name: AI Telemetry Workbench
     notebooks.opendatahub.io/oauth-logout-url: 'https://rhods-dashboard-redhat-ods-applications.apps.k5p2r6m6e1c4d2r.dq2p.p2.openshiftapps.com/projects/{{ WORKBENCH_NAMESPACE }}?notebookLogout={{ WORKBENCH_NAME }}'
     opendatahub.io/accelerator-name: ''
     openshift.io/description: ''

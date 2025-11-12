@@ -156,9 +156,9 @@
     namespace: "{{ WORKBENCH_NAMESPACE }}"
     pod: "{{ WORKBENCH_NAME }}-0"
     command: >-
-      bash -c 'git clone https://github.com/OCP-on-NERC/ai-telemetry.git /opt/app-root/src/ai-telemetry;
-      git clone https://github.com/OCP-on-NERC/ai-telemetry-static.git /opt/app-root/src/ai-telemetry-static;
-      (cd /opt/app-root/src/ai-telemetry; git remote add upstream https://github.com/OCP-on-NERC/ai-telemetry-static.git /opt/app-root/src/ai-telemetry-static);
+      bash -c 'git clone https://github.com/nerc-images/ai-telemetry.git /opt/app-root/src/ai-telemetry;
+      git clone https://github.com/nerc-images/ai-telemetry-static.git /opt/app-root/src/ai-telemetry-static;
+      (cd /opt/app-root/src/ai-telemetry; git remote add upstream https://github.com/nerc-images/ai-telemetry-static.git /opt/app-root/src/ai-telemetry-static);
       (cd /opt/app-root/src/ai-telemetry; git pull; mvn clean install);'
 - name: "Install python virtualenv"
   kubernetes.core.k8s_exec:
