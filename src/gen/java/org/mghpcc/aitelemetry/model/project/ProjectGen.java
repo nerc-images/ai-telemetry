@@ -1583,7 +1583,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		case VAR_description:
 			return 7;
 		case VAR_gpuEnabled:
-			return 7;
+			return 8;
 			default:
 				return BaseModel.htmCellBaseModel(var);
 		}

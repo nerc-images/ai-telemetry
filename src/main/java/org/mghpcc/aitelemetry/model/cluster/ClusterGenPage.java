@@ -2,6 +2,7 @@ package org.mghpcc.aitelemetry.model.cluster;
 
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import java.lang.String;
+import java.lang.Boolean;
 import java.util.List;
 import io.vertx.pgclient.data.Point;
 import io.vertx.core.json.JsonObject;

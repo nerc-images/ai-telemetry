@@ -34,7 +34,13 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
     Promise<Void> promise = Promise.promise();
     try {
       String hubId = hub.getHubId();
-      String clusterName = Optional.ofNullable(clusterMemoryBytesResult.getString("clusterName")).orElse("local-cluster");
+      String possibleClusterName = Optional.ofNullable(clusterMemoryBytesResult.getString("clusterName")).orElse("local-cluster");
+      Boolean hubCluster = false;
+      if("local-cluster".equals(possibleClusterName) && hub.getLocalClusterName() != null) {
+        hubCluster = true;
+        possibleClusterName = hub.getLocalClusterName();
+      }
+      String clusterName = possibleClusterName;
       String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
       String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
       JsonObject body = new JsonObject();
@@ -43,6 +49,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
       body.put(Cluster.VAR_hubResource, hubResource);
       body.put(Cluster.VAR_clusterResource, clusterResource);
       body.put(Cluster.VAR_clusterName, clusterName);
+      body.put(Cluster.VAR_hubCluster, hubCluster);
       body.put(Cluster.VAR_aiNodesTotal, Optional.ofNullable(aiNodeResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
       body.put(Cluster.VAR_gpuDevicesTotal, Optional.ofNullable(gpuDeviceResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
       body.put(Cluster.VAR_cpuCoresTotal, Optional.ofNullable(clusterCpuCoresResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));

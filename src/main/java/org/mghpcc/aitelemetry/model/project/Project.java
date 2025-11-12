@@ -171,11 +171,11 @@ public class Project extends ProjectGen<BaseModel> {
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
+   * Facet: true
    * DisplayName: GPU enabled
    * Description: Whether GPUs are enabled for this project. 
    * HtmRow: 3
-   * HtmCell: 7
-   * Facet: true
+   * HtmCell: 8
    **/
   protected void _gpuEnabled(Wrap<Boolean> w) {
     w.o(false);

@@ -17837,6 +17837,8 @@ components:
                     type: string
                   clusterName:
                     type: string
+                  hubCluster:
+                    type: boolean
                   clusterResource:
                     type: string
                   uniqueName:
@@ -17908,6 +17910,13 @@ components:
               type: string
             removeAllClusterName:
               type: string
+            setHubCluster:
+              type: boolean
+              nullable: true
+            removeHubCluster:
+              type: boolean
+            removeAllHubCluster:
+              type: boolean
             setClusterResource:
               type: string
               nullable: true
@@ -18103,6 +18112,13 @@ components:
               type: string
             removeAllClusterName:
               type: string
+            setHubCluster:
+              type: boolean
+              nullable: true
+            removeHubCluster:
+              type: boolean
+            removeAllHubCluster:
+              type: boolean
             setClusterResource:
               type: string
               nullable: true
@@ -18283,6 +18299,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18339,6 +18357,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18395,6 +18415,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18456,6 +18478,8 @@ components:
                     type: string
                   clusterName:
                     type: string
+                  hubCluster:
+                    type: boolean
                   clusterResource:
                     type: string
                   uniqueName:
@@ -18512,6 +18536,8 @@ components:
                     type: string
                   clusterName:
                     type: string
+                  hubCluster:
+                    type: boolean
                   clusterResource:
                     type: string
                   uniqueName:
@@ -18568,6 +18594,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
@@ -18624,6 +18652,8 @@ components:
               type: string
             clusterName:
               type: string
+            hubCluster:
+              type: boolean
             clusterResource:
               type: string
             uniqueName:
