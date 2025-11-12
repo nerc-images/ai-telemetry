@@ -134,772 +134,772 @@ import io.vertx.core.Future;
  * Generated: true
  **/
 public abstract class ClusterGenPageGen<DEV> extends PageLayout {
-	protected static final Logger LOG = LoggerFactory.getLogger(ClusterGenPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(ClusterGenPage.class);
 
 	////////////////////////
-	// searchListCluster_ //
+  // searchListCluster_ //
 	////////////////////////
 
 
-	/**	 The entity searchListCluster_
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonIgnore
-	@JsonInclude(Include.NON_NULL)
-	protected SearchList<Cluster> searchListCluster_;
+  /**   The entity searchListCluster_
+   *	 is defined as null before being initialized. 
+   */
+  @JsonIgnore
+  @JsonInclude(Include.NON_NULL)
+  protected SearchList<Cluster> searchListCluster_;
 
-	/**	<br> The entity searchListCluster_
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:searchListCluster_">Find the entity searchListCluster_ in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _searchListCluster_(Wrap<SearchList<Cluster>> w);
+  /**  <br> The entity searchListCluster_
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:searchListCluster_">Find the entity searchListCluster_ in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _searchListCluster_(Wrap<SearchList<Cluster>> w);
 
-	public SearchList<Cluster> getSearchListCluster_() {
-		return searchListCluster_;
-	}
+  public SearchList<Cluster> getSearchListCluster_() {
+    return searchListCluster_;
+  }
 
-	public void setSearchListCluster_(SearchList<Cluster> searchListCluster_) {
-		this.searchListCluster_ = searchListCluster_;
-	}
-	public static SearchList<Cluster> staticSetSearchListCluster_(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected ClusterGenPage searchListCluster_Init() {
-		Wrap<SearchList<Cluster>> searchListCluster_Wrap = new Wrap<SearchList<Cluster>>().var("searchListCluster_");
-		if(searchListCluster_ == null) {
-			_searchListCluster_(searchListCluster_Wrap);
-			Optional.ofNullable(searchListCluster_Wrap.getO()).ifPresent(o -> {
-				setSearchListCluster_(o);
-			});
-		}
-		return (ClusterGenPage)this;
-	}
-
-	/////////////////
-	// listCluster //
-	/////////////////
-
-
-	/**	 The entity listCluster
-	 *	 It is constructed before being initialized with the constructor by default. 
-	 */
-	@JsonProperty
-	@JsonDeserialize(using = JsonArrayDeserializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected JsonArray listCluster = new JsonArray();
-
-	/**	<br> The entity listCluster
-	 *  It is constructed before being initialized with the constructor by default. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:listCluster">Find the entity listCluster in Solr</a>
-	 * <br>
-	 * @param l is the entity already constructed. 
-	 **/
-	protected abstract void _listCluster(JsonArray l);
-
-	public JsonArray getListCluster() {
-		return listCluster;
-	}
-
-	public void setListCluster(JsonArray listCluster) {
-		this.listCluster = listCluster;
-	}
-	@JsonIgnore
-	public void setListCluster(String o) {
-		this.listCluster = ClusterGenPage.staticSetListCluster(siteRequest_, o);
-	}
-	public static JsonArray staticSetListCluster(SiteRequest siteRequest_, String o) {
-		if(o != null) {
-				return new JsonArray(o);
-		}
-		return null;
-	}
-	protected ClusterGenPage listClusterInit() {
-		_listCluster(listCluster);
-		return (ClusterGenPage)this;
-	}
-
-	public static String staticSearchListCluster(SiteRequest siteRequest_, JsonArray o) {
-		return o.toString();
-	}
-
-	public static String staticSearchStrListCluster(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqListCluster(SiteRequest siteRequest_, String o) {
-		return ClusterGenPage.staticSearchListCluster(siteRequest_, ClusterGenPage.staticSetListCluster(siteRequest_, o)).toString();
-	}
+  public void setSearchListCluster_(SearchList<Cluster> searchListCluster_) {
+    this.searchListCluster_ = searchListCluster_;
+  }
+  public static SearchList<Cluster> staticSetSearchListCluster_(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected ClusterGenPage searchListCluster_Init() {
+    Wrap<SearchList<Cluster>> searchListCluster_Wrap = new Wrap<SearchList<Cluster>>().var("searchListCluster_");
+    if(searchListCluster_ == null) {
+      _searchListCluster_(searchListCluster_Wrap);
+      Optional.ofNullable(searchListCluster_Wrap.getO()).ifPresent(o -> {
+        setSearchListCluster_(o);
+      });
+    }
+    return (ClusterGenPage)this;
+  }
 
 	/////////////////
-	// resultCount //
+  // listCluster //
 	/////////////////
 
 
-	/**	 The entity resultCount
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Integer resultCount;
+  /**   The entity listCluster
+   *	 It is constructed before being initialized with the constructor by default. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = JsonArrayDeserializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected JsonArray listCluster = new JsonArray();
 
-	/**	<br> The entity resultCount
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _resultCount(Wrap<Integer> w);
+  /**  <br> The entity listCluster
+   *  It is constructed before being initialized with the constructor by default. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:listCluster">Find the entity listCluster in Solr</a>
+   * <br>
+   * @param l is the entity already constructed. 
+   **/
+  protected abstract void _listCluster(JsonArray l);
 
-	public Integer getResultCount() {
-		return resultCount;
-	}
+  public JsonArray getListCluster() {
+    return listCluster;
+  }
 
-	public void setResultCount(Integer resultCount) {
-		this.resultCount = resultCount;
-	}
-	@JsonIgnore
-	public void setResultCount(String o) {
-		this.resultCount = ClusterGenPage.staticSetResultCount(siteRequest_, o);
-	}
-	public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Integer.parseInt(o);
-		return null;
-	}
-	protected ClusterGenPage resultCountInit() {
-		Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
-		if(resultCount == null) {
-			_resultCount(resultCountWrap);
-			Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
-				setResultCount(o);
-			});
-		}
-		return (ClusterGenPage)this;
-	}
+  public void setListCluster(JsonArray listCluster) {
+    this.listCluster = listCluster;
+  }
+  @JsonIgnore
+  public void setListCluster(String o) {
+    this.listCluster = ClusterGenPage.staticSetListCluster(siteRequest_, o);
+  }
+  public static JsonArray staticSetListCluster(SiteRequest siteRequest_, String o) {
+    if(o != null) {
+        return new JsonArray(o);
+    }
+    return null;
+  }
+  protected ClusterGenPage listClusterInit() {
+    _listCluster(listCluster);
+    return (ClusterGenPage)this;
+  }
 
-	public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
-		return o;
-	}
+  public static String staticSearchListCluster(SiteRequest siteRequest_, JsonArray o) {
+    return o.toString();
+  }
 
-	public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrListCluster(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
-		return ClusterGenPage.staticSearchResultCount(siteRequest_, ClusterGenPage.staticSetResultCount(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqListCluster(SiteRequest siteRequest_, String o) {
+    return ClusterGenPage.staticSearchListCluster(siteRequest_, ClusterGenPage.staticSetListCluster(siteRequest_, o)).toString();
+  }
+
+	/////////////////
+  // resultCount //
+	/////////////////
+
+
+  /**   The entity resultCount
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer resultCount;
+
+  /**  <br> The entity resultCount
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _resultCount(Wrap<Integer> w);
+
+  public Integer getResultCount() {
+    return resultCount;
+  }
+
+  public void setResultCount(Integer resultCount) {
+    this.resultCount = resultCount;
+  }
+  @JsonIgnore
+  public void setResultCount(String o) {
+    this.resultCount = ClusterGenPage.staticSetResultCount(siteRequest_, o);
+  }
+  public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected ClusterGenPage resultCountInit() {
+    Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
+    if(resultCount == null) {
+      _resultCount(resultCountWrap);
+      Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
+        setResultCount(o);
+      });
+    }
+    return (ClusterGenPage)this;
+  }
+
+  public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
+
+  public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
+    return ClusterGenPage.staticSearchResultCount(siteRequest_, ClusterGenPage.staticSetResultCount(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// result //
+  // result //
 	////////////
 
 
-	/**	 The entity result
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected Cluster result;
+  /**   The entity result
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Cluster result;
 
-	/**	<br> The entity result
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _result(Wrap<Cluster> w);
+  /**  <br> The entity result
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _result(Wrap<Cluster> w);
 
-	public Cluster getResult() {
-		return result;
-	}
+  public Cluster getResult() {
+    return result;
+  }
 
-	public void setResult(Cluster result) {
-		this.result = result;
-	}
-	public static Cluster staticSetResult(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected ClusterGenPage resultInit() {
-		Wrap<Cluster> resultWrap = new Wrap<Cluster>().var("result");
-		if(result == null) {
-			_result(resultWrap);
-			Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
-				setResult(o);
-			});
-		}
-		return (ClusterGenPage)this;
-	}
+  public void setResult(Cluster result) {
+    this.result = result;
+  }
+  public static Cluster staticSetResult(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected ClusterGenPage resultInit() {
+    Wrap<Cluster> resultWrap = new Wrap<Cluster>().var("result");
+    if(result == null) {
+      _result(resultWrap);
+      Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
+        setResult(o);
+      });
+    }
+    return (ClusterGenPage)this;
+  }
 
 	////////
-	// pk //
+  // pk //
 	////////
 
 
-	/**	 The entity pk
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Long pk;
+  /**   The entity pk
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Long pk;
 
-	/**	<br> The entity pk
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pk(Wrap<Long> w);
+  /**  <br> The entity pk
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pk(Wrap<Long> w);
 
-	public Long getPk() {
-		return pk;
-	}
+  public Long getPk() {
+    return pk;
+  }
 
-	public void setPk(Long pk) {
-		this.pk = pk;
-	}
-	@JsonIgnore
-	public void setPk(String o) {
-		this.pk = ClusterGenPage.staticSetPk(siteRequest_, o);
-	}
-	public static Long staticSetPk(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Long.parseLong(o);
-		return null;
-	}
-	protected ClusterGenPage pkInit() {
-		Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
-		if(pk == null) {
-			_pk(pkWrap);
-			Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
-				setPk(o);
-			});
-		}
-		return (ClusterGenPage)this;
-	}
+  public void setPk(Long pk) {
+    this.pk = pk;
+  }
+  @JsonIgnore
+  public void setPk(String o) {
+    this.pk = ClusterGenPage.staticSetPk(siteRequest_, o);
+  }
+  public static Long staticSetPk(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Long.parseLong(o);
+    return null;
+  }
+  protected ClusterGenPage pkInit() {
+    Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
+    if(pk == null) {
+      _pk(pkWrap);
+      Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
+        setPk(o);
+      });
+    }
+    return (ClusterGenPage)this;
+  }
 
-	public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
-		return o;
-	}
+  public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
+    return o;
+  }
 
-	public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
-		return ClusterGenPage.staticSearchPk(siteRequest_, ClusterGenPage.staticSetPk(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
+    return ClusterGenPage.staticSearchPk(siteRequest_, ClusterGenPage.staticSetPk(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// solrId //
+  // solrId //
 	////////////
 
 
-	/**	 The entity solrId
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String solrId;
+  /**   The entity solrId
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String solrId;
 
-	/**	<br> The entity solrId
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _solrId(Wrap<String> w);
+  /**  <br> The entity solrId
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _solrId(Wrap<String> w);
 
-	public String getSolrId() {
-		return solrId;
-	}
-	public void setSolrId(String o) {
-		this.solrId = ClusterGenPage.staticSetSolrId(siteRequest_, o);
-	}
-	public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ClusterGenPage solrIdInit() {
-		Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
-		if(solrId == null) {
-			_solrId(solrIdWrap);
-			Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
-				setSolrId(o);
-			});
-		}
-		return (ClusterGenPage)this;
-	}
+  public String getSolrId() {
+    return solrId;
+  }
+  public void setSolrId(String o) {
+    this.solrId = ClusterGenPage.staticSetSolrId(siteRequest_, o);
+  }
+  public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ClusterGenPage solrIdInit() {
+    Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
+    if(solrId == null) {
+      _solrId(solrIdWrap);
+      Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
+        setSolrId(o);
+      });
+    }
+    return (ClusterGenPage)this;
+  }
 
-	public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
-		return ClusterGenPage.staticSearchSolrId(siteRequest_, ClusterGenPage.staticSetSolrId(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
+    return ClusterGenPage.staticSearchSolrId(siteRequest_, ClusterGenPage.staticSetSolrId(siteRequest_, o)).toString();
+  }
 
 	////////////////////
-	// pageUriCluster //
+  // pageUriCluster //
 	////////////////////
 
 
-	/**	 The entity pageUriCluster
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String pageUriCluster;
+  /**   The entity pageUriCluster
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String pageUriCluster;
 
-	/**	<br> The entity pageUriCluster
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:pageUriCluster">Find the entity pageUriCluster in Solr</a>
-	 * <br>
-	 * @param c is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pageUriCluster(Wrap<String> c);
+  /**  <br> The entity pageUriCluster
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.ClusterGenPage&fq=entiteVar_enUS_indexed_string:pageUriCluster">Find the entity pageUriCluster in Solr</a>
+   * <br>
+   * @param c is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pageUriCluster(Wrap<String> c);
 
-	public String getPageUriCluster() {
-		return pageUriCluster;
-	}
-	public void setPageUriCluster(String o) {
-		this.pageUriCluster = ClusterGenPage.staticSetPageUriCluster(siteRequest_, o);
-	}
-	public static String staticSetPageUriCluster(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ClusterGenPage pageUriClusterInit() {
-		Wrap<String> pageUriClusterWrap = new Wrap<String>().var("pageUriCluster");
-		if(pageUriCluster == null) {
-			_pageUriCluster(pageUriClusterWrap);
-			Optional.ofNullable(pageUriClusterWrap.getO()).ifPresent(o -> {
-				setPageUriCluster(o);
-			});
-		}
-		return (ClusterGenPage)this;
-	}
+  public String getPageUriCluster() {
+    return pageUriCluster;
+  }
+  public void setPageUriCluster(String o) {
+    this.pageUriCluster = ClusterGenPage.staticSetPageUriCluster(siteRequest_, o);
+  }
+  public static String staticSetPageUriCluster(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ClusterGenPage pageUriClusterInit() {
+    Wrap<String> pageUriClusterWrap = new Wrap<String>().var("pageUriCluster");
+    if(pageUriCluster == null) {
+      _pageUriCluster(pageUriClusterWrap);
+      Optional.ofNullable(pageUriClusterWrap.getO()).ifPresent(o -> {
+        setPageUriCluster(o);
+      });
+    }
+    return (ClusterGenPage)this;
+  }
 
-	public static String staticSearchPageUriCluster(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchPageUriCluster(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrPageUriCluster(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPageUriCluster(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPageUriCluster(SiteRequest siteRequest_, String o) {
-		return ClusterGenPage.staticSearchPageUriCluster(siteRequest_, ClusterGenPage.staticSetPageUriCluster(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPageUriCluster(SiteRequest siteRequest_, String o) {
+    return ClusterGenPage.staticSearchPageUriCluster(siteRequest_, ClusterGenPage.staticSetPageUriCluster(siteRequest_, o)).toString();
+  }
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<ClusterGenPageGen<DEV>> promiseDeepClusterGenPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepClusterGenPage();
-	}
+  public Future<ClusterGenPageGen<DEV>> promiseDeepClusterGenPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepClusterGenPage();
+  }
 
-	public Future<ClusterGenPageGen<DEV>> promiseDeepClusterGenPage() {
-		Promise<ClusterGenPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseClusterGenPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<ClusterGenPageGen<DEV>> promiseDeepClusterGenPage() {
+    Promise<ClusterGenPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseClusterGenPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseClusterGenPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				searchListCluster_Init();
-				listClusterInit();
-				resultCountInit();
-				resultInit();
-				pkInit();
-				solrIdInit();
-				pageUriClusterInit();
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseClusterGenPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        searchListCluster_Init();
+        listClusterInit();
+        resultCountInit();
+        resultInit();
+        pkInit();
+        solrIdInit();
+        pageUriClusterInit();
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends ClusterGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepClusterGenPage(siteRequest_);
-	}
+  @Override public Future<? extends ClusterGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepClusterGenPage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestClusterGenPage(SiteRequest siteRequest_) {
-			super.siteRequestPageLayout(siteRequest_);
-	}
+  public void siteRequestClusterGenPage(SiteRequest siteRequest_) {
+      super.siteRequestPageLayout(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestClusterGenPage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestClusterGenPage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainClusterGenPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainClusterGenPage(String var) {
-		ClusterGenPage oClusterGenPage = (ClusterGenPage)this;
-		switch(var) {
-			case "searchListCluster_":
-				return oClusterGenPage.searchListCluster_;
-			case "listCluster":
-				return oClusterGenPage.listCluster;
-			case "resultCount":
-				return oClusterGenPage.resultCount;
-			case "result":
-				return oClusterGenPage.result;
-			case "pk":
-				return oClusterGenPage.pk;
-			case "solrId":
-				return oClusterGenPage.solrId;
-			case "pageUriCluster":
-				return oClusterGenPage.pageUriCluster;
-			default:
-				return super.obtainPageLayout(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainClusterGenPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainClusterGenPage(String var) {
+    ClusterGenPage oClusterGenPage = (ClusterGenPage)this;
+    switch(var) {
+      case "searchListCluster_":
+        return oClusterGenPage.searchListCluster_;
+      case "listCluster":
+        return oClusterGenPage.listCluster;
+      case "resultCount":
+        return oClusterGenPage.resultCount;
+      case "result":
+        return oClusterGenPage.result;
+      case "pk":
+        return oClusterGenPage.pk;
+      case "solrId":
+        return oClusterGenPage.solrId;
+      case "pageUriCluster":
+        return oClusterGenPage.pageUriCluster;
+      default:
+        return super.obtainPageLayout(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateClusterGenPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateClusterGenPage(String var, Object val) {
-		ClusterGenPage oClusterGenPage = (ClusterGenPage)this;
-		switch(var) {
-			default:
-				return super.relatePageLayout(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateClusterGenPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateClusterGenPage(String var, Object val) {
+    ClusterGenPage oClusterGenPage = (ClusterGenPage)this;
+    switch(var) {
+      default:
+        return super.relatePageLayout(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ClusterGenPage o) {
-		return staticSetClusterGenPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetClusterGenPage(String entityVar, SiteRequest siteRequest_, String v, ClusterGenPage o) {
-		switch(entityVar) {
-		case "listCluster":
-			return ClusterGenPage.staticSetListCluster(siteRequest_, v);
-		case "resultCount":
-			return ClusterGenPage.staticSetResultCount(siteRequest_, v);
-		case "pk":
-			return ClusterGenPage.staticSetPk(siteRequest_, v);
-		case "solrId":
-			return ClusterGenPage.staticSetSolrId(siteRequest_, v);
-		case "pageUriCluster":
-			return ClusterGenPage.staticSetPageUriCluster(siteRequest_, v);
-			default:
-				return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ClusterGenPage o) {
+    return staticSetClusterGenPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetClusterGenPage(String entityVar, SiteRequest siteRequest_, String v, ClusterGenPage o) {
+    switch(entityVar) {
+    case "listCluster":
+      return ClusterGenPage.staticSetListCluster(siteRequest_, v);
+    case "resultCount":
+      return ClusterGenPage.staticSetResultCount(siteRequest_, v);
+    case "pk":
+      return ClusterGenPage.staticSetPk(siteRequest_, v);
+    case "solrId":
+      return ClusterGenPage.staticSetSolrId(siteRequest_, v);
+    case "pageUriCluster":
+      return ClusterGenPage.staticSetPageUriCluster(siteRequest_, v);
+      default:
+        return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchClusterGenPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchClusterGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listCluster":
-			return ClusterGenPage.staticSearchListCluster(siteRequest_, (JsonArray)o);
-		case "resultCount":
-			return ClusterGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return ClusterGenPage.staticSearchPk(siteRequest_, (Long)o);
-		case "solrId":
-			return ClusterGenPage.staticSearchSolrId(siteRequest_, (String)o);
-		case "pageUriCluster":
-			return ClusterGenPage.staticSearchPageUriCluster(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchClusterGenPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchClusterGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listCluster":
+      return ClusterGenPage.staticSearchListCluster(siteRequest_, (JsonArray)o);
+    case "resultCount":
+      return ClusterGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return ClusterGenPage.staticSearchPk(siteRequest_, (Long)o);
+    case "solrId":
+      return ClusterGenPage.staticSearchSolrId(siteRequest_, (String)o);
+    case "pageUriCluster":
+      return ClusterGenPage.staticSearchPageUriCluster(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrClusterGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrClusterGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listCluster":
-			return ClusterGenPage.staticSearchStrListCluster(siteRequest_, (String)o);
-		case "resultCount":
-			return ClusterGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return ClusterGenPage.staticSearchStrPk(siteRequest_, (Long)o);
-		case "solrId":
-			return ClusterGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
-		case "pageUriCluster":
-			return ClusterGenPage.staticSearchStrPageUriCluster(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrClusterGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrClusterGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listCluster":
+      return ClusterGenPage.staticSearchStrListCluster(siteRequest_, (String)o);
+    case "resultCount":
+      return ClusterGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return ClusterGenPage.staticSearchStrPk(siteRequest_, (Long)o);
+    case "solrId":
+      return ClusterGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
+    case "pageUriCluster":
+      return ClusterGenPage.staticSearchStrPageUriCluster(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqClusterGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqClusterGenPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-		case "listCluster":
-			return ClusterGenPage.staticSearchFqListCluster(siteRequest_, o);
-		case "resultCount":
-			return ClusterGenPage.staticSearchFqResultCount(siteRequest_, o);
-		case "pk":
-			return ClusterGenPage.staticSearchFqPk(siteRequest_, o);
-		case "solrId":
-			return ClusterGenPage.staticSearchFqSolrId(siteRequest_, o);
-		case "pageUriCluster":
-			return ClusterGenPage.staticSearchFqPageUriCluster(siteRequest_, o);
-			default:
-				return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqClusterGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqClusterGenPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+    case "listCluster":
+      return ClusterGenPage.staticSearchFqListCluster(siteRequest_, o);
+    case "resultCount":
+      return ClusterGenPage.staticSearchFqResultCount(siteRequest_, o);
+    case "pk":
+      return ClusterGenPage.staticSearchFqPk(siteRequest_, o);
+    case "solrId":
+      return ClusterGenPage.staticSearchFqSolrId(siteRequest_, o);
+    case "pageUriCluster":
+      return ClusterGenPage.staticSearchFqPageUriCluster(siteRequest_, o);
+      default:
+        return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "ClusterGenPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.cluster.ClusterGenPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
-	public static final String VAR_searchListCluster_ = "searchListCluster_";
-	public static final String VAR_listCluster = "listCluster";
-	public static final String VAR_resultCount = "resultCount";
-	public static final String VAR_result = "result";
-	public static final String VAR_pk = "pk";
-	public static final String VAR_solrId = "solrId";
-	public static final String VAR_pageUriCluster = "pageUriCluster";
+  public static final String CLASS_SIMPLE_NAME = "ClusterGenPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.cluster.ClusterGenPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String VAR_searchListCluster_ = "searchListCluster_";
+  public static final String VAR_listCluster = "listCluster";
+  public static final String VAR_resultCount = "resultCount";
+  public static final String VAR_result = "result";
+  public static final String VAR_pk = "pk";
+  public static final String VAR_solrId = "solrId";
+  public static final String VAR_pageUriCluster = "pageUriCluster";
 
-	public static final String DISPLAY_NAME_searchListCluster_ = "";
-	public static final String DISPLAY_NAME_listCluster = "";
-	public static final String DISPLAY_NAME_resultCount = "";
-	public static final String DISPLAY_NAME_result = "";
-	public static final String DISPLAY_NAME_pk = "";
-	public static final String DISPLAY_NAME_solrId = "";
-	public static final String DISPLAY_NAME_pageUriCluster = "";
+  public static final String DISPLAY_NAME_searchListCluster_ = "";
+  public static final String DISPLAY_NAME_listCluster = "";
+  public static final String DISPLAY_NAME_resultCount = "";
+  public static final String DISPLAY_NAME_result = "";
+  public static final String DISPLAY_NAME_pk = "";
+  public static final String DISPLAY_NAME_solrId = "";
+  public static final String DISPLAY_NAME_pageUriCluster = "";
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return ClusterGenPage.displayNameClusterGenPage(var);
-	}
-	public static String displayNameClusterGenPage(String var) {
-		switch(var) {
-		case VAR_searchListCluster_:
-			return DISPLAY_NAME_searchListCluster_;
-		case VAR_listCluster:
-			return DISPLAY_NAME_listCluster;
-		case VAR_resultCount:
-			return DISPLAY_NAME_resultCount;
-		case VAR_result:
-			return DISPLAY_NAME_result;
-		case VAR_pk:
-			return DISPLAY_NAME_pk;
-		case VAR_solrId:
-			return DISPLAY_NAME_solrId;
-		case VAR_pageUriCluster:
-			return DISPLAY_NAME_pageUriCluster;
-		default:
-			return PageLayout.displayNamePageLayout(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return ClusterGenPage.displayNameClusterGenPage(var);
+  }
+  public static String displayNameClusterGenPage(String var) {
+    switch(var) {
+    case VAR_searchListCluster_:
+      return DISPLAY_NAME_searchListCluster_;
+    case VAR_listCluster:
+      return DISPLAY_NAME_listCluster;
+    case VAR_resultCount:
+      return DISPLAY_NAME_resultCount;
+    case VAR_result:
+      return DISPLAY_NAME_result;
+    case VAR_pk:
+      return DISPLAY_NAME_pk;
+    case VAR_solrId:
+      return DISPLAY_NAME_solrId;
+    case VAR_pageUriCluster:
+      return DISPLAY_NAME_pageUriCluster;
+    default:
+      return PageLayout.displayNamePageLayout(var);
+    }
+  }
 
-	public static String descriptionClusterGenPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return PageLayout.descriptionPageLayout(var);
-		}
-	}
+  public static String descriptionClusterGenPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return PageLayout.descriptionPageLayout(var);
+    }
+  }
 
-	public static String classSimpleNameClusterGenPage(String var) {
-		switch(var) {
-		case VAR_searchListCluster_:
-			return "SearchList";
-		case VAR_listCluster:
-			return "JsonArray";
-		case VAR_resultCount:
-			return "Integer";
-		case VAR_result:
-			return "Cluster";
-		case VAR_pk:
-			return "Long";
-		case VAR_solrId:
-			return "String";
-		case VAR_pageUriCluster:
-			return "String";
-			default:
-				return PageLayout.classSimpleNamePageLayout(var);
-		}
-	}
+  public static String classSimpleNameClusterGenPage(String var) {
+    switch(var) {
+    case VAR_searchListCluster_:
+      return "SearchList";
+    case VAR_listCluster:
+      return "JsonArray";
+    case VAR_resultCount:
+      return "Integer";
+    case VAR_result:
+      return "Cluster";
+    case VAR_pk:
+      return "Long";
+    case VAR_solrId:
+      return "String";
+    case VAR_pageUriCluster:
+      return "String";
+      default:
+        return PageLayout.classSimpleNamePageLayout(var);
+    }
+  }
 
-	public static Integer htmColumnClusterGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmColumnPageLayout(var);
-		}
-	}
+  public static Integer htmColumnClusterGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmColumnPageLayout(var);
+    }
+  }
 
-	public static Integer htmRowClusterGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmRowPageLayout(var);
-		}
-	}
+  public static Integer htmRowClusterGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmRowPageLayout(var);
+    }
+  }
 
-	public static Integer htmCellClusterGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmCellPageLayout(var);
-		}
-	}
+  public static Integer htmCellClusterGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmCellPageLayout(var);
+    }
+  }
 
-	public static Integer lengthMinClusterGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMinPageLayout(var);
-		}
-	}
+  public static Integer lengthMinClusterGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMinPageLayout(var);
+    }
+  }
 
-	public static Integer lengthMaxClusterGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMaxPageLayout(var);
-		}
-	}
+  public static Integer lengthMaxClusterGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMaxPageLayout(var);
+    }
+  }
 
-	public static Integer maxClusterGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.maxPageLayout(var);
-		}
-	}
+  public static Integer maxClusterGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.maxPageLayout(var);
+    }
+  }
 
-	public static Integer minClusterGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.minPageLayout(var);
-		}
-	}
+  public static Integer minClusterGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.minPageLayout(var);
+    }
+  }
 }

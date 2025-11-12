@@ -14432,7 +14432,7 @@ components:
   securitySchemes:
     openIdConnect:
       type: openIdConnect
-      openIdConnectUrl: https://keycloak.apps.obs.nerc.mghpcc.org/realms/NERC/.well-known/openid-configuration
+      openIdConnectUrl: https://keycloak.apps-crc.testing/realms/AITELEMETRY/.well-known/openid-configuration
   requestBodies:
     SearchBareMetalNetworkResponse:
       content:
@@ -17839,6 +17839,8 @@ components:
                     type: string
                   hubCluster:
                     type: boolean
+                  clusterNameMetrics:
+                    type: string
                   clusterResource:
                     type: string
                   uniqueName:
@@ -17917,6 +17919,13 @@ components:
               type: boolean
             removeAllHubCluster:
               type: boolean
+            setClusterNameMetrics:
+              type: string
+              nullable: true
+            removeClusterNameMetrics:
+              type: string
+            removeAllClusterNameMetrics:
+              type: string
             setClusterResource:
               type: string
               nullable: true
@@ -18119,6 +18128,13 @@ components:
               type: boolean
             removeAllHubCluster:
               type: boolean
+            setClusterNameMetrics:
+              type: string
+              nullable: true
+            removeClusterNameMetrics:
+              type: string
+            removeAllClusterNameMetrics:
+              type: string
             setClusterResource:
               type: string
               nullable: true
@@ -18301,6 +18317,8 @@ components:
               type: string
             hubCluster:
               type: boolean
+            clusterNameMetrics:
+              type: string
             clusterResource:
               type: string
             uniqueName:
@@ -18359,6 +18377,8 @@ components:
               type: string
             hubCluster:
               type: boolean
+            clusterNameMetrics:
+              type: string
             clusterResource:
               type: string
             uniqueName:
@@ -18417,6 +18437,8 @@ components:
               type: string
             hubCluster:
               type: boolean
+            clusterNameMetrics:
+              type: string
             clusterResource:
               type: string
             uniqueName:
@@ -18480,6 +18502,8 @@ components:
                     type: string
                   hubCluster:
                     type: boolean
+                  clusterNameMetrics:
+                    type: string
                   clusterResource:
                     type: string
                   uniqueName:
@@ -18538,6 +18562,8 @@ components:
                     type: string
                   hubCluster:
                     type: boolean
+                  clusterNameMetrics:
+                    type: string
                   clusterResource:
                     type: string
                   uniqueName:
@@ -18596,6 +18622,8 @@ components:
               type: string
             hubCluster:
               type: boolean
+            clusterNameMetrics:
+              type: string
             clusterResource:
               type: string
             uniqueName:
@@ -18654,6 +18682,8 @@ components:
               type: string
             hubCluster:
               type: boolean
+            clusterNameMetrics:
+              type: string
             clusterResource:
               type: string
             uniqueName:

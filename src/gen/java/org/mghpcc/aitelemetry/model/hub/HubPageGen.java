@@ -111,308 +111,308 @@ import io.vertx.core.json.JsonArray;
  * Generated: true
  **/
 public abstract class HubPageGen<DEV> extends HubGenPage {
-	protected static final Logger LOG = LoggerFactory.getLogger(HubPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(HubPage.class);
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<HubPageGen<DEV>> promiseDeepHubPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepHubPage();
-	}
+  public Future<HubPageGen<DEV>> promiseDeepHubPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepHubPage();
+  }
 
-	public Future<HubPageGen<DEV>> promiseDeepHubPage() {
-		Promise<HubPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseHubPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepHubGenPage(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<HubPageGen<DEV>> promiseDeepHubPage() {
+    Promise<HubPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseHubPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepHubGenPage(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseHubPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseHubPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends HubPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepHubPage(siteRequest_);
-	}
+  @Override public Future<? extends HubPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepHubPage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestHubPage(SiteRequest siteRequest_) {
-			super.siteRequestHubGenPage(siteRequest_);
-	}
+  public void siteRequestHubPage(SiteRequest siteRequest_) {
+      super.siteRequestHubGenPage(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestHubPage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestHubPage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainHubPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainHubPage(String var) {
-		HubPage oHubPage = (HubPage)this;
-		switch(var) {
-			default:
-				return super.obtainHubGenPage(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainHubPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainHubPage(String var) {
+    HubPage oHubPage = (HubPage)this;
+    switch(var) {
+      default:
+        return super.obtainHubGenPage(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateHubPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateHubPage(String var, Object val) {
-		HubPage oHubPage = (HubPage)this;
-		switch(var) {
-			default:
-				return super.relateHubGenPage(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateHubPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateHubPage(String var, Object val) {
+    HubPage oHubPage = (HubPage)this;
+    switch(var) {
+      default:
+        return super.relateHubGenPage(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, HubPage o) {
-		return staticSetHubPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetHubPage(String entityVar, SiteRequest siteRequest_, String v, HubPage o) {
-		switch(entityVar) {
-			default:
-				return HubGenPage.staticSetHubGenPage(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, HubPage o) {
+    return staticSetHubPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetHubPage(String entityVar, SiteRequest siteRequest_, String v, HubPage o) {
+    switch(entityVar) {
+      default:
+        return HubGenPage.staticSetHubGenPage(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchHubPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchHubPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return HubGenPage.staticSearchHubGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchHubPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchHubPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return HubGenPage.staticSearchHubGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrHubPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrHubPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return HubGenPage.staticSearchStrHubGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrHubPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrHubPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return HubGenPage.staticSearchStrHubGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqHubPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqHubPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-			default:
-				return HubGenPage.staticSearchFqHubGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqHubPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqHubPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+      default:
+        return HubGenPage.staticSearchFqHubGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "HubPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.hub.HubPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_SIMPLE_NAME = "HubPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.hub.HubPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
 
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return HubPage.displayNameHubPage(var);
-	}
-	public static String displayNameHubPage(String var) {
-		switch(var) {
-		default:
-			return HubGenPage.displayNameHubGenPage(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return HubPage.displayNameHubPage(var);
+  }
+  public static String displayNameHubPage(String var) {
+    switch(var) {
+    default:
+      return HubGenPage.displayNameHubGenPage(var);
+    }
+  }
 
-	public static String descriptionHubPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return HubGenPage.descriptionHubGenPage(var);
-		}
-	}
+  public static String descriptionHubPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return HubGenPage.descriptionHubGenPage(var);
+    }
+  }
 
-	public static String classSimpleNameHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.classSimpleNameHubGenPage(var);
-		}
-	}
+  public static String classSimpleNameHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.classSimpleNameHubGenPage(var);
+    }
+  }
 
-	public static Integer htmColumnHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.htmColumnHubGenPage(var);
-		}
-	}
+  public static Integer htmColumnHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.htmColumnHubGenPage(var);
+    }
+  }
 
-	public static Integer htmRowHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.htmRowHubGenPage(var);
-		}
-	}
+  public static Integer htmRowHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.htmRowHubGenPage(var);
+    }
+  }
 
-	public static Integer htmCellHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.htmCellHubGenPage(var);
-		}
-	}
+  public static Integer htmCellHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.htmCellHubGenPage(var);
+    }
+  }
 
-	public static Integer lengthMinHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.lengthMinHubGenPage(var);
-		}
-	}
+  public static Integer lengthMinHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.lengthMinHubGenPage(var);
+    }
+  }
 
-	public static Integer lengthMaxHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.lengthMaxHubGenPage(var);
-		}
-	}
+  public static Integer lengthMaxHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.lengthMaxHubGenPage(var);
+    }
+  }
 
-	public static Integer maxHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.maxHubGenPage(var);
-		}
-	}
+  public static Integer maxHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.maxHubGenPage(var);
+    }
+  }
 
-	public static Integer minHubPage(String var) {
-		switch(var) {
-			default:
-				return HubGenPage.minHubGenPage(var);
-		}
-	}
+  public static Integer minHubPage(String var) {
+    switch(var) {
+      default:
+        return HubGenPage.minHubGenPage(var);
+    }
+  }
 }

@@ -136,6 +136,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Facet: true
    * VarId: true
    * AuthorizationResource: CLUSTER
+   * Unique: true
    **/
   protected void _clusterResource(Wrap<String> w) {
     w.o(String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName));
