@@ -30,11 +30,10 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
   // Cluster import //
   ////////////////////
 
-  public static Future<Void> importCluster(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String classApiAddress, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult, JsonObject vmResult) {
+  public static Future<Void> importCluster(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String classApiAddress, String possibleClusterName, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult, JsonObject vmResult) {
     Promise<Void> promise = Promise.promise();
     try {
       String hubId = hub.getHubId();
-      String possibleClusterName = Optional.ofNullable(clusterMemoryBytesResult.getString("clusterName")).orElse("local-cluster");
       Boolean hubCluster = false;
       if("local-cluster".equals(possibleClusterName) && hub.getLocalClusterName() != null) {
         hubCluster = true;
