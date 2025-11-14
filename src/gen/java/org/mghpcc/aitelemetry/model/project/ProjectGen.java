@@ -39,10 +39,11 @@ import java.lang.String;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import java.lang.Boolean;
+import java.lang.Integer;
+import io.vertx.core.json.JsonArray;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -233,7 +234,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/project";
 	public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/project";
 
-	public static final String Icon = "<i class=\"fa-regular fa-school\"></i>";
+	public static final String Icon = "<i class=\"fa-regular fa-people-line\"></i>";
 	public static final Integer Rows = 100;
 
 	///////////
@@ -741,6 +742,149 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		return gpuEnabled;
 	}
 
+	/////////////////////
+	// podRestartCount //
+	/////////////////////
+
+
+	/**	 The entity podRestartCount
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonSerialize(using = ToStringSerializer.class)
+	@JsonInclude(Include.NON_NULL)
+	protected Integer podRestartCount;
+
+	/**	<br> The entity podRestartCount
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podRestartCount">Find the entity podRestartCount in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _podRestartCount(Wrap<Integer> w);
+
+	public Integer getPodRestartCount() {
+		return podRestartCount;
+	}
+
+	public void setPodRestartCount(Integer podRestartCount) {
+		this.podRestartCount = podRestartCount;
+	}
+	@JsonIgnore
+	public void setPodRestartCount(String o) {
+		this.podRestartCount = Project.staticSetPodRestartCount(siteRequest_, o);
+	}
+	public static Integer staticSetPodRestartCount(SiteRequest siteRequest_, String o) {
+		if(NumberUtils.isParsable(o))
+			return Integer.parseInt(o);
+		return null;
+	}
+	protected Project podRestartCountInit() {
+		Wrap<Integer> podRestartCountWrap = new Wrap<Integer>().var("podRestartCount");
+		if(podRestartCount == null) {
+			_podRestartCount(podRestartCountWrap);
+			Optional.ofNullable(podRestartCountWrap.getO()).ifPresent(o -> {
+				setPodRestartCount(o);
+			});
+		}
+		return (Project)this;
+	}
+
+	public static Integer staticSearchPodRestartCount(SiteRequest siteRequest_, Integer o) {
+		return o;
+	}
+
+	public static String staticSearchStrPodRestartCount(SiteRequest siteRequest_, Integer o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqPodRestartCount(SiteRequest siteRequest_, String o) {
+		return Project.staticSearchPodRestartCount(siteRequest_, Project.staticSetPodRestartCount(siteRequest_, o)).toString();
+	}
+
+	public Integer sqlPodRestartCount() {
+		return podRestartCount;
+	}
+
+	////////////////////
+	// podsRestarting //
+	////////////////////
+
+
+	/**	 The entity podsRestarting
+	 *	 It is constructed before being initialized with the constructor by default. 
+	 */
+	@JsonProperty
+	@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+	@JsonInclude(Include.NON_NULL)
+	protected List<String> podsRestarting = new ArrayList<String>();
+
+	/**	<br> The entity podsRestarting
+	 *  It is constructed before being initialized with the constructor by default. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podsRestarting">Find the entity podsRestarting in Solr</a>
+	 * <br>
+	 * @param l is the entity already constructed. 
+	 **/
+	protected abstract void _podsRestarting(List<String> l);
+
+	public List<String> getPodsRestarting() {
+		return podsRestarting;
+	}
+
+	public void setPodsRestarting(List<String> podsRestarting) {
+		this.podsRestarting = podsRestarting;
+	}
+	@JsonIgnore
+	public void setPodsRestarting(String o) {
+		String l = Project.staticSetPodsRestarting(siteRequest_, o);
+		if(l != null)
+			addPodsRestarting(l);
+	}
+	public static String staticSetPodsRestarting(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	public Project addPodsRestarting(String...objects) {
+		for(String o : objects) {
+			addPodsRestarting(o);
+		}
+		return (Project)this;
+	}
+	public Project addPodsRestarting(String o) {
+		if(o != null)
+			this.podsRestarting.add(o);
+		return (Project)this;
+	}
+	@JsonIgnore
+	public void setPodsRestarting(JsonArray objects) {
+		podsRestarting.clear();
+		if(objects == null)
+			return;
+		for(int i = 0; i < objects.size(); i++) {
+			String o = objects.getString(i);
+			addPodsRestarting(o);
+		}
+	}
+	protected Project podsRestartingInit() {
+		_podsRestarting(podsRestarting);
+		return (Project)this;
+	}
+
+	public static String staticSearchPodsRestarting(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrPodsRestarting(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqPodsRestarting(SiteRequest siteRequest_, String o) {
+		return Project.staticSearchPodsRestarting(siteRequest_, Project.staticSetPodsRestarting(siteRequest_, o)).toString();
+	}
+
+	public String[] sqlPodsRestarting() {
+		return podsRestarting.stream().map(v -> (String)v).toArray(String[]::new);
+	}
+
 	//////////////
 	// initDeep //
 	//////////////
@@ -779,6 +923,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				projectDisplayNameInit();
 				descriptionInit();
 				gpuEnabledInit();
+				podRestartCountInit();
+				podsRestartingInit();
 				promise2.complete();
 			} catch(Exception ex) {
 				promise2.fail(ex);
@@ -850,6 +996,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return oProject.description;
 			case "gpuEnabled":
 				return oProject.gpuEnabled;
+			case "podRestartCount":
+				return oProject.podRestartCount;
+			case "podsRestarting":
+				return oProject.podsRestarting;
 			default:
 				return super.obtainBaseModel(var);
 		}
@@ -919,6 +1069,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSetDescription(siteRequest_, v);
 		case "gpuEnabled":
 			return Project.staticSetGpuEnabled(siteRequest_, v);
+		case "podRestartCount":
+			return Project.staticSetPodRestartCount(siteRequest_, v);
+		case "podsRestarting":
+			return Project.staticSetPodsRestarting(siteRequest_, v);
 			default:
 				return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
 		}
@@ -951,6 +1105,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchDescription(siteRequest_, (String)o);
 		case "gpuEnabled":
 			return Project.staticSearchGpuEnabled(siteRequest_, (Boolean)o);
+		case "podRestartCount":
+			return Project.staticSearchPodRestartCount(siteRequest_, (Integer)o);
+		case "podsRestarting":
+			return Project.staticSearchPodsRestarting(siteRequest_, (String)o);
 			default:
 				return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -983,6 +1141,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchStrDescription(siteRequest_, (String)o);
 		case "gpuEnabled":
 			return Project.staticSearchStrGpuEnabled(siteRequest_, (Boolean)o);
+		case "podRestartCount":
+			return Project.staticSearchStrPodRestartCount(siteRequest_, (Integer)o);
+		case "podsRestarting":
+			return Project.staticSearchStrPodsRestarting(siteRequest_, (String)o);
 			default:
 				return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -1015,6 +1177,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchFqDescription(siteRequest_, o);
 		case "gpuEnabled":
 			return Project.staticSearchFqGpuEnabled(siteRequest_, o);
+		case "podRestartCount":
+			return Project.staticSearchFqPodRestartCount(siteRequest_, o);
+		case "podsRestarting":
+			return Project.staticSearchFqPodsRestarting(siteRequest_, o);
 			default:
 				return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -1091,6 +1257,26 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				}
 				saves.add("gpuEnabled");
 				return val;
+			} else if("podrestartcount".equals(varLower)) {
+				if(val instanceof Integer) {
+					setPodRestartCount((Integer)val);
+				} else {
+					setPodRestartCount(val == null ? null : val.toString());
+				}
+				saves.add("podRestartCount");
+				return val;
+			} else if("podsrestarting".equals(varLower)) {
+				if(val instanceof List<?>) {
+					((List<String>)val).stream().forEach(v -> addPodsRestarting(v));
+				} else if(val instanceof String[]) {
+					Arrays.asList((String[])val).stream().forEach(v -> addPodsRestarting((String)v));
+				} else if(val instanceof JsonArray) {
+					((JsonArray)val).stream().forEach(v -> addPodsRestarting(staticSetPodsRestarting(siteRequest_, v.toString())));
+				}
+				if(!saves.contains("podsRestarting")) {
+					saves.add("podsRestarting");
+				}
+				return val;
 		} else {
 			return super.persistBaseModel(var, val);
 		}
@@ -1157,6 +1343,21 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				if(gpuEnabled != null)
 					oProject.setGpuEnabled(gpuEnabled);
 			}
+
+			if(saves.contains("podRestartCount")) {
+				Integer podRestartCount = (Integer)doc.get("podRestartCount_docvalues_int");
+				if(podRestartCount != null)
+					oProject.setPodRestartCount(podRestartCount);
+			}
+
+			if(saves.contains("podsRestarting")) {
+				List<String> podsRestarting = (List<String>)doc.get("podsRestarting_docvalues_strings");
+				if(podsRestarting != null) {
+					podsRestarting.stream().forEach( v -> {
+						oProject.podsRestarting.add(Project.staticSetPodsRestarting(siteRequest_, v));
+					});
+				}
+			}
 		}
 
 		super.populateBaseModel(doc);
@@ -1190,6 +1391,16 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		if(gpuEnabled != null) {
 			doc.put("gpuEnabled_docvalues_boolean", gpuEnabled);
 		}
+		if(podRestartCount != null) {
+			doc.put("podRestartCount_docvalues_int", podRestartCount);
+		}
+		if(podsRestarting != null) {
+			JsonArray l = new JsonArray();
+			doc.put("podsRestarting_docvalues_strings", l);
+			for(String o : podsRestarting) {
+				l.add(Project.staticSearchPodsRestarting(siteRequest_, o));
+			}
+		}
 		super.indexBaseModel(doc);
 
 	}
@@ -1214,6 +1425,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "description_docvalues_string";
 			case "gpuEnabled":
 				return "gpuEnabled_docvalues_boolean";
+			case "podRestartCount":
+				return "podRestartCount_docvalues_int";
+			case "podsRestarting":
+				return "podsRestarting_docvalues_strings";
 			default:
 				return BaseModel.varStoredBaseModel(entityVar);
 		}
@@ -1239,6 +1454,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "description_docvalues_string";
 			case "gpuEnabled":
 				return "gpuEnabled_docvalues_boolean";
+			case "podRestartCount":
+				return "podRestartCount_docvalues_int";
+			case "podsRestarting":
+				return "podsRestarting_docvalues_strings";
 			default:
 				return BaseModel.varIndexedBaseModel(entityVar);
 		}
@@ -1264,6 +1483,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "description";
 			case "gpuEnabled_docvalues_boolean":
 				return "gpuEnabled";
+			case "podRestartCount_docvalues_int":
+				return "podRestartCount";
+			case "podsRestarting_docvalues_strings":
+				return "podsRestarting";
 			default:
 				return BaseModel.searchVarBaseModel(searchVar);
 		}
@@ -1303,6 +1526,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		oProject.setProjectDisplayName(Optional.ofNullable(doc.get("projectDisplayName_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oProject.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
+		oProject.setPodRestartCount(Optional.ofNullable(doc.get("podRestartCount_docvalues_int")).map(v -> v.toString()).orElse(null));
+		Optional.ofNullable((List<?>)doc.get("podsRestarting_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
+			oProject.addPodsRestarting(Project.staticSetPodsRestarting(siteRequest, v.toString()));
+		});
 
 		super.storeBaseModel(doc);
 	}
@@ -1334,6 +1561,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				apiRequest.addVars("description");
 			if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
 				apiRequest.addVars("gpuEnabled");
+			if(!Objects.equals(podRestartCount, original.getPodRestartCount()))
+				apiRequest.addVars("podRestartCount");
+			if(!Objects.equals(podsRestarting, original.getPodsRestarting()))
+				apiRequest.addVars("podsRestarting");
 			super.apiRequestBaseModel();
 		}
 	}
@@ -1354,6 +1585,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		sb.append(Optional.ofNullable(projectDisplayName).map(v -> "projectDisplayName: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
+		sb.append(Optional.ofNullable(podRestartCount).map(v -> "podRestartCount: " + v + "\n").orElse(""));
+		sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
 		return sb.toString();
 	}
 
@@ -1373,6 +1606,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String VAR_projectDisplayName = "projectDisplayName";
 	public static final String VAR_description = "description";
 	public static final String VAR_gpuEnabled = "gpuEnabled";
+	public static final String VAR_podRestartCount = "podRestartCount";
+	public static final String VAR_podsRestarting = "podsRestarting";
 
 	public static List<String> varsQForClass() {
 		return Project.varsQProject(new ArrayList<String>());
@@ -1395,6 +1630,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		vars.add(VAR_projectDisplayName);
 		vars.add(VAR_description);
 		vars.add(VAR_gpuEnabled);
+		vars.add(VAR_podRestartCount);
+		vars.add(VAR_podsRestarting);
 		BaseModel.varsFqBaseModel(vars);
 		return vars;
 	}
@@ -1403,6 +1640,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		return Project.varsRangeProject(new ArrayList<String>());
 	}
 	public static List<String> varsRangeProject(List<String> vars) {
+		vars.add(VAR_podRestartCount);
 		BaseModel.varsRangeBaseModel(vars);
 		return vars;
 	}
@@ -1416,6 +1654,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String DISPLAY_NAME_projectDisplayName = "project display name";
 	public static final String DISPLAY_NAME_description = "description";
 	public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
+	public static final String DISPLAY_NAME_podRestartCount = "pod restarts";
+	public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
 
 	@Override
 	public String idForClass() {
@@ -1485,6 +1725,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return DISPLAY_NAME_description;
 		case VAR_gpuEnabled:
 			return DISPLAY_NAME_gpuEnabled;
+		case VAR_podRestartCount:
+			return DISPLAY_NAME_podRestartCount;
+		case VAR_podsRestarting:
+			return DISPLAY_NAME_podsRestarting;
 		default:
 			return BaseModel.displayNameBaseModel(var);
 		}
@@ -1512,6 +1756,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return "A description of this project";
 		case VAR_gpuEnabled:
 			return "Whether GPUs are enabled for this project. ";
+		case VAR_podRestartCount:
+			return "The number of pod restarts in this project. ";
+		case VAR_podsRestarting:
+			return "The names of the pods restarting in this project. ";
 			default:
 				return BaseModel.descriptionBaseModel(var);
 		}
@@ -1537,6 +1785,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return "String";
 		case VAR_gpuEnabled:
 			return "Boolean";
+		case VAR_podRestartCount:
+			return "Integer";
+		case VAR_podsRestarting:
+			return "List";
 			default:
 				return BaseModel.classSimpleNameBaseModel(var);
 		}
@@ -1567,6 +1819,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return 3;
 		case VAR_gpuEnabled:
 			return 3;
+		case VAR_podRestartCount:
+			return 4;
+		case VAR_podsRestarting:
+			return 4;
 			default:
 				return BaseModel.htmRowBaseModel(var);
 		}
@@ -1584,6 +1840,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return 7;
 		case VAR_gpuEnabled:
 			return 8;
+		case VAR_podRestartCount:
+			return 0;
+		case VAR_podsRestarting:
+			return 1;
 			default:
 				return BaseModel.htmCellBaseModel(var);
 		}

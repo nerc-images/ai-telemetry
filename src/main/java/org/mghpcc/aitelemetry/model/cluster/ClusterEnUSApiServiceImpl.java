@@ -2,14 +2,19 @@ package org.mghpcc.aitelemetry.model.cluster;
 
 import java.net.URLEncoder;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.computate.search.tool.SearchTool;
 import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.search.list.SearchList;
 import org.mghpcc.aitelemetry.config.ConfigKeys;
 import org.mghpcc.aitelemetry.model.gpudevice.GpuDeviceEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.node.AiNodeEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.project.Project;
 import org.mghpcc.aitelemetry.model.project.ProjectEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.request.SiteRequest;
 
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
@@ -25,6 +30,41 @@ import io.vertx.ext.web.client.WebClient;
  * Translate: false
  **/
 public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
+
+  @Override
+  public void editpageClusterPageInit(JsonObject ctx, ClusterPage page, SearchList<Cluster> listCluster, Promise<Void> promise) {
+    try {
+      Cluster result = page.getResult();
+      if(result == null) {
+        promise.complete();
+      } else {
+        SiteRequest siteRequest = page.getSiteRequest_();
+        SearchList<Project> searchList = new SearchList<Project>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(Project.class);
+        searchList.setSiteRequest_(siteRequest);
+        searchList.facetMinCount(1);
+        searchList.rows(100);
+        searchList.fq("clusterResource_docvalues_string:" + SearchTool.escapeQueryChars(result.getClusterResource()));
+        searchList.bf("sum(podRestartCount_docvalues_int)");
+        searchList.defType("edismax");
+        searchList.promiseDeepForClass(siteRequest).onSuccess(searchList2 -> {
+          ctx.put("clusterProjects", searchList.getList().stream()
+              .map(project -> JsonObject.mapFrom(project).getMap())
+              .collect(Collectors.toList())
+              );
+          promise.complete();
+        }).onFailure(ex -> {
+          LOG.error(String.format("searchProject failed. "), ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("searchProject failed. "), ex);
+      promise.fail(ex);
+    }
+  }
 
   ////////////////////
   // Cluster import //
