@@ -39,10 +39,11 @@ import java.lang.String;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import java.lang.Boolean;
+import java.lang.Integer;
+import io.vertx.core.json.JsonArray;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -233,7 +234,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/project";
 	public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/project";
 
-	public static final String Icon = "<i class=\"fa-regular fa-school\"></i>";
+	public static final String Icon = "<i class=\"fa-regular fa-people-line\"></i>";
 	public static final Integer Rows = 100;
 
 	///////////
@@ -741,6 +742,292 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		return gpuEnabled;
 	}
 
+	/////////////////////
+	// podRestartCount //
+	/////////////////////
+
+
+	/**	 The entity podRestartCount
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonSerialize(using = ToStringSerializer.class)
+	@JsonInclude(Include.NON_NULL)
+	protected Integer podRestartCount;
+
+	/**	<br> The entity podRestartCount
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podRestartCount">Find the entity podRestartCount in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _podRestartCount(Wrap<Integer> w);
+
+	public Integer getPodRestartCount() {
+		return podRestartCount;
+	}
+
+	public void setPodRestartCount(Integer podRestartCount) {
+		this.podRestartCount = podRestartCount;
+	}
+	@JsonIgnore
+	public void setPodRestartCount(String o) {
+		this.podRestartCount = Project.staticSetPodRestartCount(siteRequest_, o);
+	}
+	public static Integer staticSetPodRestartCount(SiteRequest siteRequest_, String o) {
+		if(NumberUtils.isParsable(o))
+			return Integer.parseInt(o);
+		return null;
+	}
+	protected Project podRestartCountInit() {
+		Wrap<Integer> podRestartCountWrap = new Wrap<Integer>().var("podRestartCount");
+		if(podRestartCount == null) {
+			_podRestartCount(podRestartCountWrap);
+			Optional.ofNullable(podRestartCountWrap.getO()).ifPresent(o -> {
+				setPodRestartCount(o);
+			});
+		}
+		return (Project)this;
+	}
+
+	public static Integer staticSearchPodRestartCount(SiteRequest siteRequest_, Integer o) {
+		return o;
+	}
+
+	public static String staticSearchStrPodRestartCount(SiteRequest siteRequest_, Integer o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqPodRestartCount(SiteRequest siteRequest_, String o) {
+		return Project.staticSearchPodRestartCount(siteRequest_, Project.staticSetPodRestartCount(siteRequest_, o)).toString();
+	}
+
+	public Integer sqlPodRestartCount() {
+		return podRestartCount;
+	}
+
+	////////////////////
+	// podsRestarting //
+	////////////////////
+
+
+	/**	 The entity podsRestarting
+	 *	 It is constructed before being initialized with the constructor by default. 
+	 */
+	@JsonProperty
+	@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+	@JsonInclude(Include.NON_NULL)
+	protected List<String> podsRestarting = new ArrayList<String>();
+
+	/**	<br> The entity podsRestarting
+	 *  It is constructed before being initialized with the constructor by default. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podsRestarting">Find the entity podsRestarting in Solr</a>
+	 * <br>
+	 * @param l is the entity already constructed. 
+	 **/
+	protected abstract void _podsRestarting(List<String> l);
+
+	public List<String> getPodsRestarting() {
+		return podsRestarting;
+	}
+
+	public void setPodsRestarting(List<String> podsRestarting) {
+		this.podsRestarting = podsRestarting;
+	}
+	@JsonIgnore
+	public void setPodsRestarting(String o) {
+		String l = Project.staticSetPodsRestarting(siteRequest_, o);
+		if(l != null)
+			addPodsRestarting(l);
+	}
+	public static String staticSetPodsRestarting(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	public Project addPodsRestarting(String...objects) {
+		for(String o : objects) {
+			addPodsRestarting(o);
+		}
+		return (Project)this;
+	}
+	public Project addPodsRestarting(String o) {
+		if(o != null)
+			this.podsRestarting.add(o);
+		return (Project)this;
+	}
+	@JsonIgnore
+	public void setPodsRestarting(JsonArray objects) {
+		podsRestarting.clear();
+		if(objects == null)
+			return;
+		for(int i = 0; i < objects.size(); i++) {
+			String o = objects.getString(i);
+			addPodsRestarting(o);
+		}
+	}
+	protected Project podsRestartingInit() {
+		_podsRestarting(podsRestarting);
+		return (Project)this;
+	}
+
+	public static String staticSearchPodsRestarting(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrPodsRestarting(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqPodsRestarting(SiteRequest siteRequest_, String o) {
+		return Project.staticSearchPodsRestarting(siteRequest_, Project.staticSetPodsRestarting(siteRequest_, o)).toString();
+	}
+
+	public String[] sqlPodsRestarting() {
+		return podsRestarting.stream().map(v -> (String)v).toArray(String[]::new);
+	}
+
+	///////////////////
+	// fullPvcsCount //
+	///////////////////
+
+
+	/**	 The entity fullPvcsCount
+	 *	 is defined as null before being initialized. 
+	 */
+	@JsonProperty
+	@JsonSerialize(using = ToStringSerializer.class)
+	@JsonInclude(Include.NON_NULL)
+	protected Integer fullPvcsCount;
+
+	/**	<br> The entity fullPvcsCount
+	 *  is defined as null before being initialized. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:fullPvcsCount">Find the entity fullPvcsCount in Solr</a>
+	 * <br>
+	 * @param w is for wrapping a value to assign to this entity during initialization. 
+	 **/
+	protected abstract void _fullPvcsCount(Wrap<Integer> w);
+
+	public Integer getFullPvcsCount() {
+		return fullPvcsCount;
+	}
+
+	public void setFullPvcsCount(Integer fullPvcsCount) {
+		this.fullPvcsCount = fullPvcsCount;
+	}
+	@JsonIgnore
+	public void setFullPvcsCount(String o) {
+		this.fullPvcsCount = Project.staticSetFullPvcsCount(siteRequest_, o);
+	}
+	public static Integer staticSetFullPvcsCount(SiteRequest siteRequest_, String o) {
+		if(NumberUtils.isParsable(o))
+			return Integer.parseInt(o);
+		return null;
+	}
+	protected Project fullPvcsCountInit() {
+		Wrap<Integer> fullPvcsCountWrap = new Wrap<Integer>().var("fullPvcsCount");
+		if(fullPvcsCount == null) {
+			_fullPvcsCount(fullPvcsCountWrap);
+			Optional.ofNullable(fullPvcsCountWrap.getO()).ifPresent(o -> {
+				setFullPvcsCount(o);
+			});
+		}
+		return (Project)this;
+	}
+
+	public static Integer staticSearchFullPvcsCount(SiteRequest siteRequest_, Integer o) {
+		return o;
+	}
+
+	public static String staticSearchStrFullPvcsCount(SiteRequest siteRequest_, Integer o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqFullPvcsCount(SiteRequest siteRequest_, String o) {
+		return Project.staticSearchFullPvcsCount(siteRequest_, Project.staticSetFullPvcsCount(siteRequest_, o)).toString();
+	}
+
+	public Integer sqlFullPvcsCount() {
+		return fullPvcsCount;
+	}
+
+	//////////////
+	// fullPvcs //
+	//////////////
+
+
+	/**	 The entity fullPvcs
+	 *	 It is constructed before being initialized with the constructor by default. 
+	 */
+	@JsonProperty
+	@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+	@JsonInclude(Include.NON_NULL)
+	protected List<String> fullPvcs = new ArrayList<String>();
+
+	/**	<br> The entity fullPvcs
+	 *  It is constructed before being initialized with the constructor by default. 
+	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:fullPvcs">Find the entity fullPvcs in Solr</a>
+	 * <br>
+	 * @param l is the entity already constructed. 
+	 **/
+	protected abstract void _fullPvcs(List<String> l);
+
+	public List<String> getFullPvcs() {
+		return fullPvcs;
+	}
+
+	public void setFullPvcs(List<String> fullPvcs) {
+		this.fullPvcs = fullPvcs;
+	}
+	@JsonIgnore
+	public void setFullPvcs(String o) {
+		String l = Project.staticSetFullPvcs(siteRequest_, o);
+		if(l != null)
+			addFullPvcs(l);
+	}
+	public static String staticSetFullPvcs(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+	public Project addFullPvcs(String...objects) {
+		for(String o : objects) {
+			addFullPvcs(o);
+		}
+		return (Project)this;
+	}
+	public Project addFullPvcs(String o) {
+		if(o != null)
+			this.fullPvcs.add(o);
+		return (Project)this;
+	}
+	@JsonIgnore
+	public void setFullPvcs(JsonArray objects) {
+		fullPvcs.clear();
+		if(objects == null)
+			return;
+		for(int i = 0; i < objects.size(); i++) {
+			String o = objects.getString(i);
+			addFullPvcs(o);
+		}
+	}
+	protected Project fullPvcsInit() {
+		_fullPvcs(fullPvcs);
+		return (Project)this;
+	}
+
+	public static String staticSearchFullPvcs(SiteRequest siteRequest_, String o) {
+		return o;
+	}
+
+	public static String staticSearchStrFullPvcs(SiteRequest siteRequest_, String o) {
+		return o == null ? null : o.toString();
+	}
+
+	public static String staticSearchFqFullPvcs(SiteRequest siteRequest_, String o) {
+		return Project.staticSearchFullPvcs(siteRequest_, Project.staticSetFullPvcs(siteRequest_, o)).toString();
+	}
+
+	public String[] sqlFullPvcs() {
+		return fullPvcs.stream().map(v -> (String)v).toArray(String[]::new);
+	}
+
 	//////////////
 	// initDeep //
 	//////////////
@@ -779,6 +1066,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				projectDisplayNameInit();
 				descriptionInit();
 				gpuEnabledInit();
+				podRestartCountInit();
+				podsRestartingInit();
+				fullPvcsCountInit();
+				fullPvcsInit();
 				promise2.complete();
 			} catch(Exception ex) {
 				promise2.fail(ex);
@@ -850,6 +1141,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return oProject.description;
 			case "gpuEnabled":
 				return oProject.gpuEnabled;
+			case "podRestartCount":
+				return oProject.podRestartCount;
+			case "podsRestarting":
+				return oProject.podsRestarting;
+			case "fullPvcsCount":
+				return oProject.fullPvcsCount;
+			case "fullPvcs":
+				return oProject.fullPvcs;
 			default:
 				return super.obtainBaseModel(var);
 		}
@@ -919,6 +1218,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSetDescription(siteRequest_, v);
 		case "gpuEnabled":
 			return Project.staticSetGpuEnabled(siteRequest_, v);
+		case "podRestartCount":
+			return Project.staticSetPodRestartCount(siteRequest_, v);
+		case "podsRestarting":
+			return Project.staticSetPodsRestarting(siteRequest_, v);
+		case "fullPvcsCount":
+			return Project.staticSetFullPvcsCount(siteRequest_, v);
+		case "fullPvcs":
+			return Project.staticSetFullPvcs(siteRequest_, v);
 			default:
 				return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
 		}
@@ -951,6 +1258,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchDescription(siteRequest_, (String)o);
 		case "gpuEnabled":
 			return Project.staticSearchGpuEnabled(siteRequest_, (Boolean)o);
+		case "podRestartCount":
+			return Project.staticSearchPodRestartCount(siteRequest_, (Integer)o);
+		case "podsRestarting":
+			return Project.staticSearchPodsRestarting(siteRequest_, (String)o);
+		case "fullPvcsCount":
+			return Project.staticSearchFullPvcsCount(siteRequest_, (Integer)o);
+		case "fullPvcs":
+			return Project.staticSearchFullPvcs(siteRequest_, (String)o);
 			default:
 				return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -983,6 +1298,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchStrDescription(siteRequest_, (String)o);
 		case "gpuEnabled":
 			return Project.staticSearchStrGpuEnabled(siteRequest_, (Boolean)o);
+		case "podRestartCount":
+			return Project.staticSearchStrPodRestartCount(siteRequest_, (Integer)o);
+		case "podsRestarting":
+			return Project.staticSearchStrPodsRestarting(siteRequest_, (String)o);
+		case "fullPvcsCount":
+			return Project.staticSearchStrFullPvcsCount(siteRequest_, (Integer)o);
+		case "fullPvcs":
+			return Project.staticSearchStrFullPvcs(siteRequest_, (String)o);
 			default:
 				return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -1015,6 +1338,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return Project.staticSearchFqDescription(siteRequest_, o);
 		case "gpuEnabled":
 			return Project.staticSearchFqGpuEnabled(siteRequest_, o);
+		case "podRestartCount":
+			return Project.staticSearchFqPodRestartCount(siteRequest_, o);
+		case "podsRestarting":
+			return Project.staticSearchFqPodsRestarting(siteRequest_, o);
+		case "fullPvcsCount":
+			return Project.staticSearchFqFullPvcsCount(siteRequest_, o);
+		case "fullPvcs":
+			return Project.staticSearchFqFullPvcs(siteRequest_, o);
 			default:
 				return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
 		}
@@ -1091,6 +1422,46 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				}
 				saves.add("gpuEnabled");
 				return val;
+			} else if("podrestartcount".equals(varLower)) {
+				if(val instanceof Integer) {
+					setPodRestartCount((Integer)val);
+				} else {
+					setPodRestartCount(val == null ? null : val.toString());
+				}
+				saves.add("podRestartCount");
+				return val;
+			} else if("podsrestarting".equals(varLower)) {
+				if(val instanceof List<?>) {
+					((List<String>)val).stream().forEach(v -> addPodsRestarting(v));
+				} else if(val instanceof String[]) {
+					Arrays.asList((String[])val).stream().forEach(v -> addPodsRestarting((String)v));
+				} else if(val instanceof JsonArray) {
+					((JsonArray)val).stream().forEach(v -> addPodsRestarting(staticSetPodsRestarting(siteRequest_, v.toString())));
+				}
+				if(!saves.contains("podsRestarting")) {
+					saves.add("podsRestarting");
+				}
+				return val;
+			} else if("fullpvcscount".equals(varLower)) {
+				if(val instanceof Integer) {
+					setFullPvcsCount((Integer)val);
+				} else {
+					setFullPvcsCount(val == null ? null : val.toString());
+				}
+				saves.add("fullPvcsCount");
+				return val;
+			} else if("fullpvcs".equals(varLower)) {
+				if(val instanceof List<?>) {
+					((List<String>)val).stream().forEach(v -> addFullPvcs(v));
+				} else if(val instanceof String[]) {
+					Arrays.asList((String[])val).stream().forEach(v -> addFullPvcs((String)v));
+				} else if(val instanceof JsonArray) {
+					((JsonArray)val).stream().forEach(v -> addFullPvcs(staticSetFullPvcs(siteRequest_, v.toString())));
+				}
+				if(!saves.contains("fullPvcs")) {
+					saves.add("fullPvcs");
+				}
+				return val;
 		} else {
 			return super.persistBaseModel(var, val);
 		}
@@ -1157,6 +1528,36 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				if(gpuEnabled != null)
 					oProject.setGpuEnabled(gpuEnabled);
 			}
+
+			if(saves.contains("podRestartCount")) {
+				Integer podRestartCount = (Integer)doc.get("podRestartCount_docvalues_int");
+				if(podRestartCount != null)
+					oProject.setPodRestartCount(podRestartCount);
+			}
+
+			if(saves.contains("podsRestarting")) {
+				List<String> podsRestarting = (List<String>)doc.get("podsRestarting_docvalues_strings");
+				if(podsRestarting != null) {
+					podsRestarting.stream().forEach( v -> {
+						oProject.podsRestarting.add(Project.staticSetPodsRestarting(siteRequest_, v));
+					});
+				}
+			}
+
+			if(saves.contains("fullPvcsCount")) {
+				Integer fullPvcsCount = (Integer)doc.get("fullPvcsCount_docvalues_int");
+				if(fullPvcsCount != null)
+					oProject.setFullPvcsCount(fullPvcsCount);
+			}
+
+			if(saves.contains("fullPvcs")) {
+				List<String> fullPvcs = (List<String>)doc.get("fullPvcs_docvalues_strings");
+				if(fullPvcs != null) {
+					fullPvcs.stream().forEach( v -> {
+						oProject.fullPvcs.add(Project.staticSetFullPvcs(siteRequest_, v));
+					});
+				}
+			}
 		}
 
 		super.populateBaseModel(doc);
@@ -1190,6 +1591,26 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		if(gpuEnabled != null) {
 			doc.put("gpuEnabled_docvalues_boolean", gpuEnabled);
 		}
+		if(podRestartCount != null) {
+			doc.put("podRestartCount_docvalues_int", podRestartCount);
+		}
+		if(podsRestarting != null) {
+			JsonArray l = new JsonArray();
+			doc.put("podsRestarting_docvalues_strings", l);
+			for(String o : podsRestarting) {
+				l.add(Project.staticSearchPodsRestarting(siteRequest_, o));
+			}
+		}
+		if(fullPvcsCount != null) {
+			doc.put("fullPvcsCount_docvalues_int", fullPvcsCount);
+		}
+		if(fullPvcs != null) {
+			JsonArray l = new JsonArray();
+			doc.put("fullPvcs_docvalues_strings", l);
+			for(String o : fullPvcs) {
+				l.add(Project.staticSearchFullPvcs(siteRequest_, o));
+			}
+		}
 		super.indexBaseModel(doc);
 
 	}
@@ -1214,6 +1635,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "description_docvalues_string";
 			case "gpuEnabled":
 				return "gpuEnabled_docvalues_boolean";
+			case "podRestartCount":
+				return "podRestartCount_docvalues_int";
+			case "podsRestarting":
+				return "podsRestarting_docvalues_strings";
+			case "fullPvcsCount":
+				return "fullPvcsCount_docvalues_int";
+			case "fullPvcs":
+				return "fullPvcs_docvalues_strings";
 			default:
 				return BaseModel.varStoredBaseModel(entityVar);
 		}
@@ -1239,6 +1668,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "description_docvalues_string";
 			case "gpuEnabled":
 				return "gpuEnabled_docvalues_boolean";
+			case "podRestartCount":
+				return "podRestartCount_docvalues_int";
+			case "podsRestarting":
+				return "podsRestarting_docvalues_strings";
+			case "fullPvcsCount":
+				return "fullPvcsCount_docvalues_int";
+			case "fullPvcs":
+				return "fullPvcs_docvalues_strings";
 			default:
 				return BaseModel.varIndexedBaseModel(entityVar);
 		}
@@ -1264,6 +1701,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				return "description";
 			case "gpuEnabled_docvalues_boolean":
 				return "gpuEnabled";
+			case "podRestartCount_docvalues_int":
+				return "podRestartCount";
+			case "podsRestarting_docvalues_strings":
+				return "podsRestarting";
+			case "fullPvcsCount_docvalues_int":
+				return "fullPvcsCount";
+			case "fullPvcs_docvalues_strings":
+				return "fullPvcs";
 			default:
 				return BaseModel.searchVarBaseModel(searchVar);
 		}
@@ -1303,6 +1748,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		oProject.setProjectDisplayName(Optional.ofNullable(doc.get("projectDisplayName_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oProject.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
 		oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
+		oProject.setPodRestartCount(Optional.ofNullable(doc.get("podRestartCount_docvalues_int")).map(v -> v.toString()).orElse(null));
+		Optional.ofNullable((List<?>)doc.get("podsRestarting_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
+			oProject.addPodsRestarting(Project.staticSetPodsRestarting(siteRequest, v.toString()));
+		});
+		oProject.setFullPvcsCount(Optional.ofNullable(doc.get("fullPvcsCount_docvalues_int")).map(v -> v.toString()).orElse(null));
+		Optional.ofNullable((List<?>)doc.get("fullPvcs_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
+			oProject.addFullPvcs(Project.staticSetFullPvcs(siteRequest, v.toString()));
+		});
 
 		super.storeBaseModel(doc);
 	}
@@ -1334,6 +1787,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 				apiRequest.addVars("description");
 			if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
 				apiRequest.addVars("gpuEnabled");
+			if(!Objects.equals(podRestartCount, original.getPodRestartCount()))
+				apiRequest.addVars("podRestartCount");
+			if(!Objects.equals(podsRestarting, original.getPodsRestarting()))
+				apiRequest.addVars("podsRestarting");
+			if(!Objects.equals(fullPvcsCount, original.getFullPvcsCount()))
+				apiRequest.addVars("fullPvcsCount");
+			if(!Objects.equals(fullPvcs, original.getFullPvcs()))
+				apiRequest.addVars("fullPvcs");
 			super.apiRequestBaseModel();
 		}
 	}
@@ -1354,6 +1815,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		sb.append(Optional.ofNullable(projectDisplayName).map(v -> "projectDisplayName: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
 		sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
+		sb.append(Optional.ofNullable(podRestartCount).map(v -> "podRestartCount: " + v + "\n").orElse(""));
+		sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
+		sb.append(Optional.ofNullable(fullPvcsCount).map(v -> "fullPvcsCount: " + v + "\n").orElse(""));
+		sb.append(Optional.ofNullable(fullPvcs).map(v -> "fullPvcs: " + v + "\n").orElse(""));
 		return sb.toString();
 	}
 
@@ -1373,6 +1838,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String VAR_projectDisplayName = "projectDisplayName";
 	public static final String VAR_description = "description";
 	public static final String VAR_gpuEnabled = "gpuEnabled";
+	public static final String VAR_podRestartCount = "podRestartCount";
+	public static final String VAR_podsRestarting = "podsRestarting";
+	public static final String VAR_fullPvcsCount = "fullPvcsCount";
+	public static final String VAR_fullPvcs = "fullPvcs";
 
 	public static List<String> varsQForClass() {
 		return Project.varsQProject(new ArrayList<String>());
@@ -1395,6 +1864,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		vars.add(VAR_projectDisplayName);
 		vars.add(VAR_description);
 		vars.add(VAR_gpuEnabled);
+		vars.add(VAR_podRestartCount);
+		vars.add(VAR_podsRestarting);
+		vars.add(VAR_fullPvcsCount);
+		vars.add(VAR_fullPvcs);
 		BaseModel.varsFqBaseModel(vars);
 		return vars;
 	}
@@ -1403,6 +1876,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 		return Project.varsRangeProject(new ArrayList<String>());
 	}
 	public static List<String> varsRangeProject(List<String> vars) {
+		vars.add(VAR_podRestartCount);
+		vars.add(VAR_fullPvcsCount);
 		BaseModel.varsRangeBaseModel(vars);
 		return vars;
 	}
@@ -1416,6 +1891,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 	public static final String DISPLAY_NAME_projectDisplayName = "project display name";
 	public static final String DISPLAY_NAME_description = "description";
 	public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
+	public static final String DISPLAY_NAME_podRestartCount = "pod restarts";
+	public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
+	public static final String DISPLAY_NAME_fullPvcsCount = "Full PVCs count";
+	public static final String DISPLAY_NAME_fullPvcs = "pods restarting";
 
 	@Override
 	public String idForClass() {
@@ -1485,6 +1964,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return DISPLAY_NAME_description;
 		case VAR_gpuEnabled:
 			return DISPLAY_NAME_gpuEnabled;
+		case VAR_podRestartCount:
+			return DISPLAY_NAME_podRestartCount;
+		case VAR_podsRestarting:
+			return DISPLAY_NAME_podsRestarting;
+		case VAR_fullPvcsCount:
+			return DISPLAY_NAME_fullPvcsCount;
+		case VAR_fullPvcs:
+			return DISPLAY_NAME_fullPvcs;
 		default:
 			return BaseModel.displayNameBaseModel(var);
 		}
@@ -1512,6 +1999,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return "A description of this project";
 		case VAR_gpuEnabled:
 			return "Whether GPUs are enabled for this project. ";
+		case VAR_podRestartCount:
+			return "The number of pod restarts in this project. ";
+		case VAR_podsRestarting:
+			return "The names of the pods restarting in this project. ";
+		case VAR_fullPvcsCount:
+			return "The number of persistent volume claims that are running out of disk space in this project. ";
+		case VAR_fullPvcs:
+			return "The names of the persistent volume claims that are running out of disk space in this project. ";
 			default:
 				return BaseModel.descriptionBaseModel(var);
 		}
@@ -1537,6 +2032,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return "String";
 		case VAR_gpuEnabled:
 			return "Boolean";
+		case VAR_podRestartCount:
+			return "Integer";
+		case VAR_podsRestarting:
+			return "List";
+		case VAR_fullPvcsCount:
+			return "Integer";
+		case VAR_fullPvcs:
+			return "List";
 			default:
 				return BaseModel.classSimpleNameBaseModel(var);
 		}
@@ -1567,6 +2070,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return 3;
 		case VAR_gpuEnabled:
 			return 3;
+		case VAR_podRestartCount:
+			return 4;
+		case VAR_podsRestarting:
+			return 4;
+		case VAR_fullPvcsCount:
+			return 4;
+		case VAR_fullPvcs:
+			return 4;
 			default:
 				return BaseModel.htmRowBaseModel(var);
 		}
@@ -1584,6 +2095,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 			return 7;
 		case VAR_gpuEnabled:
 			return 8;
+		case VAR_podRestartCount:
+			return 0;
+		case VAR_podsRestarting:
+			return 1;
+		case VAR_fullPvcsCount:
+			return 2;
+		case VAR_fullPvcs:
+			return 3;
 			default:
 				return BaseModel.htmCellBaseModel(var);
 		}
