@@ -948,6 +948,22 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 							num++;
 							bParams.add(o2.sqlUserKey());
 						break;
+					case "setPodRestartCount":
+							o2.setPodRestartCount(jsonObject.getString(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Project.VAR_podRestartCount + "=$" + num);
+							num++;
+							bParams.add(o2.sqlPodRestartCount());
+						break;
+					case "setPodsRestarting":
+							o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+							if(bParams.size() > 0)
+								bSql.append(", ");
+							bSql.append(Project.VAR_podsRestarting + "=$" + num);
+							num++;
+							bParams.add(o2.sqlPodsRestarting());
+						break;
 					case "setObjectTitle":
 							o2.setObjectTitle(jsonObject.getString(entityVar));
 							if(bParams.size() > 0)
@@ -1505,6 +1521,24 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 						bSql.append(Project.VAR_userKey + "=$" + num);
 						num++;
 						bParams.add(o2.sqlUserKey());
+						break;
+					case Project.VAR_podRestartCount:
+						o2.setPodRestartCount(jsonObject.getString(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Project.VAR_podRestartCount + "=$" + num);
+						num++;
+						bParams.add(o2.sqlPodRestartCount());
+						break;
+					case Project.VAR_podsRestarting:
+						o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+						if(bParams.size() > 0) {
+							bSql.append(", ");
+						}
+						bSql.append(Project.VAR_podsRestarting + "=$" + num);
+						num++;
+						bParams.add(o2.sqlPodsRestarting());
 						break;
 					case Project.VAR_objectTitle:
 						o2.setObjectTitle(jsonObject.getString(entityVar));
@@ -3810,7 +3844,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			SiteRequest siteRequest = o.getSiteRequest_();
 			SqlConnection sqlConnection = siteRequest.getSqlConnection();
 			Long pk = o.getPk();
-			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, objectTitle, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
+			sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, podRestartCount, podsRestarting, objectTitle, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
 					.collecting(Collectors.toList())
 					.execute(Tuple.of(pk)
 					).onSuccess(result -> {
@@ -4123,6 +4157,8 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 			page.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
 			page.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
 			page.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
+			page.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
+			page.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
 			page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
 			page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
 			page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));

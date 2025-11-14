@@ -24,7 +24,7 @@ import io.vertx.pgclient.data.Polygon;
  * Description: A research project using AI and GPUs
  * AName: an project
  * PluralName: projects
- * Icon: <i class="fa-regular fa-school"></i>
+ * Icon: <i class="fa-regular fa-people-line"></i>
  * Sort.asc: hubId
  * Sort.asc: clusterName
  * Sort.asc: projectName
@@ -179,5 +179,32 @@ public class Project extends ProjectGen<BaseModel> {
    **/
   protected void _gpuEnabled(Wrap<Boolean> w) {
     w.o(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: pod restarts
+   * Description: The number of pod restarts in this project. 
+   * HtmRowTitleOpen: health checks
+   * HtmRow: 4
+   * HtmCell: 0
+   **/
+  protected void _podRestartCount(Wrap<Integer> w) {
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: pods restarting
+   * Description: The names of the pods restarting in this project. 
+   * HtmRow: 4
+   * HtmCell: 1
+   **/
+  protected void _podsRestarting(List<String> l) {
   }
 }

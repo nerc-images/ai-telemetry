@@ -144,6 +144,8 @@ ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectName text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectResource text UNIQUE;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS description text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS gpuEnabled boolean;
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS podRestartCount integer;
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS podsRestarting text[];
 
 CREATE TABLE IF NOT EXISTS ClusterTemplate();
 ALTER TABLE ClusterTemplate ADD COLUMN IF NOT EXISTS pk bigserial primary key;

@@ -14432,7 +14432,7 @@ components:
   securitySchemes:
     openIdConnect:
       type: openIdConnect
-      openIdConnectUrl: https://keycloak.apps-crc.testing/realms/AITELEMETRY/.well-known/openid-configuration
+      openIdConnectUrl: https://keycloak.apps.obs.nerc.mghpcc.org/realms/NERC/.well-known/openid-configuration
   requestBodies:
     SearchBareMetalNetworkResponse:
       content:
@@ -21441,6 +21441,12 @@ components:
                     type: string
                   gpuEnabled:
                     type: boolean
+                  podRestartCount:
+                    type: string
+                  podsRestarting:
+                    type: array
+                    items:
+                      type: string
     PATCHProjectRequest:
       allOf:
         - type: object
@@ -21508,6 +21514,30 @@ components:
               type: boolean
             removeAllGpuEnabled:
               type: boolean
+            setPodRestartCount:
+              type: string
+              nullable: true
+            removePodRestartCount:
+              type: string
+            removeAllPodRestartCount:
+              type: string
+            setPodsRestarting:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removePodsRestarting:
+              type: string
+            removeAllPodsRestarting:
+              type: array
+              items:
+                type: string
+            addPodsRestarting:
+              type: string
+            addAllPodsRestarting:
+              type: array
+              items:
+                type: string
     PATCHProjectResponse:
       allOf:
         - type: object
@@ -21575,6 +21605,30 @@ components:
               type: boolean
             removeAllGpuEnabled:
               type: boolean
+            setPodRestartCount:
+              type: string
+              nullable: true
+            removePodRestartCount:
+              type: string
+            removeAllPodRestartCount:
+              type: string
+            setPodsRestarting:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removePodsRestarting:
+              type: string
+            removeAllPodsRestarting:
+              type: array
+              items:
+                type: string
+            addPodsRestarting:
+              type: string
+            addAllPodsRestarting:
+              type: array
+              items:
+                type: string
     POSTProjectRequest:
       allOf:
         - type: object
@@ -21597,6 +21651,12 @@ components:
               type: string
             gpuEnabled:
               type: boolean
+            podRestartCount:
+              type: string
+            podsRestarting:
+              type: array
+              items:
+                type: string
     POSTProjectResponse:
       allOf:
         - type: object
@@ -21619,6 +21679,12 @@ components:
               type: string
             gpuEnabled:
               type: boolean
+            podRestartCount:
+              type: string
+            podsRestarting:
+              type: array
+              items:
+                type: string
     DELETEFilterProjectResponse:
       allOf:
         - type: object
@@ -21641,6 +21707,12 @@ components:
               type: string
             gpuEnabled:
               type: boolean
+            podRestartCount:
+              type: string
+            podsRestarting:
+              type: array
+              items:
+                type: string
     PUTImportProjectRequest:
       allOf:
         - type: object
@@ -21668,6 +21740,12 @@ components:
                     type: string
                   gpuEnabled:
                     type: boolean
+                  podRestartCount:
+                    type: string
+                  podsRestarting:
+                    type: array
+                    items:
+                      type: string
     PUTImportProjectResponse:
       allOf:
         - type: object
@@ -21690,6 +21768,12 @@ components:
                     type: string
                   gpuEnabled:
                     type: boolean
+                  podRestartCount:
+                    type: string
+                  podsRestarting:
+                    type: array
+                    items:
+                      type: string
     GETProjectResponse:
       allOf:
         - type: object
@@ -21712,6 +21796,12 @@ components:
               type: string
             gpuEnabled:
               type: boolean
+            podRestartCount:
+              type: string
+            podsRestarting:
+              type: array
+              items:
+                type: string
     DELETEProjectResponse:
       allOf:
         - type: object
@@ -21734,6 +21824,12 @@ components:
               type: string
             gpuEnabled:
               type: boolean
+            podRestartCount:
+              type: string
+            podsRestarting:
+              type: array
+              items:
+                type: string
     EditPageProjectResponse:
       allOf:
         - type: string
