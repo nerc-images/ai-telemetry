@@ -207,4 +207,30 @@ public class Project extends ProjectGen<BaseModel> {
    **/
   protected void _podsRestarting(List<String> l) {
   }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: Full PVCs count
+   * Description: The number of persistent volume claims that are running out of disk space in this project. 
+   * HtmRow: 4
+   * HtmCell: 2
+   **/
+  protected void _fullPvcsCount(Wrap<Integer> w) {
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: pods restarting
+   * Description: The names of the persistent volume claims that are running out of disk space in this project. 
+   * HtmRow: 4
+   * HtmCell: 3
+   **/
+  protected void _fullPvcs(List<String> l) {
+  }
 }

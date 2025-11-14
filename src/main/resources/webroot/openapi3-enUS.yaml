@@ -21447,6 +21447,12 @@ components:
                     type: array
                     items:
                       type: string
+                  fullPvcsCount:
+                    type: string
+                  fullPvcs:
+                    type: array
+                    items:
+                      type: string
     PATCHProjectRequest:
       allOf:
         - type: object
@@ -21535,6 +21541,30 @@ components:
             addPodsRestarting:
               type: string
             addAllPodsRestarting:
+              type: array
+              items:
+                type: string
+            setFullPvcsCount:
+              type: string
+              nullable: true
+            removeFullPvcsCount:
+              type: string
+            removeAllFullPvcsCount:
+              type: string
+            setFullPvcs:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeFullPvcs:
+              type: string
+            removeAllFullPvcs:
+              type: array
+              items:
+                type: string
+            addFullPvcs:
+              type: string
+            addAllFullPvcs:
               type: array
               items:
                 type: string
@@ -21629,6 +21659,30 @@ components:
               type: array
               items:
                 type: string
+            setFullPvcsCount:
+              type: string
+              nullable: true
+            removeFullPvcsCount:
+              type: string
+            removeAllFullPvcsCount:
+              type: string
+            setFullPvcs:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeFullPvcs:
+              type: string
+            removeAllFullPvcs:
+              type: array
+              items:
+                type: string
+            addFullPvcs:
+              type: string
+            addAllFullPvcs:
+              type: array
+              items:
+                type: string
     POSTProjectRequest:
       allOf:
         - type: object
@@ -21654,6 +21708,12 @@ components:
             podRestartCount:
               type: string
             podsRestarting:
+              type: array
+              items:
+                type: string
+            fullPvcsCount:
+              type: string
+            fullPvcs:
               type: array
               items:
                 type: string
@@ -21685,6 +21745,12 @@ components:
               type: array
               items:
                 type: string
+            fullPvcsCount:
+              type: string
+            fullPvcs:
+              type: array
+              items:
+                type: string
     DELETEFilterProjectResponse:
       allOf:
         - type: object
@@ -21710,6 +21776,12 @@ components:
             podRestartCount:
               type: string
             podsRestarting:
+              type: array
+              items:
+                type: string
+            fullPvcsCount:
+              type: string
+            fullPvcs:
               type: array
               items:
                 type: string
@@ -21746,6 +21818,12 @@ components:
                     type: array
                     items:
                       type: string
+                  fullPvcsCount:
+                    type: string
+                  fullPvcs:
+                    type: array
+                    items:
+                      type: string
     PUTImportProjectResponse:
       allOf:
         - type: object
@@ -21771,6 +21849,12 @@ components:
                   podRestartCount:
                     type: string
                   podsRestarting:
+                    type: array
+                    items:
+                      type: string
+                  fullPvcsCount:
+                    type: string
+                  fullPvcs:
                     type: array
                     items:
                       type: string
@@ -21802,6 +21886,12 @@ components:
               type: array
               items:
                 type: string
+            fullPvcsCount:
+              type: string
+            fullPvcs:
+              type: array
+              items:
+                type: string
     DELETEProjectResponse:
       allOf:
         - type: object
@@ -21827,6 +21917,12 @@ components:
             podRestartCount:
               type: string
             podsRestarting:
+              type: array
+              items:
+                type: string
+            fullPvcsCount:
+              type: string
+            fullPvcs:
               type: array
               items:
                 type: string
