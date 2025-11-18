@@ -3,6 +3,8 @@ package org.mghpcc.aitelemetry.model.project;
 import org.mghpcc.aitelemetry.model.project.Project;
 import java.lang.String;
 import java.lang.Boolean;
+import java.lang.Integer;
+import java.util.List;
 import org.mghpcc.aitelemetry.page.PageLayout;
 import org.mghpcc.aitelemetry.request.SiteRequest;
 import org.mghpcc.aitelemetry.user.SiteUser;
@@ -27,7 +29,6 @@ import java.net.URLDecoder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import java.util.Map;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -540,7 +541,7 @@ public class ProjectGenPage extends ProjectGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-school\"></i>");
+      c.o("<i class=\"fa-regular fa-people-line\"></i>");
   }
 
   protected void _pageUriProject(Wrap<String> c) {

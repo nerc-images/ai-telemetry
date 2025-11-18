@@ -1,5 +1,7 @@
 package org.mghpcc.aitelemetry.model.cluster;
 
+import io.vertx.core.Promise;
+
 /**
  * Promise: true
  **/
