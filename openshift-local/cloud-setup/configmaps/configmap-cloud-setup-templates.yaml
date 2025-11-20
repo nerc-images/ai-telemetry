@@ -283,6 +283,8 @@ data:
       WEB_COMPONENTS_SECRET: "{{ WEB_COMPONENTS_SECRET }}"
       WEB_COMPONENTS_PREFIX: "{{ WEB_COMPONENTS_PREFIX }}"
       WEB_COMPONENTS_THEME: "{{ WEB_COMPONENTS_THEME }}"
+      WEB_COMPONENTS_KIT: ""
+      WEB_COMPONENTS_PRO: "false"
       FONTAWESOME_KIT: "{{ FONTAWESOME_KIT }}"
       FONTAWESOME_STYLE: "{{ FONTAWESOME_STYLE }}"
       SITE_THEME: "{{ SITE_THEME }}"
@@ -294,10 +296,15 @@ data:
       namespace: {{ SITE_NAMESPACE }}
     type: Opaque
     stringData:
-      PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER | replace("'", "\\'") }}'
-      PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER | replace("'", "\\'") }}'
-      PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: '{{ PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER | replace("'", "\\'") }}'
+      STATIC_REPOS: '{{ STATIC_REPOS | replace("'", "\\'") }}'
+      HUBS: '{{ HUBS | replace("'", "\\'") }}'
+      YOUTUBE_URL: '{{ YOUTUBE_URL | replace("'", "\\'") }}'
+      LINKEDIN_URL: '{{ LINKEDIN_URL | replace("'", "\\'") }}'
+      PROM_KEYCLOAK_PROXY_SSL_OPENSHIFTLOCAL: '{{ PROM_KEYCLOAK_PROXY_SSL_OPENSHIFTLOCAL | replace("'", "\\'") }}'
+      PROM_KEYCLOAK_PROXY_HOST_NAME_OPENSHIFTLOCAL: '{{ PROM_KEYCLOAK_PROXY_HOST_NAME_OPENSHIFTLOCAL | replace("'", "\\'") }}'
+      PROM_KEYCLOAK_PROXY_PORT_OPENSHIFTLOCAL: '{{ PROM_KEYCLOAK_PROXY_PORT_OPENSHIFTLOCAL | replace("'", "\\'") }}'
       AUTH_CLIENT_SA: '{{ AUTH_CLIENT_SA | replace("'", "\\'") }}'
+      AUTH_OPENSHIFT_SECRET_KEY_SA: '{{ AUTH_OPENSHIFT_SECRET_KEY_SA | replace("'", "\\'") }}'
       AUTH_OPENSHIFT_SECRET_SA: '{{ AUTH_OPENSHIFT_SECRET_SA | replace("'", "\\'") }}'
       AUTH_SECRET_SA: '{{ AUTH_SECRET_SA | replace("'", "\\'") }}'
       GRAFANA_BASE_URL: '{{ GRAFANA_BASE_URL | replace("'", "\\'") }}'
@@ -325,8 +332,6 @@ data:
       IMPORT_DATA_PERIOD_BareMetalNode: '{{ IMPORT_DATA_PERIOD_BareMetalNode | replace("'", "\\'") }}'
       IMPORT_DATA_START_TIME_BareMetalResourceClass: '{{ IMPORT_DATA_START_TIME_BareMetalResourceClass | replace("'", "\\'") }}'
       IMPORT_DATA_PERIOD_BareMetalResourceClass: '{{ IMPORT_DATA_PERIOD_BareMetalResourceClass | replace("'", "\\'") }}'
-      IMPORT_DATA_START_TIME_Project: '{{ IMPORT_DATA_START_TIME_Project | replace("'", "\\'") }}'
-      IMPORT_DATA_PERIOD_Project: '{{ IMPORT_DATA_PERIOD_Project | replace("'", "\\'") }}'
       ENABLE_IMPORT_DATA_Cluster: '{{ ENABLE_IMPORT_DATA_Cluster | replace("'", "\\'") }}'
       ENABLE_IMPORT_DATA_AiNode: '{{ ENABLE_IMPORT_DATA_AiNode | replace("'", "\\'") }}'
       ENABLE_IMPORT_DATA_Project: '{{ ENABLE_IMPORT_DATA_Project | replace("'", "\\'") }}'

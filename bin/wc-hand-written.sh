@@ -45,5 +45,11 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrder.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachine.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachinePage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloper.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSApiServiceImpl.java \
       -type f -exec wc -l {} +
 echo hand written
