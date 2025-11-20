@@ -134,772 +134,786 @@ import io.vertx.core.Future;
  * Generated: true
  **/
 public abstract class VirtualMachineGenPageGen<DEV> extends PageLayout {
-	protected static final Logger LOG = LoggerFactory.getLogger(VirtualMachineGenPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(VirtualMachineGenPage.class);
 
 	///////////////////////////////
-	// searchListVirtualMachine_ //
+  // searchListVirtualMachine_ //
 	///////////////////////////////
 
 
-	/**	 The entity searchListVirtualMachine_
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonIgnore
-	@JsonInclude(Include.NON_NULL)
-	protected SearchList<VirtualMachine> searchListVirtualMachine_;
+  /**
+   *  The entity searchListVirtualMachine_
+   *	 is defined as null before being initialized. 
+   */
+  @JsonIgnore
+  @JsonInclude(Include.NON_NULL)
+  protected SearchList<VirtualMachine> searchListVirtualMachine_;
 
-	/**	<br> The entity searchListVirtualMachine_
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:searchListVirtualMachine_">Find the entity searchListVirtualMachine_ in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _searchListVirtualMachine_(Wrap<SearchList<VirtualMachine>> w);
+  /**
+   * <br> The entity searchListVirtualMachine_
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:searchListVirtualMachine_">Find the entity searchListVirtualMachine_ in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _searchListVirtualMachine_(Wrap<SearchList<VirtualMachine>> w);
 
-	public SearchList<VirtualMachine> getSearchListVirtualMachine_() {
-		return searchListVirtualMachine_;
-	}
+  public SearchList<VirtualMachine> getSearchListVirtualMachine_() {
+    return searchListVirtualMachine_;
+  }
 
-	public void setSearchListVirtualMachine_(SearchList<VirtualMachine> searchListVirtualMachine_) {
-		this.searchListVirtualMachine_ = searchListVirtualMachine_;
-	}
-	public static SearchList<VirtualMachine> staticSetSearchListVirtualMachine_(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected VirtualMachineGenPage searchListVirtualMachine_Init() {
-		Wrap<SearchList<VirtualMachine>> searchListVirtualMachine_Wrap = new Wrap<SearchList<VirtualMachine>>().var("searchListVirtualMachine_");
-		if(searchListVirtualMachine_ == null) {
-			_searchListVirtualMachine_(searchListVirtualMachine_Wrap);
-			Optional.ofNullable(searchListVirtualMachine_Wrap.getO()).ifPresent(o -> {
-				setSearchListVirtualMachine_(o);
-			});
-		}
-		return (VirtualMachineGenPage)this;
-	}
+  public void setSearchListVirtualMachine_(SearchList<VirtualMachine> searchListVirtualMachine_) {
+    this.searchListVirtualMachine_ = searchListVirtualMachine_;
+  }
+  public static SearchList<VirtualMachine> staticSetSearchListVirtualMachine_(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected VirtualMachineGenPage searchListVirtualMachine_Init() {
+    Wrap<SearchList<VirtualMachine>> searchListVirtualMachine_Wrap = new Wrap<SearchList<VirtualMachine>>().var("searchListVirtualMachine_");
+    if(searchListVirtualMachine_ == null) {
+      _searchListVirtualMachine_(searchListVirtualMachine_Wrap);
+      Optional.ofNullable(searchListVirtualMachine_Wrap.getO()).ifPresent(o -> {
+        setSearchListVirtualMachine_(o);
+      });
+    }
+    return (VirtualMachineGenPage)this;
+  }
 
 	////////////////////////
-	// listVirtualMachine //
+  // listVirtualMachine //
 	////////////////////////
 
 
-	/**	 The entity listVirtualMachine
-	 *	 It is constructed before being initialized with the constructor by default. 
-	 */
-	@JsonProperty
-	@JsonDeserialize(using = JsonArrayDeserializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected JsonArray listVirtualMachine = new JsonArray();
+  /**
+   *  The entity listVirtualMachine
+   *	 It is constructed before being initialized with the constructor by default. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = JsonArrayDeserializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected JsonArray listVirtualMachine = new JsonArray();
 
-	/**	<br> The entity listVirtualMachine
-	 *  It is constructed before being initialized with the constructor by default. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:listVirtualMachine">Find the entity listVirtualMachine in Solr</a>
-	 * <br>
-	 * @param l is the entity already constructed. 
-	 **/
-	protected abstract void _listVirtualMachine(JsonArray l);
+  /**
+   * <br> The entity listVirtualMachine
+   *  It is constructed before being initialized with the constructor by default. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:listVirtualMachine">Find the entity listVirtualMachine in Solr</a>
+   * <br>
+   * @param l is the entity already constructed. 
+   **/
+  protected abstract void _listVirtualMachine(JsonArray l);
 
-	public JsonArray getListVirtualMachine() {
-		return listVirtualMachine;
-	}
+  public JsonArray getListVirtualMachine() {
+    return listVirtualMachine;
+  }
 
-	public void setListVirtualMachine(JsonArray listVirtualMachine) {
-		this.listVirtualMachine = listVirtualMachine;
-	}
-	@JsonIgnore
-	public void setListVirtualMachine(String o) {
-		this.listVirtualMachine = VirtualMachineGenPage.staticSetListVirtualMachine(siteRequest_, o);
-	}
-	public static JsonArray staticSetListVirtualMachine(SiteRequest siteRequest_, String o) {
-		if(o != null) {
-				return new JsonArray(o);
-		}
-		return null;
-	}
-	protected VirtualMachineGenPage listVirtualMachineInit() {
-		_listVirtualMachine(listVirtualMachine);
-		return (VirtualMachineGenPage)this;
-	}
+  public void setListVirtualMachine(JsonArray listVirtualMachine) {
+    this.listVirtualMachine = listVirtualMachine;
+  }
+  @JsonIgnore
+  public void setListVirtualMachine(String o) {
+    this.listVirtualMachine = VirtualMachineGenPage.staticSetListVirtualMachine(siteRequest_, o);
+  }
+  public static JsonArray staticSetListVirtualMachine(SiteRequest siteRequest_, String o) {
+    if(o != null) {
+        return new JsonArray(o);
+    }
+    return null;
+  }
+  protected VirtualMachineGenPage listVirtualMachineInit() {
+    _listVirtualMachine(listVirtualMachine);
+    return (VirtualMachineGenPage)this;
+  }
 
-	public static String staticSearchListVirtualMachine(SiteRequest siteRequest_, JsonArray o) {
-		return o.toString();
-	}
+  public static String staticSearchListVirtualMachine(SiteRequest siteRequest_, JsonArray o) {
+    return o.toString();
+  }
 
-	public static String staticSearchStrListVirtualMachine(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrListVirtualMachine(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqListVirtualMachine(SiteRequest siteRequest_, String o) {
-		return VirtualMachineGenPage.staticSearchListVirtualMachine(siteRequest_, VirtualMachineGenPage.staticSetListVirtualMachine(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqListVirtualMachine(SiteRequest siteRequest_, String o) {
+    return VirtualMachineGenPage.staticSearchListVirtualMachine(siteRequest_, VirtualMachineGenPage.staticSetListVirtualMachine(siteRequest_, o)).toString();
+  }
 
 	/////////////////
-	// resultCount //
+  // resultCount //
 	/////////////////
 
 
-	/**	 The entity resultCount
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Integer resultCount;
+  /**
+   *  The entity resultCount
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer resultCount;
 
-	/**	<br> The entity resultCount
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _resultCount(Wrap<Integer> w);
+  /**
+   * <br> The entity resultCount
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _resultCount(Wrap<Integer> w);
 
-	public Integer getResultCount() {
-		return resultCount;
-	}
+  public Integer getResultCount() {
+    return resultCount;
+  }
 
-	public void setResultCount(Integer resultCount) {
-		this.resultCount = resultCount;
-	}
-	@JsonIgnore
-	public void setResultCount(String o) {
-		this.resultCount = VirtualMachineGenPage.staticSetResultCount(siteRequest_, o);
-	}
-	public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Integer.parseInt(o);
-		return null;
-	}
-	protected VirtualMachineGenPage resultCountInit() {
-		Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
-		if(resultCount == null) {
-			_resultCount(resultCountWrap);
-			Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
-				setResultCount(o);
-			});
-		}
-		return (VirtualMachineGenPage)this;
-	}
+  public void setResultCount(Integer resultCount) {
+    this.resultCount = resultCount;
+  }
+  @JsonIgnore
+  public void setResultCount(String o) {
+    this.resultCount = VirtualMachineGenPage.staticSetResultCount(siteRequest_, o);
+  }
+  public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected VirtualMachineGenPage resultCountInit() {
+    Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
+    if(resultCount == null) {
+      _resultCount(resultCountWrap);
+      Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
+        setResultCount(o);
+      });
+    }
+    return (VirtualMachineGenPage)this;
+  }
 
-	public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
-		return o;
-	}
+  public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
 
-	public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
-		return VirtualMachineGenPage.staticSearchResultCount(siteRequest_, VirtualMachineGenPage.staticSetResultCount(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
+    return VirtualMachineGenPage.staticSearchResultCount(siteRequest_, VirtualMachineGenPage.staticSetResultCount(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// result //
+  // result //
 	////////////
 
 
-	/**	 The entity result
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected VirtualMachine result;
+  /**
+   *  The entity result
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected VirtualMachine result;
 
-	/**	<br> The entity result
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _result(Wrap<VirtualMachine> w);
+  /**
+   * <br> The entity result
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _result(Wrap<VirtualMachine> w);
 
-	public VirtualMachine getResult() {
-		return result;
-	}
+  public VirtualMachine getResult() {
+    return result;
+  }
 
-	public void setResult(VirtualMachine result) {
-		this.result = result;
-	}
-	public static VirtualMachine staticSetResult(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected VirtualMachineGenPage resultInit() {
-		Wrap<VirtualMachine> resultWrap = new Wrap<VirtualMachine>().var("result");
-		if(result == null) {
-			_result(resultWrap);
-			Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
-				setResult(o);
-			});
-		}
-		return (VirtualMachineGenPage)this;
-	}
+  public void setResult(VirtualMachine result) {
+    this.result = result;
+  }
+  public static VirtualMachine staticSetResult(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected VirtualMachineGenPage resultInit() {
+    Wrap<VirtualMachine> resultWrap = new Wrap<VirtualMachine>().var("result");
+    if(result == null) {
+      _result(resultWrap);
+      Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
+        setResult(o);
+      });
+    }
+    return (VirtualMachineGenPage)this;
+  }
 
 	////////
-	// pk //
+  // pk //
 	////////
 
 
-	/**	 The entity pk
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Long pk;
+  /**
+   *  The entity pk
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Long pk;
 
-	/**	<br> The entity pk
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pk(Wrap<Long> w);
+  /**
+   * <br> The entity pk
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pk(Wrap<Long> w);
 
-	public Long getPk() {
-		return pk;
-	}
+  public Long getPk() {
+    return pk;
+  }
 
-	public void setPk(Long pk) {
-		this.pk = pk;
-	}
-	@JsonIgnore
-	public void setPk(String o) {
-		this.pk = VirtualMachineGenPage.staticSetPk(siteRequest_, o);
-	}
-	public static Long staticSetPk(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Long.parseLong(o);
-		return null;
-	}
-	protected VirtualMachineGenPage pkInit() {
-		Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
-		if(pk == null) {
-			_pk(pkWrap);
-			Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
-				setPk(o);
-			});
-		}
-		return (VirtualMachineGenPage)this;
-	}
+  public void setPk(Long pk) {
+    this.pk = pk;
+  }
+  @JsonIgnore
+  public void setPk(String o) {
+    this.pk = VirtualMachineGenPage.staticSetPk(siteRequest_, o);
+  }
+  public static Long staticSetPk(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Long.parseLong(o);
+    return null;
+  }
+  protected VirtualMachineGenPage pkInit() {
+    Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
+    if(pk == null) {
+      _pk(pkWrap);
+      Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
+        setPk(o);
+      });
+    }
+    return (VirtualMachineGenPage)this;
+  }
 
-	public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
-		return o;
-	}
+  public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
+    return o;
+  }
 
-	public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
-		return VirtualMachineGenPage.staticSearchPk(siteRequest_, VirtualMachineGenPage.staticSetPk(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
+    return VirtualMachineGenPage.staticSearchPk(siteRequest_, VirtualMachineGenPage.staticSetPk(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// solrId //
+  // solrId //
 	////////////
 
 
-	/**	 The entity solrId
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String solrId;
+  /**
+   *  The entity solrId
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String solrId;
 
-	/**	<br> The entity solrId
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _solrId(Wrap<String> w);
+  /**
+   * <br> The entity solrId
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _solrId(Wrap<String> w);
 
-	public String getSolrId() {
-		return solrId;
-	}
-	public void setSolrId(String o) {
-		this.solrId = VirtualMachineGenPage.staticSetSolrId(siteRequest_, o);
-	}
-	public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected VirtualMachineGenPage solrIdInit() {
-		Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
-		if(solrId == null) {
-			_solrId(solrIdWrap);
-			Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
-				setSolrId(o);
-			});
-		}
-		return (VirtualMachineGenPage)this;
-	}
+  public String getSolrId() {
+    return solrId;
+  }
+  public void setSolrId(String o) {
+    this.solrId = VirtualMachineGenPage.staticSetSolrId(siteRequest_, o);
+  }
+  public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected VirtualMachineGenPage solrIdInit() {
+    Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
+    if(solrId == null) {
+      _solrId(solrIdWrap);
+      Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
+        setSolrId(o);
+      });
+    }
+    return (VirtualMachineGenPage)this;
+  }
 
-	public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
-		return VirtualMachineGenPage.staticSearchSolrId(siteRequest_, VirtualMachineGenPage.staticSetSolrId(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
+    return VirtualMachineGenPage.staticSearchSolrId(siteRequest_, VirtualMachineGenPage.staticSetSolrId(siteRequest_, o)).toString();
+  }
 
 	///////////////////////////
-	// pageUriVirtualMachine //
+  // pageUriVirtualMachine //
 	///////////////////////////
 
 
-	/**	 The entity pageUriVirtualMachine
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String pageUriVirtualMachine;
+  /**
+   *  The entity pageUriVirtualMachine
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String pageUriVirtualMachine;
 
-	/**	<br> The entity pageUriVirtualMachine
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:pageUriVirtualMachine">Find the entity pageUriVirtualMachine in Solr</a>
-	 * <br>
-	 * @param c is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pageUriVirtualMachine(Wrap<String> c);
+  /**
+   * <br> The entity pageUriVirtualMachine
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage&fq=entiteVar_enUS_indexed_string:pageUriVirtualMachine">Find the entity pageUriVirtualMachine in Solr</a>
+   * <br>
+   * @param c is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pageUriVirtualMachine(Wrap<String> c);
 
-	public String getPageUriVirtualMachine() {
-		return pageUriVirtualMachine;
-	}
-	public void setPageUriVirtualMachine(String o) {
-		this.pageUriVirtualMachine = VirtualMachineGenPage.staticSetPageUriVirtualMachine(siteRequest_, o);
-	}
-	public static String staticSetPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected VirtualMachineGenPage pageUriVirtualMachineInit() {
-		Wrap<String> pageUriVirtualMachineWrap = new Wrap<String>().var("pageUriVirtualMachine");
-		if(pageUriVirtualMachine == null) {
-			_pageUriVirtualMachine(pageUriVirtualMachineWrap);
-			Optional.ofNullable(pageUriVirtualMachineWrap.getO()).ifPresent(o -> {
-				setPageUriVirtualMachine(o);
-			});
-		}
-		return (VirtualMachineGenPage)this;
-	}
+  public String getPageUriVirtualMachine() {
+    return pageUriVirtualMachine;
+  }
+  public void setPageUriVirtualMachine(String o) {
+    this.pageUriVirtualMachine = VirtualMachineGenPage.staticSetPageUriVirtualMachine(siteRequest_, o);
+  }
+  public static String staticSetPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected VirtualMachineGenPage pageUriVirtualMachineInit() {
+    Wrap<String> pageUriVirtualMachineWrap = new Wrap<String>().var("pageUriVirtualMachine");
+    if(pageUriVirtualMachine == null) {
+      _pageUriVirtualMachine(pageUriVirtualMachineWrap);
+      Optional.ofNullable(pageUriVirtualMachineWrap.getO()).ifPresent(o -> {
+        setPageUriVirtualMachine(o);
+      });
+    }
+    return (VirtualMachineGenPage)this;
+  }
 
-	public static String staticSearchPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
-		return VirtualMachineGenPage.staticSearchPageUriVirtualMachine(siteRequest_, VirtualMachineGenPage.staticSetPageUriVirtualMachine(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPageUriVirtualMachine(SiteRequest siteRequest_, String o) {
+    return VirtualMachineGenPage.staticSearchPageUriVirtualMachine(siteRequest_, VirtualMachineGenPage.staticSetPageUriVirtualMachine(siteRequest_, o)).toString();
+  }
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<VirtualMachineGenPageGen<DEV>> promiseDeepVirtualMachineGenPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepVirtualMachineGenPage();
-	}
+  public Future<VirtualMachineGenPageGen<DEV>> promiseDeepVirtualMachineGenPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepVirtualMachineGenPage();
+  }
 
-	public Future<VirtualMachineGenPageGen<DEV>> promiseDeepVirtualMachineGenPage() {
-		Promise<VirtualMachineGenPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseVirtualMachineGenPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<VirtualMachineGenPageGen<DEV>> promiseDeepVirtualMachineGenPage() {
+    Promise<VirtualMachineGenPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseVirtualMachineGenPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseVirtualMachineGenPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				searchListVirtualMachine_Init();
-				listVirtualMachineInit();
-				resultCountInit();
-				resultInit();
-				pkInit();
-				solrIdInit();
-				pageUriVirtualMachineInit();
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseVirtualMachineGenPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        searchListVirtualMachine_Init();
+        listVirtualMachineInit();
+        resultCountInit();
+        resultInit();
+        pkInit();
+        solrIdInit();
+        pageUriVirtualMachineInit();
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends VirtualMachineGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepVirtualMachineGenPage(siteRequest_);
-	}
+  @Override public Future<? extends VirtualMachineGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepVirtualMachineGenPage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestVirtualMachineGenPage(SiteRequest siteRequest_) {
-			super.siteRequestPageLayout(siteRequest_);
-	}
+  public void siteRequestVirtualMachineGenPage(SiteRequest siteRequest_) {
+      super.siteRequestPageLayout(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestVirtualMachineGenPage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestVirtualMachineGenPage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainVirtualMachineGenPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainVirtualMachineGenPage(String var) {
-		VirtualMachineGenPage oVirtualMachineGenPage = (VirtualMachineGenPage)this;
-		switch(var) {
-			case "searchListVirtualMachine_":
-				return oVirtualMachineGenPage.searchListVirtualMachine_;
-			case "listVirtualMachine":
-				return oVirtualMachineGenPage.listVirtualMachine;
-			case "resultCount":
-				return oVirtualMachineGenPage.resultCount;
-			case "result":
-				return oVirtualMachineGenPage.result;
-			case "pk":
-				return oVirtualMachineGenPage.pk;
-			case "solrId":
-				return oVirtualMachineGenPage.solrId;
-			case "pageUriVirtualMachine":
-				return oVirtualMachineGenPage.pageUriVirtualMachine;
-			default:
-				return super.obtainPageLayout(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainVirtualMachineGenPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainVirtualMachineGenPage(String var) {
+    VirtualMachineGenPage oVirtualMachineGenPage = (VirtualMachineGenPage)this;
+    switch(var) {
+      case "searchListVirtualMachine_":
+        return oVirtualMachineGenPage.searchListVirtualMachine_;
+      case "listVirtualMachine":
+        return oVirtualMachineGenPage.listVirtualMachine;
+      case "resultCount":
+        return oVirtualMachineGenPage.resultCount;
+      case "result":
+        return oVirtualMachineGenPage.result;
+      case "pk":
+        return oVirtualMachineGenPage.pk;
+      case "solrId":
+        return oVirtualMachineGenPage.solrId;
+      case "pageUriVirtualMachine":
+        return oVirtualMachineGenPage.pageUriVirtualMachine;
+      default:
+        return super.obtainPageLayout(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateVirtualMachineGenPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateVirtualMachineGenPage(String var, Object val) {
-		VirtualMachineGenPage oVirtualMachineGenPage = (VirtualMachineGenPage)this;
-		switch(var) {
-			default:
-				return super.relatePageLayout(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateVirtualMachineGenPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateVirtualMachineGenPage(String var, Object val) {
+    VirtualMachineGenPage oVirtualMachineGenPage = (VirtualMachineGenPage)this;
+    switch(var) {
+      default:
+        return super.relatePageLayout(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, VirtualMachineGenPage o) {
-		return staticSetVirtualMachineGenPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, String v, VirtualMachineGenPage o) {
-		switch(entityVar) {
-		case "listVirtualMachine":
-			return VirtualMachineGenPage.staticSetListVirtualMachine(siteRequest_, v);
-		case "resultCount":
-			return VirtualMachineGenPage.staticSetResultCount(siteRequest_, v);
-		case "pk":
-			return VirtualMachineGenPage.staticSetPk(siteRequest_, v);
-		case "solrId":
-			return VirtualMachineGenPage.staticSetSolrId(siteRequest_, v);
-		case "pageUriVirtualMachine":
-			return VirtualMachineGenPage.staticSetPageUriVirtualMachine(siteRequest_, v);
-			default:
-				return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, VirtualMachineGenPage o) {
+    return staticSetVirtualMachineGenPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, String v, VirtualMachineGenPage o) {
+    switch(entityVar) {
+    case "listVirtualMachine":
+      return VirtualMachineGenPage.staticSetListVirtualMachine(siteRequest_, v);
+    case "resultCount":
+      return VirtualMachineGenPage.staticSetResultCount(siteRequest_, v);
+    case "pk":
+      return VirtualMachineGenPage.staticSetPk(siteRequest_, v);
+    case "solrId":
+      return VirtualMachineGenPage.staticSetSolrId(siteRequest_, v);
+    case "pageUriVirtualMachine":
+      return VirtualMachineGenPage.staticSetPageUriVirtualMachine(siteRequest_, v);
+      default:
+        return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchVirtualMachineGenPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listVirtualMachine":
-			return VirtualMachineGenPage.staticSearchListVirtualMachine(siteRequest_, (JsonArray)o);
-		case "resultCount":
-			return VirtualMachineGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return VirtualMachineGenPage.staticSearchPk(siteRequest_, (Long)o);
-		case "solrId":
-			return VirtualMachineGenPage.staticSearchSolrId(siteRequest_, (String)o);
-		case "pageUriVirtualMachine":
-			return VirtualMachineGenPage.staticSearchPageUriVirtualMachine(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchVirtualMachineGenPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listVirtualMachine":
+      return VirtualMachineGenPage.staticSearchListVirtualMachine(siteRequest_, (JsonArray)o);
+    case "resultCount":
+      return VirtualMachineGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return VirtualMachineGenPage.staticSearchPk(siteRequest_, (Long)o);
+    case "solrId":
+      return VirtualMachineGenPage.staticSearchSolrId(siteRequest_, (String)o);
+    case "pageUriVirtualMachine":
+      return VirtualMachineGenPage.staticSearchPageUriVirtualMachine(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrVirtualMachineGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listVirtualMachine":
-			return VirtualMachineGenPage.staticSearchStrListVirtualMachine(siteRequest_, (String)o);
-		case "resultCount":
-			return VirtualMachineGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return VirtualMachineGenPage.staticSearchStrPk(siteRequest_, (Long)o);
-		case "solrId":
-			return VirtualMachineGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
-		case "pageUriVirtualMachine":
-			return VirtualMachineGenPage.staticSearchStrPageUriVirtualMachine(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrVirtualMachineGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listVirtualMachine":
+      return VirtualMachineGenPage.staticSearchStrListVirtualMachine(siteRequest_, (String)o);
+    case "resultCount":
+      return VirtualMachineGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return VirtualMachineGenPage.staticSearchStrPk(siteRequest_, (Long)o);
+    case "solrId":
+      return VirtualMachineGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
+    case "pageUriVirtualMachine":
+      return VirtualMachineGenPage.staticSearchStrPageUriVirtualMachine(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqVirtualMachineGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-		case "listVirtualMachine":
-			return VirtualMachineGenPage.staticSearchFqListVirtualMachine(siteRequest_, o);
-		case "resultCount":
-			return VirtualMachineGenPage.staticSearchFqResultCount(siteRequest_, o);
-		case "pk":
-			return VirtualMachineGenPage.staticSearchFqPk(siteRequest_, o);
-		case "solrId":
-			return VirtualMachineGenPage.staticSearchFqSolrId(siteRequest_, o);
-		case "pageUriVirtualMachine":
-			return VirtualMachineGenPage.staticSearchFqPageUriVirtualMachine(siteRequest_, o);
-			default:
-				return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqVirtualMachineGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqVirtualMachineGenPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+    case "listVirtualMachine":
+      return VirtualMachineGenPage.staticSearchFqListVirtualMachine(siteRequest_, o);
+    case "resultCount":
+      return VirtualMachineGenPage.staticSearchFqResultCount(siteRequest_, o);
+    case "pk":
+      return VirtualMachineGenPage.staticSearchFqPk(siteRequest_, o);
+    case "solrId":
+      return VirtualMachineGenPage.staticSearchFqSolrId(siteRequest_, o);
+    case "pageUriVirtualMachine":
+      return VirtualMachineGenPage.staticSearchFqPageUriVirtualMachine(siteRequest_, o);
+      default:
+        return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "VirtualMachineGenPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
-	public static final String VAR_searchListVirtualMachine_ = "searchListVirtualMachine_";
-	public static final String VAR_listVirtualMachine = "listVirtualMachine";
-	public static final String VAR_resultCount = "resultCount";
-	public static final String VAR_result = "result";
-	public static final String VAR_pk = "pk";
-	public static final String VAR_solrId = "solrId";
-	public static final String VAR_pageUriVirtualMachine = "pageUriVirtualMachine";
+  public static final String CLASS_SIMPLE_NAME = "VirtualMachineGenPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String VAR_searchListVirtualMachine_ = "searchListVirtualMachine_";
+  public static final String VAR_listVirtualMachine = "listVirtualMachine";
+  public static final String VAR_resultCount = "resultCount";
+  public static final String VAR_result = "result";
+  public static final String VAR_pk = "pk";
+  public static final String VAR_solrId = "solrId";
+  public static final String VAR_pageUriVirtualMachine = "pageUriVirtualMachine";
 
-	public static final String DISPLAY_NAME_searchListVirtualMachine_ = "";
-	public static final String DISPLAY_NAME_listVirtualMachine = "";
-	public static final String DISPLAY_NAME_resultCount = "";
-	public static final String DISPLAY_NAME_result = "";
-	public static final String DISPLAY_NAME_pk = "";
-	public static final String DISPLAY_NAME_solrId = "";
-	public static final String DISPLAY_NAME_pageUriVirtualMachine = "";
+  public static final String DISPLAY_NAME_searchListVirtualMachine_ = "";
+  public static final String DISPLAY_NAME_listVirtualMachine = "";
+  public static final String DISPLAY_NAME_resultCount = "";
+  public static final String DISPLAY_NAME_result = "";
+  public static final String DISPLAY_NAME_pk = "";
+  public static final String DISPLAY_NAME_solrId = "";
+  public static final String DISPLAY_NAME_pageUriVirtualMachine = "";
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return VirtualMachineGenPage.displayNameVirtualMachineGenPage(var);
-	}
-	public static String displayNameVirtualMachineGenPage(String var) {
-		switch(var) {
-		case VAR_searchListVirtualMachine_:
-			return DISPLAY_NAME_searchListVirtualMachine_;
-		case VAR_listVirtualMachine:
-			return DISPLAY_NAME_listVirtualMachine;
-		case VAR_resultCount:
-			return DISPLAY_NAME_resultCount;
-		case VAR_result:
-			return DISPLAY_NAME_result;
-		case VAR_pk:
-			return DISPLAY_NAME_pk;
-		case VAR_solrId:
-			return DISPLAY_NAME_solrId;
-		case VAR_pageUriVirtualMachine:
-			return DISPLAY_NAME_pageUriVirtualMachine;
-		default:
-			return PageLayout.displayNamePageLayout(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return VirtualMachineGenPage.displayNameVirtualMachineGenPage(var);
+  }
+  public static String displayNameVirtualMachineGenPage(String var) {
+    switch(var) {
+    case VAR_searchListVirtualMachine_:
+      return DISPLAY_NAME_searchListVirtualMachine_;
+    case VAR_listVirtualMachine:
+      return DISPLAY_NAME_listVirtualMachine;
+    case VAR_resultCount:
+      return DISPLAY_NAME_resultCount;
+    case VAR_result:
+      return DISPLAY_NAME_result;
+    case VAR_pk:
+      return DISPLAY_NAME_pk;
+    case VAR_solrId:
+      return DISPLAY_NAME_solrId;
+    case VAR_pageUriVirtualMachine:
+      return DISPLAY_NAME_pageUriVirtualMachine;
+    default:
+      return PageLayout.displayNamePageLayout(var);
+    }
+  }
 
-	public static String descriptionVirtualMachineGenPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return PageLayout.descriptionPageLayout(var);
-		}
-	}
+  public static String descriptionVirtualMachineGenPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return PageLayout.descriptionPageLayout(var);
+    }
+  }
 
-	public static String classSimpleNameVirtualMachineGenPage(String var) {
-		switch(var) {
-		case VAR_searchListVirtualMachine_:
-			return "SearchList";
-		case VAR_listVirtualMachine:
-			return "JsonArray";
-		case VAR_resultCount:
-			return "Integer";
-		case VAR_result:
-			return "VirtualMachine";
-		case VAR_pk:
-			return "Long";
-		case VAR_solrId:
-			return "String";
-		case VAR_pageUriVirtualMachine:
-			return "String";
-			default:
-				return PageLayout.classSimpleNamePageLayout(var);
-		}
-	}
+  public static String classSimpleNameVirtualMachineGenPage(String var) {
+    switch(var) {
+    case VAR_searchListVirtualMachine_:
+      return "SearchList";
+    case VAR_listVirtualMachine:
+      return "JsonArray";
+    case VAR_resultCount:
+      return "Integer";
+    case VAR_result:
+      return "VirtualMachine";
+    case VAR_pk:
+      return "Long";
+    case VAR_solrId:
+      return "String";
+    case VAR_pageUriVirtualMachine:
+      return "String";
+      default:
+        return PageLayout.classSimpleNamePageLayout(var);
+    }
+  }
 
-	public static Integer htmColumnVirtualMachineGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmColumnPageLayout(var);
-		}
-	}
+  public static Integer htmColumnVirtualMachineGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmColumnPageLayout(var);
+    }
+  }
 
-	public static Integer htmRowVirtualMachineGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmRowPageLayout(var);
-		}
-	}
+  public static Integer htmRowVirtualMachineGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmRowPageLayout(var);
+    }
+  }
 
-	public static Integer htmCellVirtualMachineGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmCellPageLayout(var);
-		}
-	}
+  public static Integer htmCellVirtualMachineGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmCellPageLayout(var);
+    }
+  }
 
-	public static Integer lengthMinVirtualMachineGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMinPageLayout(var);
-		}
-	}
+  public static Integer lengthMinVirtualMachineGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMinPageLayout(var);
+    }
+  }
 
-	public static Integer lengthMaxVirtualMachineGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMaxPageLayout(var);
-		}
-	}
+  public static Integer lengthMaxVirtualMachineGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMaxPageLayout(var);
+    }
+  }
 
-	public static Integer maxVirtualMachineGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.maxPageLayout(var);
-		}
-	}
+  public static Integer maxVirtualMachineGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.maxPageLayout(var);
+    }
+  }
 
-	public static Integer minVirtualMachineGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.minPageLayout(var);
-		}
-	}
+  public static Integer minVirtualMachineGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.minPageLayout(var);
+    }
+  }
 }

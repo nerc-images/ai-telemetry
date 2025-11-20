@@ -111,308 +111,308 @@ import io.vertx.core.json.JsonArray;
  * Generated: true
  **/
 public abstract class ManagedClusterPageGen<DEV> extends ManagedClusterGenPage {
-	protected static final Logger LOG = LoggerFactory.getLogger(ManagedClusterPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(ManagedClusterPage.class);
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<ManagedClusterPageGen<DEV>> promiseDeepManagedClusterPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepManagedClusterPage();
-	}
+  public Future<ManagedClusterPageGen<DEV>> promiseDeepManagedClusterPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepManagedClusterPage();
+  }
 
-	public Future<ManagedClusterPageGen<DEV>> promiseDeepManagedClusterPage() {
-		Promise<ManagedClusterPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseManagedClusterPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepManagedClusterGenPage(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<ManagedClusterPageGen<DEV>> promiseDeepManagedClusterPage() {
+    Promise<ManagedClusterPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseManagedClusterPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepManagedClusterGenPage(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseManagedClusterPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseManagedClusterPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends ManagedClusterPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepManagedClusterPage(siteRequest_);
-	}
+  @Override public Future<? extends ManagedClusterPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepManagedClusterPage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestManagedClusterPage(SiteRequest siteRequest_) {
-			super.siteRequestManagedClusterGenPage(siteRequest_);
-	}
+  public void siteRequestManagedClusterPage(SiteRequest siteRequest_) {
+      super.siteRequestManagedClusterGenPage(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestManagedClusterPage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestManagedClusterPage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainManagedClusterPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainManagedClusterPage(String var) {
-		ManagedClusterPage oManagedClusterPage = (ManagedClusterPage)this;
-		switch(var) {
-			default:
-				return super.obtainManagedClusterGenPage(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainManagedClusterPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainManagedClusterPage(String var) {
+    ManagedClusterPage oManagedClusterPage = (ManagedClusterPage)this;
+    switch(var) {
+      default:
+        return super.obtainManagedClusterGenPage(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateManagedClusterPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateManagedClusterPage(String var, Object val) {
-		ManagedClusterPage oManagedClusterPage = (ManagedClusterPage)this;
-		switch(var) {
-			default:
-				return super.relateManagedClusterGenPage(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateManagedClusterPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateManagedClusterPage(String var, Object val) {
+    ManagedClusterPage oManagedClusterPage = (ManagedClusterPage)this;
+    switch(var) {
+      default:
+        return super.relateManagedClusterGenPage(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ManagedClusterPage o) {
-		return staticSetManagedClusterPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetManagedClusterPage(String entityVar, SiteRequest siteRequest_, String v, ManagedClusterPage o) {
-		switch(entityVar) {
-			default:
-				return ManagedClusterGenPage.staticSetManagedClusterGenPage(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ManagedClusterPage o) {
+    return staticSetManagedClusterPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetManagedClusterPage(String entityVar, SiteRequest siteRequest_, String v, ManagedClusterPage o) {
+    switch(entityVar) {
+      default:
+        return ManagedClusterGenPage.staticSetManagedClusterGenPage(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchManagedClusterPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchManagedClusterPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return ManagedClusterGenPage.staticSearchManagedClusterGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchManagedClusterPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchManagedClusterPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return ManagedClusterGenPage.staticSearchManagedClusterGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrManagedClusterPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrManagedClusterPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return ManagedClusterGenPage.staticSearchStrManagedClusterGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrManagedClusterPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrManagedClusterPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return ManagedClusterGenPage.staticSearchStrManagedClusterGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqManagedClusterPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqManagedClusterPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-			default:
-				return ManagedClusterGenPage.staticSearchFqManagedClusterGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqManagedClusterPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqManagedClusterPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+      default:
+        return ManagedClusterGenPage.staticSearchFqManagedClusterGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "ManagedClusterPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.managedcluster.ManagedClusterPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_SIMPLE_NAME = "ManagedClusterPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.managedcluster.ManagedClusterPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
 
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return ManagedClusterPage.displayNameManagedClusterPage(var);
-	}
-	public static String displayNameManagedClusterPage(String var) {
-		switch(var) {
-		default:
-			return ManagedClusterGenPage.displayNameManagedClusterGenPage(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return ManagedClusterPage.displayNameManagedClusterPage(var);
+  }
+  public static String displayNameManagedClusterPage(String var) {
+    switch(var) {
+    default:
+      return ManagedClusterGenPage.displayNameManagedClusterGenPage(var);
+    }
+  }
 
-	public static String descriptionManagedClusterPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.descriptionManagedClusterGenPage(var);
-		}
-	}
+  public static String descriptionManagedClusterPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.descriptionManagedClusterGenPage(var);
+    }
+  }
 
-	public static String classSimpleNameManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.classSimpleNameManagedClusterGenPage(var);
-		}
-	}
+  public static String classSimpleNameManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.classSimpleNameManagedClusterGenPage(var);
+    }
+  }
 
-	public static Integer htmColumnManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.htmColumnManagedClusterGenPage(var);
-		}
-	}
+  public static Integer htmColumnManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.htmColumnManagedClusterGenPage(var);
+    }
+  }
 
-	public static Integer htmRowManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.htmRowManagedClusterGenPage(var);
-		}
-	}
+  public static Integer htmRowManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.htmRowManagedClusterGenPage(var);
+    }
+  }
 
-	public static Integer htmCellManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.htmCellManagedClusterGenPage(var);
-		}
-	}
+  public static Integer htmCellManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.htmCellManagedClusterGenPage(var);
+    }
+  }
 
-	public static Integer lengthMinManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.lengthMinManagedClusterGenPage(var);
-		}
-	}
+  public static Integer lengthMinManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.lengthMinManagedClusterGenPage(var);
+    }
+  }
 
-	public static Integer lengthMaxManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.lengthMaxManagedClusterGenPage(var);
-		}
-	}
+  public static Integer lengthMaxManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.lengthMaxManagedClusterGenPage(var);
+    }
+  }
 
-	public static Integer maxManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.maxManagedClusterGenPage(var);
-		}
-	}
+  public static Integer maxManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.maxManagedClusterGenPage(var);
+    }
+  }
 
-	public static Integer minManagedClusterPage(String var) {
-		switch(var) {
-			default:
-				return ManagedClusterGenPage.minManagedClusterGenPage(var);
-		}
-	}
+  public static Integer minManagedClusterPage(String var) {
+    switch(var) {
+      default:
+        return ManagedClusterGenPage.minManagedClusterGenPage(var);
+    }
+  }
 }

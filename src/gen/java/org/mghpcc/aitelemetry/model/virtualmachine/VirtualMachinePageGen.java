@@ -111,308 +111,308 @@ import io.vertx.core.json.JsonArray;
  * Generated: true
  **/
 public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
-	protected static final Logger LOG = LoggerFactory.getLogger(VirtualMachinePage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(VirtualMachinePage.class);
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<VirtualMachinePageGen<DEV>> promiseDeepVirtualMachinePage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepVirtualMachinePage();
-	}
+  public Future<VirtualMachinePageGen<DEV>> promiseDeepVirtualMachinePage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepVirtualMachinePage();
+  }
 
-	public Future<VirtualMachinePageGen<DEV>> promiseDeepVirtualMachinePage() {
-		Promise<VirtualMachinePageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseVirtualMachinePage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepVirtualMachineGenPage(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<VirtualMachinePageGen<DEV>> promiseDeepVirtualMachinePage() {
+    Promise<VirtualMachinePageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseVirtualMachinePage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepVirtualMachineGenPage(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseVirtualMachinePage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseVirtualMachinePage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends VirtualMachinePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepVirtualMachinePage(siteRequest_);
-	}
+  @Override public Future<? extends VirtualMachinePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepVirtualMachinePage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestVirtualMachinePage(SiteRequest siteRequest_) {
-			super.siteRequestVirtualMachineGenPage(siteRequest_);
-	}
+  public void siteRequestVirtualMachinePage(SiteRequest siteRequest_) {
+      super.siteRequestVirtualMachineGenPage(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestVirtualMachinePage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestVirtualMachinePage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainVirtualMachinePage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainVirtualMachinePage(String var) {
-		VirtualMachinePage oVirtualMachinePage = (VirtualMachinePage)this;
-		switch(var) {
-			default:
-				return super.obtainVirtualMachineGenPage(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainVirtualMachinePage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainVirtualMachinePage(String var) {
+    VirtualMachinePage oVirtualMachinePage = (VirtualMachinePage)this;
+    switch(var) {
+      default:
+        return super.obtainVirtualMachineGenPage(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateVirtualMachinePage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateVirtualMachinePage(String var, Object val) {
-		VirtualMachinePage oVirtualMachinePage = (VirtualMachinePage)this;
-		switch(var) {
-			default:
-				return super.relateVirtualMachineGenPage(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateVirtualMachinePage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateVirtualMachinePage(String var, Object val) {
+    VirtualMachinePage oVirtualMachinePage = (VirtualMachinePage)this;
+    switch(var) {
+      default:
+        return super.relateVirtualMachineGenPage(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, VirtualMachinePage o) {
-		return staticSetVirtualMachinePage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetVirtualMachinePage(String entityVar, SiteRequest siteRequest_, String v, VirtualMachinePage o) {
-		switch(entityVar) {
-			default:
-				return VirtualMachineGenPage.staticSetVirtualMachineGenPage(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, VirtualMachinePage o) {
+    return staticSetVirtualMachinePage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetVirtualMachinePage(String entityVar, SiteRequest siteRequest_, String v, VirtualMachinePage o) {
+    switch(entityVar) {
+      default:
+        return VirtualMachineGenPage.staticSetVirtualMachineGenPage(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchVirtualMachinePage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchVirtualMachinePage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return VirtualMachineGenPage.staticSearchVirtualMachineGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchVirtualMachinePage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchVirtualMachinePage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return VirtualMachineGenPage.staticSearchVirtualMachineGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrVirtualMachinePage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrVirtualMachinePage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return VirtualMachineGenPage.staticSearchStrVirtualMachineGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrVirtualMachinePage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrVirtualMachinePage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return VirtualMachineGenPage.staticSearchStrVirtualMachineGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqVirtualMachinePage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqVirtualMachinePage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-			default:
-				return VirtualMachineGenPage.staticSearchFqVirtualMachineGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqVirtualMachinePage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqVirtualMachinePage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+      default:
+        return VirtualMachineGenPage.staticSearchFqVirtualMachineGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "VirtualMachinePage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachinePage";
-	public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_SIMPLE_NAME = "VirtualMachinePage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachinePage";
+  public static final String CLASS_AUTH_RESOURCE = "";
 
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return VirtualMachinePage.displayNameVirtualMachinePage(var);
-	}
-	public static String displayNameVirtualMachinePage(String var) {
-		switch(var) {
-		default:
-			return VirtualMachineGenPage.displayNameVirtualMachineGenPage(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return VirtualMachinePage.displayNameVirtualMachinePage(var);
+  }
+  public static String displayNameVirtualMachinePage(String var) {
+    switch(var) {
+    default:
+      return VirtualMachineGenPage.displayNameVirtualMachineGenPage(var);
+    }
+  }
 
-	public static String descriptionVirtualMachinePage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.descriptionVirtualMachineGenPage(var);
-		}
-	}
+  public static String descriptionVirtualMachinePage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.descriptionVirtualMachineGenPage(var);
+    }
+  }
 
-	public static String classSimpleNameVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.classSimpleNameVirtualMachineGenPage(var);
-		}
-	}
+  public static String classSimpleNameVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.classSimpleNameVirtualMachineGenPage(var);
+    }
+  }
 
-	public static Integer htmColumnVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.htmColumnVirtualMachineGenPage(var);
-		}
-	}
+  public static Integer htmColumnVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.htmColumnVirtualMachineGenPage(var);
+    }
+  }
 
-	public static Integer htmRowVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.htmRowVirtualMachineGenPage(var);
-		}
-	}
+  public static Integer htmRowVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.htmRowVirtualMachineGenPage(var);
+    }
+  }
 
-	public static Integer htmCellVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.htmCellVirtualMachineGenPage(var);
-		}
-	}
+  public static Integer htmCellVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.htmCellVirtualMachineGenPage(var);
+    }
+  }
 
-	public static Integer lengthMinVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.lengthMinVirtualMachineGenPage(var);
-		}
-	}
+  public static Integer lengthMinVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.lengthMinVirtualMachineGenPage(var);
+    }
+  }
 
-	public static Integer lengthMaxVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.lengthMaxVirtualMachineGenPage(var);
-		}
-	}
+  public static Integer lengthMaxVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.lengthMaxVirtualMachineGenPage(var);
+    }
+  }
 
-	public static Integer maxVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.maxVirtualMachineGenPage(var);
-		}
-	}
+  public static Integer maxVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.maxVirtualMachineGenPage(var);
+    }
+  }
 
-	public static Integer minVirtualMachinePage(String var) {
-		switch(var) {
-			default:
-				return VirtualMachineGenPage.minVirtualMachineGenPage(var);
-		}
-	}
+  public static Integer minVirtualMachinePage(String var) {
+    switch(var) {
+      default:
+        return VirtualMachineGenPage.minVirtualMachineGenPage(var);
+    }
+  }
 }

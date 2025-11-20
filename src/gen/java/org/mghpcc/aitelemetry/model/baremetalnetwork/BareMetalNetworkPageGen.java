@@ -111,308 +111,308 @@ import io.vertx.core.json.JsonArray;
  * Generated: true
  **/
 public abstract class BareMetalNetworkPageGen<DEV> extends BareMetalNetworkGenPage {
-	protected static final Logger LOG = LoggerFactory.getLogger(BareMetalNetworkPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(BareMetalNetworkPage.class);
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<BareMetalNetworkPageGen<DEV>> promiseDeepBareMetalNetworkPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepBareMetalNetworkPage();
-	}
+  public Future<BareMetalNetworkPageGen<DEV>> promiseDeepBareMetalNetworkPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepBareMetalNetworkPage();
+  }
 
-	public Future<BareMetalNetworkPageGen<DEV>> promiseDeepBareMetalNetworkPage() {
-		Promise<BareMetalNetworkPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseBareMetalNetworkPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepBareMetalNetworkGenPage(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<BareMetalNetworkPageGen<DEV>> promiseDeepBareMetalNetworkPage() {
+    Promise<BareMetalNetworkPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseBareMetalNetworkPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepBareMetalNetworkGenPage(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseBareMetalNetworkPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseBareMetalNetworkPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends BareMetalNetworkPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepBareMetalNetworkPage(siteRequest_);
-	}
+  @Override public Future<? extends BareMetalNetworkPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepBareMetalNetworkPage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestBareMetalNetworkPage(SiteRequest siteRequest_) {
-			super.siteRequestBareMetalNetworkGenPage(siteRequest_);
-	}
+  public void siteRequestBareMetalNetworkPage(SiteRequest siteRequest_) {
+      super.siteRequestBareMetalNetworkGenPage(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestBareMetalNetworkPage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestBareMetalNetworkPage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainBareMetalNetworkPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainBareMetalNetworkPage(String var) {
-		BareMetalNetworkPage oBareMetalNetworkPage = (BareMetalNetworkPage)this;
-		switch(var) {
-			default:
-				return super.obtainBareMetalNetworkGenPage(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainBareMetalNetworkPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainBareMetalNetworkPage(String var) {
+    BareMetalNetworkPage oBareMetalNetworkPage = (BareMetalNetworkPage)this;
+    switch(var) {
+      default:
+        return super.obtainBareMetalNetworkGenPage(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateBareMetalNetworkPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateBareMetalNetworkPage(String var, Object val) {
-		BareMetalNetworkPage oBareMetalNetworkPage = (BareMetalNetworkPage)this;
-		switch(var) {
-			default:
-				return super.relateBareMetalNetworkGenPage(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateBareMetalNetworkPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateBareMetalNetworkPage(String var, Object val) {
+    BareMetalNetworkPage oBareMetalNetworkPage = (BareMetalNetworkPage)this;
+    switch(var) {
+      default:
+        return super.relateBareMetalNetworkGenPage(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, BareMetalNetworkPage o) {
-		return staticSetBareMetalNetworkPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, String v, BareMetalNetworkPage o) {
-		switch(entityVar) {
-			default:
-				return BareMetalNetworkGenPage.staticSetBareMetalNetworkGenPage(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, BareMetalNetworkPage o) {
+    return staticSetBareMetalNetworkPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, String v, BareMetalNetworkPage o) {
+    switch(entityVar) {
+      default:
+        return BareMetalNetworkGenPage.staticSetBareMetalNetworkGenPage(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchBareMetalNetworkPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return BareMetalNetworkGenPage.staticSearchBareMetalNetworkGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchBareMetalNetworkPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return BareMetalNetworkGenPage.staticSearchBareMetalNetworkGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrBareMetalNetworkPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return BareMetalNetworkGenPage.staticSearchStrBareMetalNetworkGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrBareMetalNetworkPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return BareMetalNetworkGenPage.staticSearchStrBareMetalNetworkGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqBareMetalNetworkPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-			default:
-				return BareMetalNetworkGenPage.staticSearchFqBareMetalNetworkGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqBareMetalNetworkPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqBareMetalNetworkPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+      default:
+        return BareMetalNetworkGenPage.staticSearchFqBareMetalNetworkGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "BareMetalNetworkPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetworkPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_SIMPLE_NAME = "BareMetalNetworkPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetworkPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
 
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return BareMetalNetworkPage.displayNameBareMetalNetworkPage(var);
-	}
-	public static String displayNameBareMetalNetworkPage(String var) {
-		switch(var) {
-		default:
-			return BareMetalNetworkGenPage.displayNameBareMetalNetworkGenPage(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return BareMetalNetworkPage.displayNameBareMetalNetworkPage(var);
+  }
+  public static String displayNameBareMetalNetworkPage(String var) {
+    switch(var) {
+    default:
+      return BareMetalNetworkGenPage.displayNameBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static String descriptionBareMetalNetworkPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.descriptionBareMetalNetworkGenPage(var);
-		}
-	}
+  public static String descriptionBareMetalNetworkPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.descriptionBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static String classSimpleNameBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.classSimpleNameBareMetalNetworkGenPage(var);
-		}
-	}
+  public static String classSimpleNameBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.classSimpleNameBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static Integer htmColumnBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.htmColumnBareMetalNetworkGenPage(var);
-		}
-	}
+  public static Integer htmColumnBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.htmColumnBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static Integer htmRowBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.htmRowBareMetalNetworkGenPage(var);
-		}
-	}
+  public static Integer htmRowBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.htmRowBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static Integer htmCellBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.htmCellBareMetalNetworkGenPage(var);
-		}
-	}
+  public static Integer htmCellBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.htmCellBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static Integer lengthMinBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.lengthMinBareMetalNetworkGenPage(var);
-		}
-	}
+  public static Integer lengthMinBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.lengthMinBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static Integer lengthMaxBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.lengthMaxBareMetalNetworkGenPage(var);
-		}
-	}
+  public static Integer lengthMaxBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.lengthMaxBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static Integer maxBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.maxBareMetalNetworkGenPage(var);
-		}
-	}
+  public static Integer maxBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.maxBareMetalNetworkGenPage(var);
+    }
+  }
 
-	public static Integer minBareMetalNetworkPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalNetworkGenPage.minBareMetalNetworkGenPage(var);
-		}
-	}
+  public static Integer minBareMetalNetworkPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalNetworkGenPage.minBareMetalNetworkGenPage(var);
+    }
+  }
 }

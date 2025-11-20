@@ -111,308 +111,308 @@ import io.vertx.core.json.JsonArray;
  * Generated: true
  **/
 public abstract class BareMetalResourceClassPageGen<DEV> extends BareMetalResourceClassGenPage {
-	protected static final Logger LOG = LoggerFactory.getLogger(BareMetalResourceClassPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(BareMetalResourceClassPage.class);
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<BareMetalResourceClassPageGen<DEV>> promiseDeepBareMetalResourceClassPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepBareMetalResourceClassPage();
-	}
+  public Future<BareMetalResourceClassPageGen<DEV>> promiseDeepBareMetalResourceClassPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepBareMetalResourceClassPage();
+  }
 
-	public Future<BareMetalResourceClassPageGen<DEV>> promiseDeepBareMetalResourceClassPage() {
-		Promise<BareMetalResourceClassPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseBareMetalResourceClassPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepBareMetalResourceClassGenPage(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<BareMetalResourceClassPageGen<DEV>> promiseDeepBareMetalResourceClassPage() {
+    Promise<BareMetalResourceClassPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseBareMetalResourceClassPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepBareMetalResourceClassGenPage(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseBareMetalResourceClassPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseBareMetalResourceClassPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends BareMetalResourceClassPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepBareMetalResourceClassPage(siteRequest_);
-	}
+  @Override public Future<? extends BareMetalResourceClassPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepBareMetalResourceClassPage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestBareMetalResourceClassPage(SiteRequest siteRequest_) {
-			super.siteRequestBareMetalResourceClassGenPage(siteRequest_);
-	}
+  public void siteRequestBareMetalResourceClassPage(SiteRequest siteRequest_) {
+      super.siteRequestBareMetalResourceClassGenPage(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestBareMetalResourceClassPage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestBareMetalResourceClassPage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainBareMetalResourceClassPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainBareMetalResourceClassPage(String var) {
-		BareMetalResourceClassPage oBareMetalResourceClassPage = (BareMetalResourceClassPage)this;
-		switch(var) {
-			default:
-				return super.obtainBareMetalResourceClassGenPage(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainBareMetalResourceClassPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainBareMetalResourceClassPage(String var) {
+    BareMetalResourceClassPage oBareMetalResourceClassPage = (BareMetalResourceClassPage)this;
+    switch(var) {
+      default:
+        return super.obtainBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateBareMetalResourceClassPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateBareMetalResourceClassPage(String var, Object val) {
-		BareMetalResourceClassPage oBareMetalResourceClassPage = (BareMetalResourceClassPage)this;
-		switch(var) {
-			default:
-				return super.relateBareMetalResourceClassGenPage(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateBareMetalResourceClassPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateBareMetalResourceClassPage(String var, Object val) {
+    BareMetalResourceClassPage oBareMetalResourceClassPage = (BareMetalResourceClassPage)this;
+    switch(var) {
+      default:
+        return super.relateBareMetalResourceClassGenPage(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassPage o) {
-		return staticSetBareMetalResourceClassPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassPage o) {
-		switch(entityVar) {
-			default:
-				return BareMetalResourceClassGenPage.staticSetBareMetalResourceClassGenPage(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassPage o) {
+    return staticSetBareMetalResourceClassPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassPage o) {
+    switch(entityVar) {
+      default:
+        return BareMetalResourceClassGenPage.staticSetBareMetalResourceClassGenPage(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchBareMetalResourceClassPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return BareMetalResourceClassGenPage.staticSearchBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchBareMetalResourceClassPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return BareMetalResourceClassGenPage.staticSearchBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrBareMetalResourceClassPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return BareMetalResourceClassGenPage.staticSearchStrBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrBareMetalResourceClassPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return BareMetalResourceClassGenPage.staticSearchStrBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqBareMetalResourceClassPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-			default:
-				return BareMetalResourceClassGenPage.staticSearchFqBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqBareMetalResourceClassPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqBareMetalResourceClassPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+      default:
+        return BareMetalResourceClassGenPage.staticSearchFqBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "BareMetalResourceClassPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_SIMPLE_NAME = "BareMetalResourceClassPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
 
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return BareMetalResourceClassPage.displayNameBareMetalResourceClassPage(var);
-	}
-	public static String displayNameBareMetalResourceClassPage(String var) {
-		switch(var) {
-		default:
-			return BareMetalResourceClassGenPage.displayNameBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return BareMetalResourceClassPage.displayNameBareMetalResourceClassPage(var);
+  }
+  public static String displayNameBareMetalResourceClassPage(String var) {
+    switch(var) {
+    default:
+      return BareMetalResourceClassGenPage.displayNameBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static String descriptionBareMetalResourceClassPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.descriptionBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static String descriptionBareMetalResourceClassPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.descriptionBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static String classSimpleNameBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.classSimpleNameBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static String classSimpleNameBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.classSimpleNameBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static Integer htmColumnBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.htmColumnBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static Integer htmColumnBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.htmColumnBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static Integer htmRowBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.htmRowBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static Integer htmRowBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.htmRowBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static Integer htmCellBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.htmCellBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static Integer htmCellBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.htmCellBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static Integer lengthMinBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.lengthMinBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static Integer lengthMinBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.lengthMinBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static Integer lengthMaxBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.lengthMaxBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static Integer lengthMaxBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.lengthMaxBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static Integer maxBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.maxBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static Integer maxBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.maxBareMetalResourceClassGenPage(var);
+    }
+  }
 
-	public static Integer minBareMetalResourceClassPage(String var) {
-		switch(var) {
-			default:
-				return BareMetalResourceClassGenPage.minBareMetalResourceClassGenPage(var);
-		}
-	}
+  public static Integer minBareMetalResourceClassPage(String var) {
+    switch(var) {
+      default:
+        return BareMetalResourceClassGenPage.minBareMetalResourceClassGenPage(var);
+    }
+  }
 }

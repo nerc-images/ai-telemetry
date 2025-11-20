@@ -175,929 +175,953 @@ import org.computate.search.response.solr.SolrResponse;
  * Generated: true
  **/
 public abstract class ManagedClusterGen<DEV> extends BaseModel {
-	protected static final Logger LOG = LoggerFactory.getLogger(ManagedCluster.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(ManagedCluster.class);
 
-	public static final String Description_enUS = "An OpenShift tenant cluster";
-	public static final String AName_enUS = "a tenant cluster";
-	public static final String This_enUS = "this ";
-	public static final String ThisName_enUS = "this tenant cluster";
-	public static final String A_enUS = "a ";
-	public static final String TheName_enUS = "the tenant cluster";
-	public static final String SingularName_enUS = "tenant cluster";
-	public static final String PluralName_enUS = "tenant clusters";
-	public static final String NameActual_enUS = "current tenant cluster";
-	public static final String AllName_enUS = "all tenant clusters";
-	public static final String SearchAllNameBy_enUS = "search tenant clusters by ";
-	public static final String SearchAllName_enUS = "search tenant clusters";
-	public static final String Title_enUS = "tenant clusters";
-	public static final String ThePluralName_enUS = "the tenant clusters";
-	public static final String NoNameFound_enUS = "no tenant cluster found";
-	public static final String ApiUri_enUS = "/en-us/api/managed-cluster";
-	public static final String ApiUriSearchPage_enUS = "/en-us/search/managed-cluster";
-	public static final String ApiUriEditPage_enUS = "/en-us/edit/managed-cluster/{id}";
-	public static final String OfName_enUS = "of tenant cluster";
-	public static final String ANameAdjective_enUS = "a tenant cluster";
-	public static final String NameAdjectiveSingular_enUS = "tenant cluster";
-	public static final String NameAdjectivePlural_enUS = "tenant clusters";
-	public static final String Search_enUS_OpenApiUri = "/en-us/api/managed-cluster";
-	public static final String Search_enUS_StringFormatUri = "/en-us/api/managed-cluster";
-	public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
-	public static final String GET_enUS_OpenApiUri = "/en-us/api/managed-cluster/{id}";
-	public static final String GET_enUS_StringFormatUri = "/en-us/api/managed-cluster/%s";
-	public static final String GET_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster/%s";
-	public static final String PATCH_enUS_OpenApiUri = "/en-us/api/managed-cluster";
-	public static final String PATCH_enUS_StringFormatUri = "/en-us/api/managed-cluster";
-	public static final String PATCH_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
-	public static final String POST_enUS_OpenApiUri = "/en-us/api/managed-cluster";
-	public static final String POST_enUS_StringFormatUri = "/en-us/api/managed-cluster";
-	public static final String POST_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
-	public static final String DELETE_enUS_OpenApiUri = "/en-us/api/managed-cluster/{id}";
-	public static final String DELETE_enUS_StringFormatUri = "/en-us/api/managed-cluster/%s";
-	public static final String DELETE_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster/%s";
-	public static final String PUTImport_enUS_OpenApiUri = "/en-us/api/managed-cluster-import";
-	public static final String PUTImport_enUS_StringFormatUri = "/en-us/api/managed-cluster-import";
-	public static final String PUTImport_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster-import";
-	public static final String Download_enUS_OpenApiUri = "/en-us/download/kubeconfig/{id}";
-	public static final String Download_enUS_StringFormatUri = "/en-us/download/kubeconfig/%s";
-	public static final String Download_enUS_StringFormatUrl = "%s/en-us/download/kubeconfig/%s";
-	public static final String SearchPage_enUS_OpenApiUri = "/en-us/search/managed-cluster";
-	public static final String SearchPage_enUS_StringFormatUri = "/en-us/search/managed-cluster";
-	public static final String SearchPage_enUS_StringFormatUrl = "%s/en-us/search/managed-cluster";
-	public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/managed-cluster/{id}";
-	public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/managed-cluster/%s";
-	public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/managed-cluster/%s";
-	public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/managed-cluster";
-	public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/managed-cluster";
-	public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
+  public static final String Description_enUS = "An OpenShift tenant cluster";
+  public static final String AName_enUS = "a tenant cluster";
+  public static final String This_enUS = "this ";
+  public static final String ThisName_enUS = "this tenant cluster";
+  public static final String A_enUS = "a ";
+  public static final String TheName_enUS = "the tenant cluster";
+  public static final String SingularName_enUS = "tenant cluster";
+  public static final String PluralName_enUS = "tenant clusters";
+  public static final String NameActual_enUS = "current tenant cluster";
+  public static final String AllName_enUS = "all tenant clusters";
+  public static final String SearchAllNameBy_enUS = "search tenant clusters by ";
+  public static final String SearchAllName_enUS = "search tenant clusters";
+  public static final String Title_enUS = "tenant clusters";
+  public static final String ThePluralName_enUS = "the tenant clusters";
+  public static final String NoNameFound_enUS = "no tenant cluster found";
+  public static final String ApiUri_enUS = "/en-us/api/managed-cluster";
+  public static final String ApiUriSearchPage_enUS = "/en-us/search/managed-cluster";
+  public static final String ApiUriEditPage_enUS = "/en-us/edit/managed-cluster/{id}";
+  public static final String OfName_enUS = "of tenant cluster";
+  public static final String ANameAdjective_enUS = "a tenant cluster";
+  public static final String NameAdjectiveSingular_enUS = "tenant cluster";
+  public static final String NameAdjectivePlural_enUS = "tenant clusters";
+  public static final String Search_enUS_OpenApiUri = "/en-us/api/managed-cluster";
+  public static final String Search_enUS_StringFormatUri = "/en-us/api/managed-cluster";
+  public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
+  public static final String GET_enUS_OpenApiUri = "/en-us/api/managed-cluster/{id}";
+  public static final String GET_enUS_StringFormatUri = "/en-us/api/managed-cluster/%s";
+  public static final String GET_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster/%s";
+  public static final String PATCH_enUS_OpenApiUri = "/en-us/api/managed-cluster";
+  public static final String PATCH_enUS_StringFormatUri = "/en-us/api/managed-cluster";
+  public static final String PATCH_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
+  public static final String POST_enUS_OpenApiUri = "/en-us/api/managed-cluster";
+  public static final String POST_enUS_StringFormatUri = "/en-us/api/managed-cluster";
+  public static final String POST_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
+  public static final String DELETE_enUS_OpenApiUri = "/en-us/api/managed-cluster/{id}";
+  public static final String DELETE_enUS_StringFormatUri = "/en-us/api/managed-cluster/%s";
+  public static final String DELETE_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster/%s";
+  public static final String PUTImport_enUS_OpenApiUri = "/en-us/api/managed-cluster-import";
+  public static final String PUTImport_enUS_StringFormatUri = "/en-us/api/managed-cluster-import";
+  public static final String PUTImport_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster-import";
+  public static final String Download_enUS_OpenApiUri = "/en-us/download/kubeconfig/{id}";
+  public static final String Download_enUS_StringFormatUri = "/en-us/download/kubeconfig/%s";
+  public static final String Download_enUS_StringFormatUrl = "%s/en-us/download/kubeconfig/%s";
+  public static final String SearchPage_enUS_OpenApiUri = "/en-us/search/managed-cluster";
+  public static final String SearchPage_enUS_StringFormatUri = "/en-us/search/managed-cluster";
+  public static final String SearchPage_enUS_StringFormatUrl = "%s/en-us/search/managed-cluster";
+  public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/managed-cluster/{id}";
+  public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/managed-cluster/%s";
+  public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/managed-cluster/%s";
+  public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/managed-cluster";
+  public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/managed-cluster";
+  public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
 
-	public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
+  public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
 
 	////////
-	// id //
+  // id //
 	////////
 
 
-	/**	 The entity id
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String id;
+  /**
+   *  The entity id
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String id;
 
-	/**	<br> The entity id
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:id">Find the entity id in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _id(Wrap<String> w);
+  /**
+   * <br> The entity id
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:id">Find the entity id in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _id(Wrap<String> w);
 
-	public String getId() {
-		return id;
-	}
-	public void setId(String o) {
-		this.id = ManagedCluster.staticSetId(siteRequest_, o);
-	}
-	public static String staticSetId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ManagedCluster idInit() {
-		Wrap<String> idWrap = new Wrap<String>().var("id");
-		if(id == null) {
-			_id(idWrap);
-			Optional.ofNullable(idWrap.getO()).ifPresent(o -> {
-				setId(o);
-			});
-		}
-		return (ManagedCluster)this;
-	}
+  public String getId() {
+    return id;
+  }
+  public void setId(String o) {
+    this.id = ManagedCluster.staticSetId(siteRequest_, o);
+  }
+  public static String staticSetId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ManagedCluster idInit() {
+    Wrap<String> idWrap = new Wrap<String>().var("id");
+    if(id == null) {
+      _id(idWrap);
+      Optional.ofNullable(idWrap.getO()).ifPresent(o -> {
+        setId(o);
+      });
+    }
+    return (ManagedCluster)this;
+  }
 
-	public static String staticSearchId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrId(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrId(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqId(SiteRequest siteRequest_, String o) {
-		return ManagedCluster.staticSearchId(siteRequest_, ManagedCluster.staticSetId(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqId(SiteRequest siteRequest_, String o) {
+    return ManagedCluster.staticSearchId(siteRequest_, ManagedCluster.staticSetId(siteRequest_, o)).toString();
+  }
 
-	public String sqlId() {
-		return id;
-	}
+  public String sqlId() {
+    return id;
+  }
+
+  public static String staticJsonId(String id) {
+    return id;
+  }
 
 	///////////
-	// state //
+  // state //
 	///////////
 
 
-	/**	 The entity state
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String state;
+  /**
+   *  The entity state
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String state;
 
-	/**	<br> The entity state
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:state">Find the entity state in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _state(Wrap<String> w);
+  /**
+   * <br> The entity state
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:state">Find the entity state in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _state(Wrap<String> w);
 
-	public String getState() {
-		return state;
-	}
-	public void setState(String o) {
-		this.state = ManagedCluster.staticSetState(siteRequest_, o);
-	}
-	public static String staticSetState(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ManagedCluster stateInit() {
-		Wrap<String> stateWrap = new Wrap<String>().var("state");
-		if(state == null) {
-			_state(stateWrap);
-			Optional.ofNullable(stateWrap.getO()).ifPresent(o -> {
-				setState(o);
-			});
-		}
-		return (ManagedCluster)this;
-	}
+  public String getState() {
+    return state;
+  }
+  public void setState(String o) {
+    this.state = ManagedCluster.staticSetState(siteRequest_, o);
+  }
+  public static String staticSetState(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ManagedCluster stateInit() {
+    Wrap<String> stateWrap = new Wrap<String>().var("state");
+    if(state == null) {
+      _state(stateWrap);
+      Optional.ofNullable(stateWrap.getO()).ifPresent(o -> {
+        setState(o);
+      });
+    }
+    return (ManagedCluster)this;
+  }
 
-	public static String staticSearchState(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchState(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrState(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrState(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqState(SiteRequest siteRequest_, String o) {
-		return ManagedCluster.staticSearchState(siteRequest_, ManagedCluster.staticSetState(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqState(SiteRequest siteRequest_, String o) {
+    return ManagedCluster.staticSearchState(siteRequest_, ManagedCluster.staticSetState(siteRequest_, o)).toString();
+  }
 
-	public String sqlState() {
-		return state;
-	}
+  public String sqlState() {
+    return state;
+  }
+
+  public static String staticJsonState(String state) {
+    return state;
+  }
 
 	////////////
-	// apiUrl //
+  // apiUrl //
 	////////////
 
 
-	/**	 The entity apiUrl
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String apiUrl;
+  /**
+   *  The entity apiUrl
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String apiUrl;
 
-	/**	<br> The entity apiUrl
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:apiUrl">Find the entity apiUrl in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _apiUrl(Wrap<String> w);
+  /**
+   * <br> The entity apiUrl
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:apiUrl">Find the entity apiUrl in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _apiUrl(Wrap<String> w);
 
-	public String getApiUrl() {
-		return apiUrl;
-	}
-	public void setApiUrl(String o) {
-		this.apiUrl = ManagedCluster.staticSetApiUrl(siteRequest_, o);
-	}
-	public static String staticSetApiUrl(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ManagedCluster apiUrlInit() {
-		Wrap<String> apiUrlWrap = new Wrap<String>().var("apiUrl");
-		if(apiUrl == null) {
-			_apiUrl(apiUrlWrap);
-			Optional.ofNullable(apiUrlWrap.getO()).ifPresent(o -> {
-				setApiUrl(o);
-			});
-		}
-		return (ManagedCluster)this;
-	}
+  public String getApiUrl() {
+    return apiUrl;
+  }
+  public void setApiUrl(String o) {
+    this.apiUrl = ManagedCluster.staticSetApiUrl(siteRequest_, o);
+  }
+  public static String staticSetApiUrl(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ManagedCluster apiUrlInit() {
+    Wrap<String> apiUrlWrap = new Wrap<String>().var("apiUrl");
+    if(apiUrl == null) {
+      _apiUrl(apiUrlWrap);
+      Optional.ofNullable(apiUrlWrap.getO()).ifPresent(o -> {
+        setApiUrl(o);
+      });
+    }
+    return (ManagedCluster)this;
+  }
 
-	public static String staticSearchApiUrl(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchApiUrl(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrApiUrl(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrApiUrl(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqApiUrl(SiteRequest siteRequest_, String o) {
-		return ManagedCluster.staticSearchApiUrl(siteRequest_, ManagedCluster.staticSetApiUrl(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqApiUrl(SiteRequest siteRequest_, String o) {
+    return ManagedCluster.staticSearchApiUrl(siteRequest_, ManagedCluster.staticSetApiUrl(siteRequest_, o)).toString();
+  }
 
-	public String sqlApiUrl() {
-		return apiUrl;
-	}
+  public String sqlApiUrl() {
+    return apiUrl;
+  }
 
-	////////////////
-	// consoleUrl //
-	////////////////
-
-
-	/**	 The entity consoleUrl
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String consoleUrl;
-
-	/**	<br> The entity consoleUrl
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:consoleUrl">Find the entity consoleUrl in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _consoleUrl(Wrap<String> w);
-
-	public String getConsoleUrl() {
-		return consoleUrl;
-	}
-	public void setConsoleUrl(String o) {
-		this.consoleUrl = ManagedCluster.staticSetConsoleUrl(siteRequest_, o);
-	}
-	public static String staticSetConsoleUrl(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ManagedCluster consoleUrlInit() {
-		Wrap<String> consoleUrlWrap = new Wrap<String>().var("consoleUrl");
-		if(consoleUrl == null) {
-			_consoleUrl(consoleUrlWrap);
-			Optional.ofNullable(consoleUrlWrap.getO()).ifPresent(o -> {
-				setConsoleUrl(o);
-			});
-		}
-		return (ManagedCluster)this;
-	}
-
-	public static String staticSearchConsoleUrl(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-
-	public static String staticSearchStrConsoleUrl(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqConsoleUrl(SiteRequest siteRequest_, String o) {
-		return ManagedCluster.staticSearchConsoleUrl(siteRequest_, ManagedCluster.staticSetConsoleUrl(siteRequest_, o)).toString();
-	}
-
-	public String sqlConsoleUrl() {
-		return consoleUrl;
-	}
-
-	//////////////
-	// initDeep //
-	//////////////
-
-	public Future<ManagedClusterGen<DEV>> promiseDeepManagedCluster(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepManagedCluster();
-	}
-
-	public Future<ManagedClusterGen<DEV>> promiseDeepManagedCluster() {
-		Promise<ManagedClusterGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseManagedCluster(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepBaseModel(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	public Future<Void> promiseManagedCluster(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				idInit();
-				stateInit();
-				apiUrlInit();
-				consoleUrlInit();
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	@Override public Future<? extends ManagedClusterGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepManagedCluster(siteRequest_);
-	}
-
-	/////////////////
-	// siteRequest //
-	/////////////////
-
-	public void siteRequestManagedCluster(SiteRequest siteRequest_) {
-			super.siteRequestBaseModel(siteRequest_);
-	}
-
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestManagedCluster(siteRequest_);
-	}
-
-	/////////////
-	// obtain //
-	/////////////
-
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainManagedCluster(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainManagedCluster(String var) {
-		ManagedCluster oManagedCluster = (ManagedCluster)this;
-		switch(var) {
-			case "id":
-				return oManagedCluster.id;
-			case "state":
-				return oManagedCluster.state;
-			case "apiUrl":
-				return oManagedCluster.apiUrl;
-			case "consoleUrl":
-				return oManagedCluster.consoleUrl;
-			default:
-				return super.obtainBaseModel(var);
-		}
-	}
-
-	///////////////
-	// relate //
-	///////////////
-
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateManagedCluster(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateManagedCluster(String var, Object val) {
-		ManagedCluster oManagedCluster = (ManagedCluster)this;
-		switch(var) {
-			default:
-				return super.relateBaseModel(var, val);
-		}
-	}
-
-	///////////////
-	// staticSet //
-	///////////////
-
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ManagedCluster o) {
-		return staticSetManagedCluster(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetManagedCluster(String entityVar, SiteRequest siteRequest_, String v, ManagedCluster o) {
-		switch(entityVar) {
-		case "id":
-			return ManagedCluster.staticSetId(siteRequest_, v);
-		case "state":
-			return ManagedCluster.staticSetState(siteRequest_, v);
-		case "apiUrl":
-			return ManagedCluster.staticSetApiUrl(siteRequest_, v);
-		case "consoleUrl":
-			return ManagedCluster.staticSetConsoleUrl(siteRequest_, v);
-			default:
-				return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static String staticJsonApiUrl(String apiUrl) {
+    return apiUrl;
+  }
 
 	////////////////
-	// staticSearch //
+  // consoleUrl //
 	////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchManagedCluster(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchManagedCluster(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "id":
-			return ManagedCluster.staticSearchId(siteRequest_, (String)o);
-		case "state":
-			return ManagedCluster.staticSearchState(siteRequest_, (String)o);
-		case "apiUrl":
-			return ManagedCluster.staticSearchApiUrl(siteRequest_, (String)o);
-		case "consoleUrl":
-			return ManagedCluster.staticSearchConsoleUrl(siteRequest_, (String)o);
-			default:
-				return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  /**
+   *  The entity consoleUrl
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String consoleUrl;
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrManagedCluster(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrManagedCluster(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "id":
-			return ManagedCluster.staticSearchStrId(siteRequest_, (String)o);
-		case "state":
-			return ManagedCluster.staticSearchStrState(siteRequest_, (String)o);
-		case "apiUrl":
-			return ManagedCluster.staticSearchStrApiUrl(siteRequest_, (String)o);
-		case "consoleUrl":
-			return ManagedCluster.staticSearchStrConsoleUrl(siteRequest_, (String)o);
-			default:
-				return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
+  /**
+   * <br> The entity consoleUrl
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster&fq=entiteVar_enUS_indexed_string:consoleUrl">Find the entity consoleUrl in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _consoleUrl(Wrap<String> w);
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  public String getConsoleUrl() {
+    return consoleUrl;
+  }
+  public void setConsoleUrl(String o) {
+    this.consoleUrl = ManagedCluster.staticSetConsoleUrl(siteRequest_, o);
+  }
+  public static String staticSetConsoleUrl(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ManagedCluster consoleUrlInit() {
+    Wrap<String> consoleUrlWrap = new Wrap<String>().var("consoleUrl");
+    if(consoleUrl == null) {
+      _consoleUrl(consoleUrlWrap);
+      Optional.ofNullable(consoleUrlWrap.getO()).ifPresent(o -> {
+        setConsoleUrl(o);
+      });
+    }
+    return (ManagedCluster)this;
+  }
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqManagedCluster(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqManagedCluster(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-		case "id":
-			return ManagedCluster.staticSearchFqId(siteRequest_, o);
-		case "state":
-			return ManagedCluster.staticSearchFqState(siteRequest_, o);
-		case "apiUrl":
-			return ManagedCluster.staticSearchFqApiUrl(siteRequest_, o);
-		case "consoleUrl":
-			return ManagedCluster.staticSearchFqConsoleUrl(siteRequest_, o);
-			default:
-				return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchConsoleUrl(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	/////////////
-	// persist //
-	/////////////
+  public static String staticSearchStrConsoleUrl(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	@Override public boolean persistForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		if(val != null) {
-			for(String v : vars) {
-				if(o == null)
-					o = persistManagedCluster(v, val);
-				else if(o instanceof BaseModel) {
-					BaseModel oBaseModel = (BaseModel)o;
-					o = oBaseModel.persistForClass(v, val);
-				}
-			}
-		}
-		return o != null;
-	}
-	public Object persistManagedCluster(String var, Object val) {
-		String varLower = var.toLowerCase();
-			if("id".equals(varLower)) {
-				if(val instanceof String) {
-					setId((String)val);
-				}
-				saves.add("id");
-				return val;
-			} else if("state".equals(varLower)) {
-				if(val instanceof String) {
-					setState((String)val);
-				}
-				saves.add("state");
-				return val;
-			} else if("apiurl".equals(varLower)) {
-				if(val instanceof String) {
-					setApiUrl((String)val);
-				}
-				saves.add("apiUrl");
-				return val;
-			} else if("consoleurl".equals(varLower)) {
-				if(val instanceof String) {
-					setConsoleUrl((String)val);
-				}
-				saves.add("consoleUrl");
-				return val;
-		} else {
-			return super.persistBaseModel(var, val);
-		}
-	}
+  public static String staticSearchFqConsoleUrl(SiteRequest siteRequest_, String o) {
+    return ManagedCluster.staticSearchConsoleUrl(siteRequest_, ManagedCluster.staticSetConsoleUrl(siteRequest_, o)).toString();
+  }
 
-	/////////////
-	// populate //
-	/////////////
+  public String sqlConsoleUrl() {
+    return consoleUrl;
+  }
 
-	@Override public void populateForClass(SolrResponse.Doc doc) {
-		populateManagedCluster(doc);
-	}
-	public void populateManagedCluster(SolrResponse.Doc doc) {
-		ManagedCluster oManagedCluster = (ManagedCluster)this;
-		saves = Optional.ofNullable((ArrayList<String>)doc.get("saves_docvalues_strings")).orElse(new ArrayList<String>());
-		if(saves != null) {
+  public static String staticJsonConsoleUrl(String consoleUrl) {
+    return consoleUrl;
+  }
 
-			if(saves.contains("id")) {
-				String id = (String)doc.get("id_docvalues_string");
-				if(id != null)
-					oManagedCluster.setId(id);
-			}
+  //////////////
+  // initDeep //
+  //////////////
 
-			if(saves.contains("state")) {
-				String state = (String)doc.get("state_docvalues_string");
-				if(state != null)
-					oManagedCluster.setState(state);
-			}
+  public Future<ManagedClusterGen<DEV>> promiseDeepManagedCluster(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepManagedCluster();
+  }
 
-			if(saves.contains("apiUrl")) {
-				String apiUrl = (String)doc.get("apiUrl_docvalues_string");
-				if(apiUrl != null)
-					oManagedCluster.setApiUrl(apiUrl);
-			}
+  public Future<ManagedClusterGen<DEV>> promiseDeepManagedCluster() {
+    Promise<ManagedClusterGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseManagedCluster(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepBaseModel(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-			if(saves.contains("consoleUrl")) {
-				String consoleUrl = (String)doc.get("consoleUrl_docvalues_string");
-				if(consoleUrl != null)
-					oManagedCluster.setConsoleUrl(consoleUrl);
-			}
-		}
+  public Future<Void> promiseManagedCluster(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        idInit();
+        stateInit();
+        apiUrlInit();
+        consoleUrlInit();
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-		super.populateBaseModel(doc);
-	}
+  @Override public Future<? extends ManagedClusterGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepManagedCluster(siteRequest_);
+  }
 
-	public void indexManagedCluster(JsonObject doc) {
-		if(id != null) {
-			doc.put("id_docvalues_string", id);
-		}
-		if(state != null) {
-			doc.put("state_docvalues_string", state);
-		}
-		if(apiUrl != null) {
-			doc.put("apiUrl_docvalues_string", apiUrl);
-		}
-		if(consoleUrl != null) {
-			doc.put("consoleUrl_docvalues_string", consoleUrl);
-		}
-		super.indexBaseModel(doc);
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	}
+  public void siteRequestManagedCluster(SiteRequest siteRequest_) {
+      super.siteRequestBaseModel(siteRequest_);
+  }
 
-	public static String varStoredManagedCluster(String entityVar) {
-		switch(entityVar) {
-			case "id":
-				return "id_docvalues_string";
-			case "state":
-				return "state_docvalues_string";
-			case "apiUrl":
-				return "apiUrl_docvalues_string";
-			case "consoleUrl":
-				return "consoleUrl_docvalues_string";
-			default:
-				return BaseModel.varStoredBaseModel(entityVar);
-		}
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestManagedCluster(siteRequest_);
+  }
 
-	public static String varIndexedManagedCluster(String entityVar) {
-		switch(entityVar) {
-			case "id":
-				return "id_docvalues_string";
-			case "state":
-				return "state_docvalues_string";
-			case "apiUrl":
-				return "apiUrl_docvalues_string";
-			case "consoleUrl":
-				return "consoleUrl_docvalues_string";
-			default:
-				return BaseModel.varIndexedBaseModel(entityVar);
-		}
-	}
+  /////////////
+  // obtain //
+  /////////////
 
-	public static String searchVarManagedCluster(String searchVar) {
-		switch(searchVar) {
-			case "id_docvalues_string":
-				return "id";
-			case "state_docvalues_string":
-				return "state";
-			case "apiUrl_docvalues_string":
-				return "apiUrl";
-			case "consoleUrl_docvalues_string":
-				return "consoleUrl";
-			default:
-				return BaseModel.searchVarBaseModel(searchVar);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainManagedCluster(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainManagedCluster(String var) {
+    ManagedCluster oManagedCluster = (ManagedCluster)this;
+    switch(var) {
+      case "id":
+        return oManagedCluster.id;
+      case "state":
+        return oManagedCluster.state;
+      case "apiUrl":
+        return oManagedCluster.apiUrl;
+      case "consoleUrl":
+        return oManagedCluster.consoleUrl;
+      default:
+        return super.obtainBaseModel(var);
+    }
+  }
 
-	public static String varSearchManagedCluster(String entityVar) {
-		switch(entityVar) {
-			default:
-				return BaseModel.varSearchBaseModel(entityVar);
-		}
-	}
+  ///////////////
+  // relate //
+  ///////////////
 
-	public static String varSuggestedManagedCluster(String entityVar) {
-		switch(entityVar) {
-			default:
-				return BaseModel.varSuggestedBaseModel(entityVar);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateManagedCluster(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateManagedCluster(String var, Object val) {
+    ManagedCluster oManagedCluster = (ManagedCluster)this;
+    switch(var) {
+      default:
+        return super.relateBaseModel(var, val);
+    }
+  }
 
-	/////////////
-	// store //
-	/////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	@Override public void storeForClass(SolrResponse.Doc doc) {
-		storeManagedCluster(doc);
-	}
-	public void storeManagedCluster(SolrResponse.Doc doc) {
-		ManagedCluster oManagedCluster = (ManagedCluster)this;
-		SiteRequest siteRequest = oManagedCluster.getSiteRequest_();
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ManagedCluster o) {
+    return staticSetManagedCluster(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetManagedCluster(String entityVar, SiteRequest siteRequest_, String v, ManagedCluster o) {
+    switch(entityVar) {
+    case "id":
+      return ManagedCluster.staticSetId(siteRequest_, v);
+    case "state":
+      return ManagedCluster.staticSetState(siteRequest_, v);
+    case "apiUrl":
+      return ManagedCluster.staticSetApiUrl(siteRequest_, v);
+    case "consoleUrl":
+      return ManagedCluster.staticSetConsoleUrl(siteRequest_, v);
+      default:
+        return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-		oManagedCluster.setId(Optional.ofNullable(doc.get("id_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oManagedCluster.setState(Optional.ofNullable(doc.get("state_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oManagedCluster.setApiUrl(Optional.ofNullable(doc.get("apiUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oManagedCluster.setConsoleUrl(Optional.ofNullable(doc.get("consoleUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-		super.storeBaseModel(doc);
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchManagedCluster(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchManagedCluster(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "id":
+      return ManagedCluster.staticSearchId(siteRequest_, (String)o);
+    case "state":
+      return ManagedCluster.staticSearchState(siteRequest_, (String)o);
+    case "apiUrl":
+      return ManagedCluster.staticSearchApiUrl(siteRequest_, (String)o);
+    case "consoleUrl":
+      return ManagedCluster.staticSearchConsoleUrl(siteRequest_, (String)o);
+      default:
+        return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// apiRequest //
-	//////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public void apiRequestManagedCluster() {
-		ApiRequest apiRequest = Optional.ofNullable(siteRequest_).map(r -> r.getApiRequest_()).orElse(null);
-		Object o = Optional.ofNullable(apiRequest).map(ApiRequest::getOriginal).orElse(null);
-		if(o != null && o instanceof ManagedCluster) {
-			ManagedCluster original = (ManagedCluster)o;
-			if(!Objects.equals(id, original.getId()))
-				apiRequest.addVars("id");
-			if(!Objects.equals(state, original.getState()))
-				apiRequest.addVars("state");
-			if(!Objects.equals(apiUrl, original.getApiUrl()))
-				apiRequest.addVars("apiUrl");
-			if(!Objects.equals(consoleUrl, original.getConsoleUrl()))
-				apiRequest.addVars("consoleUrl");
-			super.apiRequestBaseModel();
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrManagedCluster(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrManagedCluster(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "id":
+      return ManagedCluster.staticSearchStrId(siteRequest_, (String)o);
+    case "state":
+      return ManagedCluster.staticSearchStrState(siteRequest_, (String)o);
+    case "apiUrl":
+      return ManagedCluster.staticSearchStrApiUrl(siteRequest_, (String)o);
+    case "consoleUrl":
+      return ManagedCluster.staticSearchStrConsoleUrl(siteRequest_, (String)o);
+      default:
+        return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		sb.append(Optional.ofNullable(id).map(v -> "id: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(state).map(v -> "state: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(apiUrl).map(v -> "apiUrl: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(consoleUrl).map(v -> "consoleUrl: \"" + v + "\"\n" ).orElse(""));
-		return sb.toString();
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqManagedCluster(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqManagedCluster(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+    case "id":
+      return ManagedCluster.staticSearchFqId(siteRequest_, o);
+    case "state":
+      return ManagedCluster.staticSearchFqState(siteRequest_, o);
+    case "apiUrl":
+      return ManagedCluster.staticSearchFqApiUrl(siteRequest_, o);
+    case "consoleUrl":
+      return ManagedCluster.staticSearchFqConsoleUrl(siteRequest_, o);
+      default:
+        return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "ManagedCluster";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster";
-	public static final String CLASS_AUTH_RESOURCE = "MANAGEDCLUSTER";
-	public static final String CLASS_API_ADDRESS_ManagedCluster = "ai-telemetry-enUS-ManagedCluster";
-	public static String getClassApiAddress() {
-		return CLASS_API_ADDRESS_ManagedCluster;
-	}
-	public static final String VAR_id = "id";
-	public static final String VAR_state = "state";
-	public static final String VAR_apiUrl = "apiUrl";
-	public static final String VAR_consoleUrl = "consoleUrl";
+  /////////////
+  // persist //
+  /////////////
 
-	public static List<String> varsQForClass() {
-		return ManagedCluster.varsQManagedCluster(new ArrayList<String>());
-	}
-	public static List<String> varsQManagedCluster(List<String> vars) {
-		BaseModel.varsQBaseModel(vars);
-		return vars;
-	}
+  @Override public boolean persistForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    if(val != null) {
+      for(String v : vars) {
+        if(o == null)
+          o = persistManagedCluster(v, val);
+        else if(o instanceof BaseModel) {
+          BaseModel oBaseModel = (BaseModel)o;
+          o = oBaseModel.persistForClass(v, val);
+        }
+      }
+    }
+    return o != null;
+  }
+  public Object persistManagedCluster(String var, Object val) {
+    String varLower = var.toLowerCase();
+      if("id".equals(varLower)) {
+        if(val instanceof String) {
+          setId((String)val);
+        }
+        saves.add("id");
+        return val;
+      } else if("state".equals(varLower)) {
+        if(val instanceof String) {
+          setState((String)val);
+        }
+        saves.add("state");
+        return val;
+      } else if("apiurl".equals(varLower)) {
+        if(val instanceof String) {
+          setApiUrl((String)val);
+        }
+        saves.add("apiUrl");
+        return val;
+      } else if("consoleurl".equals(varLower)) {
+        if(val instanceof String) {
+          setConsoleUrl((String)val);
+        }
+        saves.add("consoleUrl");
+        return val;
+    } else {
+      return super.persistBaseModel(var, val);
+    }
+  }
 
-	public static List<String> varsFqForClass() {
-		return ManagedCluster.varsFqManagedCluster(new ArrayList<String>());
-	}
-	public static List<String> varsFqManagedCluster(List<String> vars) {
-		vars.add(VAR_id);
-		vars.add(VAR_state);
-		vars.add(VAR_apiUrl);
-		vars.add(VAR_consoleUrl);
-		BaseModel.varsFqBaseModel(vars);
-		return vars;
-	}
+  /////////////
+  // populate //
+  /////////////
 
-	public static List<String> varsRangeForClass() {
-		return ManagedCluster.varsRangeManagedCluster(new ArrayList<String>());
-	}
-	public static List<String> varsRangeManagedCluster(List<String> vars) {
-		BaseModel.varsRangeBaseModel(vars);
-		return vars;
-	}
+  @Override public void populateForClass(SolrResponse.Doc doc) {
+    populateManagedCluster(doc);
+  }
+  public void populateManagedCluster(SolrResponse.Doc doc) {
+    ManagedCluster oManagedCluster = (ManagedCluster)this;
+    saves = Optional.ofNullable((ArrayList<String>)doc.get("saves_docvalues_strings")).orElse(new ArrayList<String>());
+    if(saves != null) {
 
-	public static final String DISPLAY_NAME_id = "cluster ID";
-	public static final String DISPLAY_NAME_state = "cluster state";
-	public static final String DISPLAY_NAME_apiUrl = "cluster API URL";
-	public static final String DISPLAY_NAME_consoleUrl = "cluster console URL";
+      if(saves.contains("id")) {
+        String id = (String)doc.get("id_docvalues_string");
+        if(id != null)
+          oManagedCluster.setId(id);
+      }
 
-	@Override
-	public String idForClass() {
-		return id;
-	}
+      if(saves.contains("state")) {
+        String state = (String)doc.get("state_docvalues_string");
+        if(state != null)
+          oManagedCluster.setState(state);
+      }
 
-	@Override
-	public String titleForClass() {
-		return objectTitle;
-	}
+      if(saves.contains("apiUrl")) {
+        String apiUrl = (String)doc.get("apiUrl_docvalues_string");
+        if(apiUrl != null)
+          oManagedCluster.setApiUrl(apiUrl);
+      }
 
-	@Override
-	public String nameForClass() {
-		return id;
-	}
+      if(saves.contains("consoleUrl")) {
+        String consoleUrl = (String)doc.get("consoleUrl_docvalues_string");
+        if(consoleUrl != null)
+          oManagedCluster.setConsoleUrl(consoleUrl);
+      }
+    }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return ManagedCluster.NameAdjectiveSingular_enUS;
-	}
+    super.populateBaseModel(doc);
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  public void indexManagedCluster(JsonObject doc) {
+    if(id != null) {
+      doc.put("id_docvalues_string", id);
+    }
+    if(state != null) {
+      doc.put("state_docvalues_string", state);
+    }
+    if(apiUrl != null) {
+      doc.put("apiUrl_docvalues_string", apiUrl);
+    }
+    if(consoleUrl != null) {
+      doc.put("consoleUrl_docvalues_string", consoleUrl);
+    }
+    super.indexBaseModel(doc);
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return "%s/en-us/edit/managed-cluster/%s";
-	}
-
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
-
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
-
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return "%s/en-us/download/kubeconfig/%s";
-	}
-
-	public static String displayNameForClass(String var) {
-		return ManagedCluster.displayNameManagedCluster(var);
-	}
-	public static String displayNameManagedCluster(String var) {
-		switch(var) {
-		case VAR_id:
-			return DISPLAY_NAME_id;
-		case VAR_state:
-			return DISPLAY_NAME_state;
-		case VAR_apiUrl:
-			return DISPLAY_NAME_apiUrl;
-		case VAR_consoleUrl:
-			return DISPLAY_NAME_consoleUrl;
-		default:
-			return BaseModel.displayNameBaseModel(var);
-		}
 	}
 
-	public static String descriptionManagedCluster(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-		case VAR_id:
-			return "The ID of this cluster";
-		case VAR_state:
-			return "The state of this cluster";
-		case VAR_apiUrl:
-			return "The cluster API URL";
-		case VAR_consoleUrl:
-			return "The cluster console URL";
-			default:
-				return BaseModel.descriptionBaseModel(var);
-		}
-	}
+  public static String varStoredManagedCluster(String entityVar) {
+    switch(entityVar) {
+      case "id":
+        return "id_docvalues_string";
+      case "state":
+        return "state_docvalues_string";
+      case "apiUrl":
+        return "apiUrl_docvalues_string";
+      case "consoleUrl":
+        return "consoleUrl_docvalues_string";
+      default:
+        return BaseModel.varStoredBaseModel(entityVar);
+    }
+  }
 
-	public static String classSimpleNameManagedCluster(String var) {
-		switch(var) {
-		case VAR_id:
-			return "String";
-		case VAR_state:
-			return "String";
-		case VAR_apiUrl:
-			return "String";
-		case VAR_consoleUrl:
-			return "String";
-			default:
-				return BaseModel.classSimpleNameBaseModel(var);
-		}
-	}
+  public static String varIndexedManagedCluster(String entityVar) {
+    switch(entityVar) {
+      case "id":
+        return "id_docvalues_string";
+      case "state":
+        return "state_docvalues_string";
+      case "apiUrl":
+        return "apiUrl_docvalues_string";
+      case "consoleUrl":
+        return "consoleUrl_docvalues_string";
+      default:
+        return BaseModel.varIndexedBaseModel(entityVar);
+    }
+  }
 
-	public static Integer htmColumnManagedCluster(String var) {
-		switch(var) {
-		case VAR_id:
-			return 0;
-		case VAR_state:
-			return 1;
-		case VAR_apiUrl:
-			return 2;
-		case VAR_consoleUrl:
-			return 3;
-			default:
-				return BaseModel.htmColumnBaseModel(var);
-		}
-	}
+  public static String searchVarManagedCluster(String searchVar) {
+    switch(searchVar) {
+      case "id_docvalues_string":
+        return "id";
+      case "state_docvalues_string":
+        return "state";
+      case "apiUrl_docvalues_string":
+        return "apiUrl";
+      case "consoleUrl_docvalues_string":
+        return "consoleUrl";
+      default:
+        return BaseModel.searchVarBaseModel(searchVar);
+    }
+  }
 
-	public static Integer htmRowManagedCluster(String var) {
-		switch(var) {
-		case VAR_id:
-			return 3;
-		case VAR_state:
-			return 3;
-		case VAR_apiUrl:
-			return 3;
-		case VAR_consoleUrl:
-			return 3;
-			default:
-				return BaseModel.htmRowBaseModel(var);
-		}
-	}
+  public static String varSearchManagedCluster(String entityVar) {
+    switch(entityVar) {
+      default:
+        return BaseModel.varSearchBaseModel(entityVar);
+    }
+  }
 
-	public static Integer htmCellManagedCluster(String var) {
-		switch(var) {
-		case VAR_id:
-			return 1;
-		case VAR_state:
-			return 3;
-		case VAR_apiUrl:
-			return 4;
-		case VAR_consoleUrl:
-			return 4;
-			default:
-				return BaseModel.htmCellBaseModel(var);
-		}
-	}
+  public static String varSuggestedManagedCluster(String entityVar) {
+    switch(entityVar) {
+      default:
+        return BaseModel.varSuggestedBaseModel(entityVar);
+    }
+  }
 
-	public static Integer lengthMinManagedCluster(String var) {
-		switch(var) {
-			default:
-				return BaseModel.lengthMinBaseModel(var);
-		}
-	}
+  /////////////
+  // store //
+  /////////////
 
-	public static Integer lengthMaxManagedCluster(String var) {
-		switch(var) {
-			default:
-				return BaseModel.lengthMaxBaseModel(var);
-		}
-	}
+  @Override public void storeForClass(SolrResponse.Doc doc) {
+    storeManagedCluster(doc);
+  }
+  public void storeManagedCluster(SolrResponse.Doc doc) {
+    ManagedCluster oManagedCluster = (ManagedCluster)this;
+    SiteRequest siteRequest = oManagedCluster.getSiteRequest_();
 
-	public static Integer maxManagedCluster(String var) {
-		switch(var) {
-			default:
-				return BaseModel.maxBaseModel(var);
-		}
-	}
+    oManagedCluster.setId(Optional.ofNullable(doc.get("id_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oManagedCluster.setState(Optional.ofNullable(doc.get("state_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oManagedCluster.setApiUrl(Optional.ofNullable(doc.get("apiUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oManagedCluster.setConsoleUrl(Optional.ofNullable(doc.get("consoleUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
 
-	public static Integer minManagedCluster(String var) {
-		switch(var) {
-			default:
-				return BaseModel.minBaseModel(var);
-		}
-	}
+    super.storeBaseModel(doc);
+  }
+
+  //////////////////
+  // apiRequest //
+  //////////////////
+
+  public void apiRequestManagedCluster() {
+    ApiRequest apiRequest = Optional.ofNullable(siteRequest_).map(r -> r.getApiRequest_()).orElse(null);
+    Object o = Optional.ofNullable(apiRequest).map(ApiRequest::getOriginal).orElse(null);
+    if(o != null && o instanceof ManagedCluster) {
+      ManagedCluster original = (ManagedCluster)o;
+      if(!Objects.equals(id, original.getId()))
+        apiRequest.addVars("id");
+      if(!Objects.equals(state, original.getState()))
+        apiRequest.addVars("state");
+      if(!Objects.equals(apiUrl, original.getApiUrl()))
+        apiRequest.addVars("apiUrl");
+      if(!Objects.equals(consoleUrl, original.getConsoleUrl()))
+        apiRequest.addVars("consoleUrl");
+      super.apiRequestBaseModel();
+    }
+  }
+
+  //////////////
+  // toString //
+  //////////////
+
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    sb.append(Optional.ofNullable(id).map(v -> "id: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(state).map(v -> "state: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(apiUrl).map(v -> "apiUrl: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(consoleUrl).map(v -> "consoleUrl: \"" + v + "\"\n" ).orElse(""));
+    return sb.toString();
+  }
+
+  public static final String CLASS_SIMPLE_NAME = "ManagedCluster";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster";
+  public static final String CLASS_AUTH_RESOURCE = "MANAGEDCLUSTER";
+  public static final String CLASS_API_ADDRESS_ManagedCluster = "ai-telemetry-enUS-ManagedCluster";
+  public static String getClassApiAddress() {
+    return CLASS_API_ADDRESS_ManagedCluster;
+  }
+  public static final String VAR_id = "id";
+  public static final String VAR_state = "state";
+  public static final String VAR_apiUrl = "apiUrl";
+  public static final String VAR_consoleUrl = "consoleUrl";
+
+  public static List<String> varsQForClass() {
+    return ManagedCluster.varsQManagedCluster(new ArrayList<String>());
+  }
+  public static List<String> varsQManagedCluster(List<String> vars) {
+    BaseModel.varsQBaseModel(vars);
+    return vars;
+  }
+
+  public static List<String> varsFqForClass() {
+    return ManagedCluster.varsFqManagedCluster(new ArrayList<String>());
+  }
+  public static List<String> varsFqManagedCluster(List<String> vars) {
+    vars.add(VAR_id);
+    vars.add(VAR_state);
+    vars.add(VAR_apiUrl);
+    vars.add(VAR_consoleUrl);
+    BaseModel.varsFqBaseModel(vars);
+    return vars;
+  }
+
+  public static List<String> varsRangeForClass() {
+    return ManagedCluster.varsRangeManagedCluster(new ArrayList<String>());
+  }
+  public static List<String> varsRangeManagedCluster(List<String> vars) {
+    BaseModel.varsRangeBaseModel(vars);
+    return vars;
+  }
+
+  public static final String DISPLAY_NAME_id = "cluster ID";
+  public static final String DISPLAY_NAME_state = "cluster state";
+  public static final String DISPLAY_NAME_apiUrl = "cluster API URL";
+  public static final String DISPLAY_NAME_consoleUrl = "cluster console URL";
+
+  @Override
+  public String idForClass() {
+    return id;
+  }
+
+  @Override
+  public String titleForClass() {
+    return objectTitle;
+  }
+
+  @Override
+  public String nameForClass() {
+    return id;
+  }
+
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return ManagedCluster.NameAdjectiveSingular_enUS;
+  }
+
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return "%s/en-us/edit/managed-cluster/%s";
+  }
+
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return "%s/en-us/download/kubeconfig/%s";
+  }
+
+  public static String displayNameForClass(String var) {
+    return ManagedCluster.displayNameManagedCluster(var);
+  }
+  public static String displayNameManagedCluster(String var) {
+    switch(var) {
+    case VAR_id:
+      return DISPLAY_NAME_id;
+    case VAR_state:
+      return DISPLAY_NAME_state;
+    case VAR_apiUrl:
+      return DISPLAY_NAME_apiUrl;
+    case VAR_consoleUrl:
+      return DISPLAY_NAME_consoleUrl;
+    default:
+      return BaseModel.displayNameBaseModel(var);
+    }
+  }
+
+  public static String descriptionManagedCluster(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+    case VAR_id:
+      return "The ID of this cluster";
+    case VAR_state:
+      return "The state of this cluster";
+    case VAR_apiUrl:
+      return "The cluster API URL";
+    case VAR_consoleUrl:
+      return "The cluster console URL";
+      default:
+        return BaseModel.descriptionBaseModel(var);
+    }
+  }
+
+  public static String classSimpleNameManagedCluster(String var) {
+    switch(var) {
+    case VAR_id:
+      return "String";
+    case VAR_state:
+      return "String";
+    case VAR_apiUrl:
+      return "String";
+    case VAR_consoleUrl:
+      return "String";
+      default:
+        return BaseModel.classSimpleNameBaseModel(var);
+    }
+  }
+
+  public static Integer htmColumnManagedCluster(String var) {
+    switch(var) {
+    case VAR_id:
+      return 0;
+    case VAR_state:
+      return 1;
+    case VAR_apiUrl:
+      return 2;
+    case VAR_consoleUrl:
+      return 3;
+      default:
+        return BaseModel.htmColumnBaseModel(var);
+    }
+  }
+
+  public static Integer htmRowManagedCluster(String var) {
+    switch(var) {
+    case VAR_id:
+      return 3;
+    case VAR_state:
+      return 3;
+    case VAR_apiUrl:
+      return 3;
+    case VAR_consoleUrl:
+      return 3;
+      default:
+        return BaseModel.htmRowBaseModel(var);
+    }
+  }
+
+  public static Integer htmCellManagedCluster(String var) {
+    switch(var) {
+    case VAR_id:
+      return 1;
+    case VAR_state:
+      return 3;
+    case VAR_apiUrl:
+      return 4;
+    case VAR_consoleUrl:
+      return 4;
+      default:
+        return BaseModel.htmCellBaseModel(var);
+    }
+  }
+
+  public static Integer lengthMinManagedCluster(String var) {
+    switch(var) {
+      default:
+        return BaseModel.lengthMinBaseModel(var);
+    }
+  }
+
+  public static Integer lengthMaxManagedCluster(String var) {
+    switch(var) {
+      default:
+        return BaseModel.lengthMaxBaseModel(var);
+    }
+  }
+
+  public static Integer maxManagedCluster(String var) {
+    switch(var) {
+      default:
+        return BaseModel.maxBaseModel(var);
+    }
+  }
+
+  public static Integer minManagedCluster(String var) {
+    switch(var) {
+      default:
+        return BaseModel.minBaseModel(var);
+    }
+  }
 }

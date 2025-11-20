@@ -231,14 +231,16 @@ public abstract class HubGen<DEV> extends BaseModel {
 	/////////////
 
 
-  /**   The entity hubName
+  /**
+   *  The entity hubName
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String hubName;
 
-  /**  <br> The entity hubName
+  /**
+   * <br> The entity hubName
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.Hub&fq=entiteVar_enUS_indexed_string:hubName">Find the entity hubName in Solr</a>
    * <br>
@@ -282,19 +284,25 @@ public abstract class HubGen<DEV> extends BaseModel {
     return hubName;
   }
 
+  public static String staticJsonHubName(String hubName) {
+    return hubName;
+  }
+
 	///////////
   // hubId //
 	///////////
 
 
-  /**   The entity hubId
+  /**
+   *  The entity hubId
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String hubId;
 
-  /**  <br> The entity hubId
+  /**
+   * <br> The entity hubId
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.Hub&fq=entiteVar_enUS_indexed_string:hubId">Find the entity hubId in Solr</a>
    * <br>
@@ -338,19 +346,25 @@ public abstract class HubGen<DEV> extends BaseModel {
     return hubId;
   }
 
+  public static String staticJsonHubId(String hubId) {
+    return hubId;
+  }
+
 	/////////////////
   // hubResource //
 	/////////////////
 
 
-  /**   The entity hubResource
+  /**
+   *  The entity hubResource
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String hubResource;
 
-  /**  <br> The entity hubResource
+  /**
+   * <br> The entity hubResource
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.Hub&fq=entiteVar_enUS_indexed_string:hubResource">Find the entity hubResource in Solr</a>
    * <br>
@@ -394,19 +408,25 @@ public abstract class HubGen<DEV> extends BaseModel {
     return hubResource;
   }
 
+  public static String staticJsonHubResource(String hubResource) {
+    return hubResource;
+  }
+
 	////////////
   // pageId //
 	////////////
 
 
-  /**   The entity pageId
+  /**
+   *  The entity pageId
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String pageId;
 
-  /**  <br> The entity pageId
+  /**
+   * <br> The entity pageId
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.Hub&fq=entiteVar_enUS_indexed_string:pageId">Find the entity pageId in Solr</a>
    * <br>
@@ -450,19 +470,25 @@ public abstract class HubGen<DEV> extends BaseModel {
     return pageId;
   }
 
+  public static String staticJsonPageId(String pageId) {
+    return pageId;
+  }
+
 	/////////////////
   // description //
 	/////////////////
 
 
-  /**   The entity description
+  /**
+   *  The entity description
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String description;
 
-  /**  <br> The entity description
+  /**
+   * <br> The entity description
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.Hub&fq=entiteVar_enUS_indexed_string:description">Find the entity description in Solr</a>
    * <br>
@@ -506,19 +532,25 @@ public abstract class HubGen<DEV> extends BaseModel {
     return description;
   }
 
+  public static String staticJsonDescription(String description) {
+    return description;
+  }
+
 	//////////////////////
   // localClusterName //
 	//////////////////////
 
 
-  /**   The entity localClusterName
+  /**
+   *  The entity localClusterName
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String localClusterName;
 
-  /**  <br> The entity localClusterName
+  /**
+   * <br> The entity localClusterName
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.hub.Hub&fq=entiteVar_enUS_indexed_string:localClusterName">Find the entity localClusterName in Solr</a>
    * <br>
@@ -559,6 +591,10 @@ public abstract class HubGen<DEV> extends BaseModel {
   }
 
   public String sqlLocalClusterName() {
+    return localClusterName;
+  }
+
+  public static String staticJsonLocalClusterName(String localClusterName) {
     return localClusterName;
   }
 

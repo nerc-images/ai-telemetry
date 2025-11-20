@@ -111,308 +111,308 @@ import io.vertx.core.json.JsonArray;
  * Generated: true
  **/
 public abstract class AiNodePageGen<DEV> extends AiNodeGenPage {
-	protected static final Logger LOG = LoggerFactory.getLogger(AiNodePage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(AiNodePage.class);
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<AiNodePageGen<DEV>> promiseDeepAiNodePage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepAiNodePage();
-	}
+  public Future<AiNodePageGen<DEV>> promiseDeepAiNodePage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepAiNodePage();
+  }
 
-	public Future<AiNodePageGen<DEV>> promiseDeepAiNodePage() {
-		Promise<AiNodePageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseAiNodePage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepAiNodeGenPage(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<AiNodePageGen<DEV>> promiseDeepAiNodePage() {
+    Promise<AiNodePageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseAiNodePage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepAiNodeGenPage(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseAiNodePage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseAiNodePage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends AiNodePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepAiNodePage(siteRequest_);
-	}
+  @Override public Future<? extends AiNodePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepAiNodePage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestAiNodePage(SiteRequest siteRequest_) {
-			super.siteRequestAiNodeGenPage(siteRequest_);
-	}
+  public void siteRequestAiNodePage(SiteRequest siteRequest_) {
+      super.siteRequestAiNodeGenPage(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestAiNodePage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestAiNodePage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainAiNodePage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainAiNodePage(String var) {
-		AiNodePage oAiNodePage = (AiNodePage)this;
-		switch(var) {
-			default:
-				return super.obtainAiNodeGenPage(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainAiNodePage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainAiNodePage(String var) {
+    AiNodePage oAiNodePage = (AiNodePage)this;
+    switch(var) {
+      default:
+        return super.obtainAiNodeGenPage(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateAiNodePage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateAiNodePage(String var, Object val) {
-		AiNodePage oAiNodePage = (AiNodePage)this;
-		switch(var) {
-			default:
-				return super.relateAiNodeGenPage(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateAiNodePage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateAiNodePage(String var, Object val) {
+    AiNodePage oAiNodePage = (AiNodePage)this;
+    switch(var) {
+      default:
+        return super.relateAiNodeGenPage(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, AiNodePage o) {
-		return staticSetAiNodePage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetAiNodePage(String entityVar, SiteRequest siteRequest_, String v, AiNodePage o) {
-		switch(entityVar) {
-			default:
-				return AiNodeGenPage.staticSetAiNodeGenPage(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, AiNodePage o) {
+    return staticSetAiNodePage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetAiNodePage(String entityVar, SiteRequest siteRequest_, String v, AiNodePage o) {
+    switch(entityVar) {
+      default:
+        return AiNodeGenPage.staticSetAiNodeGenPage(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchAiNodePage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchAiNodePage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return AiNodeGenPage.staticSearchAiNodeGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchAiNodePage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchAiNodePage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return AiNodeGenPage.staticSearchAiNodeGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrAiNodePage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrAiNodePage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return AiNodeGenPage.staticSearchStrAiNodeGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrAiNodePage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrAiNodePage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return AiNodeGenPage.staticSearchStrAiNodeGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqAiNodePage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqAiNodePage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-			default:
-				return AiNodeGenPage.staticSearchFqAiNodeGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqAiNodePage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqAiNodePage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+      default:
+        return AiNodeGenPage.staticSearchFqAiNodeGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "AiNodePage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.node.AiNodePage";
-	public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_SIMPLE_NAME = "AiNodePage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.node.AiNodePage";
+  public static final String CLASS_AUTH_RESOURCE = "";
 
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return AiNodePage.displayNameAiNodePage(var);
-	}
-	public static String displayNameAiNodePage(String var) {
-		switch(var) {
-		default:
-			return AiNodeGenPage.displayNameAiNodeGenPage(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return AiNodePage.displayNameAiNodePage(var);
+  }
+  public static String displayNameAiNodePage(String var) {
+    switch(var) {
+    default:
+      return AiNodeGenPage.displayNameAiNodeGenPage(var);
+    }
+  }
 
-	public static String descriptionAiNodePage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return AiNodeGenPage.descriptionAiNodeGenPage(var);
-		}
-	}
+  public static String descriptionAiNodePage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return AiNodeGenPage.descriptionAiNodeGenPage(var);
+    }
+  }
 
-	public static String classSimpleNameAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.classSimpleNameAiNodeGenPage(var);
-		}
-	}
+  public static String classSimpleNameAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.classSimpleNameAiNodeGenPage(var);
+    }
+  }
 
-	public static Integer htmColumnAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.htmColumnAiNodeGenPage(var);
-		}
-	}
+  public static Integer htmColumnAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.htmColumnAiNodeGenPage(var);
+    }
+  }
 
-	public static Integer htmRowAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.htmRowAiNodeGenPage(var);
-		}
-	}
+  public static Integer htmRowAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.htmRowAiNodeGenPage(var);
+    }
+  }
 
-	public static Integer htmCellAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.htmCellAiNodeGenPage(var);
-		}
-	}
+  public static Integer htmCellAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.htmCellAiNodeGenPage(var);
+    }
+  }
 
-	public static Integer lengthMinAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.lengthMinAiNodeGenPage(var);
-		}
-	}
+  public static Integer lengthMinAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.lengthMinAiNodeGenPage(var);
+    }
+  }
 
-	public static Integer lengthMaxAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.lengthMaxAiNodeGenPage(var);
-		}
-	}
+  public static Integer lengthMaxAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.lengthMaxAiNodeGenPage(var);
+    }
+  }
 
-	public static Integer maxAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.maxAiNodeGenPage(var);
-		}
-	}
+  public static Integer maxAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.maxAiNodeGenPage(var);
+    }
+  }
 
-	public static Integer minAiNodePage(String var) {
-		switch(var) {
-			default:
-				return AiNodeGenPage.minAiNodeGenPage(var);
-		}
-	}
+  public static Integer minAiNodePage(String var) {
+    switch(var) {
+      default:
+        return AiNodeGenPage.minAiNodeGenPage(var);
+    }
+  }
 }
