@@ -1,7 +1,7 @@
-package org.mghpcc.aitelemetry.model.project;
+package org.mghpcc.aitelemetry.model.developer.aitelemetry;
 
 import org.mghpcc.aitelemetry.request.SiteRequest;
-import org.mghpcc.aitelemetry.model.project.ProjectGenPage;
+import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperGenPage;
 import org.mghpcc.aitelemetry.model.BaseModel;
 import org.computate.vertx.api.ApiRequest;
 import org.mghpcc.aitelemetry.config.ConfigKeys;
@@ -41,23 +41,23 @@ import io.vertx.core.json.JsonArray;
 /**
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
- * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these ProjectPage objects in a RESTful API. 
- * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class ProjectPageGen into the class ProjectPage. 
+ * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these AiTelemetryDeveloperPage objects in a RESTful API. 
+ * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class AiTelemetryDeveloperPageGen into the class AiTelemetryDeveloperPage. 
  * </li>
- * <h3>About the ProjectPage class and it's generated class ProjectPageGen&lt;ProjectGenPage&gt;: </h3>extends ProjectPageGen
+ * <h3>About the AiTelemetryDeveloperPage class and it's generated class AiTelemetryDeveloperPageGen&lt;AiTelemetryDeveloperGenPage&gt;: </h3>extends AiTelemetryDeveloperPageGen
  * <p>
- * This Java class extends a generated Java class ProjectPageGen built by the <a href="https://github.com/computate-org/computate">https://github.com/computate-org/computate</a> project. 
+ * This Java class extends a generated Java class AiTelemetryDeveloperPageGen built by the <a href="https://github.com/computate-org/computate">https://github.com/computate-org/computate</a> project. 
  * Whenever this Java class is modified or touched, the watch service installed as described in the README, indexes all the information about this Java class in a local Apache Solr Search Engine. 
  * If you are running the service, you can see the indexed data about this Java Class here: 
  * </p>
- * <p><a href="https://solr.apps-crc.testing/solr/computate/select?q=*:*&fq=partEstClasse_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.ProjectPage">Find the class ProjectPage in Solr. </a></p>
+ * <p><a href="https://solr.apps-crc.testing/solr/computate/select?q=*:*&fq=partEstClasse_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperPage">Find the class AiTelemetryDeveloperPage in Solr. </a></p>
  * <p>
  * The extended class ending with "Gen" did not exist at first, but was automatically created by the same watch service based on the data retrieved from the local Apache Server search engine. 
  * The extended class contains many generated fields, getters, setters, initialization code, and helper methods to help build a website and API fast, reactive, and scalable. 
  * </p>
- * extends ProjectPageGen<ProjectGenPage>
- * <p>This <code>class ProjectPage extends ProjectPageGen&lt;ProjectGenPage&gt;</code>, which means it extends a newly generated ProjectPageGen. 
- * The generated <code>class ProjectPageGen extends ProjectGenPage</code> which means that ProjectPage extends ProjectPageGen which extends ProjectGenPage. 
+ * extends AiTelemetryDeveloperPageGen<AiTelemetryDeveloperGenPage>
+ * <p>This <code>class AiTelemetryDeveloperPage extends AiTelemetryDeveloperPageGen&lt;AiTelemetryDeveloperGenPage&gt;</code>, which means it extends a newly generated AiTelemetryDeveloperPageGen. 
+ * The generated <code>class AiTelemetryDeveloperPageGen extends AiTelemetryDeveloperGenPage</code> which means that AiTelemetryDeveloperPage extends AiTelemetryDeveloperPageGen which extends AiTelemetryDeveloperGenPage. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
  * <h2>Api: true</h2>
@@ -66,7 +66,7 @@ import io.vertx.core.json.JsonArray;
  * <h2>Color: null</h2>
  * <h2>Indexed: true</h2>
  * <h2>{@inheritDoc}</h2>
- * <p>By adding a class comment "{@inheritDoc}", the ProjectPage class will inherit the helpful inherited class comments from the super class ProjectPageGen. 
+ * <p>By adding a class comment "{@inheritDoc}", the AiTelemetryDeveloperPage class will inherit the helpful inherited class comments from the super class AiTelemetryDeveloperPageGen. 
  * </p>
  * <h2>Rows: null</h2>
  * <h2>Model: true</h2>
@@ -76,7 +76,7 @@ import io.vertx.core.json.JsonArray;
  * <p>
  *   This class contains a comment <b>"Promise: true"</b>
  *   Sometimes a Java class must be initialized asynchronously when it involves calling a blocking API. 
- *   This means that the ProjectPage Java class has promiseDeep methods which must be initialized asynchronously as a Vert.x Promise  instead of initDeep methods which are a simple non-asynchronous method. 
+ *   This means that the AiTelemetryDeveloperPage Java class has promiseDeep methods which must be initialized asynchronously as a Vert.x Promise  instead of initDeep methods which are a simple non-asynchronous method. 
  * </p>
  * <p>
  *   Adding protected void methods beginning with an underscore with a Promise as the only parameter will automatically set `Promise: true`. 
@@ -97,12 +97,12 @@ import io.vertx.core.json.JsonArray;
  * </p>
  * <h2>AName.enUS: null</h2>
  * <p>
- * Delete the class ProjectPage in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.ProjectPage&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * Delete the class AiTelemetryDeveloperPage in Solr: 
+ * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperPage&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
  * </p>
  * <p>
- * Delete  the package org.mghpcc.aitelemetry.model.project in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.mghpcc.aitelemetry.model.project&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * Delete  the package org.mghpcc.aitelemetry.model.developer.aitelemetry in Solr: 
+ * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.mghpcc.aitelemetry.model.developer.aitelemetry&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
@@ -110,24 +110,24 @@ import io.vertx.core.json.JsonArray;
  * </p>
  * Generated: true
  **/
-public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
-  protected static final Logger LOG = LoggerFactory.getLogger(ProjectPage.class);
+public abstract class AiTelemetryDeveloperPageGen<DEV> extends AiTelemetryDeveloperGenPage {
+  protected static final Logger LOG = LoggerFactory.getLogger(AiTelemetryDeveloperPage.class);
 
   //////////////
   // initDeep //
   //////////////
 
-  public Future<ProjectPageGen<DEV>> promiseDeepProjectPage(SiteRequest siteRequest_) {
+  public Future<AiTelemetryDeveloperPageGen<DEV>> promiseDeepAiTelemetryDeveloperPage(SiteRequest siteRequest_) {
     setSiteRequest_(siteRequest_);
-    return promiseDeepProjectPage();
+    return promiseDeepAiTelemetryDeveloperPage();
   }
 
-  public Future<ProjectPageGen<DEV>> promiseDeepProjectPage() {
-    Promise<ProjectPageGen<DEV>> promise = Promise.promise();
+  public Future<AiTelemetryDeveloperPageGen<DEV>> promiseDeepAiTelemetryDeveloperPage() {
+    Promise<AiTelemetryDeveloperPageGen<DEV>> promise = Promise.promise();
     Promise<Void> promise2 = Promise.promise();
-    promiseProjectPage(promise2);
+    promiseAiTelemetryDeveloperPage(promise2);
     promise2.future().onSuccess(a -> {
-      super.promiseDeepProjectGenPage(siteRequest_).onSuccess(b -> {
+      super.promiseDeepAiTelemetryDeveloperGenPage(siteRequest_).onSuccess(b -> {
         promise.complete(this);
       }).onFailure(ex -> {
         promise.fail(ex);
@@ -138,7 +138,7 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     return promise.future();
   }
 
-  public Future<Void> promiseProjectPage(Promise<Void> promise) {
+  public Future<Void> promiseAiTelemetryDeveloperPage(Promise<Void> promise) {
     Future.future(a -> a.complete()).compose(a -> {
       Promise<Void> promise2 = Promise.promise();
       try {
@@ -155,20 +155,20 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     return promise.future();
   }
 
-  @Override public Future<? extends ProjectPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-    return promiseDeepProjectPage(siteRequest_);
+  @Override public Future<? extends AiTelemetryDeveloperPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepAiTelemetryDeveloperPage(siteRequest_);
   }
 
   /////////////////
   // siteRequest //
   /////////////////
 
-  public void siteRequestProjectPage(SiteRequest siteRequest_) {
-      super.siteRequestProjectGenPage(siteRequest_);
+  public void siteRequestAiTelemetryDeveloperPage(SiteRequest siteRequest_) {
+      super.siteRequestAiTelemetryDeveloperGenPage(siteRequest_);
   }
 
   public void siteRequestForClass(SiteRequest siteRequest_) {
-    siteRequestProjectPage(siteRequest_);
+    siteRequestAiTelemetryDeveloperPage(siteRequest_);
   }
 
   /////////////
@@ -180,7 +180,7 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     Object o = null;
     for(String v : vars) {
       if(o == null)
-        o = obtainProjectPage(v);
+        o = obtainAiTelemetryDeveloperPage(v);
       else if(o instanceof BaseModel) {
         BaseModel baseModel = (BaseModel)o;
         o = baseModel.obtainForClass(v);
@@ -192,11 +192,11 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     }
     return o;
   }
-  public Object obtainProjectPage(String var) {
-    ProjectPage oProjectPage = (ProjectPage)this;
+  public Object obtainAiTelemetryDeveloperPage(String var) {
+    AiTelemetryDeveloperPage oAiTelemetryDeveloperPage = (AiTelemetryDeveloperPage)this;
     switch(var) {
       default:
-        return super.obtainProjectGenPage(var);
+        return super.obtainAiTelemetryDeveloperGenPage(var);
     }
   }
 
@@ -209,7 +209,7 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     Object o = null;
     for(String v : vars) {
       if(o == null)
-        o = relateProjectPage(v, val);
+        o = relateAiTelemetryDeveloperPage(v, val);
       else if(o instanceof BaseModel) {
         BaseModel baseModel = (BaseModel)o;
         o = baseModel.relateForClass(v, val);
@@ -217,11 +217,11 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     }
     return o != null;
   }
-  public Object relateProjectPage(String var, Object val) {
-    ProjectPage oProjectPage = (ProjectPage)this;
+  public Object relateAiTelemetryDeveloperPage(String var, Object val) {
+    AiTelemetryDeveloperPage oAiTelemetryDeveloperPage = (AiTelemetryDeveloperPage)this;
     switch(var) {
       default:
-        return super.relateProjectGenPage(var, val);
+        return super.relateAiTelemetryDeveloperGenPage(var, val);
     }
   }
 
@@ -229,13 +229,13 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
   // staticSet //
   ///////////////
 
-  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ProjectPage o) {
-    return staticSetProjectPage(entityVar,  siteRequest_, v, o);
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, AiTelemetryDeveloperPage o) {
+    return staticSetAiTelemetryDeveloperPage(entityVar,  siteRequest_, v, o);
   }
-  public static Object staticSetProjectPage(String entityVar, SiteRequest siteRequest_, String v, ProjectPage o) {
+  public static Object staticSetAiTelemetryDeveloperPage(String entityVar, SiteRequest siteRequest_, String v, AiTelemetryDeveloperPage o) {
     switch(entityVar) {
       default:
-        return ProjectGenPage.staticSetProjectGenPage(entityVar,  siteRequest_, v, o);
+        return AiTelemetryDeveloperGenPage.staticSetAiTelemetryDeveloperGenPage(entityVar,  siteRequest_, v, o);
     }
   }
 
@@ -244,12 +244,12 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
   ////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-    return staticSearchProjectPage(entityVar,  siteRequest_, o);
+    return staticSearchAiTelemetryDeveloperPage(entityVar,  siteRequest_, o);
   }
-  public static Object staticSearchProjectPage(String entityVar, SiteRequest siteRequest_, Object o) {
+  public static Object staticSearchAiTelemetryDeveloperPage(String entityVar, SiteRequest siteRequest_, Object o) {
     switch(entityVar) {
       default:
-        return ProjectGenPage.staticSearchProjectGenPage(entityVar,  siteRequest_, o);
+        return AiTelemetryDeveloperGenPage.staticSearchAiTelemetryDeveloperGenPage(entityVar,  siteRequest_, o);
     }
   }
 
@@ -258,12 +258,12 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
   ///////////////////
 
   public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-    return staticSearchStrProjectPage(entityVar,  siteRequest_, o);
+    return staticSearchStrAiTelemetryDeveloperPage(entityVar,  siteRequest_, o);
   }
-  public static String staticSearchStrProjectPage(String entityVar, SiteRequest siteRequest_, Object o) {
+  public static String staticSearchStrAiTelemetryDeveloperPage(String entityVar, SiteRequest siteRequest_, Object o) {
     switch(entityVar) {
       default:
-        return ProjectGenPage.staticSearchStrProjectGenPage(entityVar,  siteRequest_, o);
+        return AiTelemetryDeveloperGenPage.staticSearchStrAiTelemetryDeveloperGenPage(entityVar,  siteRequest_, o);
     }
   }
 
@@ -272,12 +272,12 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
   //////////////////
 
   public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-    return staticSearchFqProjectPage(entityVar,  siteRequest_, o);
+    return staticSearchFqAiTelemetryDeveloperPage(entityVar,  siteRequest_, o);
   }
-  public static String staticSearchFqProjectPage(String entityVar, SiteRequest siteRequest_, String o) {
+  public static String staticSearchFqAiTelemetryDeveloperPage(String entityVar, SiteRequest siteRequest_, String o) {
     switch(entityVar) {
       default:
-        return ProjectGenPage.staticSearchFqProjectGenPage(entityVar,  siteRequest_, o);
+        return AiTelemetryDeveloperGenPage.staticSearchFqAiTelemetryDeveloperGenPage(entityVar,  siteRequest_, o);
     }
   }
 
@@ -291,8 +291,8 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     return sb.toString();
   }
 
-  public static final String CLASS_SIMPLE_NAME = "ProjectPage";
-  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.project.ProjectPage";
+  public static final String CLASS_SIMPLE_NAME = "AiTelemetryDeveloperPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperPage";
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
@@ -342,77 +342,77 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
   }
 
   public static String displayNameForClass(String var) {
-    return ProjectPage.displayNameProjectPage(var);
+    return AiTelemetryDeveloperPage.displayNameAiTelemetryDeveloperPage(var);
   }
-  public static String displayNameProjectPage(String var) {
+  public static String displayNameAiTelemetryDeveloperPage(String var) {
     switch(var) {
     default:
-      return ProjectGenPage.displayNameProjectGenPage(var);
+      return AiTelemetryDeveloperGenPage.displayNameAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static String descriptionProjectPage(String var) {
+  public static String descriptionAiTelemetryDeveloperPage(String var) {
     if(var == null)
       return null;
     switch(var) {
       default:
-        return ProjectGenPage.descriptionProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.descriptionAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static String classSimpleNameProjectPage(String var) {
+  public static String classSimpleNameAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.classSimpleNameProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.classSimpleNameAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static Integer htmColumnProjectPage(String var) {
+  public static Integer htmColumnAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.htmColumnProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.htmColumnAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static Integer htmRowProjectPage(String var) {
+  public static Integer htmRowAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.htmRowProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.htmRowAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static Integer htmCellProjectPage(String var) {
+  public static Integer htmCellAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.htmCellProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.htmCellAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static Integer lengthMinProjectPage(String var) {
+  public static Integer lengthMinAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.lengthMinProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.lengthMinAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static Integer lengthMaxProjectPage(String var) {
+  public static Integer lengthMaxAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.lengthMaxProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.lengthMaxAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static Integer maxProjectPage(String var) {
+  public static Integer maxAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.maxProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.maxAiTelemetryDeveloperGenPage(var);
     }
   }
 
-  public static Integer minProjectPage(String var) {
+  public static Integer minAiTelemetryDeveloperPage(String var) {
     switch(var) {
       default:
-        return ProjectGenPage.minProjectGenPage(var);
+        return AiTelemetryDeveloperGenPage.minAiTelemetryDeveloperGenPage(var);
     }
   }
 }

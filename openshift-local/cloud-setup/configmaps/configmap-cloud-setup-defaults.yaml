@@ -48,7 +48,7 @@ data:
     # The domain name of the site. 
     DOMAIN_NAME: "mghpcc.org"
     # The GitHub organization for this project. 
-    GITHUB_ORG: "OCP-on-NERC"
+    GITHUB_ORG: "nerc-images"
     # The main git repository for the project. 
     SITE_REPO: "git@github.com:nerc-images/ai-telemetry.git"
     # The main git repository for the project via ssh. 
@@ -79,7 +79,7 @@ data:
     #########################
 
     # The URL to sign up for the mailing list. 
-    MAILING_LIST_URL: "https://computate.topicbox.com/groups/computate"
+    MAILING_LIST_URL: "https://computate.topicbox.com/groups/aitelemetry"
     # The email address of the mailing list. 
     MAILING_LIST_EMAIL: "aitelemetry@group.computate.org"
 
@@ -555,21 +555,30 @@ data:
     # extra vars #
     ##############
 
+    STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/computate.org-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
+    HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
+
+    # Social media
+    YOUTUBE_URL: https://www.youtube.com/watch?v=5_y5PFtsTYk&list=PLcVjtgfCeLvQu8KDUjmwHzbFqbg5K70zN
+    LINKEDIN_URL: https://www.linkedin.com/in/computate/
+
     #######################
     # prom-keycloak-proxy #
     #######################
     # Whether to use SSL when connecting to the Prometheus Keycloak Proxy. 
-    PROM_KEYCLOAK_PROXY_SSL_LOCALCLUSTER: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | default('true', true) | lower) != 'false' }}"
+    PROM_KEYCLOAK_PROXY_SSL_OPENSHIFTLOCAL: "{{ (lookup('env', 'PROM_KEYCLOAK_PROXY_SSL') | default('true', true) | lower) != 'false' }}"
     # The host name to connect to the Prometheus Keycloak Proxy in OpenShift. 
-    PROM_KEYCLOAK_PROXY_HOST_NAME_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('metrics-local-cluster.' + OPENSHIFT_APPS_DOMAIN, true) }}"
+    PROM_KEYCLOAK_PROXY_HOST_NAME_OPENSHIFTLOCAL: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_HOST_NAME') | default('metrics-local-cluster.' + OPENSHIFT_APPS_DOMAIN, true) }}"
     # The default port that the Prometheus Keycloak Proxy runs. 
-    PROM_KEYCLOAK_PROXY_PORT_LOCALCLUSTER: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
+    PROM_KEYCLOAK_PROXY_PORT_OPENSHIFTLOCAL: "{{ lookup('env', 'PROM_KEYCLOAK_PROXY_PORT') | default('443', true) }}"
     # The Auth client. 
     AUTH_CLIENT_SA: "{{ lookup('env', 'AUTH_CLIENT_SA') | default(AUTH_CLIENT, true) }}"
+    # The Auth openshift secret key with the client secret credentials. 
+    AUTH_OPENSHIFT_SECRET_KEY_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_KEY_SA') | default('AUTH_SECRET', true) }}"
     # The Auth openshift secret with the client secret credentials. 
-    AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('cloud-extra', true) }}"
+    AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-auth', true) }}"
     # The Auth secret. 
-    AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data.AUTH_SECRET_SA | b64decode }}"
+    AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data[AUTH_OPENSHIFT_SECRET_KEY_SA] | b64decode }}"
 
     ###########
     # grafana #
@@ -626,8 +635,6 @@ data:
     # Ensure BareMetalResourceClass is updated frequently
     IMPORT_DATA_START_TIME_BareMetalResourceClass: 12:00 America/New_York
     IMPORT_DATA_PERIOD_BareMetalResourceClass: 1 minute
-    IMPORT_DATA_START_TIME_Project: 12:00 America/New_York
-    IMPORT_DATA_PERIOD_Project: 1 minute
 
     ENABLE_IMPORT_DATA_Cluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Cluster') | default('true', true) | bool }}"
     ENABLE_IMPORT_DATA_AiNode: "{{ lookup('env', 'ENABLE_IMPORT_DATA_AiNode') | default('true', true) | bool }}"

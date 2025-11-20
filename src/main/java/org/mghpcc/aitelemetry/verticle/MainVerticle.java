@@ -170,12 +170,12 @@ import org.mghpcc.aitelemetry.user.SiteUserEnUSGenApiService;
 import org.mghpcc.aitelemetry.user.SiteUserEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.result.BaseResult;
 import org.mghpcc.aitelemetry.model.BaseModel;
-import org.mghpcc.aitelemetry.model.hub.HubEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.hub.HubEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
 import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.page.SitePage;
+import org.mghpcc.aitelemetry.model.hub.HubEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.hub.HubEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.cluster.ClusterEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.cluster.ClusterEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
@@ -215,6 +215,9 @@ import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrder;
 import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
+import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper;
 
 
 /**
@@ -272,7 +275,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
   public void setSdkMeterProvider(SdkMeterProvider sdkMeterProvider) {
     this.sdkMeterProvider = sdkMeterProvider;
   }
-
 
   /**
    * The main method for the Vert.x application that runs the Vert.x Runner class
@@ -352,14 +354,14 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiSiteUser.setVertx(vertx);
       apiSiteUser.setConfig(config);
       apiSiteUser.setWebClient(webClient);
-      HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
-      apiHub.setVertx(vertx);
-      apiHub.setConfig(config);
-      apiHub.setWebClient(webClient);
       SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
       apiSitePage.setVertx(vertx);
       apiSitePage.setConfig(config);
       apiSitePage.setWebClient(webClient);
+      HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
+      apiHub.setVertx(vertx);
+      apiHub.setConfig(config);
+      apiHub.setWebClient(webClient);
       ClusterEnUSApiServiceImpl apiCluster = new ClusterEnUSApiServiceImpl();
       apiCluster.setVertx(vertx);
       apiCluster.setConfig(config);
@@ -412,13 +414,17 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiVirtualMachine.setVertx(vertx);
       apiVirtualMachine.setConfig(config);
       apiVirtualMachine.setWebClient(webClient);
+      AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
+      apiAiTelemetryDeveloper.setVertx(vertx);
+      apiAiTelemetryDeveloper.setConfig(config);
+      apiAiTelemetryDeveloper.setWebClient(webClient);
       apiSiteUser.createAuthorizationScopes().onSuccess(authToken -> {
-          apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
-              .compose(q2 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-              .compose(q2 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }))
+          apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
+              .compose(q2 -> apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
               .onSuccess(q2 -> {
-            apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
-                .compose(q3 -> apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
+            apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
+                .compose(q3 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
+                .compose(q3 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }))
                 .onSuccess(q3 -> {
               apiCluster.authorizeGroupData(authToken, Cluster.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
                   .compose(q4 -> apiCluster.authorizeGroupData(authToken, Cluster.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
@@ -467,8 +473,13 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
                                           .compose(q16 -> apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
                                           .compose(q16 -> apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
                                           .onSuccess(q16 -> {
-                                        LOG.info("authorize data complete");
-                                        promise.complete();
+                                        apiAiTelemetryDeveloper.authorizeGroupData(authToken, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "COMPANYPRODUCT-ai-telemetry-developer-GET", new String[] { "GET" })
+                                            .compose(q17 -> apiAiTelemetryDeveloper.authorizeGroupData(authToken, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }))
+                                            .compose(q17 -> apiAiTelemetryDeveloper.authorizeGroupData(authToken, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
+                                            .onSuccess(q17 -> {
+                                          LOG.info("authorize data complete");
+                                          promise.complete();
+                                      }).onFailure(ex -> promise.fail(ex));
                                     }).onFailure(ex -> promise.fail(ex));
                                   }).onFailure(ex -> promise.fail(ex));
                                 }).onFailure(ex -> promise.fail(ex));
@@ -797,11 +808,11 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
                         configureAmqp().onSuccess(j -> 
                           configureRabbitmq().onSuccess(k -> 
                             configureJinjava().onSuccess(l -> 
-                                configureApi().onSuccess(n -> 
-                                  configureUi().onSuccess(o -> 
-                                    startServer().onSuccess(p -> startPromise.complete())
-                                  ).onFailure(ex -> startPromise.fail(ex))
+                              configureApi().onSuccess(n -> 
+                                configureUi().onSuccess(o -> 
+                                  startServer().onSuccess(p -> startPromise.complete())
                                 ).onFailure(ex -> startPromise.fail(ex))
+                              ).onFailure(ex -> startPromise.fail(ex))
                             ).onFailure(ex -> startPromise.fail(ex))
                           ).onFailure(ex -> startPromise.fail(ex))
                         ).onFailure(ex -> startPromise.fail(ex))
@@ -1453,7 +1464,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-
   public <API_IMPL extends BaseApiServiceInterface> void initializeApiService(API_IMPL service) {
     service.setVertx(vertx);
     service.setEventBus(vertx.eventBus());
@@ -1481,8 +1491,8 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     Promise<Void> promise = Promise.promise();
     try {
       List<Future<?>> futures = new ArrayList<>();
-      List<String> authClassSimpleNames = Arrays.asList("Hub","SitePage","Cluster","AiNode","GpuDevice","Project","ClusterTemplate","ClusterOrder","ManagedCluster","ClusterRequest","BareMetalNetwork","BareMetalResourceClass","BareMetalNode","BareMetalOrder","VirtualMachine");
-      List<String> authResources = Arrays.asList("HUB","SITEPAGE","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER","VIRTUALMACHINE");
+      List<String> authClassSimpleNames = Arrays.asList("SitePage","Hub","Cluster","AiNode","GpuDevice","Project","ClusterTemplate","ClusterOrder","ManagedCluster","ClusterRequest","BareMetalNetwork","BareMetalResourceClass","BareMetalNode","BareMetalOrder","VirtualMachine","AiTelemetryDeveloper");
+      List<String> authResources = Arrays.asList("SITEPAGE","HUB","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER","VIRTUALMACHINE","AITELEMETRYDEVELOPER");
       List<String> publicClassSimpleNames = Arrays.asList("SitePage","ClusterTemplate","BareMetalResourceClass");
       SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
       initializeApiService(apiSiteUser);
@@ -1490,13 +1500,13 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiSiteUser.configureUserSearchApi(config().getString(ComputateConfigKeys.USER_SEARCH_URI), router, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_SiteUser, config(), webClient, authResources, authClassSimpleNames);
       apiSiteUser.configurePublicSearchApi(config().getString(ComputateConfigKeys.PUBLIC_SEARCH_URI), router, SiteRequest.class, config(), webClient, publicClassSimpleNames);
 
-      HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
-      initializeApiService(apiHub);
-      registerApiService(HubEnUSGenApiService.class, apiHub, Hub.getClassApiAddress());
-
       SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
       initializeApiService(apiSitePage);
       registerApiService(SitePageEnUSGenApiService.class, apiSitePage, SitePage.getClassApiAddress());
+
+      HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
+      initializeApiService(apiHub);
+      registerApiService(HubEnUSGenApiService.class, apiHub, Hub.getClassApiAddress());
 
       ClusterEnUSApiServiceImpl apiCluster = new ClusterEnUSApiServiceImpl();
       initializeApiService(apiCluster);
@@ -1549,6 +1559,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       VirtualMachineEnUSApiServiceImpl apiVirtualMachine = new VirtualMachineEnUSApiServiceImpl();
       initializeApiService(apiVirtualMachine);
       registerApiService(VirtualMachineEnUSGenApiService.class, apiVirtualMachine, VirtualMachine.getClassApiAddress());
+
+      AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
+      initializeApiService(apiAiTelemetryDeveloper);
+      registerApiService(AiTelemetryDeveloperEnUSGenApiService.class, apiAiTelemetryDeveloper, AiTelemetryDeveloper.getClassApiAddress());
 
       Future.all(futures).onSuccess( a -> {
         LOG.info("The API was configured properly.");

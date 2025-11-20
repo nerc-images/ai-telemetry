@@ -32,6 +32,25 @@ spec:
         app.kubernetes.io/name: aitelemetry
         deployment: aitelemetry
     spec:
+      initContainers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: git-cloner
+          command:
+            - sh
+            - '-c'
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: "ai-telemetry-developer"
+              mountPath: "/home/default/computate.org-static/webawesome/templates/en-us/ai-telemetry-developer"
+          terminationMessagePolicy: File
+          envFrom:
+            - secretRef:
+                name: cloud-extra
+          image: docker.io/alpine/git
+          args:
+            - >-
+              git clone https://computate.org:$GITHUB_DEVELOPERS_TOKEN@github.com/computate-org/ai-telemetry-developer.git /home/default/computate.org-static/webawesome/templates/en-us/ai-telemetry-developer; 
       containers:
       - name: aitelemetry
         env:
@@ -99,6 +118,12 @@ spec:
             cpu: 750m
             ephemeral-storage: 1Gi
             memory: 768Mi
+          volumeMounts:
+            - name: "ai-telemetry-developer"
+              mountPath: "/home/default/computate.org-static/webawesome/templates/en-us/ai-telemetry-developer"
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
+      volumes:
+        - name: "ai-telemetry-developer"
+          emptyDir: {}

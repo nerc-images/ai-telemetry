@@ -179,1960 +179,2038 @@ import org.computate.search.response.solr.SolrResponse;
  * Generated: true
  **/
 public abstract class ProjectGen<DEV> extends BaseModel {
-	protected static final Logger LOG = LoggerFactory.getLogger(Project.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(Project.class);
 
-	public static final String Description_enUS = "A research project using AI and GPUs";
-	public static final String AName_enUS = "an project";
-	public static final String This_enUS = "this ";
-	public static final String ThisName_enUS = "this project";
-	public static final String A_enUS = "a ";
-	public static final String TheName_enUS = "the project";
-	public static final String SingularName_enUS = "project";
-	public static final String PluralName_enUS = "projects";
-	public static final String NameActual_enUS = "current project";
-	public static final String AllName_enUS = "all projects";
-	public static final String SearchAllNameBy_enUS = "search projects by ";
-	public static final String SearchAllName_enUS = "search projects";
-	public static final String Title_enUS = "projects";
-	public static final String ThePluralName_enUS = "the projects";
-	public static final String NoNameFound_enUS = "no project found";
-	public static final String ApiUri_enUS = "/en-us/api/project";
-	public static final String ApiUriSearchPage_enUS = "/en-us/search/project";
-	public static final String ApiUriEditPage_enUS = "/en-us/edit/project/{projectResource}";
-	public static final String OfName_enUS = "of project";
-	public static final String ANameAdjective_enUS = "a project";
-	public static final String NameAdjectiveSingular_enUS = "project";
-	public static final String NameAdjectivePlural_enUS = "projects";
-	public static final String Search_enUS_OpenApiUri = "/en-us/api/project";
-	public static final String Search_enUS_StringFormatUri = "/en-us/api/project";
-	public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/project";
-	public static final String GET_enUS_OpenApiUri = "/en-us/api/project/{projectResource}";
-	public static final String GET_enUS_StringFormatUri = "/en-us/api/project/%s";
-	public static final String GET_enUS_StringFormatUrl = "%s/en-us/api/project/%s";
-	public static final String PATCH_enUS_OpenApiUri = "/en-us/api/project";
-	public static final String PATCH_enUS_StringFormatUri = "/en-us/api/project";
-	public static final String PATCH_enUS_StringFormatUrl = "%s/en-us/api/project";
-	public static final String POST_enUS_OpenApiUri = "/en-us/api/project";
-	public static final String POST_enUS_StringFormatUri = "/en-us/api/project";
-	public static final String POST_enUS_StringFormatUrl = "%s/en-us/api/project";
-	public static final String DELETE_enUS_OpenApiUri = "/en-us/api/project/{projectResource}";
-	public static final String DELETE_enUS_StringFormatUri = "/en-us/api/project/%s";
-	public static final String DELETE_enUS_StringFormatUrl = "%s/en-us/api/project/%s";
-	public static final String PUTImport_enUS_OpenApiUri = "/en-us/api/project-import";
-	public static final String PUTImport_enUS_StringFormatUri = "/en-us/api/project-import";
-	public static final String PUTImport_enUS_StringFormatUrl = "%s/en-us/api/project-import";
-	public static final String SearchPage_enUS_OpenApiUri = "/en-us/search/project";
-	public static final String SearchPage_enUS_StringFormatUri = "/en-us/search/project";
-	public static final String SearchPage_enUS_StringFormatUrl = "%s/en-us/search/project";
-	public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/project/{projectResource}";
-	public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/project/%s";
-	public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/project/%s";
-	public static final String UserPage_enUS_OpenApiUri = "/en-us/user/project/{projectResource}";
-	public static final String UserPage_enUS_StringFormatUri = "/en-us/user/project/%s";
-	public static final String UserPage_enUS_StringFormatUrl = "%s/en-us/user/project/%s";
-	public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/project";
-	public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/project";
-	public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/project";
+  public static final String Description_enUS = "A research project using AI and GPUs";
+  public static final String AName_enUS = "an project";
+  public static final String This_enUS = "this ";
+  public static final String ThisName_enUS = "this project";
+  public static final String A_enUS = "a ";
+  public static final String TheName_enUS = "the project";
+  public static final String SingularName_enUS = "project";
+  public static final String PluralName_enUS = "projects";
+  public static final String NameActual_enUS = "current project";
+  public static final String AllName_enUS = "all projects";
+  public static final String SearchAllNameBy_enUS = "search projects by ";
+  public static final String SearchAllName_enUS = "search projects";
+  public static final String Title_enUS = "projects";
+  public static final String ThePluralName_enUS = "the projects";
+  public static final String NoNameFound_enUS = "no project found";
+  public static final String ApiUri_enUS = "/en-us/api/project";
+  public static final String ApiUriSearchPage_enUS = "/en-us/search/project";
+  public static final String ApiUriEditPage_enUS = "/en-us/edit/project/{projectResource}";
+  public static final String OfName_enUS = "of project";
+  public static final String ANameAdjective_enUS = "a project";
+  public static final String NameAdjectiveSingular_enUS = "project";
+  public static final String NameAdjectivePlural_enUS = "projects";
+  public static final String Search_enUS_OpenApiUri = "/en-us/api/project";
+  public static final String Search_enUS_StringFormatUri = "/en-us/api/project";
+  public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/project";
+  public static final String GET_enUS_OpenApiUri = "/en-us/api/project/{projectResource}";
+  public static final String GET_enUS_StringFormatUri = "/en-us/api/project/%s";
+  public static final String GET_enUS_StringFormatUrl = "%s/en-us/api/project/%s";
+  public static final String PATCH_enUS_OpenApiUri = "/en-us/api/project";
+  public static final String PATCH_enUS_StringFormatUri = "/en-us/api/project";
+  public static final String PATCH_enUS_StringFormatUrl = "%s/en-us/api/project";
+  public static final String POST_enUS_OpenApiUri = "/en-us/api/project";
+  public static final String POST_enUS_StringFormatUri = "/en-us/api/project";
+  public static final String POST_enUS_StringFormatUrl = "%s/en-us/api/project";
+  public static final String DELETE_enUS_OpenApiUri = "/en-us/api/project/{projectResource}";
+  public static final String DELETE_enUS_StringFormatUri = "/en-us/api/project/%s";
+  public static final String DELETE_enUS_StringFormatUrl = "%s/en-us/api/project/%s";
+  public static final String PUTImport_enUS_OpenApiUri = "/en-us/api/project-import";
+  public static final String PUTImport_enUS_StringFormatUri = "/en-us/api/project-import";
+  public static final String PUTImport_enUS_StringFormatUrl = "%s/en-us/api/project-import";
+  public static final String SearchPage_enUS_OpenApiUri = "/en-us/search/project";
+  public static final String SearchPage_enUS_StringFormatUri = "/en-us/search/project";
+  public static final String SearchPage_enUS_StringFormatUrl = "%s/en-us/search/project";
+  public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/project/{projectResource}";
+  public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/project/%s";
+  public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/project/%s";
+  public static final String UserPage_enUS_OpenApiUri = "/en-us/user/project/{projectResource}";
+  public static final String UserPage_enUS_StringFormatUri = "/en-us/user/project/%s";
+  public static final String UserPage_enUS_StringFormatUrl = "%s/en-us/user/project/%s";
+  public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/project";
+  public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/project";
+  public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/project";
 
-	public static final String Icon = "<i class=\"fa-regular fa-people-line\"></i>";
-	public static final Integer Rows = 100;
+  public static final String Icon = "<i class=\"fa-regular fa-people-line\"></i>";
+  public static final Integer Rows = 100;
 
 	///////////
-	// hubId //
+  // hubId //
 	///////////
 
 
-	/**	 The entity hubId
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String hubId;
+  /**
+   *  The entity hubId
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String hubId;
 
-	/**	<br> The entity hubId
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:hubId">Find the entity hubId in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _hubId(Wrap<String> w);
+  /**
+   * <br> The entity hubId
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:hubId">Find the entity hubId in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _hubId(Wrap<String> w);
 
-	public String getHubId() {
-		return hubId;
-	}
-	public void setHubId(String o) {
-		this.hubId = Project.staticSetHubId(siteRequest_, o);
-	}
-	public static String staticSetHubId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project hubIdInit() {
-		Wrap<String> hubIdWrap = new Wrap<String>().var("hubId");
-		if(hubId == null) {
-			_hubId(hubIdWrap);
-			Optional.ofNullable(hubIdWrap.getO()).ifPresent(o -> {
-				setHubId(o);
-			});
-		}
-		return (Project)this;
-	}
+  public String getHubId() {
+    return hubId;
+  }
+  public void setHubId(String o) {
+    this.hubId = Project.staticSetHubId(siteRequest_, o);
+  }
+  public static String staticSetHubId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project hubIdInit() {
+    Wrap<String> hubIdWrap = new Wrap<String>().var("hubId");
+    if(hubId == null) {
+      _hubId(hubIdWrap);
+      Optional.ofNullable(hubIdWrap.getO()).ifPresent(o -> {
+        setHubId(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	public static String staticSearchHubId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchHubId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrHubId(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrHubId(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqHubId(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchHubId(siteRequest_, Project.staticSetHubId(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqHubId(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchHubId(siteRequest_, Project.staticSetHubId(siteRequest_, o)).toString();
+  }
 
-	public String sqlHubId() {
-		return hubId;
-	}
+  public String sqlHubId() {
+    return hubId;
+  }
 
-	/////////////////
-	// hubResource //
-	/////////////////
-
-
-	/**	 The entity hubResource
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String hubResource;
-
-	/**	<br> The entity hubResource
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:hubResource">Find the entity hubResource in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _hubResource(Wrap<String> w);
-
-	public String getHubResource() {
-		return hubResource;
-	}
-	public void setHubResource(String o) {
-		this.hubResource = Project.staticSetHubResource(siteRequest_, o);
-	}
-	public static String staticSetHubResource(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project hubResourceInit() {
-		Wrap<String> hubResourceWrap = new Wrap<String>().var("hubResource");
-		if(hubResource == null) {
-			_hubResource(hubResourceWrap);
-			Optional.ofNullable(hubResourceWrap.getO()).ifPresent(o -> {
-				setHubResource(o);
-			});
-		}
-		return (Project)this;
-	}
-
-	public static String staticSearchHubResource(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-
-	public static String staticSearchStrHubResource(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqHubResource(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchHubResource(siteRequest_, Project.staticSetHubResource(siteRequest_, o)).toString();
-	}
-
-	public String sqlHubResource() {
-		return hubResource;
-	}
+  public static String staticJsonHubId(String hubId) {
+    return hubId;
+  }
 
 	/////////////////
-	// clusterName //
+  // hubResource //
 	/////////////////
 
 
-	/**	 The entity clusterName
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String clusterName;
+  /**
+   *  The entity hubResource
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String hubResource;
 
-	/**	<br> The entity clusterName
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:clusterName">Find the entity clusterName in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _clusterName(Wrap<String> w);
+  /**
+   * <br> The entity hubResource
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:hubResource">Find the entity hubResource in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _hubResource(Wrap<String> w);
 
-	public String getClusterName() {
-		return clusterName;
-	}
-	public void setClusterName(String o) {
-		this.clusterName = Project.staticSetClusterName(siteRequest_, o);
-	}
-	public static String staticSetClusterName(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project clusterNameInit() {
-		Wrap<String> clusterNameWrap = new Wrap<String>().var("clusterName");
-		if(clusterName == null) {
-			_clusterName(clusterNameWrap);
-			Optional.ofNullable(clusterNameWrap.getO()).ifPresent(o -> {
-				setClusterName(o);
-			});
-		}
-		return (Project)this;
-	}
+  public String getHubResource() {
+    return hubResource;
+  }
+  public void setHubResource(String o) {
+    this.hubResource = Project.staticSetHubResource(siteRequest_, o);
+  }
+  public static String staticSetHubResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project hubResourceInit() {
+    Wrap<String> hubResourceWrap = new Wrap<String>().var("hubResource");
+    if(hubResource == null) {
+      _hubResource(hubResourceWrap);
+      Optional.ofNullable(hubResourceWrap.getO()).ifPresent(o -> {
+        setHubResource(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	public static String staticSearchClusterName(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchHubResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrClusterName(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrHubResource(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqClusterName(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchClusterName(siteRequest_, Project.staticSetClusterName(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqHubResource(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchHubResource(siteRequest_, Project.staticSetHubResource(siteRequest_, o)).toString();
+  }
 
-	public String sqlClusterName() {
-		return clusterName;
-	}
+  public String sqlHubResource() {
+    return hubResource;
+  }
+
+  public static String staticJsonHubResource(String hubResource) {
+    return hubResource;
+  }
+
+	/////////////////
+  // clusterName //
+	/////////////////
+
+
+  /**
+   *  The entity clusterName
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String clusterName;
+
+  /**
+   * <br> The entity clusterName
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:clusterName">Find the entity clusterName in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _clusterName(Wrap<String> w);
+
+  public String getClusterName() {
+    return clusterName;
+  }
+  public void setClusterName(String o) {
+    this.clusterName = Project.staticSetClusterName(siteRequest_, o);
+  }
+  public static String staticSetClusterName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project clusterNameInit() {
+    Wrap<String> clusterNameWrap = new Wrap<String>().var("clusterName");
+    if(clusterName == null) {
+      _clusterName(clusterNameWrap);
+      Optional.ofNullable(clusterNameWrap.getO()).ifPresent(o -> {
+        setClusterName(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchClusterName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrClusterName(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqClusterName(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchClusterName(siteRequest_, Project.staticSetClusterName(siteRequest_, o)).toString();
+  }
+
+  public String sqlClusterName() {
+    return clusterName;
+  }
+
+  public static String staticJsonClusterName(String clusterName) {
+    return clusterName;
+  }
 
 	/////////////////////
-	// clusterResource //
-	/////////////////////
-
-
-	/**	 The entity clusterResource
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String clusterResource;
-
-	/**	<br> The entity clusterResource
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:clusterResource">Find the entity clusterResource in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _clusterResource(Wrap<String> w);
-
-	public String getClusterResource() {
-		return clusterResource;
-	}
-	public void setClusterResource(String o) {
-		this.clusterResource = Project.staticSetClusterResource(siteRequest_, o);
-	}
-	public static String staticSetClusterResource(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project clusterResourceInit() {
-		Wrap<String> clusterResourceWrap = new Wrap<String>().var("clusterResource");
-		if(clusterResource == null) {
-			_clusterResource(clusterResourceWrap);
-			Optional.ofNullable(clusterResourceWrap.getO()).ifPresent(o -> {
-				setClusterResource(o);
-			});
-		}
-		return (Project)this;
-	}
-
-	public static String staticSearchClusterResource(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-
-	public static String staticSearchStrClusterResource(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqClusterResource(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchClusterResource(siteRequest_, Project.staticSetClusterResource(siteRequest_, o)).toString();
-	}
-
-	public String sqlClusterResource() {
-		return clusterResource;
-	}
-
-	/////////////////
-	// projectName //
-	/////////////////
-
-
-	/**	 The entity projectName
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String projectName;
-
-	/**	<br> The entity projectName
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectName">Find the entity projectName in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _projectName(Wrap<String> w);
-
-	public String getProjectName() {
-		return projectName;
-	}
-	public void setProjectName(String o) {
-		this.projectName = Project.staticSetProjectName(siteRequest_, o);
-	}
-	public static String staticSetProjectName(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project projectNameInit() {
-		Wrap<String> projectNameWrap = new Wrap<String>().var("projectName");
-		if(projectName == null) {
-			_projectName(projectNameWrap);
-			Optional.ofNullable(projectNameWrap.getO()).ifPresent(o -> {
-				setProjectName(o);
-			});
-		}
-		return (Project)this;
-	}
-
-	public static String staticSearchProjectName(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-
-	public static String staticSearchStrProjectName(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqProjectName(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchProjectName(siteRequest_, Project.staticSetProjectName(siteRequest_, o)).toString();
-	}
-
-	public String sqlProjectName() {
-		return projectName;
-	}
-
-	/////////////////////
-	// projectResource //
+  // clusterResource //
 	/////////////////////
 
 
-	/**	 The entity projectResource
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String projectResource;
+  /**
+   *  The entity clusterResource
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String clusterResource;
 
-	/**	<br> The entity projectResource
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectResource">Find the entity projectResource in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _projectResource(Wrap<String> w);
+  /**
+   * <br> The entity clusterResource
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:clusterResource">Find the entity clusterResource in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _clusterResource(Wrap<String> w);
 
-	public String getProjectResource() {
-		return projectResource;
-	}
-	public void setProjectResource(String o) {
-		this.projectResource = Project.staticSetProjectResource(siteRequest_, o);
-	}
-	public static String staticSetProjectResource(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project projectResourceInit() {
-		Wrap<String> projectResourceWrap = new Wrap<String>().var("projectResource");
-		if(projectResource == null) {
-			_projectResource(projectResourceWrap);
-			Optional.ofNullable(projectResourceWrap.getO()).ifPresent(o -> {
-				setProjectResource(o);
-			});
-		}
-		return (Project)this;
-	}
+  public String getClusterResource() {
+    return clusterResource;
+  }
+  public void setClusterResource(String o) {
+    this.clusterResource = Project.staticSetClusterResource(siteRequest_, o);
+  }
+  public static String staticSetClusterResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project clusterResourceInit() {
+    Wrap<String> clusterResourceWrap = new Wrap<String>().var("clusterResource");
+    if(clusterResource == null) {
+      _clusterResource(clusterResourceWrap);
+      Optional.ofNullable(clusterResourceWrap.getO()).ifPresent(o -> {
+        setClusterResource(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	public static String staticSearchProjectResource(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchClusterResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrProjectResource(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrClusterResource(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqProjectResource(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchProjectResource(siteRequest_, Project.staticSetProjectResource(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqClusterResource(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchClusterResource(siteRequest_, Project.staticSetClusterResource(siteRequest_, o)).toString();
+  }
 
-	public String sqlProjectResource() {
-		return projectResource;
-	}
+  public String sqlClusterResource() {
+    return clusterResource;
+  }
+
+  public static String staticJsonClusterResource(String clusterResource) {
+    return clusterResource;
+  }
+
+	/////////////////
+  // projectName //
+	/////////////////
+
+
+  /**
+   *  The entity projectName
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String projectName;
+
+  /**
+   * <br> The entity projectName
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectName">Find the entity projectName in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _projectName(Wrap<String> w);
+
+  public String getProjectName() {
+    return projectName;
+  }
+  public void setProjectName(String o) {
+    this.projectName = Project.staticSetProjectName(siteRequest_, o);
+  }
+  public static String staticSetProjectName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project projectNameInit() {
+    Wrap<String> projectNameWrap = new Wrap<String>().var("projectName");
+    if(projectName == null) {
+      _projectName(projectNameWrap);
+      Optional.ofNullable(projectNameWrap.getO()).ifPresent(o -> {
+        setProjectName(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchProjectName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrProjectName(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqProjectName(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchProjectName(siteRequest_, Project.staticSetProjectName(siteRequest_, o)).toString();
+  }
+
+  public String sqlProjectName() {
+    return projectName;
+  }
+
+  public static String staticJsonProjectName(String projectName) {
+    return projectName;
+  }
+
+	/////////////////////
+  // projectResource //
+	/////////////////////
+
+
+  /**
+   *  The entity projectResource
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String projectResource;
+
+  /**
+   * <br> The entity projectResource
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectResource">Find the entity projectResource in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _projectResource(Wrap<String> w);
+
+  public String getProjectResource() {
+    return projectResource;
+  }
+  public void setProjectResource(String o) {
+    this.projectResource = Project.staticSetProjectResource(siteRequest_, o);
+  }
+  public static String staticSetProjectResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project projectResourceInit() {
+    Wrap<String> projectResourceWrap = new Wrap<String>().var("projectResource");
+    if(projectResource == null) {
+      _projectResource(projectResourceWrap);
+      Optional.ofNullable(projectResourceWrap.getO()).ifPresent(o -> {
+        setProjectResource(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchProjectResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrProjectResource(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqProjectResource(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchProjectResource(siteRequest_, Project.staticSetProjectResource(siteRequest_, o)).toString();
+  }
+
+  public String sqlProjectResource() {
+    return projectResource;
+  }
+
+  public static String staticJsonProjectResource(String projectResource) {
+    return projectResource;
+  }
 
 	////////////////////////
-	// projectDisplayName //
+  // projectDisplayName //
 	////////////////////////
 
 
-	/**	 The entity projectDisplayName
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String projectDisplayName;
+  /**
+   *  The entity projectDisplayName
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String projectDisplayName;
 
-	/**	<br> The entity projectDisplayName
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectDisplayName">Find the entity projectDisplayName in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _projectDisplayName(Wrap<String> w);
+  /**
+   * <br> The entity projectDisplayName
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectDisplayName">Find the entity projectDisplayName in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _projectDisplayName(Wrap<String> w);
 
-	public String getProjectDisplayName() {
-		return projectDisplayName;
-	}
-	public void setProjectDisplayName(String o) {
-		this.projectDisplayName = Project.staticSetProjectDisplayName(siteRequest_, o);
-	}
-	public static String staticSetProjectDisplayName(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project projectDisplayNameInit() {
-		Wrap<String> projectDisplayNameWrap = new Wrap<String>().var("projectDisplayName");
-		if(projectDisplayName == null) {
-			_projectDisplayName(projectDisplayNameWrap);
-			Optional.ofNullable(projectDisplayNameWrap.getO()).ifPresent(o -> {
-				setProjectDisplayName(o);
-			});
-		}
-		return (Project)this;
-	}
+  public String getProjectDisplayName() {
+    return projectDisplayName;
+  }
+  public void setProjectDisplayName(String o) {
+    this.projectDisplayName = Project.staticSetProjectDisplayName(siteRequest_, o);
+  }
+  public static String staticSetProjectDisplayName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project projectDisplayNameInit() {
+    Wrap<String> projectDisplayNameWrap = new Wrap<String>().var("projectDisplayName");
+    if(projectDisplayName == null) {
+      _projectDisplayName(projectDisplayNameWrap);
+      Optional.ofNullable(projectDisplayNameWrap.getO()).ifPresent(o -> {
+        setProjectDisplayName(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	public static String staticSearchProjectDisplayName(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchProjectDisplayName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrProjectDisplayName(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrProjectDisplayName(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqProjectDisplayName(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchProjectDisplayName(siteRequest_, Project.staticSetProjectDisplayName(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqProjectDisplayName(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchProjectDisplayName(siteRequest_, Project.staticSetProjectDisplayName(siteRequest_, o)).toString();
+  }
 
 	/////////////////
-	// description //
+  // description //
 	/////////////////
 
 
-	/**	 The entity description
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String description;
+  /**
+   *  The entity description
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String description;
 
-	/**	<br> The entity description
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:description">Find the entity description in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _description(Wrap<String> w);
+  /**
+   * <br> The entity description
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:description">Find the entity description in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _description(Wrap<String> w);
 
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String o) {
-		this.description = Project.staticSetDescription(siteRequest_, o);
-	}
-	public static String staticSetDescription(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected Project descriptionInit() {
-		Wrap<String> descriptionWrap = new Wrap<String>().var("description");
-		if(description == null) {
-			_description(descriptionWrap);
-			Optional.ofNullable(descriptionWrap.getO()).ifPresent(o -> {
-				setDescription(o);
-			});
-		}
-		return (Project)this;
-	}
+  public String getDescription() {
+    return description;
+  }
+  public void setDescription(String o) {
+    this.description = Project.staticSetDescription(siteRequest_, o);
+  }
+  public static String staticSetDescription(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project descriptionInit() {
+    Wrap<String> descriptionWrap = new Wrap<String>().var("description");
+    if(description == null) {
+      _description(descriptionWrap);
+      Optional.ofNullable(descriptionWrap.getO()).ifPresent(o -> {
+        setDescription(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	public static String staticSearchDescription(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchDescription(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrDescription(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrDescription(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqDescription(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchDescription(siteRequest_, Project.staticSetDescription(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqDescription(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchDescription(siteRequest_, Project.staticSetDescription(siteRequest_, o)).toString();
+  }
 
-	public String sqlDescription() {
-		return description;
-	}
+  public String sqlDescription() {
+    return description;
+  }
+
+  public static String staticJsonDescription(String description) {
+    return description;
+  }
 
 	////////////////
-	// gpuEnabled //
+  // gpuEnabled //
 	////////////////
 
 
-	/**	 The entity gpuEnabled
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected Boolean gpuEnabled;
+  /**
+   *  The entity gpuEnabled
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Boolean gpuEnabled;
 
-	/**	<br> The entity gpuEnabled
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:gpuEnabled">Find the entity gpuEnabled in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _gpuEnabled(Wrap<Boolean> w);
+  /**
+   * <br> The entity gpuEnabled
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:gpuEnabled">Find the entity gpuEnabled in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _gpuEnabled(Wrap<Boolean> w);
 
-	public Boolean getGpuEnabled() {
-		return gpuEnabled;
-	}
+  public Boolean getGpuEnabled() {
+    return gpuEnabled;
+  }
 
-	public void setGpuEnabled(Boolean gpuEnabled) {
-		this.gpuEnabled = gpuEnabled;
-	}
-	@JsonIgnore
-	public void setGpuEnabled(String o) {
-		this.gpuEnabled = Project.staticSetGpuEnabled(siteRequest_, o);
-	}
-	public static Boolean staticSetGpuEnabled(SiteRequest siteRequest_, String o) {
-		return Boolean.parseBoolean(o);
-	}
-	protected Project gpuEnabledInit() {
-		Wrap<Boolean> gpuEnabledWrap = new Wrap<Boolean>().var("gpuEnabled");
-		if(gpuEnabled == null) {
-			_gpuEnabled(gpuEnabledWrap);
-			Optional.ofNullable(gpuEnabledWrap.getO()).ifPresent(o -> {
-				setGpuEnabled(o);
-			});
-		}
-		return (Project)this;
-	}
+  public void setGpuEnabled(Boolean gpuEnabled) {
+    this.gpuEnabled = gpuEnabled;
+  }
+  @JsonIgnore
+  public void setGpuEnabled(String o) {
+    this.gpuEnabled = Project.staticSetGpuEnabled(siteRequest_, o);
+  }
+  public static Boolean staticSetGpuEnabled(SiteRequest siteRequest_, String o) {
+    return Boolean.parseBoolean(o);
+  }
+  protected Project gpuEnabledInit() {
+    Wrap<Boolean> gpuEnabledWrap = new Wrap<Boolean>().var("gpuEnabled");
+    if(gpuEnabled == null) {
+      _gpuEnabled(gpuEnabledWrap);
+      Optional.ofNullable(gpuEnabledWrap.getO()).ifPresent(o -> {
+        setGpuEnabled(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	public static Boolean staticSearchGpuEnabled(SiteRequest siteRequest_, Boolean o) {
-		return o;
-	}
+  public static Boolean staticSearchGpuEnabled(SiteRequest siteRequest_, Boolean o) {
+    return o;
+  }
 
-	public static String staticSearchStrGpuEnabled(SiteRequest siteRequest_, Boolean o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrGpuEnabled(SiteRequest siteRequest_, Boolean o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqGpuEnabled(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchGpuEnabled(siteRequest_, Project.staticSetGpuEnabled(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqGpuEnabled(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchGpuEnabled(siteRequest_, Project.staticSetGpuEnabled(siteRequest_, o)).toString();
+  }
 
-	public Boolean sqlGpuEnabled() {
-		return gpuEnabled;
-	}
+  public Boolean sqlGpuEnabled() {
+    return gpuEnabled;
+  }
+
+  public static Boolean staticJsonGpuEnabled(Boolean gpuEnabled) {
+    return gpuEnabled;
+  }
 
 	/////////////////////
-	// podRestartCount //
+  // podRestartCount //
 	/////////////////////
 
 
-	/**	 The entity podRestartCount
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Integer podRestartCount;
+  /**
+   *  The entity podRestartCount
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer podRestartCount;
 
-	/**	<br> The entity podRestartCount
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podRestartCount">Find the entity podRestartCount in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _podRestartCount(Wrap<Integer> w);
+  /**
+   * <br> The entity podRestartCount
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podRestartCount">Find the entity podRestartCount in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _podRestartCount(Wrap<Integer> w);
 
-	public Integer getPodRestartCount() {
-		return podRestartCount;
-	}
+  public Integer getPodRestartCount() {
+    return podRestartCount;
+  }
 
-	public void setPodRestartCount(Integer podRestartCount) {
-		this.podRestartCount = podRestartCount;
-	}
-	@JsonIgnore
-	public void setPodRestartCount(String o) {
-		this.podRestartCount = Project.staticSetPodRestartCount(siteRequest_, o);
-	}
-	public static Integer staticSetPodRestartCount(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Integer.parseInt(o);
-		return null;
-	}
-	protected Project podRestartCountInit() {
-		Wrap<Integer> podRestartCountWrap = new Wrap<Integer>().var("podRestartCount");
-		if(podRestartCount == null) {
-			_podRestartCount(podRestartCountWrap);
-			Optional.ofNullable(podRestartCountWrap.getO()).ifPresent(o -> {
-				setPodRestartCount(o);
-			});
-		}
-		return (Project)this;
-	}
+  public void setPodRestartCount(Integer podRestartCount) {
+    this.podRestartCount = podRestartCount;
+  }
+  @JsonIgnore
+  public void setPodRestartCount(String o) {
+    this.podRestartCount = Project.staticSetPodRestartCount(siteRequest_, o);
+  }
+  public static Integer staticSetPodRestartCount(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected Project podRestartCountInit() {
+    Wrap<Integer> podRestartCountWrap = new Wrap<Integer>().var("podRestartCount");
+    if(podRestartCount == null) {
+      _podRestartCount(podRestartCountWrap);
+      Optional.ofNullable(podRestartCountWrap.getO()).ifPresent(o -> {
+        setPodRestartCount(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	public static Integer staticSearchPodRestartCount(SiteRequest siteRequest_, Integer o) {
-		return o;
-	}
+  public static Integer staticSearchPodRestartCount(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
 
-	public static String staticSearchStrPodRestartCount(SiteRequest siteRequest_, Integer o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPodRestartCount(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPodRestartCount(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchPodRestartCount(siteRequest_, Project.staticSetPodRestartCount(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPodRestartCount(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchPodRestartCount(siteRequest_, Project.staticSetPodRestartCount(siteRequest_, o)).toString();
+  }
 
-	public Integer sqlPodRestartCount() {
-		return podRestartCount;
-	}
+  public Integer sqlPodRestartCount() {
+    return podRestartCount;
+  }
+
+  public static String staticJsonPodRestartCount(Integer podRestartCount) {
+    return Optional.ofNullable(podRestartCount).map(v -> v.toString()).orElse(null);
+  }
 
 	////////////////////
-	// podsRestarting //
+  // podsRestarting //
 	////////////////////
 
 
-	/**	 The entity podsRestarting
-	 *	 It is constructed before being initialized with the constructor by default. 
-	 */
-	@JsonProperty
-	@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-	@JsonInclude(Include.NON_NULL)
-	protected List<String> podsRestarting = new ArrayList<String>();
+  /**
+   *  The entity podsRestarting
+   *	 It is constructed before being initialized with the constructor by default. 
+   */
+  @JsonProperty
+  @JsonFormat(shape = JsonFormat.Shape.ARRAY)
+  @JsonInclude(Include.NON_NULL)
+  protected List<String> podsRestarting = new ArrayList<String>();
 
-	/**	<br> The entity podsRestarting
-	 *  It is constructed before being initialized with the constructor by default. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podsRestarting">Find the entity podsRestarting in Solr</a>
-	 * <br>
-	 * @param l is the entity already constructed. 
-	 **/
-	protected abstract void _podsRestarting(List<String> l);
+  /**
+   * <br> The entity podsRestarting
+   *  It is constructed before being initialized with the constructor by default. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podsRestarting">Find the entity podsRestarting in Solr</a>
+   * <br>
+   * @param l is the entity already constructed. 
+   **/
+  protected abstract void _podsRestarting(List<String> l);
 
-	public List<String> getPodsRestarting() {
-		return podsRestarting;
-	}
+  public List<String> getPodsRestarting() {
+    return podsRestarting;
+  }
 
-	public void setPodsRestarting(List<String> podsRestarting) {
-		this.podsRestarting = podsRestarting;
-	}
-	@JsonIgnore
-	public void setPodsRestarting(String o) {
-		String l = Project.staticSetPodsRestarting(siteRequest_, o);
-		if(l != null)
-			addPodsRestarting(l);
-	}
-	public static String staticSetPodsRestarting(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	public Project addPodsRestarting(String...objects) {
-		for(String o : objects) {
-			addPodsRestarting(o);
-		}
-		return (Project)this;
-	}
-	public Project addPodsRestarting(String o) {
-		if(o != null)
-			this.podsRestarting.add(o);
-		return (Project)this;
-	}
-	@JsonIgnore
-	public void setPodsRestarting(JsonArray objects) {
-		podsRestarting.clear();
-		if(objects == null)
-			return;
-		for(int i = 0; i < objects.size(); i++) {
-			String o = objects.getString(i);
-			addPodsRestarting(o);
-		}
-	}
-	protected Project podsRestartingInit() {
-		_podsRestarting(podsRestarting);
-		return (Project)this;
-	}
+  public void setPodsRestarting(List<String> podsRestarting) {
+    this.podsRestarting = podsRestarting;
+  }
+  @JsonIgnore
+  public void setPodsRestarting(String o) {
+    String l = Project.staticSetPodsRestarting(siteRequest_, o);
+    if(l != null)
+      addPodsRestarting(l);
+  }
+  public static String staticSetPodsRestarting(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  public Project addPodsRestarting(String...objects) {
+    for(String o : objects) {
+      addPodsRestarting(o);
+    }
+    return (Project)this;
+  }
+  public Project addPodsRestarting(String o) {
+    if(o != null)
+      this.podsRestarting.add(o);
+    return (Project)this;
+  }
+  @JsonIgnore
+  public void setPodsRestarting(JsonArray objects) {
+    podsRestarting.clear();
+    if(objects == null)
+      return;
+    for(int i = 0; i < objects.size(); i++) {
+      String o = objects.getString(i);
+      addPodsRestarting(o);
+    }
+  }
+  protected Project podsRestartingInit() {
+    _podsRestarting(podsRestarting);
+    return (Project)this;
+  }
 
-	public static String staticSearchPodsRestarting(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchPodsRestarting(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrPodsRestarting(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPodsRestarting(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPodsRestarting(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchPodsRestarting(siteRequest_, Project.staticSetPodsRestarting(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPodsRestarting(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchPodsRestarting(siteRequest_, Project.staticSetPodsRestarting(siteRequest_, o)).toString();
+  }
 
-	public String[] sqlPodsRestarting() {
-		return podsRestarting.stream().map(v -> (String)v).toArray(String[]::new);
-	}
+  public String[] sqlPodsRestarting() {
+    return podsRestarting.stream().map(v -> (String)v).toArray(String[]::new);
+  }
 
-	///////////////////
-	// fullPvcsCount //
-	///////////////////
-
-
-	/**	 The entity fullPvcsCount
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Integer fullPvcsCount;
-
-	/**	<br> The entity fullPvcsCount
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:fullPvcsCount">Find the entity fullPvcsCount in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _fullPvcsCount(Wrap<Integer> w);
-
-	public Integer getFullPvcsCount() {
-		return fullPvcsCount;
-	}
-
-	public void setFullPvcsCount(Integer fullPvcsCount) {
-		this.fullPvcsCount = fullPvcsCount;
-	}
-	@JsonIgnore
-	public void setFullPvcsCount(String o) {
-		this.fullPvcsCount = Project.staticSetFullPvcsCount(siteRequest_, o);
-	}
-	public static Integer staticSetFullPvcsCount(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Integer.parseInt(o);
-		return null;
-	}
-	protected Project fullPvcsCountInit() {
-		Wrap<Integer> fullPvcsCountWrap = new Wrap<Integer>().var("fullPvcsCount");
-		if(fullPvcsCount == null) {
-			_fullPvcsCount(fullPvcsCountWrap);
-			Optional.ofNullable(fullPvcsCountWrap.getO()).ifPresent(o -> {
-				setFullPvcsCount(o);
-			});
-		}
-		return (Project)this;
-	}
-
-	public static Integer staticSearchFullPvcsCount(SiteRequest siteRequest_, Integer o) {
-		return o;
-	}
-
-	public static String staticSearchStrFullPvcsCount(SiteRequest siteRequest_, Integer o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqFullPvcsCount(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchFullPvcsCount(siteRequest_, Project.staticSetFullPvcsCount(siteRequest_, o)).toString();
-	}
-
-	public Integer sqlFullPvcsCount() {
-		return fullPvcsCount;
-	}
-
-	//////////////
-	// fullPvcs //
-	//////////////
-
-
-	/**	 The entity fullPvcs
-	 *	 It is constructed before being initialized with the constructor by default. 
-	 */
-	@JsonProperty
-	@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-	@JsonInclude(Include.NON_NULL)
-	protected List<String> fullPvcs = new ArrayList<String>();
-
-	/**	<br> The entity fullPvcs
-	 *  It is constructed before being initialized with the constructor by default. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:fullPvcs">Find the entity fullPvcs in Solr</a>
-	 * <br>
-	 * @param l is the entity already constructed. 
-	 **/
-	protected abstract void _fullPvcs(List<String> l);
-
-	public List<String> getFullPvcs() {
-		return fullPvcs;
-	}
-
-	public void setFullPvcs(List<String> fullPvcs) {
-		this.fullPvcs = fullPvcs;
-	}
-	@JsonIgnore
-	public void setFullPvcs(String o) {
-		String l = Project.staticSetFullPvcs(siteRequest_, o);
-		if(l != null)
-			addFullPvcs(l);
-	}
-	public static String staticSetFullPvcs(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	public Project addFullPvcs(String...objects) {
-		for(String o : objects) {
-			addFullPvcs(o);
-		}
-		return (Project)this;
-	}
-	public Project addFullPvcs(String o) {
-		if(o != null)
-			this.fullPvcs.add(o);
-		return (Project)this;
-	}
-	@JsonIgnore
-	public void setFullPvcs(JsonArray objects) {
-		fullPvcs.clear();
-		if(objects == null)
-			return;
-		for(int i = 0; i < objects.size(); i++) {
-			String o = objects.getString(i);
-			addFullPvcs(o);
-		}
-	}
-	protected Project fullPvcsInit() {
-		_fullPvcs(fullPvcs);
-		return (Project)this;
-	}
-
-	public static String staticSearchFullPvcs(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-
-	public static String staticSearchStrFullPvcs(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqFullPvcs(SiteRequest siteRequest_, String o) {
-		return Project.staticSearchFullPvcs(siteRequest_, Project.staticSetFullPvcs(siteRequest_, o)).toString();
-	}
-
-	public String[] sqlFullPvcs() {
-		return fullPvcs.stream().map(v -> (String)v).toArray(String[]::new);
-	}
-
-	//////////////
-	// initDeep //
-	//////////////
-
-	public Future<ProjectGen<DEV>> promiseDeepProject(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepProject();
-	}
-
-	public Future<ProjectGen<DEV>> promiseDeepProject() {
-		Promise<ProjectGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseProject(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepBaseModel(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	public Future<Void> promiseProject(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				hubIdInit();
-				hubResourceInit();
-				clusterNameInit();
-				clusterResourceInit();
-				projectNameInit();
-				projectResourceInit();
-				projectDisplayNameInit();
-				descriptionInit();
-				gpuEnabledInit();
-				podRestartCountInit();
-				podsRestartingInit();
-				fullPvcsCountInit();
-				fullPvcsInit();
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	@Override public Future<? extends ProjectGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepProject(siteRequest_);
-	}
-
-	/////////////////
-	// siteRequest //
-	/////////////////
-
-	public void siteRequestProject(SiteRequest siteRequest_) {
-			super.siteRequestBaseModel(siteRequest_);
-	}
-
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestProject(siteRequest_);
-	}
-
-	/////////////
-	// obtain //
-	/////////////
-
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainProject(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainProject(String var) {
-		Project oProject = (Project)this;
-		switch(var) {
-			case "hubId":
-				return oProject.hubId;
-			case "hubResource":
-				return oProject.hubResource;
-			case "clusterName":
-				return oProject.clusterName;
-			case "clusterResource":
-				return oProject.clusterResource;
-			case "projectName":
-				return oProject.projectName;
-			case "projectResource":
-				return oProject.projectResource;
-			case "projectDisplayName":
-				return oProject.projectDisplayName;
-			case "description":
-				return oProject.description;
-			case "gpuEnabled":
-				return oProject.gpuEnabled;
-			case "podRestartCount":
-				return oProject.podRestartCount;
-			case "podsRestarting":
-				return oProject.podsRestarting;
-			case "fullPvcsCount":
-				return oProject.fullPvcsCount;
-			case "fullPvcs":
-				return oProject.fullPvcs;
-			default:
-				return super.obtainBaseModel(var);
-		}
-	}
-
-	///////////////
-	// relate //
-	///////////////
-
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateProject(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateProject(String var, Object val) {
-		Project oProject = (Project)this;
-		switch(var) {
-			case "hubResource":
-				if(oProject.getHubResource() == null)
-					oProject.setHubResource(Optional.ofNullable(val).map(v -> v.toString()).orElse(null));
-				if(!saves.contains("hubResource"))
-					saves.add("hubResource");
-				return val;
-			case "clusterResource":
-				if(oProject.getClusterResource() == null)
-					oProject.setClusterResource(Optional.ofNullable(val).map(v -> v.toString()).orElse(null));
-				if(!saves.contains("clusterResource"))
-					saves.add("clusterResource");
-				return val;
-			default:
-				return super.relateBaseModel(var, val);
-		}
-	}
-
-	///////////////
-	// staticSet //
-	///////////////
-
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, Project o) {
-		return staticSetProject(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetProject(String entityVar, SiteRequest siteRequest_, String v, Project o) {
-		switch(entityVar) {
-		case "hubId":
-			return Project.staticSetHubId(siteRequest_, v);
-		case "hubResource":
-			return Project.staticSetHubResource(siteRequest_, v);
-		case "clusterName":
-			return Project.staticSetClusterName(siteRequest_, v);
-		case "clusterResource":
-			return Project.staticSetClusterResource(siteRequest_, v);
-		case "projectName":
-			return Project.staticSetProjectName(siteRequest_, v);
-		case "projectResource":
-			return Project.staticSetProjectResource(siteRequest_, v);
-		case "projectDisplayName":
-			return Project.staticSetProjectDisplayName(siteRequest_, v);
-		case "description":
-			return Project.staticSetDescription(siteRequest_, v);
-		case "gpuEnabled":
-			return Project.staticSetGpuEnabled(siteRequest_, v);
-		case "podRestartCount":
-			return Project.staticSetPodRestartCount(siteRequest_, v);
-		case "podsRestarting":
-			return Project.staticSetPodsRestarting(siteRequest_, v);
-		case "fullPvcsCount":
-			return Project.staticSetFullPvcsCount(siteRequest_, v);
-		case "fullPvcs":
-			return Project.staticSetFullPvcs(siteRequest_, v);
-			default:
-				return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
-		}
-	}
-
-	////////////////
-	// staticSearch //
-	////////////////
-
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchProject(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchProject(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "hubId":
-			return Project.staticSearchHubId(siteRequest_, (String)o);
-		case "hubResource":
-			return Project.staticSearchHubResource(siteRequest_, (String)o);
-		case "clusterName":
-			return Project.staticSearchClusterName(siteRequest_, (String)o);
-		case "clusterResource":
-			return Project.staticSearchClusterResource(siteRequest_, (String)o);
-		case "projectName":
-			return Project.staticSearchProjectName(siteRequest_, (String)o);
-		case "projectResource":
-			return Project.staticSearchProjectResource(siteRequest_, (String)o);
-		case "projectDisplayName":
-			return Project.staticSearchProjectDisplayName(siteRequest_, (String)o);
-		case "description":
-			return Project.staticSearchDescription(siteRequest_, (String)o);
-		case "gpuEnabled":
-			return Project.staticSearchGpuEnabled(siteRequest_, (Boolean)o);
-		case "podRestartCount":
-			return Project.staticSearchPodRestartCount(siteRequest_, (Integer)o);
-		case "podsRestarting":
-			return Project.staticSearchPodsRestarting(siteRequest_, (String)o);
-		case "fullPvcsCount":
-			return Project.staticSearchFullPvcsCount(siteRequest_, (Integer)o);
-		case "fullPvcs":
-			return Project.staticSearchFullPvcs(siteRequest_, (String)o);
-			default:
-				return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
+  public static JsonArray staticJsonPodsRestarting(List<String> podsRestarting) {
+    JsonArray a = new JsonArray();
+    podsRestarting.stream().forEach(v -> a.add(v.toString()));
+    return a;
+  }
 
 	///////////////////
-	// staticSearchStr //
+  // fullPvcsCount //
 	///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrProject(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrProject(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "hubId":
-			return Project.staticSearchStrHubId(siteRequest_, (String)o);
-		case "hubResource":
-			return Project.staticSearchStrHubResource(siteRequest_, (String)o);
-		case "clusterName":
-			return Project.staticSearchStrClusterName(siteRequest_, (String)o);
-		case "clusterResource":
-			return Project.staticSearchStrClusterResource(siteRequest_, (String)o);
-		case "projectName":
-			return Project.staticSearchStrProjectName(siteRequest_, (String)o);
-		case "projectResource":
-			return Project.staticSearchStrProjectResource(siteRequest_, (String)o);
-		case "projectDisplayName":
-			return Project.staticSearchStrProjectDisplayName(siteRequest_, (String)o);
-		case "description":
-			return Project.staticSearchStrDescription(siteRequest_, (String)o);
-		case "gpuEnabled":
-			return Project.staticSearchStrGpuEnabled(siteRequest_, (Boolean)o);
-		case "podRestartCount":
-			return Project.staticSearchStrPodRestartCount(siteRequest_, (Integer)o);
-		case "podsRestarting":
-			return Project.staticSearchStrPodsRestarting(siteRequest_, (String)o);
-		case "fullPvcsCount":
-			return Project.staticSearchStrFullPvcsCount(siteRequest_, (Integer)o);
-		case "fullPvcs":
-			return Project.staticSearchStrFullPvcs(siteRequest_, (String)o);
-			default:
-				return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  /**
+   *  The entity fullPvcsCount
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer fullPvcsCount;
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqProject(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqProject(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-		case "hubId":
-			return Project.staticSearchFqHubId(siteRequest_, o);
-		case "hubResource":
-			return Project.staticSearchFqHubResource(siteRequest_, o);
-		case "clusterName":
-			return Project.staticSearchFqClusterName(siteRequest_, o);
-		case "clusterResource":
-			return Project.staticSearchFqClusterResource(siteRequest_, o);
-		case "projectName":
-			return Project.staticSearchFqProjectName(siteRequest_, o);
-		case "projectResource":
-			return Project.staticSearchFqProjectResource(siteRequest_, o);
-		case "projectDisplayName":
-			return Project.staticSearchFqProjectDisplayName(siteRequest_, o);
-		case "description":
-			return Project.staticSearchFqDescription(siteRequest_, o);
-		case "gpuEnabled":
-			return Project.staticSearchFqGpuEnabled(siteRequest_, o);
-		case "podRestartCount":
-			return Project.staticSearchFqPodRestartCount(siteRequest_, o);
-		case "podsRestarting":
-			return Project.staticSearchFqPodsRestarting(siteRequest_, o);
-		case "fullPvcsCount":
-			return Project.staticSearchFqFullPvcsCount(siteRequest_, o);
-		case "fullPvcs":
-			return Project.staticSearchFqFullPvcs(siteRequest_, o);
-			default:
-				return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
+  /**
+   * <br> The entity fullPvcsCount
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:fullPvcsCount">Find the entity fullPvcsCount in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _fullPvcsCount(Wrap<Integer> w);
 
-	/////////////
-	// persist //
-	/////////////
+  public Integer getFullPvcsCount() {
+    return fullPvcsCount;
+  }
 
-	@Override public boolean persistForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		if(val != null) {
-			for(String v : vars) {
-				if(o == null)
-					o = persistProject(v, val);
-				else if(o instanceof BaseModel) {
-					BaseModel oBaseModel = (BaseModel)o;
-					o = oBaseModel.persistForClass(v, val);
-				}
-			}
-		}
-		return o != null;
-	}
-	public Object persistProject(String var, Object val) {
-		String varLower = var.toLowerCase();
-			if("hubid".equals(varLower)) {
-				if(val instanceof String) {
-					setHubId((String)val);
-				}
-				saves.add("hubId");
-				return val;
-			} else if("hubresource".equals(varLower)) {
-				if(val instanceof String) {
-					setHubResource((String)val);
-				}
-				saves.add("hubResource");
-				return val;
-			} else if("clustername".equals(varLower)) {
-				if(val instanceof String) {
-					setClusterName((String)val);
-				}
-				saves.add("clusterName");
-				return val;
-			} else if("clusterresource".equals(varLower)) {
-				if(val instanceof String) {
-					setClusterResource((String)val);
-				}
-				saves.add("clusterResource");
-				return val;
-			} else if("projectname".equals(varLower)) {
-				if(val instanceof String) {
-					setProjectName((String)val);
-				}
-				saves.add("projectName");
-				return val;
-			} else if("projectresource".equals(varLower)) {
-				if(val instanceof String) {
-					setProjectResource((String)val);
-				}
-				saves.add("projectResource");
-				return val;
-			} else if("description".equals(varLower)) {
-				if(val instanceof String) {
-					setDescription((String)val);
-				}
-				saves.add("description");
-				return val;
-			} else if("gpuenabled".equals(varLower)) {
-				if(val instanceof Boolean) {
-					setGpuEnabled((Boolean)val);
-				} else {
-					setGpuEnabled(val == null ? null : val.toString());
-				}
-				saves.add("gpuEnabled");
-				return val;
-			} else if("podrestartcount".equals(varLower)) {
-				if(val instanceof Integer) {
-					setPodRestartCount((Integer)val);
-				} else {
-					setPodRestartCount(val == null ? null : val.toString());
-				}
-				saves.add("podRestartCount");
-				return val;
-			} else if("podsrestarting".equals(varLower)) {
-				if(val instanceof List<?>) {
-					((List<String>)val).stream().forEach(v -> addPodsRestarting(v));
-				} else if(val instanceof String[]) {
-					Arrays.asList((String[])val).stream().forEach(v -> addPodsRestarting((String)v));
-				} else if(val instanceof JsonArray) {
-					((JsonArray)val).stream().forEach(v -> addPodsRestarting(staticSetPodsRestarting(siteRequest_, v.toString())));
-				}
-				if(!saves.contains("podsRestarting")) {
-					saves.add("podsRestarting");
-				}
-				return val;
-			} else if("fullpvcscount".equals(varLower)) {
-				if(val instanceof Integer) {
-					setFullPvcsCount((Integer)val);
-				} else {
-					setFullPvcsCount(val == null ? null : val.toString());
-				}
-				saves.add("fullPvcsCount");
-				return val;
-			} else if("fullpvcs".equals(varLower)) {
-				if(val instanceof List<?>) {
-					((List<String>)val).stream().forEach(v -> addFullPvcs(v));
-				} else if(val instanceof String[]) {
-					Arrays.asList((String[])val).stream().forEach(v -> addFullPvcs((String)v));
-				} else if(val instanceof JsonArray) {
-					((JsonArray)val).stream().forEach(v -> addFullPvcs(staticSetFullPvcs(siteRequest_, v.toString())));
-				}
-				if(!saves.contains("fullPvcs")) {
-					saves.add("fullPvcs");
-				}
-				return val;
-		} else {
-			return super.persistBaseModel(var, val);
-		}
-	}
+  public void setFullPvcsCount(Integer fullPvcsCount) {
+    this.fullPvcsCount = fullPvcsCount;
+  }
+  @JsonIgnore
+  public void setFullPvcsCount(String o) {
+    this.fullPvcsCount = Project.staticSetFullPvcsCount(siteRequest_, o);
+  }
+  public static Integer staticSetFullPvcsCount(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected Project fullPvcsCountInit() {
+    Wrap<Integer> fullPvcsCountWrap = new Wrap<Integer>().var("fullPvcsCount");
+    if(fullPvcsCount == null) {
+      _fullPvcsCount(fullPvcsCountWrap);
+      Optional.ofNullable(fullPvcsCountWrap.getO()).ifPresent(o -> {
+        setFullPvcsCount(o);
+      });
+    }
+    return (Project)this;
+  }
 
-	/////////////
-	// populate //
-	/////////////
+  public static Integer staticSearchFullPvcsCount(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
 
-	@Override public void populateForClass(SolrResponse.Doc doc) {
-		populateProject(doc);
-	}
-	public void populateProject(SolrResponse.Doc doc) {
-		Project oProject = (Project)this;
-		saves = Optional.ofNullable((ArrayList<String>)doc.get("saves_docvalues_strings")).orElse(new ArrayList<String>());
-		if(saves != null) {
+  public static String staticSearchStrFullPvcsCount(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
 
-			if(saves.contains("hubId")) {
-				String hubId = (String)doc.get("hubId_docvalues_string");
-				if(hubId != null)
-					oProject.setHubId(hubId);
-			}
+  public static String staticSearchFqFullPvcsCount(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchFullPvcsCount(siteRequest_, Project.staticSetFullPvcsCount(siteRequest_, o)).toString();
+  }
 
-			String hubResource = (String)doc.get("hubResource_docvalues_string");
-			if(hubResource != null)
-				oProject.setHubResource(hubResource);
+  public Integer sqlFullPvcsCount() {
+    return fullPvcsCount;
+  }
 
-			if(saves.contains("clusterName")) {
-				String clusterName = (String)doc.get("clusterName_docvalues_string");
-				if(clusterName != null)
-					oProject.setClusterName(clusterName);
-			}
-
-			String clusterResource = (String)doc.get("clusterResource_docvalues_string");
-			if(clusterResource != null)
-				oProject.setClusterResource(clusterResource);
-
-			if(saves.contains("projectName")) {
-				String projectName = (String)doc.get("projectName_docvalues_string");
-				if(projectName != null)
-					oProject.setProjectName(projectName);
-			}
-
-			if(saves.contains("projectResource")) {
-				String projectResource = (String)doc.get("projectResource_docvalues_string");
-				if(projectResource != null)
-					oProject.setProjectResource(projectResource);
-			}
-
-			if(saves.contains("projectDisplayName")) {
-				String projectDisplayName = (String)doc.get("projectDisplayName_docvalues_string");
-				if(projectDisplayName != null)
-					oProject.setProjectDisplayName(projectDisplayName);
-			}
-
-			if(saves.contains("description")) {
-				String description = (String)doc.get("description_docvalues_string");
-				if(description != null)
-					oProject.setDescription(description);
-			}
-
-			if(saves.contains("gpuEnabled")) {
-				Boolean gpuEnabled = (Boolean)doc.get("gpuEnabled_docvalues_boolean");
-				if(gpuEnabled != null)
-					oProject.setGpuEnabled(gpuEnabled);
-			}
-
-			if(saves.contains("podRestartCount")) {
-				Integer podRestartCount = (Integer)doc.get("podRestartCount_docvalues_int");
-				if(podRestartCount != null)
-					oProject.setPodRestartCount(podRestartCount);
-			}
-
-			if(saves.contains("podsRestarting")) {
-				List<String> podsRestarting = (List<String>)doc.get("podsRestarting_docvalues_strings");
-				if(podsRestarting != null) {
-					podsRestarting.stream().forEach( v -> {
-						oProject.podsRestarting.add(Project.staticSetPodsRestarting(siteRequest_, v));
-					});
-				}
-			}
-
-			if(saves.contains("fullPvcsCount")) {
-				Integer fullPvcsCount = (Integer)doc.get("fullPvcsCount_docvalues_int");
-				if(fullPvcsCount != null)
-					oProject.setFullPvcsCount(fullPvcsCount);
-			}
-
-			if(saves.contains("fullPvcs")) {
-				List<String> fullPvcs = (List<String>)doc.get("fullPvcs_docvalues_strings");
-				if(fullPvcs != null) {
-					fullPvcs.stream().forEach( v -> {
-						oProject.fullPvcs.add(Project.staticSetFullPvcs(siteRequest_, v));
-					});
-				}
-			}
-		}
-
-		super.populateBaseModel(doc);
-	}
-
-	public void indexProject(JsonObject doc) {
-		if(hubId != null) {
-			doc.put("hubId_docvalues_string", hubId);
-		}
-		if(hubResource != null) {
-			doc.put("hubResource_docvalues_string", hubResource);
-		}
-		if(clusterName != null) {
-			doc.put("clusterName_docvalues_string", clusterName);
-		}
-		if(clusterResource != null) {
-			doc.put("clusterResource_docvalues_string", clusterResource);
-		}
-		if(projectName != null) {
-			doc.put("projectName_docvalues_string", projectName);
-		}
-		if(projectResource != null) {
-			doc.put("projectResource_docvalues_string", projectResource);
-		}
-		if(projectDisplayName != null) {
-			doc.put("projectDisplayName_docvalues_string", projectDisplayName);
-		}
-		if(description != null) {
-			doc.put("description_docvalues_string", description);
-		}
-		if(gpuEnabled != null) {
-			doc.put("gpuEnabled_docvalues_boolean", gpuEnabled);
-		}
-		if(podRestartCount != null) {
-			doc.put("podRestartCount_docvalues_int", podRestartCount);
-		}
-		if(podsRestarting != null) {
-			JsonArray l = new JsonArray();
-			doc.put("podsRestarting_docvalues_strings", l);
-			for(String o : podsRestarting) {
-				l.add(Project.staticSearchPodsRestarting(siteRequest_, o));
-			}
-		}
-		if(fullPvcsCount != null) {
-			doc.put("fullPvcsCount_docvalues_int", fullPvcsCount);
-		}
-		if(fullPvcs != null) {
-			JsonArray l = new JsonArray();
-			doc.put("fullPvcs_docvalues_strings", l);
-			for(String o : fullPvcs) {
-				l.add(Project.staticSearchFullPvcs(siteRequest_, o));
-			}
-		}
-		super.indexBaseModel(doc);
-
-	}
-
-	public static String varStoredProject(String entityVar) {
-		switch(entityVar) {
-			case "hubId":
-				return "hubId_docvalues_string";
-			case "hubResource":
-				return "hubResource_docvalues_string";
-			case "clusterName":
-				return "clusterName_docvalues_string";
-			case "clusterResource":
-				return "clusterResource_docvalues_string";
-			case "projectName":
-				return "projectName_docvalues_string";
-			case "projectResource":
-				return "projectResource_docvalues_string";
-			case "projectDisplayName":
-				return "projectDisplayName_docvalues_string";
-			case "description":
-				return "description_docvalues_string";
-			case "gpuEnabled":
-				return "gpuEnabled_docvalues_boolean";
-			case "podRestartCount":
-				return "podRestartCount_docvalues_int";
-			case "podsRestarting":
-				return "podsRestarting_docvalues_strings";
-			case "fullPvcsCount":
-				return "fullPvcsCount_docvalues_int";
-			case "fullPvcs":
-				return "fullPvcs_docvalues_strings";
-			default:
-				return BaseModel.varStoredBaseModel(entityVar);
-		}
-	}
-
-	public static String varIndexedProject(String entityVar) {
-		switch(entityVar) {
-			case "hubId":
-				return "hubId_docvalues_string";
-			case "hubResource":
-				return "hubResource_docvalues_string";
-			case "clusterName":
-				return "clusterName_docvalues_string";
-			case "clusterResource":
-				return "clusterResource_docvalues_string";
-			case "projectName":
-				return "projectName_docvalues_string";
-			case "projectResource":
-				return "projectResource_docvalues_string";
-			case "projectDisplayName":
-				return "projectDisplayName_docvalues_string";
-			case "description":
-				return "description_docvalues_string";
-			case "gpuEnabled":
-				return "gpuEnabled_docvalues_boolean";
-			case "podRestartCount":
-				return "podRestartCount_docvalues_int";
-			case "podsRestarting":
-				return "podsRestarting_docvalues_strings";
-			case "fullPvcsCount":
-				return "fullPvcsCount_docvalues_int";
-			case "fullPvcs":
-				return "fullPvcs_docvalues_strings";
-			default:
-				return BaseModel.varIndexedBaseModel(entityVar);
-		}
-	}
-
-	public static String searchVarProject(String searchVar) {
-		switch(searchVar) {
-			case "hubId_docvalues_string":
-				return "hubId";
-			case "hubResource_docvalues_string":
-				return "hubResource";
-			case "clusterName_docvalues_string":
-				return "clusterName";
-			case "clusterResource_docvalues_string":
-				return "clusterResource";
-			case "projectName_docvalues_string":
-				return "projectName";
-			case "projectResource_docvalues_string":
-				return "projectResource";
-			case "projectDisplayName_docvalues_string":
-				return "projectDisplayName";
-			case "description_docvalues_string":
-				return "description";
-			case "gpuEnabled_docvalues_boolean":
-				return "gpuEnabled";
-			case "podRestartCount_docvalues_int":
-				return "podRestartCount";
-			case "podsRestarting_docvalues_strings":
-				return "podsRestarting";
-			case "fullPvcsCount_docvalues_int":
-				return "fullPvcsCount";
-			case "fullPvcs_docvalues_strings":
-				return "fullPvcs";
-			default:
-				return BaseModel.searchVarBaseModel(searchVar);
-		}
-	}
-
-	public static String varSearchProject(String entityVar) {
-		switch(entityVar) {
-			default:
-				return BaseModel.varSearchBaseModel(entityVar);
-		}
-	}
-
-	public static String varSuggestedProject(String entityVar) {
-		switch(entityVar) {
-			default:
-				return BaseModel.varSuggestedBaseModel(entityVar);
-		}
-	}
-
-	/////////////
-	// store //
-	/////////////
-
-	@Override public void storeForClass(SolrResponse.Doc doc) {
-		storeProject(doc);
-	}
-	public void storeProject(SolrResponse.Doc doc) {
-		Project oProject = (Project)this;
-		SiteRequest siteRequest = oProject.getSiteRequest_();
-
-		oProject.setHubId(Optional.ofNullable(doc.get("hubId_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setHubResource(Optional.ofNullable(doc.get("hubResource_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setClusterName(Optional.ofNullable(doc.get("clusterName_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setClusterResource(Optional.ofNullable(doc.get("clusterResource_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setProjectName(Optional.ofNullable(doc.get("projectName_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setProjectResource(Optional.ofNullable(doc.get("projectResource_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setProjectDisplayName(Optional.ofNullable(doc.get("projectDisplayName_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
-		oProject.setPodRestartCount(Optional.ofNullable(doc.get("podRestartCount_docvalues_int")).map(v -> v.toString()).orElse(null));
-		Optional.ofNullable((List<?>)doc.get("podsRestarting_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
-			oProject.addPodsRestarting(Project.staticSetPodsRestarting(siteRequest, v.toString()));
-		});
-		oProject.setFullPvcsCount(Optional.ofNullable(doc.get("fullPvcsCount_docvalues_int")).map(v -> v.toString()).orElse(null));
-		Optional.ofNullable((List<?>)doc.get("fullPvcs_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
-			oProject.addFullPvcs(Project.staticSetFullPvcs(siteRequest, v.toString()));
-		});
-
-		super.storeBaseModel(doc);
-	}
-
-	//////////////////
-	// apiRequest //
-	//////////////////
-
-	public void apiRequestProject() {
-		ApiRequest apiRequest = Optional.ofNullable(siteRequest_).map(r -> r.getApiRequest_()).orElse(null);
-		Object o = Optional.ofNullable(apiRequest).map(ApiRequest::getOriginal).orElse(null);
-		if(o != null && o instanceof Project) {
-			Project original = (Project)o;
-			if(!Objects.equals(hubId, original.getHubId()))
-				apiRequest.addVars("hubId");
-			if(!Objects.equals(hubResource, original.getHubResource()))
-				apiRequest.addVars("hubResource");
-			if(!Objects.equals(clusterName, original.getClusterName()))
-				apiRequest.addVars("clusterName");
-			if(!Objects.equals(clusterResource, original.getClusterResource()))
-				apiRequest.addVars("clusterResource");
-			if(!Objects.equals(projectName, original.getProjectName()))
-				apiRequest.addVars("projectName");
-			if(!Objects.equals(projectResource, original.getProjectResource()))
-				apiRequest.addVars("projectResource");
-			if(!Objects.equals(projectDisplayName, original.getProjectDisplayName()))
-				apiRequest.addVars("projectDisplayName");
-			if(!Objects.equals(description, original.getDescription()))
-				apiRequest.addVars("description");
-			if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
-				apiRequest.addVars("gpuEnabled");
-			if(!Objects.equals(podRestartCount, original.getPodRestartCount()))
-				apiRequest.addVars("podRestartCount");
-			if(!Objects.equals(podsRestarting, original.getPodsRestarting()))
-				apiRequest.addVars("podsRestarting");
-			if(!Objects.equals(fullPvcsCount, original.getFullPvcsCount()))
-				apiRequest.addVars("fullPvcsCount");
-			if(!Objects.equals(fullPvcs, original.getFullPvcs()))
-				apiRequest.addVars("fullPvcs");
-			super.apiRequestBaseModel();
-		}
-	}
+  public static String staticJsonFullPvcsCount(Integer fullPvcsCount) {
+    return Optional.ofNullable(fullPvcsCount).map(v -> v.toString()).orElse(null);
+  }
 
 	//////////////
-	// toString //
+  // fullPvcs //
 	//////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		sb.append(Optional.ofNullable(hubId).map(v -> "hubId: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(hubResource).map(v -> "hubResource: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(clusterName).map(v -> "clusterName: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(clusterResource).map(v -> "clusterResource: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(projectName).map(v -> "projectName: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(projectResource).map(v -> "projectResource: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(projectDisplayName).map(v -> "projectDisplayName: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
-		sb.append(Optional.ofNullable(podRestartCount).map(v -> "podRestartCount: " + v + "\n").orElse(""));
-		sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
-		sb.append(Optional.ofNullable(fullPvcsCount).map(v -> "fullPvcsCount: " + v + "\n").orElse(""));
-		sb.append(Optional.ofNullable(fullPvcs).map(v -> "fullPvcs: " + v + "\n").orElse(""));
-		return sb.toString();
+
+  /**
+   *  The entity fullPvcs
+   *	 It is constructed before being initialized with the constructor by default. 
+   */
+  @JsonProperty
+  @JsonFormat(shape = JsonFormat.Shape.ARRAY)
+  @JsonInclude(Include.NON_NULL)
+  protected List<String> fullPvcs = new ArrayList<String>();
+
+  /**
+   * <br> The entity fullPvcs
+   *  It is constructed before being initialized with the constructor by default. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:fullPvcs">Find the entity fullPvcs in Solr</a>
+   * <br>
+   * @param l is the entity already constructed. 
+   **/
+  protected abstract void _fullPvcs(List<String> l);
+
+  public List<String> getFullPvcs() {
+    return fullPvcs;
+  }
+
+  public void setFullPvcs(List<String> fullPvcs) {
+    this.fullPvcs = fullPvcs;
+  }
+  @JsonIgnore
+  public void setFullPvcs(String o) {
+    String l = Project.staticSetFullPvcs(siteRequest_, o);
+    if(l != null)
+      addFullPvcs(l);
+  }
+  public static String staticSetFullPvcs(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  public Project addFullPvcs(String...objects) {
+    for(String o : objects) {
+      addFullPvcs(o);
+    }
+    return (Project)this;
+  }
+  public Project addFullPvcs(String o) {
+    if(o != null)
+      this.fullPvcs.add(o);
+    return (Project)this;
+  }
+  @JsonIgnore
+  public void setFullPvcs(JsonArray objects) {
+    fullPvcs.clear();
+    if(objects == null)
+      return;
+    for(int i = 0; i < objects.size(); i++) {
+      String o = objects.getString(i);
+      addFullPvcs(o);
+    }
+  }
+  protected Project fullPvcsInit() {
+    _fullPvcs(fullPvcs);
+    return (Project)this;
+  }
+
+  public static String staticSearchFullPvcs(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrFullPvcs(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqFullPvcs(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchFullPvcs(siteRequest_, Project.staticSetFullPvcs(siteRequest_, o)).toString();
+  }
+
+  public String[] sqlFullPvcs() {
+    return fullPvcs.stream().map(v -> (String)v).toArray(String[]::new);
+  }
+
+  public static JsonArray staticJsonFullPvcs(List<String> fullPvcs) {
+    JsonArray a = new JsonArray();
+    fullPvcs.stream().forEach(v -> a.add(v.toString()));
+    return a;
+  }
+
+  //////////////
+  // initDeep //
+  //////////////
+
+  public Future<ProjectGen<DEV>> promiseDeepProject(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepProject();
+  }
+
+  public Future<ProjectGen<DEV>> promiseDeepProject() {
+    Promise<ProjectGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseProject(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepBaseModel(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
+
+  public Future<Void> promiseProject(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        hubIdInit();
+        hubResourceInit();
+        clusterNameInit();
+        clusterResourceInit();
+        projectNameInit();
+        projectResourceInit();
+        projectDisplayNameInit();
+        descriptionInit();
+        gpuEnabledInit();
+        podRestartCountInit();
+        podsRestartingInit();
+        fullPvcsCountInit();
+        fullPvcsInit();
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
+
+  @Override public Future<? extends ProjectGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepProject(siteRequest_);
+  }
+
+  /////////////////
+  // siteRequest //
+  /////////////////
+
+  public void siteRequestProject(SiteRequest siteRequest_) {
+      super.siteRequestBaseModel(siteRequest_);
+  }
+
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestProject(siteRequest_);
+  }
+
+  /////////////
+  // obtain //
+  /////////////
+
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainProject(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainProject(String var) {
+    Project oProject = (Project)this;
+    switch(var) {
+      case "hubId":
+        return oProject.hubId;
+      case "hubResource":
+        return oProject.hubResource;
+      case "clusterName":
+        return oProject.clusterName;
+      case "clusterResource":
+        return oProject.clusterResource;
+      case "projectName":
+        return oProject.projectName;
+      case "projectResource":
+        return oProject.projectResource;
+      case "projectDisplayName":
+        return oProject.projectDisplayName;
+      case "description":
+        return oProject.description;
+      case "gpuEnabled":
+        return oProject.gpuEnabled;
+      case "podRestartCount":
+        return oProject.podRestartCount;
+      case "podsRestarting":
+        return oProject.podsRestarting;
+      case "fullPvcsCount":
+        return oProject.fullPvcsCount;
+      case "fullPvcs":
+        return oProject.fullPvcs;
+      default:
+        return super.obtainBaseModel(var);
+    }
+  }
+
+  ///////////////
+  // relate //
+  ///////////////
+
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateProject(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateProject(String var, Object val) {
+    Project oProject = (Project)this;
+    switch(var) {
+      case "hubResource":
+        if(oProject.getHubResource() == null)
+          oProject.setHubResource(Optional.ofNullable(val).map(v -> v.toString()).orElse(null));
+        if(!saves.contains("hubResource"))
+          saves.add("hubResource");
+        return val;
+      case "clusterResource":
+        if(oProject.getClusterResource() == null)
+          oProject.setClusterResource(Optional.ofNullable(val).map(v -> v.toString()).orElse(null));
+        if(!saves.contains("clusterResource"))
+          saves.add("clusterResource");
+        return val;
+      default:
+        return super.relateBaseModel(var, val);
+    }
+  }
+
+  ///////////////
+  // staticSet //
+  ///////////////
+
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, Project o) {
+    return staticSetProject(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetProject(String entityVar, SiteRequest siteRequest_, String v, Project o) {
+    switch(entityVar) {
+    case "hubId":
+      return Project.staticSetHubId(siteRequest_, v);
+    case "hubResource":
+      return Project.staticSetHubResource(siteRequest_, v);
+    case "clusterName":
+      return Project.staticSetClusterName(siteRequest_, v);
+    case "clusterResource":
+      return Project.staticSetClusterResource(siteRequest_, v);
+    case "projectName":
+      return Project.staticSetProjectName(siteRequest_, v);
+    case "projectResource":
+      return Project.staticSetProjectResource(siteRequest_, v);
+    case "projectDisplayName":
+      return Project.staticSetProjectDisplayName(siteRequest_, v);
+    case "description":
+      return Project.staticSetDescription(siteRequest_, v);
+    case "gpuEnabled":
+      return Project.staticSetGpuEnabled(siteRequest_, v);
+    case "podRestartCount":
+      return Project.staticSetPodRestartCount(siteRequest_, v);
+    case "podsRestarting":
+      return Project.staticSetPodsRestarting(siteRequest_, v);
+    case "fullPvcsCount":
+      return Project.staticSetFullPvcsCount(siteRequest_, v);
+    case "fullPvcs":
+      return Project.staticSetFullPvcs(siteRequest_, v);
+      default:
+        return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
+    }
+  }
+
+  ////////////////
+  // staticSearch //
+  ////////////////
+
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchProject(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchProject(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "hubId":
+      return Project.staticSearchHubId(siteRequest_, (String)o);
+    case "hubResource":
+      return Project.staticSearchHubResource(siteRequest_, (String)o);
+    case "clusterName":
+      return Project.staticSearchClusterName(siteRequest_, (String)o);
+    case "clusterResource":
+      return Project.staticSearchClusterResource(siteRequest_, (String)o);
+    case "projectName":
+      return Project.staticSearchProjectName(siteRequest_, (String)o);
+    case "projectResource":
+      return Project.staticSearchProjectResource(siteRequest_, (String)o);
+    case "projectDisplayName":
+      return Project.staticSearchProjectDisplayName(siteRequest_, (String)o);
+    case "description":
+      return Project.staticSearchDescription(siteRequest_, (String)o);
+    case "gpuEnabled":
+      return Project.staticSearchGpuEnabled(siteRequest_, (Boolean)o);
+    case "podRestartCount":
+      return Project.staticSearchPodRestartCount(siteRequest_, (Integer)o);
+    case "podsRestarting":
+      return Project.staticSearchPodsRestarting(siteRequest_, (String)o);
+    case "fullPvcsCount":
+      return Project.staticSearchFullPvcsCount(siteRequest_, (Integer)o);
+    case "fullPvcs":
+      return Project.staticSearchFullPvcs(siteRequest_, (String)o);
+      default:
+        return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
+
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
+
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrProject(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrProject(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "hubId":
+      return Project.staticSearchStrHubId(siteRequest_, (String)o);
+    case "hubResource":
+      return Project.staticSearchStrHubResource(siteRequest_, (String)o);
+    case "clusterName":
+      return Project.staticSearchStrClusterName(siteRequest_, (String)o);
+    case "clusterResource":
+      return Project.staticSearchStrClusterResource(siteRequest_, (String)o);
+    case "projectName":
+      return Project.staticSearchStrProjectName(siteRequest_, (String)o);
+    case "projectResource":
+      return Project.staticSearchStrProjectResource(siteRequest_, (String)o);
+    case "projectDisplayName":
+      return Project.staticSearchStrProjectDisplayName(siteRequest_, (String)o);
+    case "description":
+      return Project.staticSearchStrDescription(siteRequest_, (String)o);
+    case "gpuEnabled":
+      return Project.staticSearchStrGpuEnabled(siteRequest_, (Boolean)o);
+    case "podRestartCount":
+      return Project.staticSearchStrPodRestartCount(siteRequest_, (Integer)o);
+    case "podsRestarting":
+      return Project.staticSearchStrPodsRestarting(siteRequest_, (String)o);
+    case "fullPvcsCount":
+      return Project.staticSearchStrFullPvcsCount(siteRequest_, (Integer)o);
+    case "fullPvcs":
+      return Project.staticSearchStrFullPvcs(siteRequest_, (String)o);
+      default:
+        return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
+
+  //////////////////
+  // staticSearchFq //
+  //////////////////
+
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqProject(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqProject(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+    case "hubId":
+      return Project.staticSearchFqHubId(siteRequest_, o);
+    case "hubResource":
+      return Project.staticSearchFqHubResource(siteRequest_, o);
+    case "clusterName":
+      return Project.staticSearchFqClusterName(siteRequest_, o);
+    case "clusterResource":
+      return Project.staticSearchFqClusterResource(siteRequest_, o);
+    case "projectName":
+      return Project.staticSearchFqProjectName(siteRequest_, o);
+    case "projectResource":
+      return Project.staticSearchFqProjectResource(siteRequest_, o);
+    case "projectDisplayName":
+      return Project.staticSearchFqProjectDisplayName(siteRequest_, o);
+    case "description":
+      return Project.staticSearchFqDescription(siteRequest_, o);
+    case "gpuEnabled":
+      return Project.staticSearchFqGpuEnabled(siteRequest_, o);
+    case "podRestartCount":
+      return Project.staticSearchFqPodRestartCount(siteRequest_, o);
+    case "podsRestarting":
+      return Project.staticSearchFqPodsRestarting(siteRequest_, o);
+    case "fullPvcsCount":
+      return Project.staticSearchFqFullPvcsCount(siteRequest_, o);
+    case "fullPvcs":
+      return Project.staticSearchFqFullPvcs(siteRequest_, o);
+      default:
+        return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
+
+  /////////////
+  // persist //
+  /////////////
+
+  @Override public boolean persistForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    if(val != null) {
+      for(String v : vars) {
+        if(o == null)
+          o = persistProject(v, val);
+        else if(o instanceof BaseModel) {
+          BaseModel oBaseModel = (BaseModel)o;
+          o = oBaseModel.persistForClass(v, val);
+        }
+      }
+    }
+    return o != null;
+  }
+  public Object persistProject(String var, Object val) {
+    String varLower = var.toLowerCase();
+      if("hubid".equals(varLower)) {
+        if(val instanceof String) {
+          setHubId((String)val);
+        }
+        saves.add("hubId");
+        return val;
+      } else if("hubresource".equals(varLower)) {
+        if(val instanceof String) {
+          setHubResource((String)val);
+        }
+        saves.add("hubResource");
+        return val;
+      } else if("clustername".equals(varLower)) {
+        if(val instanceof String) {
+          setClusterName((String)val);
+        }
+        saves.add("clusterName");
+        return val;
+      } else if("clusterresource".equals(varLower)) {
+        if(val instanceof String) {
+          setClusterResource((String)val);
+        }
+        saves.add("clusterResource");
+        return val;
+      } else if("projectname".equals(varLower)) {
+        if(val instanceof String) {
+          setProjectName((String)val);
+        }
+        saves.add("projectName");
+        return val;
+      } else if("projectresource".equals(varLower)) {
+        if(val instanceof String) {
+          setProjectResource((String)val);
+        }
+        saves.add("projectResource");
+        return val;
+      } else if("description".equals(varLower)) {
+        if(val instanceof String) {
+          setDescription((String)val);
+        }
+        saves.add("description");
+        return val;
+      } else if("gpuenabled".equals(varLower)) {
+        if(val instanceof Boolean) {
+          setGpuEnabled((Boolean)val);
+        } else {
+          setGpuEnabled(val == null ? null : val.toString());
+        }
+        saves.add("gpuEnabled");
+        return val;
+      } else if("podrestartcount".equals(varLower)) {
+        if(val instanceof Integer) {
+          setPodRestartCount((Integer)val);
+        } else {
+          setPodRestartCount(val == null ? null : val.toString());
+        }
+        saves.add("podRestartCount");
+        return val;
+      } else if("podsrestarting".equals(varLower)) {
+        if(val instanceof List<?>) {
+          ((List<String>)val).stream().forEach(v -> addPodsRestarting(v));
+        } else if(val instanceof String[]) {
+          Arrays.asList((String[])val).stream().forEach(v -> addPodsRestarting((String)v));
+        } else if(val instanceof JsonArray) {
+          ((JsonArray)val).stream().forEach(v -> addPodsRestarting(staticSetPodsRestarting(siteRequest_, v.toString())));
+        }
+        if(!saves.contains("podsRestarting")) {
+          saves.add("podsRestarting");
+        }
+        return val;
+      } else if("fullpvcscount".equals(varLower)) {
+        if(val instanceof Integer) {
+          setFullPvcsCount((Integer)val);
+        } else {
+          setFullPvcsCount(val == null ? null : val.toString());
+        }
+        saves.add("fullPvcsCount");
+        return val;
+      } else if("fullpvcs".equals(varLower)) {
+        if(val instanceof List<?>) {
+          ((List<String>)val).stream().forEach(v -> addFullPvcs(v));
+        } else if(val instanceof String[]) {
+          Arrays.asList((String[])val).stream().forEach(v -> addFullPvcs((String)v));
+        } else if(val instanceof JsonArray) {
+          ((JsonArray)val).stream().forEach(v -> addFullPvcs(staticSetFullPvcs(siteRequest_, v.toString())));
+        }
+        if(!saves.contains("fullPvcs")) {
+          saves.add("fullPvcs");
+        }
+        return val;
+    } else {
+      return super.persistBaseModel(var, val);
+    }
+  }
+
+  /////////////
+  // populate //
+  /////////////
+
+  @Override public void populateForClass(SolrResponse.Doc doc) {
+    populateProject(doc);
+  }
+  public void populateProject(SolrResponse.Doc doc) {
+    Project oProject = (Project)this;
+    saves = Optional.ofNullable((ArrayList<String>)doc.get("saves_docvalues_strings")).orElse(new ArrayList<String>());
+    if(saves != null) {
+
+      if(saves.contains("hubId")) {
+        String hubId = (String)doc.get("hubId_docvalues_string");
+        if(hubId != null)
+          oProject.setHubId(hubId);
+      }
+
+      String hubResource = (String)doc.get("hubResource_docvalues_string");
+      if(hubResource != null)
+        oProject.setHubResource(hubResource);
+
+      if(saves.contains("clusterName")) {
+        String clusterName = (String)doc.get("clusterName_docvalues_string");
+        if(clusterName != null)
+          oProject.setClusterName(clusterName);
+      }
+
+      String clusterResource = (String)doc.get("clusterResource_docvalues_string");
+      if(clusterResource != null)
+        oProject.setClusterResource(clusterResource);
+
+      if(saves.contains("projectName")) {
+        String projectName = (String)doc.get("projectName_docvalues_string");
+        if(projectName != null)
+          oProject.setProjectName(projectName);
+      }
+
+      if(saves.contains("projectResource")) {
+        String projectResource = (String)doc.get("projectResource_docvalues_string");
+        if(projectResource != null)
+          oProject.setProjectResource(projectResource);
+      }
+
+      if(saves.contains("projectDisplayName")) {
+        String projectDisplayName = (String)doc.get("projectDisplayName_docvalues_string");
+        if(projectDisplayName != null)
+          oProject.setProjectDisplayName(projectDisplayName);
+      }
+
+      if(saves.contains("description")) {
+        String description = (String)doc.get("description_docvalues_string");
+        if(description != null)
+          oProject.setDescription(description);
+      }
+
+      if(saves.contains("gpuEnabled")) {
+        Boolean gpuEnabled = (Boolean)doc.get("gpuEnabled_docvalues_boolean");
+        if(gpuEnabled != null)
+          oProject.setGpuEnabled(gpuEnabled);
+      }
+
+      if(saves.contains("podRestartCount")) {
+        Integer podRestartCount = (Integer)doc.get("podRestartCount_docvalues_int");
+        if(podRestartCount != null)
+          oProject.setPodRestartCount(podRestartCount);
+      }
+
+      if(saves.contains("podsRestarting")) {
+        List<String> podsRestarting = (List<String>)doc.get("podsRestarting_docvalues_strings");
+        if(podsRestarting != null) {
+          podsRestarting.stream().forEach( v -> {
+            oProject.podsRestarting.add(Project.staticSetPodsRestarting(siteRequest_, v));
+          });
+        }
+      }
+
+      if(saves.contains("fullPvcsCount")) {
+        Integer fullPvcsCount = (Integer)doc.get("fullPvcsCount_docvalues_int");
+        if(fullPvcsCount != null)
+          oProject.setFullPvcsCount(fullPvcsCount);
+      }
+
+      if(saves.contains("fullPvcs")) {
+        List<String> fullPvcs = (List<String>)doc.get("fullPvcs_docvalues_strings");
+        if(fullPvcs != null) {
+          fullPvcs.stream().forEach( v -> {
+            oProject.fullPvcs.add(Project.staticSetFullPvcs(siteRequest_, v));
+          });
+        }
+      }
+    }
+
+    super.populateBaseModel(doc);
+  }
+
+  public void indexProject(JsonObject doc) {
+    if(hubId != null) {
+      doc.put("hubId_docvalues_string", hubId);
+    }
+    if(hubResource != null) {
+      doc.put("hubResource_docvalues_string", hubResource);
+    }
+    if(clusterName != null) {
+      doc.put("clusterName_docvalues_string", clusterName);
+    }
+    if(clusterResource != null) {
+      doc.put("clusterResource_docvalues_string", clusterResource);
+    }
+    if(projectName != null) {
+      doc.put("projectName_docvalues_string", projectName);
+    }
+    if(projectResource != null) {
+      doc.put("projectResource_docvalues_string", projectResource);
+    }
+    if(projectDisplayName != null) {
+      doc.put("projectDisplayName_docvalues_string", projectDisplayName);
+    }
+    if(description != null) {
+      doc.put("description_docvalues_string", description);
+    }
+    if(gpuEnabled != null) {
+      doc.put("gpuEnabled_docvalues_boolean", gpuEnabled);
+    }
+    if(podRestartCount != null) {
+      doc.put("podRestartCount_docvalues_int", podRestartCount);
+    }
+    if(podsRestarting != null) {
+      JsonArray l = new JsonArray();
+      doc.put("podsRestarting_docvalues_strings", l);
+      for(String o : podsRestarting) {
+        l.add(Project.staticSearchPodsRestarting(siteRequest_, o));
+      }
+    }
+    if(fullPvcsCount != null) {
+      doc.put("fullPvcsCount_docvalues_int", fullPvcsCount);
+    }
+    if(fullPvcs != null) {
+      JsonArray l = new JsonArray();
+      doc.put("fullPvcs_docvalues_strings", l);
+      for(String o : fullPvcs) {
+        l.add(Project.staticSearchFullPvcs(siteRequest_, o));
+      }
+    }
+    super.indexBaseModel(doc);
+
 	}
 
-	public static final String CLASS_SIMPLE_NAME = "Project";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.project.Project";
-	public static final String CLASS_AUTH_RESOURCE = "PROJECT";
-	public static final String CLASS_API_ADDRESS_Project = "ai-telemetry-enUS-Project";
-	public static String getClassApiAddress() {
-		return CLASS_API_ADDRESS_Project;
-	}
-	public static final String VAR_hubId = "hubId";
-	public static final String VAR_hubResource = "hubResource";
-	public static final String VAR_clusterName = "clusterName";
-	public static final String VAR_clusterResource = "clusterResource";
-	public static final String VAR_projectName = "projectName";
-	public static final String VAR_projectResource = "projectResource";
-	public static final String VAR_projectDisplayName = "projectDisplayName";
-	public static final String VAR_description = "description";
-	public static final String VAR_gpuEnabled = "gpuEnabled";
-	public static final String VAR_podRestartCount = "podRestartCount";
-	public static final String VAR_podsRestarting = "podsRestarting";
-	public static final String VAR_fullPvcsCount = "fullPvcsCount";
-	public static final String VAR_fullPvcs = "fullPvcs";
+  public static String varStoredProject(String entityVar) {
+    switch(entityVar) {
+      case "hubId":
+        return "hubId_docvalues_string";
+      case "hubResource":
+        return "hubResource_docvalues_string";
+      case "clusterName":
+        return "clusterName_docvalues_string";
+      case "clusterResource":
+        return "clusterResource_docvalues_string";
+      case "projectName":
+        return "projectName_docvalues_string";
+      case "projectResource":
+        return "projectResource_docvalues_string";
+      case "projectDisplayName":
+        return "projectDisplayName_docvalues_string";
+      case "description":
+        return "description_docvalues_string";
+      case "gpuEnabled":
+        return "gpuEnabled_docvalues_boolean";
+      case "podRestartCount":
+        return "podRestartCount_docvalues_int";
+      case "podsRestarting":
+        return "podsRestarting_docvalues_strings";
+      case "fullPvcsCount":
+        return "fullPvcsCount_docvalues_int";
+      case "fullPvcs":
+        return "fullPvcs_docvalues_strings";
+      default:
+        return BaseModel.varStoredBaseModel(entityVar);
+    }
+  }
 
-	public static List<String> varsQForClass() {
-		return Project.varsQProject(new ArrayList<String>());
-	}
-	public static List<String> varsQProject(List<String> vars) {
-		BaseModel.varsQBaseModel(vars);
-		return vars;
-	}
+  public static String varIndexedProject(String entityVar) {
+    switch(entityVar) {
+      case "hubId":
+        return "hubId_docvalues_string";
+      case "hubResource":
+        return "hubResource_docvalues_string";
+      case "clusterName":
+        return "clusterName_docvalues_string";
+      case "clusterResource":
+        return "clusterResource_docvalues_string";
+      case "projectName":
+        return "projectName_docvalues_string";
+      case "projectResource":
+        return "projectResource_docvalues_string";
+      case "projectDisplayName":
+        return "projectDisplayName_docvalues_string";
+      case "description":
+        return "description_docvalues_string";
+      case "gpuEnabled":
+        return "gpuEnabled_docvalues_boolean";
+      case "podRestartCount":
+        return "podRestartCount_docvalues_int";
+      case "podsRestarting":
+        return "podsRestarting_docvalues_strings";
+      case "fullPvcsCount":
+        return "fullPvcsCount_docvalues_int";
+      case "fullPvcs":
+        return "fullPvcs_docvalues_strings";
+      default:
+        return BaseModel.varIndexedBaseModel(entityVar);
+    }
+  }
 
-	public static List<String> varsFqForClass() {
-		return Project.varsFqProject(new ArrayList<String>());
-	}
-	public static List<String> varsFqProject(List<String> vars) {
-		vars.add(VAR_hubId);
-		vars.add(VAR_hubResource);
-		vars.add(VAR_clusterName);
-		vars.add(VAR_clusterResource);
-		vars.add(VAR_projectName);
-		vars.add(VAR_projectResource);
-		vars.add(VAR_projectDisplayName);
-		vars.add(VAR_description);
-		vars.add(VAR_gpuEnabled);
-		vars.add(VAR_podRestartCount);
-		vars.add(VAR_podsRestarting);
-		vars.add(VAR_fullPvcsCount);
-		vars.add(VAR_fullPvcs);
-		BaseModel.varsFqBaseModel(vars);
-		return vars;
-	}
+  public static String searchVarProject(String searchVar) {
+    switch(searchVar) {
+      case "hubId_docvalues_string":
+        return "hubId";
+      case "hubResource_docvalues_string":
+        return "hubResource";
+      case "clusterName_docvalues_string":
+        return "clusterName";
+      case "clusterResource_docvalues_string":
+        return "clusterResource";
+      case "projectName_docvalues_string":
+        return "projectName";
+      case "projectResource_docvalues_string":
+        return "projectResource";
+      case "projectDisplayName_docvalues_string":
+        return "projectDisplayName";
+      case "description_docvalues_string":
+        return "description";
+      case "gpuEnabled_docvalues_boolean":
+        return "gpuEnabled";
+      case "podRestartCount_docvalues_int":
+        return "podRestartCount";
+      case "podsRestarting_docvalues_strings":
+        return "podsRestarting";
+      case "fullPvcsCount_docvalues_int":
+        return "fullPvcsCount";
+      case "fullPvcs_docvalues_strings":
+        return "fullPvcs";
+      default:
+        return BaseModel.searchVarBaseModel(searchVar);
+    }
+  }
 
-	public static List<String> varsRangeForClass() {
-		return Project.varsRangeProject(new ArrayList<String>());
-	}
-	public static List<String> varsRangeProject(List<String> vars) {
-		vars.add(VAR_podRestartCount);
-		vars.add(VAR_fullPvcsCount);
-		BaseModel.varsRangeBaseModel(vars);
-		return vars;
-	}
+  public static String varSearchProject(String entityVar) {
+    switch(entityVar) {
+      default:
+        return BaseModel.varSearchBaseModel(entityVar);
+    }
+  }
 
-	public static final String DISPLAY_NAME_hubId = "ACM Hub";
-	public static final String DISPLAY_NAME_hubResource = "hub auth resource";
-	public static final String DISPLAY_NAME_clusterName = "cluster name";
-	public static final String DISPLAY_NAME_clusterResource = "cluster auth resource";
-	public static final String DISPLAY_NAME_projectName = "project name";
-	public static final String DISPLAY_NAME_projectResource = "project auth resource";
-	public static final String DISPLAY_NAME_projectDisplayName = "project display name";
-	public static final String DISPLAY_NAME_description = "description";
-	public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
-	public static final String DISPLAY_NAME_podRestartCount = "pod restarts";
-	public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
-	public static final String DISPLAY_NAME_fullPvcsCount = "Full PVCs count";
-	public static final String DISPLAY_NAME_fullPvcs = "pods restarting";
+  public static String varSuggestedProject(String entityVar) {
+    switch(entityVar) {
+      default:
+        return BaseModel.varSuggestedBaseModel(entityVar);
+    }
+  }
 
-	@Override
-	public String idForClass() {
-		return projectResource;
-	}
+  /////////////
+  // store //
+  /////////////
 
-	@Override
-	public String titleForClass() {
-		return objectTitle;
-	}
+  @Override public void storeForClass(SolrResponse.Doc doc) {
+    storeProject(doc);
+  }
+  public void storeProject(SolrResponse.Doc doc) {
+    Project oProject = (Project)this;
+    SiteRequest siteRequest = oProject.getSiteRequest_();
 
-	@Override
-	public String nameForClass() {
-		return projectDisplayName;
-	}
+    oProject.setHubId(Optional.ofNullable(doc.get("hubId_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setHubResource(Optional.ofNullable(doc.get("hubResource_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setClusterName(Optional.ofNullable(doc.get("clusterName_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setClusterResource(Optional.ofNullable(doc.get("clusterResource_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setProjectName(Optional.ofNullable(doc.get("projectName_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setProjectResource(Optional.ofNullable(doc.get("projectResource_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setProjectDisplayName(Optional.ofNullable(doc.get("projectDisplayName_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
+    oProject.setPodRestartCount(Optional.ofNullable(doc.get("podRestartCount_docvalues_int")).map(v -> v.toString()).orElse(null));
+    Optional.ofNullable((List<?>)doc.get("podsRestarting_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
+      oProject.addPodsRestarting(Project.staticSetPodsRestarting(siteRequest, v.toString()));
+    });
+    oProject.setFullPvcsCount(Optional.ofNullable(doc.get("fullPvcsCount_docvalues_int")).map(v -> v.toString()).orElse(null));
+    Optional.ofNullable((List<?>)doc.get("fullPvcs_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
+      oProject.addFullPvcs(Project.staticSetFullPvcs(siteRequest, v.toString()));
+    });
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return Project.NameAdjectiveSingular_enUS;
-	}
+    super.storeBaseModel(doc);
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return description;
-	}
+  //////////////////
+  // apiRequest //
+  //////////////////
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return "%s/en-us/edit/project/%s";
-	}
+  public void apiRequestProject() {
+    ApiRequest apiRequest = Optional.ofNullable(siteRequest_).map(r -> r.getApiRequest_()).orElse(null);
+    Object o = Optional.ofNullable(apiRequest).map(ApiRequest::getOriginal).orElse(null);
+    if(o != null && o instanceof Project) {
+      Project original = (Project)o;
+      if(!Objects.equals(hubId, original.getHubId()))
+        apiRequest.addVars("hubId");
+      if(!Objects.equals(hubResource, original.getHubResource()))
+        apiRequest.addVars("hubResource");
+      if(!Objects.equals(clusterName, original.getClusterName()))
+        apiRequest.addVars("clusterName");
+      if(!Objects.equals(clusterResource, original.getClusterResource()))
+        apiRequest.addVars("clusterResource");
+      if(!Objects.equals(projectName, original.getProjectName()))
+        apiRequest.addVars("projectName");
+      if(!Objects.equals(projectResource, original.getProjectResource()))
+        apiRequest.addVars("projectResource");
+      if(!Objects.equals(projectDisplayName, original.getProjectDisplayName()))
+        apiRequest.addVars("projectDisplayName");
+      if(!Objects.equals(description, original.getDescription()))
+        apiRequest.addVars("description");
+      if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
+        apiRequest.addVars("gpuEnabled");
+      if(!Objects.equals(podRestartCount, original.getPodRestartCount()))
+        apiRequest.addVars("podRestartCount");
+      if(!Objects.equals(podsRestarting, original.getPodsRestarting()))
+        apiRequest.addVars("podsRestarting");
+      if(!Objects.equals(fullPvcsCount, original.getFullPvcsCount()))
+        apiRequest.addVars("fullPvcsCount");
+      if(!Objects.equals(fullPvcs, original.getFullPvcs()))
+        apiRequest.addVars("fullPvcs");
+      super.apiRequestBaseModel();
+    }
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  //////////////
+  // toString //
+  //////////////
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return "%s/en-us/user/project/%s";
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    sb.append(Optional.ofNullable(hubId).map(v -> "hubId: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(hubResource).map(v -> "hubResource: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(clusterName).map(v -> "clusterName: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(clusterResource).map(v -> "clusterResource: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(projectName).map(v -> "projectName: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(projectResource).map(v -> "projectResource: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(projectDisplayName).map(v -> "projectDisplayName: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(podRestartCount).map(v -> "podRestartCount: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(fullPvcsCount).map(v -> "fullPvcsCount: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(fullPvcs).map(v -> "fullPvcs: " + v + "\n").orElse(""));
+    return sb.toString();
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  public static final String CLASS_SIMPLE_NAME = "Project";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.project.Project";
+  public static final String CLASS_AUTH_RESOURCE = "PROJECT";
+  public static final String CLASS_API_ADDRESS_Project = "ai-telemetry-enUS-Project";
+  public static String getClassApiAddress() {
+    return CLASS_API_ADDRESS_Project;
+  }
+  public static final String VAR_hubId = "hubId";
+  public static final String VAR_hubResource = "hubResource";
+  public static final String VAR_clusterName = "clusterName";
+  public static final String VAR_clusterResource = "clusterResource";
+  public static final String VAR_projectName = "projectName";
+  public static final String VAR_projectResource = "projectResource";
+  public static final String VAR_projectDisplayName = "projectDisplayName";
+  public static final String VAR_description = "description";
+  public static final String VAR_gpuEnabled = "gpuEnabled";
+  public static final String VAR_podRestartCount = "podRestartCount";
+  public static final String VAR_podsRestarting = "podsRestarting";
+  public static final String VAR_fullPvcsCount = "fullPvcsCount";
+  public static final String VAR_fullPvcs = "fullPvcs";
 
-	public static String displayNameForClass(String var) {
-		return Project.displayNameProject(var);
-	}
-	public static String displayNameProject(String var) {
-		switch(var) {
-		case VAR_hubId:
-			return DISPLAY_NAME_hubId;
-		case VAR_hubResource:
-			return DISPLAY_NAME_hubResource;
-		case VAR_clusterName:
-			return DISPLAY_NAME_clusterName;
-		case VAR_clusterResource:
-			return DISPLAY_NAME_clusterResource;
-		case VAR_projectName:
-			return DISPLAY_NAME_projectName;
-		case VAR_projectResource:
-			return DISPLAY_NAME_projectResource;
-		case VAR_projectDisplayName:
-			return DISPLAY_NAME_projectDisplayName;
-		case VAR_description:
-			return DISPLAY_NAME_description;
-		case VAR_gpuEnabled:
-			return DISPLAY_NAME_gpuEnabled;
-		case VAR_podRestartCount:
-			return DISPLAY_NAME_podRestartCount;
-		case VAR_podsRestarting:
-			return DISPLAY_NAME_podsRestarting;
-		case VAR_fullPvcsCount:
-			return DISPLAY_NAME_fullPvcsCount;
-		case VAR_fullPvcs:
-			return DISPLAY_NAME_fullPvcs;
-		default:
-			return BaseModel.displayNameBaseModel(var);
-		}
-	}
+  public static List<String> varsQForClass() {
+    return Project.varsQProject(new ArrayList<String>());
+  }
+  public static List<String> varsQProject(List<String> vars) {
+    BaseModel.varsQBaseModel(vars);
+    return vars;
+  }
 
-	public static String descriptionProject(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-		case VAR_hubId:
-			return "The name of the ACM Hub for this cluster in Prometheus Keycloak Proxy. ";
-		case VAR_hubResource:
-			return "The unique authorization resource for the hub for multi-tenancy";
-		case VAR_clusterName:
-			return "The name of this cluster";
-		case VAR_clusterResource:
-			return "The unique authorization resource for the cluster for multi-tenancy";
-		case VAR_projectName:
-			return "The name of this project";
-		case VAR_projectResource:
-			return "The unique authorization resource for the project for multi-tenancy";
-		case VAR_projectDisplayName:
-			return "The display name of this project";
-		case VAR_description:
-			return "A description of this project";
-		case VAR_gpuEnabled:
-			return "Whether GPUs are enabled for this project. ";
-		case VAR_podRestartCount:
-			return "The number of pod restarts in this project. ";
-		case VAR_podsRestarting:
-			return "The names of the pods restarting in this project. ";
-		case VAR_fullPvcsCount:
-			return "The number of persistent volume claims that are running out of disk space in this project. ";
-		case VAR_fullPvcs:
-			return "The names of the persistent volume claims that are running out of disk space in this project. ";
-			default:
-				return BaseModel.descriptionBaseModel(var);
-		}
-	}
+  public static List<String> varsFqForClass() {
+    return Project.varsFqProject(new ArrayList<String>());
+  }
+  public static List<String> varsFqProject(List<String> vars) {
+    vars.add(VAR_hubId);
+    vars.add(VAR_hubResource);
+    vars.add(VAR_clusterName);
+    vars.add(VAR_clusterResource);
+    vars.add(VAR_projectName);
+    vars.add(VAR_projectResource);
+    vars.add(VAR_projectDisplayName);
+    vars.add(VAR_description);
+    vars.add(VAR_gpuEnabled);
+    vars.add(VAR_podRestartCount);
+    vars.add(VAR_podsRestarting);
+    vars.add(VAR_fullPvcsCount);
+    vars.add(VAR_fullPvcs);
+    BaseModel.varsFqBaseModel(vars);
+    return vars;
+  }
 
-	public static String classSimpleNameProject(String var) {
-		switch(var) {
-		case VAR_hubId:
-			return "String";
-		case VAR_hubResource:
-			return "String";
-		case VAR_clusterName:
-			return "String";
-		case VAR_clusterResource:
-			return "String";
-		case VAR_projectName:
-			return "String";
-		case VAR_projectResource:
-			return "String";
-		case VAR_projectDisplayName:
-			return "String";
-		case VAR_description:
-			return "String";
-		case VAR_gpuEnabled:
-			return "Boolean";
-		case VAR_podRestartCount:
-			return "Integer";
-		case VAR_podsRestarting:
-			return "List";
-		case VAR_fullPvcsCount:
-			return "Integer";
-		case VAR_fullPvcs:
-			return "List";
-			default:
-				return BaseModel.classSimpleNameBaseModel(var);
-		}
-	}
+  public static List<String> varsRangeForClass() {
+    return Project.varsRangeProject(new ArrayList<String>());
+  }
+  public static List<String> varsRangeProject(List<String> vars) {
+    vars.add(VAR_podRestartCount);
+    vars.add(VAR_fullPvcsCount);
+    BaseModel.varsRangeBaseModel(vars);
+    return vars;
+  }
 
-	public static Integer htmColumnProject(String var) {
-		switch(var) {
-		case VAR_hubId:
-			return 1;
-		case VAR_clusterName:
-			return 2;
-		case VAR_projectName:
-			return 3;
-			default:
-				return BaseModel.htmColumnBaseModel(var);
-		}
-	}
+  public static final String DISPLAY_NAME_hubId = "ACM Hub";
+  public static final String DISPLAY_NAME_hubResource = "hub auth resource";
+  public static final String DISPLAY_NAME_clusterName = "cluster name";
+  public static final String DISPLAY_NAME_clusterResource = "cluster auth resource";
+  public static final String DISPLAY_NAME_projectName = "project name";
+  public static final String DISPLAY_NAME_projectResource = "project auth resource";
+  public static final String DISPLAY_NAME_projectDisplayName = "project display name";
+  public static final String DISPLAY_NAME_description = "description";
+  public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
+  public static final String DISPLAY_NAME_podRestartCount = "pod restarts";
+  public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
+  public static final String DISPLAY_NAME_fullPvcsCount = "Full PVCs count";
+  public static final String DISPLAY_NAME_fullPvcs = "pods restarting";
 
-	public static Integer htmRowProject(String var) {
-		switch(var) {
-		case VAR_hubId:
-			return 3;
-		case VAR_clusterName:
-			return 3;
-		case VAR_projectName:
-			return 3;
-		case VAR_description:
-			return 3;
-		case VAR_gpuEnabled:
-			return 3;
-		case VAR_podRestartCount:
-			return 4;
-		case VAR_podsRestarting:
-			return 4;
-		case VAR_fullPvcsCount:
-			return 4;
-		case VAR_fullPvcs:
-			return 4;
-			default:
-				return BaseModel.htmRowBaseModel(var);
-		}
-	}
+  @Override
+  public String idForClass() {
+    return projectResource;
+  }
 
-	public static Integer htmCellProject(String var) {
-		switch(var) {
-		case VAR_hubId:
-			return 1;
-		case VAR_clusterName:
-			return 3;
-		case VAR_projectName:
-			return 5;
-		case VAR_description:
-			return 7;
-		case VAR_gpuEnabled:
-			return 8;
-		case VAR_podRestartCount:
-			return 0;
-		case VAR_podsRestarting:
-			return 1;
-		case VAR_fullPvcsCount:
-			return 2;
-		case VAR_fullPvcs:
-			return 3;
-			default:
-				return BaseModel.htmCellBaseModel(var);
-		}
-	}
+  @Override
+  public String titleForClass() {
+    return objectTitle;
+  }
 
-	public static Integer lengthMinProject(String var) {
-		switch(var) {
-			default:
-				return BaseModel.lengthMinBaseModel(var);
-		}
-	}
+  @Override
+  public String nameForClass() {
+    return projectDisplayName;
+  }
 
-	public static Integer lengthMaxProject(String var) {
-		switch(var) {
-			default:
-				return BaseModel.lengthMaxBaseModel(var);
-		}
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return Project.NameAdjectiveSingular_enUS;
+  }
 
-	public static Integer maxProject(String var) {
-		switch(var) {
-			default:
-				return BaseModel.maxBaseModel(var);
-		}
-	}
+  @Override
+  public String descriptionForClass() {
+    return description;
+  }
 
-	public static Integer minProject(String var) {
-		switch(var) {
-			default:
-				return BaseModel.minBaseModel(var);
-		}
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return "%s/en-us/edit/project/%s";
+  }
+
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return "%s/en-us/user/project/%s";
+  }
+
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
+
+  public static String displayNameForClass(String var) {
+    return Project.displayNameProject(var);
+  }
+  public static String displayNameProject(String var) {
+    switch(var) {
+    case VAR_hubId:
+      return DISPLAY_NAME_hubId;
+    case VAR_hubResource:
+      return DISPLAY_NAME_hubResource;
+    case VAR_clusterName:
+      return DISPLAY_NAME_clusterName;
+    case VAR_clusterResource:
+      return DISPLAY_NAME_clusterResource;
+    case VAR_projectName:
+      return DISPLAY_NAME_projectName;
+    case VAR_projectResource:
+      return DISPLAY_NAME_projectResource;
+    case VAR_projectDisplayName:
+      return DISPLAY_NAME_projectDisplayName;
+    case VAR_description:
+      return DISPLAY_NAME_description;
+    case VAR_gpuEnabled:
+      return DISPLAY_NAME_gpuEnabled;
+    case VAR_podRestartCount:
+      return DISPLAY_NAME_podRestartCount;
+    case VAR_podsRestarting:
+      return DISPLAY_NAME_podsRestarting;
+    case VAR_fullPvcsCount:
+      return DISPLAY_NAME_fullPvcsCount;
+    case VAR_fullPvcs:
+      return DISPLAY_NAME_fullPvcs;
+    default:
+      return BaseModel.displayNameBaseModel(var);
+    }
+  }
+
+  public static String descriptionProject(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+    case VAR_hubId:
+      return "The name of the ACM Hub for this cluster in Prometheus Keycloak Proxy. ";
+    case VAR_hubResource:
+      return "The unique authorization resource for the hub for multi-tenancy";
+    case VAR_clusterName:
+      return "The name of this cluster";
+    case VAR_clusterResource:
+      return "The unique authorization resource for the cluster for multi-tenancy";
+    case VAR_projectName:
+      return "The name of this project";
+    case VAR_projectResource:
+      return "The unique authorization resource for the project for multi-tenancy";
+    case VAR_projectDisplayName:
+      return "The display name of this project";
+    case VAR_description:
+      return "A description of this project";
+    case VAR_gpuEnabled:
+      return "Whether GPUs are enabled for this project. ";
+    case VAR_podRestartCount:
+      return "The number of pod restarts in this project. ";
+    case VAR_podsRestarting:
+      return "The names of the pods restarting in this project. ";
+    case VAR_fullPvcsCount:
+      return "The number of persistent volume claims that are running out of disk space in this project. ";
+    case VAR_fullPvcs:
+      return "The names of the persistent volume claims that are running out of disk space in this project. ";
+      default:
+        return BaseModel.descriptionBaseModel(var);
+    }
+  }
+
+  public static String classSimpleNameProject(String var) {
+    switch(var) {
+    case VAR_hubId:
+      return "String";
+    case VAR_hubResource:
+      return "String";
+    case VAR_clusterName:
+      return "String";
+    case VAR_clusterResource:
+      return "String";
+    case VAR_projectName:
+      return "String";
+    case VAR_projectResource:
+      return "String";
+    case VAR_projectDisplayName:
+      return "String";
+    case VAR_description:
+      return "String";
+    case VAR_gpuEnabled:
+      return "Boolean";
+    case VAR_podRestartCount:
+      return "Integer";
+    case VAR_podsRestarting:
+      return "List";
+    case VAR_fullPvcsCount:
+      return "Integer";
+    case VAR_fullPvcs:
+      return "List";
+      default:
+        return BaseModel.classSimpleNameBaseModel(var);
+    }
+  }
+
+  public static Integer htmColumnProject(String var) {
+    switch(var) {
+    case VAR_hubId:
+      return 1;
+    case VAR_clusterName:
+      return 2;
+    case VAR_projectName:
+      return 3;
+      default:
+        return BaseModel.htmColumnBaseModel(var);
+    }
+  }
+
+  public static Integer htmRowProject(String var) {
+    switch(var) {
+    case VAR_hubId:
+      return 3;
+    case VAR_clusterName:
+      return 3;
+    case VAR_projectName:
+      return 3;
+    case VAR_description:
+      return 3;
+    case VAR_gpuEnabled:
+      return 3;
+    case VAR_podRestartCount:
+      return 4;
+    case VAR_podsRestarting:
+      return 4;
+    case VAR_fullPvcsCount:
+      return 4;
+    case VAR_fullPvcs:
+      return 4;
+      default:
+        return BaseModel.htmRowBaseModel(var);
+    }
+  }
+
+  public static Integer htmCellProject(String var) {
+    switch(var) {
+    case VAR_hubId:
+      return 1;
+    case VAR_clusterName:
+      return 3;
+    case VAR_projectName:
+      return 5;
+    case VAR_description:
+      return 7;
+    case VAR_gpuEnabled:
+      return 8;
+    case VAR_podRestartCount:
+      return 0;
+    case VAR_podsRestarting:
+      return 1;
+    case VAR_fullPvcsCount:
+      return 2;
+    case VAR_fullPvcs:
+      return 3;
+      default:
+        return BaseModel.htmCellBaseModel(var);
+    }
+  }
+
+  public static Integer lengthMinProject(String var) {
+    switch(var) {
+      default:
+        return BaseModel.lengthMinBaseModel(var);
+    }
+  }
+
+  public static Integer lengthMaxProject(String var) {
+    switch(var) {
+      default:
+        return BaseModel.lengthMaxBaseModel(var);
+    }
+  }
+
+  public static Integer maxProject(String var) {
+    switch(var) {
+      default:
+        return BaseModel.maxBaseModel(var);
+    }
+  }
+
+  public static Integer minProject(String var) {
+    switch(var) {
+      default:
+        return BaseModel.minBaseModel(var);
+    }
+  }
 }
