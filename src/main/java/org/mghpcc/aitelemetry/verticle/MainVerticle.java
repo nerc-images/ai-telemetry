@@ -1590,6 +1590,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
         staticHandler.setAllowRootFileSystemAccess(true);
         staticHandler.setWebRoot(staticPath);
         staticHandler.setFilesReadOnly(true);
+        staticHandler.setCachingEnabled(true);
       }
       router.route("/static/*").handler(staticHandler);
 
