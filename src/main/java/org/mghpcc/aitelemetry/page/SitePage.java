@@ -35,7 +35,7 @@ import io.vertx.core.json.JsonObject;
 
 
 /**
- * Order: 4
+ * Order: 3
  * Description: Read the latest articles to learn more
  * AName: an article
  * Icon: <i class="fa-duotone fa-solid fa-newspaper"></i>

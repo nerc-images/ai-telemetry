@@ -134,772 +134,786 @@ import io.vertx.core.Future;
  * Generated: true
  **/
 public abstract class BareMetalResourceClassGenPageGen<DEV> extends PageLayout {
-	protected static final Logger LOG = LoggerFactory.getLogger(BareMetalResourceClassGenPage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(BareMetalResourceClassGenPage.class);
 
 	///////////////////////////////////////
-	// searchListBareMetalResourceClass_ //
+  // searchListBareMetalResourceClass_ //
 	///////////////////////////////////////
 
 
-	/**	 The entity searchListBareMetalResourceClass_
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonIgnore
-	@JsonInclude(Include.NON_NULL)
-	protected SearchList<BareMetalResourceClass> searchListBareMetalResourceClass_;
+  /**
+   *  The entity searchListBareMetalResourceClass_
+   *	 is defined as null before being initialized. 
+   */
+  @JsonIgnore
+  @JsonInclude(Include.NON_NULL)
+  protected SearchList<BareMetalResourceClass> searchListBareMetalResourceClass_;
 
-	/**	<br> The entity searchListBareMetalResourceClass_
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:searchListBareMetalResourceClass_">Find the entity searchListBareMetalResourceClass_ in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _searchListBareMetalResourceClass_(Wrap<SearchList<BareMetalResourceClass>> w);
+  /**
+   * <br> The entity searchListBareMetalResourceClass_
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:searchListBareMetalResourceClass_">Find the entity searchListBareMetalResourceClass_ in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _searchListBareMetalResourceClass_(Wrap<SearchList<BareMetalResourceClass>> w);
 
-	public SearchList<BareMetalResourceClass> getSearchListBareMetalResourceClass_() {
-		return searchListBareMetalResourceClass_;
-	}
+  public SearchList<BareMetalResourceClass> getSearchListBareMetalResourceClass_() {
+    return searchListBareMetalResourceClass_;
+  }
 
-	public void setSearchListBareMetalResourceClass_(SearchList<BareMetalResourceClass> searchListBareMetalResourceClass_) {
-		this.searchListBareMetalResourceClass_ = searchListBareMetalResourceClass_;
-	}
-	public static SearchList<BareMetalResourceClass> staticSetSearchListBareMetalResourceClass_(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected BareMetalResourceClassGenPage searchListBareMetalResourceClass_Init() {
-		Wrap<SearchList<BareMetalResourceClass>> searchListBareMetalResourceClass_Wrap = new Wrap<SearchList<BareMetalResourceClass>>().var("searchListBareMetalResourceClass_");
-		if(searchListBareMetalResourceClass_ == null) {
-			_searchListBareMetalResourceClass_(searchListBareMetalResourceClass_Wrap);
-			Optional.ofNullable(searchListBareMetalResourceClass_Wrap.getO()).ifPresent(o -> {
-				setSearchListBareMetalResourceClass_(o);
-			});
-		}
-		return (BareMetalResourceClassGenPage)this;
-	}
+  public void setSearchListBareMetalResourceClass_(SearchList<BareMetalResourceClass> searchListBareMetalResourceClass_) {
+    this.searchListBareMetalResourceClass_ = searchListBareMetalResourceClass_;
+  }
+  public static SearchList<BareMetalResourceClass> staticSetSearchListBareMetalResourceClass_(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected BareMetalResourceClassGenPage searchListBareMetalResourceClass_Init() {
+    Wrap<SearchList<BareMetalResourceClass>> searchListBareMetalResourceClass_Wrap = new Wrap<SearchList<BareMetalResourceClass>>().var("searchListBareMetalResourceClass_");
+    if(searchListBareMetalResourceClass_ == null) {
+      _searchListBareMetalResourceClass_(searchListBareMetalResourceClass_Wrap);
+      Optional.ofNullable(searchListBareMetalResourceClass_Wrap.getO()).ifPresent(o -> {
+        setSearchListBareMetalResourceClass_(o);
+      });
+    }
+    return (BareMetalResourceClassGenPage)this;
+  }
 
 	////////////////////////////////
-	// listBareMetalResourceClass //
+  // listBareMetalResourceClass //
 	////////////////////////////////
 
 
-	/**	 The entity listBareMetalResourceClass
-	 *	 It is constructed before being initialized with the constructor by default. 
-	 */
-	@JsonProperty
-	@JsonDeserialize(using = JsonArrayDeserializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected JsonArray listBareMetalResourceClass = new JsonArray();
+  /**
+   *  The entity listBareMetalResourceClass
+   *	 It is constructed before being initialized with the constructor by default. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = JsonArrayDeserializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected JsonArray listBareMetalResourceClass = new JsonArray();
 
-	/**	<br> The entity listBareMetalResourceClass
-	 *  It is constructed before being initialized with the constructor by default. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:listBareMetalResourceClass">Find the entity listBareMetalResourceClass in Solr</a>
-	 * <br>
-	 * @param l is the entity already constructed. 
-	 **/
-	protected abstract void _listBareMetalResourceClass(JsonArray l);
+  /**
+   * <br> The entity listBareMetalResourceClass
+   *  It is constructed before being initialized with the constructor by default. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:listBareMetalResourceClass">Find the entity listBareMetalResourceClass in Solr</a>
+   * <br>
+   * @param l is the entity already constructed. 
+   **/
+  protected abstract void _listBareMetalResourceClass(JsonArray l);
 
-	public JsonArray getListBareMetalResourceClass() {
-		return listBareMetalResourceClass;
-	}
+  public JsonArray getListBareMetalResourceClass() {
+    return listBareMetalResourceClass;
+  }
 
-	public void setListBareMetalResourceClass(JsonArray listBareMetalResourceClass) {
-		this.listBareMetalResourceClass = listBareMetalResourceClass;
-	}
-	@JsonIgnore
-	public void setListBareMetalResourceClass(String o) {
-		this.listBareMetalResourceClass = BareMetalResourceClassGenPage.staticSetListBareMetalResourceClass(siteRequest_, o);
-	}
-	public static JsonArray staticSetListBareMetalResourceClass(SiteRequest siteRequest_, String o) {
-		if(o != null) {
-				return new JsonArray(o);
-		}
-		return null;
-	}
-	protected BareMetalResourceClassGenPage listBareMetalResourceClassInit() {
-		_listBareMetalResourceClass(listBareMetalResourceClass);
-		return (BareMetalResourceClassGenPage)this;
-	}
+  public void setListBareMetalResourceClass(JsonArray listBareMetalResourceClass) {
+    this.listBareMetalResourceClass = listBareMetalResourceClass;
+  }
+  @JsonIgnore
+  public void setListBareMetalResourceClass(String o) {
+    this.listBareMetalResourceClass = BareMetalResourceClassGenPage.staticSetListBareMetalResourceClass(siteRequest_, o);
+  }
+  public static JsonArray staticSetListBareMetalResourceClass(SiteRequest siteRequest_, String o) {
+    if(o != null) {
+        return new JsonArray(o);
+    }
+    return null;
+  }
+  protected BareMetalResourceClassGenPage listBareMetalResourceClassInit() {
+    _listBareMetalResourceClass(listBareMetalResourceClass);
+    return (BareMetalResourceClassGenPage)this;
+  }
 
-	public static String staticSearchListBareMetalResourceClass(SiteRequest siteRequest_, JsonArray o) {
-		return o.toString();
-	}
+  public static String staticSearchListBareMetalResourceClass(SiteRequest siteRequest_, JsonArray o) {
+    return o.toString();
+  }
 
-	public static String staticSearchStrListBareMetalResourceClass(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrListBareMetalResourceClass(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqListBareMetalResourceClass(SiteRequest siteRequest_, String o) {
-		return BareMetalResourceClassGenPage.staticSearchListBareMetalResourceClass(siteRequest_, BareMetalResourceClassGenPage.staticSetListBareMetalResourceClass(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqListBareMetalResourceClass(SiteRequest siteRequest_, String o) {
+    return BareMetalResourceClassGenPage.staticSearchListBareMetalResourceClass(siteRequest_, BareMetalResourceClassGenPage.staticSetListBareMetalResourceClass(siteRequest_, o)).toString();
+  }
 
 	/////////////////
-	// resultCount //
+  // resultCount //
 	/////////////////
 
 
-	/**	 The entity resultCount
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Integer resultCount;
+  /**
+   *  The entity resultCount
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer resultCount;
 
-	/**	<br> The entity resultCount
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _resultCount(Wrap<Integer> w);
+  /**
+   * <br> The entity resultCount
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:resultCount">Find the entity resultCount in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _resultCount(Wrap<Integer> w);
 
-	public Integer getResultCount() {
-		return resultCount;
-	}
+  public Integer getResultCount() {
+    return resultCount;
+  }
 
-	public void setResultCount(Integer resultCount) {
-		this.resultCount = resultCount;
-	}
-	@JsonIgnore
-	public void setResultCount(String o) {
-		this.resultCount = BareMetalResourceClassGenPage.staticSetResultCount(siteRequest_, o);
-	}
-	public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Integer.parseInt(o);
-		return null;
-	}
-	protected BareMetalResourceClassGenPage resultCountInit() {
-		Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
-		if(resultCount == null) {
-			_resultCount(resultCountWrap);
-			Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
-				setResultCount(o);
-			});
-		}
-		return (BareMetalResourceClassGenPage)this;
-	}
+  public void setResultCount(Integer resultCount) {
+    this.resultCount = resultCount;
+  }
+  @JsonIgnore
+  public void setResultCount(String o) {
+    this.resultCount = BareMetalResourceClassGenPage.staticSetResultCount(siteRequest_, o);
+  }
+  public static Integer staticSetResultCount(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected BareMetalResourceClassGenPage resultCountInit() {
+    Wrap<Integer> resultCountWrap = new Wrap<Integer>().var("resultCount");
+    if(resultCount == null) {
+      _resultCount(resultCountWrap);
+      Optional.ofNullable(resultCountWrap.getO()).ifPresent(o -> {
+        setResultCount(o);
+      });
+    }
+    return (BareMetalResourceClassGenPage)this;
+  }
 
-	public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
-		return o;
-	}
+  public static Integer staticSearchResultCount(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
 
-	public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrResultCount(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
-		return BareMetalResourceClassGenPage.staticSearchResultCount(siteRequest_, BareMetalResourceClassGenPage.staticSetResultCount(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqResultCount(SiteRequest siteRequest_, String o) {
+    return BareMetalResourceClassGenPage.staticSearchResultCount(siteRequest_, BareMetalResourceClassGenPage.staticSetResultCount(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// result //
+  // result //
 	////////////
 
 
-	/**	 The entity result
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected BareMetalResourceClass result;
+  /**
+   *  The entity result
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected BareMetalResourceClass result;
 
-	/**	<br> The entity result
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _result(Wrap<BareMetalResourceClass> w);
+  /**
+   * <br> The entity result
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:result">Find the entity result in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _result(Wrap<BareMetalResourceClass> w);
 
-	public BareMetalResourceClass getResult() {
-		return result;
-	}
+  public BareMetalResourceClass getResult() {
+    return result;
+  }
 
-	public void setResult(BareMetalResourceClass result) {
-		this.result = result;
-	}
-	public static BareMetalResourceClass staticSetResult(SiteRequest siteRequest_, String o) {
-		return null;
-	}
-	protected BareMetalResourceClassGenPage resultInit() {
-		Wrap<BareMetalResourceClass> resultWrap = new Wrap<BareMetalResourceClass>().var("result");
-		if(result == null) {
-			_result(resultWrap);
-			Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
-				setResult(o);
-			});
-		}
-		return (BareMetalResourceClassGenPage)this;
-	}
+  public void setResult(BareMetalResourceClass result) {
+    this.result = result;
+  }
+  public static BareMetalResourceClass staticSetResult(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected BareMetalResourceClassGenPage resultInit() {
+    Wrap<BareMetalResourceClass> resultWrap = new Wrap<BareMetalResourceClass>().var("result");
+    if(result == null) {
+      _result(resultWrap);
+      Optional.ofNullable(resultWrap.getO()).ifPresent(o -> {
+        setResult(o);
+      });
+    }
+    return (BareMetalResourceClassGenPage)this;
+  }
 
 	////////
-	// pk //
+  // pk //
 	////////
 
 
-	/**	 The entity pk
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonSerialize(using = ToStringSerializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected Long pk;
+  /**
+   *  The entity pk
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Long pk;
 
-	/**	<br> The entity pk
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pk(Wrap<Long> w);
+  /**
+   * <br> The entity pk
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:pk">Find the entity pk in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pk(Wrap<Long> w);
 
-	public Long getPk() {
-		return pk;
-	}
+  public Long getPk() {
+    return pk;
+  }
 
-	public void setPk(Long pk) {
-		this.pk = pk;
-	}
-	@JsonIgnore
-	public void setPk(String o) {
-		this.pk = BareMetalResourceClassGenPage.staticSetPk(siteRequest_, o);
-	}
-	public static Long staticSetPk(SiteRequest siteRequest_, String o) {
-		if(NumberUtils.isParsable(o))
-			return Long.parseLong(o);
-		return null;
-	}
-	protected BareMetalResourceClassGenPage pkInit() {
-		Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
-		if(pk == null) {
-			_pk(pkWrap);
-			Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
-				setPk(o);
-			});
-		}
-		return (BareMetalResourceClassGenPage)this;
-	}
+  public void setPk(Long pk) {
+    this.pk = pk;
+  }
+  @JsonIgnore
+  public void setPk(String o) {
+    this.pk = BareMetalResourceClassGenPage.staticSetPk(siteRequest_, o);
+  }
+  public static Long staticSetPk(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Long.parseLong(o);
+    return null;
+  }
+  protected BareMetalResourceClassGenPage pkInit() {
+    Wrap<Long> pkWrap = new Wrap<Long>().var("pk");
+    if(pk == null) {
+      _pk(pkWrap);
+      Optional.ofNullable(pkWrap.getO()).ifPresent(o -> {
+        setPk(o);
+      });
+    }
+    return (BareMetalResourceClassGenPage)this;
+  }
 
-	public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
-		return o;
-	}
+  public static Long staticSearchPk(SiteRequest siteRequest_, Long o) {
+    return o;
+  }
 
-	public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPk(SiteRequest siteRequest_, Long o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
-		return BareMetalResourceClassGenPage.staticSearchPk(siteRequest_, BareMetalResourceClassGenPage.staticSetPk(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPk(SiteRequest siteRequest_, String o) {
+    return BareMetalResourceClassGenPage.staticSearchPk(siteRequest_, BareMetalResourceClassGenPage.staticSetPk(siteRequest_, o)).toString();
+  }
 
 	////////////
-	// solrId //
+  // solrId //
 	////////////
 
 
-	/**	 The entity solrId
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String solrId;
+  /**
+   *  The entity solrId
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String solrId;
 
-	/**	<br> The entity solrId
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _solrId(Wrap<String> w);
+  /**
+   * <br> The entity solrId
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:solrId">Find the entity solrId in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _solrId(Wrap<String> w);
 
-	public String getSolrId() {
-		return solrId;
-	}
-	public void setSolrId(String o) {
-		this.solrId = BareMetalResourceClassGenPage.staticSetSolrId(siteRequest_, o);
-	}
-	public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected BareMetalResourceClassGenPage solrIdInit() {
-		Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
-		if(solrId == null) {
-			_solrId(solrIdWrap);
-			Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
-				setSolrId(o);
-			});
-		}
-		return (BareMetalResourceClassGenPage)this;
-	}
+  public String getSolrId() {
+    return solrId;
+  }
+  public void setSolrId(String o) {
+    this.solrId = BareMetalResourceClassGenPage.staticSetSolrId(siteRequest_, o);
+  }
+  public static String staticSetSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected BareMetalResourceClassGenPage solrIdInit() {
+    Wrap<String> solrIdWrap = new Wrap<String>().var("solrId");
+    if(solrId == null) {
+      _solrId(solrIdWrap);
+      Optional.ofNullable(solrIdWrap.getO()).ifPresent(o -> {
+        setSolrId(o);
+      });
+    }
+    return (BareMetalResourceClassGenPage)this;
+  }
 
-	public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchSolrId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrSolrId(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
-		return BareMetalResourceClassGenPage.staticSearchSolrId(siteRequest_, BareMetalResourceClassGenPage.staticSetSolrId(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqSolrId(SiteRequest siteRequest_, String o) {
+    return BareMetalResourceClassGenPage.staticSearchSolrId(siteRequest_, BareMetalResourceClassGenPage.staticSetSolrId(siteRequest_, o)).toString();
+  }
 
 	///////////////////////////////////
-	// pageUriBareMetalResourceClass //
+  // pageUriBareMetalResourceClass //
 	///////////////////////////////////
 
 
-	/**	 The entity pageUriBareMetalResourceClass
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String pageUriBareMetalResourceClass;
+  /**
+   *  The entity pageUriBareMetalResourceClass
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String pageUriBareMetalResourceClass;
 
-	/**	<br> The entity pageUriBareMetalResourceClass
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:pageUriBareMetalResourceClass">Find the entity pageUriBareMetalResourceClass in Solr</a>
-	 * <br>
-	 * @param c is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _pageUriBareMetalResourceClass(Wrap<String> c);
+  /**
+   * <br> The entity pageUriBareMetalResourceClass
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage&fq=entiteVar_enUS_indexed_string:pageUriBareMetalResourceClass">Find the entity pageUriBareMetalResourceClass in Solr</a>
+   * <br>
+   * @param c is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pageUriBareMetalResourceClass(Wrap<String> c);
 
-	public String getPageUriBareMetalResourceClass() {
-		return pageUriBareMetalResourceClass;
-	}
-	public void setPageUriBareMetalResourceClass(String o) {
-		this.pageUriBareMetalResourceClass = BareMetalResourceClassGenPage.staticSetPageUriBareMetalResourceClass(siteRequest_, o);
-	}
-	public static String staticSetPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected BareMetalResourceClassGenPage pageUriBareMetalResourceClassInit() {
-		Wrap<String> pageUriBareMetalResourceClassWrap = new Wrap<String>().var("pageUriBareMetalResourceClass");
-		if(pageUriBareMetalResourceClass == null) {
-			_pageUriBareMetalResourceClass(pageUriBareMetalResourceClassWrap);
-			Optional.ofNullable(pageUriBareMetalResourceClassWrap.getO()).ifPresent(o -> {
-				setPageUriBareMetalResourceClass(o);
-			});
-		}
-		return (BareMetalResourceClassGenPage)this;
-	}
+  public String getPageUriBareMetalResourceClass() {
+    return pageUriBareMetalResourceClass;
+  }
+  public void setPageUriBareMetalResourceClass(String o) {
+    this.pageUriBareMetalResourceClass = BareMetalResourceClassGenPage.staticSetPageUriBareMetalResourceClass(siteRequest_, o);
+  }
+  public static String staticSetPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected BareMetalResourceClassGenPage pageUriBareMetalResourceClassInit() {
+    Wrap<String> pageUriBareMetalResourceClassWrap = new Wrap<String>().var("pageUriBareMetalResourceClass");
+    if(pageUriBareMetalResourceClass == null) {
+      _pageUriBareMetalResourceClass(pageUriBareMetalResourceClassWrap);
+      Optional.ofNullable(pageUriBareMetalResourceClassWrap.getO()).ifPresent(o -> {
+        setPageUriBareMetalResourceClass(o);
+      });
+    }
+    return (BareMetalResourceClassGenPage)this;
+  }
 
-	public static String staticSearchPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
-		return BareMetalResourceClassGenPage.staticSearchPageUriBareMetalResourceClass(siteRequest_, BareMetalResourceClassGenPage.staticSetPageUriBareMetalResourceClass(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqPageUriBareMetalResourceClass(SiteRequest siteRequest_, String o) {
+    return BareMetalResourceClassGenPage.staticSearchPageUriBareMetalResourceClass(siteRequest_, BareMetalResourceClassGenPage.staticSetPageUriBareMetalResourceClass(siteRequest_, o)).toString();
+  }
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<BareMetalResourceClassGenPageGen<DEV>> promiseDeepBareMetalResourceClassGenPage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepBareMetalResourceClassGenPage();
-	}
+  public Future<BareMetalResourceClassGenPageGen<DEV>> promiseDeepBareMetalResourceClassGenPage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepBareMetalResourceClassGenPage();
+  }
 
-	public Future<BareMetalResourceClassGenPageGen<DEV>> promiseDeepBareMetalResourceClassGenPage() {
-		Promise<BareMetalResourceClassGenPageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseBareMetalResourceClassGenPage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<BareMetalResourceClassGenPageGen<DEV>> promiseDeepBareMetalResourceClassGenPage() {
+    Promise<BareMetalResourceClassGenPageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseBareMetalResourceClassGenPage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepPageLayout(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseBareMetalResourceClassGenPage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				searchListBareMetalResourceClass_Init();
-				listBareMetalResourceClassInit();
-				resultCountInit();
-				resultInit();
-				pkInit();
-				solrIdInit();
-				pageUriBareMetalResourceClassInit();
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseBareMetalResourceClassGenPage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        searchListBareMetalResourceClass_Init();
+        listBareMetalResourceClassInit();
+        resultCountInit();
+        resultInit();
+        pkInit();
+        solrIdInit();
+        pageUriBareMetalResourceClassInit();
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends BareMetalResourceClassGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepBareMetalResourceClassGenPage(siteRequest_);
-	}
+  @Override public Future<? extends BareMetalResourceClassGenPageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepBareMetalResourceClassGenPage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestBareMetalResourceClassGenPage(SiteRequest siteRequest_) {
-			super.siteRequestPageLayout(siteRequest_);
-	}
+  public void siteRequestBareMetalResourceClassGenPage(SiteRequest siteRequest_) {
+      super.siteRequestPageLayout(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestBareMetalResourceClassGenPage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestBareMetalResourceClassGenPage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainBareMetalResourceClassGenPage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainBareMetalResourceClassGenPage(String var) {
-		BareMetalResourceClassGenPage oBareMetalResourceClassGenPage = (BareMetalResourceClassGenPage)this;
-		switch(var) {
-			case "searchListBareMetalResourceClass_":
-				return oBareMetalResourceClassGenPage.searchListBareMetalResourceClass_;
-			case "listBareMetalResourceClass":
-				return oBareMetalResourceClassGenPage.listBareMetalResourceClass;
-			case "resultCount":
-				return oBareMetalResourceClassGenPage.resultCount;
-			case "result":
-				return oBareMetalResourceClassGenPage.result;
-			case "pk":
-				return oBareMetalResourceClassGenPage.pk;
-			case "solrId":
-				return oBareMetalResourceClassGenPage.solrId;
-			case "pageUriBareMetalResourceClass":
-				return oBareMetalResourceClassGenPage.pageUriBareMetalResourceClass;
-			default:
-				return super.obtainPageLayout(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainBareMetalResourceClassGenPage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainBareMetalResourceClassGenPage(String var) {
+    BareMetalResourceClassGenPage oBareMetalResourceClassGenPage = (BareMetalResourceClassGenPage)this;
+    switch(var) {
+      case "searchListBareMetalResourceClass_":
+        return oBareMetalResourceClassGenPage.searchListBareMetalResourceClass_;
+      case "listBareMetalResourceClass":
+        return oBareMetalResourceClassGenPage.listBareMetalResourceClass;
+      case "resultCount":
+        return oBareMetalResourceClassGenPage.resultCount;
+      case "result":
+        return oBareMetalResourceClassGenPage.result;
+      case "pk":
+        return oBareMetalResourceClassGenPage.pk;
+      case "solrId":
+        return oBareMetalResourceClassGenPage.solrId;
+      case "pageUriBareMetalResourceClass":
+        return oBareMetalResourceClassGenPage.pageUriBareMetalResourceClass;
+      default:
+        return super.obtainPageLayout(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateBareMetalResourceClassGenPage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateBareMetalResourceClassGenPage(String var, Object val) {
-		BareMetalResourceClassGenPage oBareMetalResourceClassGenPage = (BareMetalResourceClassGenPage)this;
-		switch(var) {
-			default:
-				return super.relatePageLayout(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateBareMetalResourceClassGenPage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateBareMetalResourceClassGenPage(String var, Object val) {
+    BareMetalResourceClassGenPage oBareMetalResourceClassGenPage = (BareMetalResourceClassGenPage)this;
+    switch(var) {
+      default:
+        return super.relatePageLayout(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassGenPage o) {
-		return staticSetBareMetalResourceClassGenPage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassGenPage o) {
-		switch(entityVar) {
-		case "listBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSetListBareMetalResourceClass(siteRequest_, v);
-		case "resultCount":
-			return BareMetalResourceClassGenPage.staticSetResultCount(siteRequest_, v);
-		case "pk":
-			return BareMetalResourceClassGenPage.staticSetPk(siteRequest_, v);
-		case "solrId":
-			return BareMetalResourceClassGenPage.staticSetSolrId(siteRequest_, v);
-		case "pageUriBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSetPageUriBareMetalResourceClass(siteRequest_, v);
-			default:
-				return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassGenPage o) {
+    return staticSetBareMetalResourceClassGenPage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, String v, BareMetalResourceClassGenPage o) {
+    switch(entityVar) {
+    case "listBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSetListBareMetalResourceClass(siteRequest_, v);
+    case "resultCount":
+      return BareMetalResourceClassGenPage.staticSetResultCount(siteRequest_, v);
+    case "pk":
+      return BareMetalResourceClassGenPage.staticSetPk(siteRequest_, v);
+    case "solrId":
+      return BareMetalResourceClassGenPage.staticSetSolrId(siteRequest_, v);
+    case "pageUriBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSetPageUriBareMetalResourceClass(siteRequest_, v);
+      default:
+        return PageLayout.staticSetPageLayout(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSearchListBareMetalResourceClass(siteRequest_, (JsonArray)o);
-		case "resultCount":
-			return BareMetalResourceClassGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return BareMetalResourceClassGenPage.staticSearchPk(siteRequest_, (Long)o);
-		case "solrId":
-			return BareMetalResourceClassGenPage.staticSearchSolrId(siteRequest_, (String)o);
-		case "pageUriBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSearchPageUriBareMetalResourceClass(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSearchListBareMetalResourceClass(siteRequest_, (JsonArray)o);
+    case "resultCount":
+      return BareMetalResourceClassGenPage.staticSearchResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return BareMetalResourceClassGenPage.staticSearchPk(siteRequest_, (Long)o);
+    case "solrId":
+      return BareMetalResourceClassGenPage.staticSearchSolrId(siteRequest_, (String)o);
+    case "pageUriBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSearchPageUriBareMetalResourceClass(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "listBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSearchStrListBareMetalResourceClass(siteRequest_, (String)o);
-		case "resultCount":
-			return BareMetalResourceClassGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
-		case "pk":
-			return BareMetalResourceClassGenPage.staticSearchStrPk(siteRequest_, (Long)o);
-		case "solrId":
-			return BareMetalResourceClassGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
-		case "pageUriBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSearchStrPageUriBareMetalResourceClass(siteRequest_, (String)o);
-			default:
-				return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "listBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSearchStrListBareMetalResourceClass(siteRequest_, (String)o);
+    case "resultCount":
+      return BareMetalResourceClassGenPage.staticSearchStrResultCount(siteRequest_, (Integer)o);
+    case "pk":
+      return BareMetalResourceClassGenPage.staticSearchStrPk(siteRequest_, (Long)o);
+    case "solrId":
+      return BareMetalResourceClassGenPage.staticSearchStrSolrId(siteRequest_, (String)o);
+    case "pageUriBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSearchStrPageUriBareMetalResourceClass(siteRequest_, (String)o);
+      default:
+        return PageLayout.staticSearchStrPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-		case "listBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSearchFqListBareMetalResourceClass(siteRequest_, o);
-		case "resultCount":
-			return BareMetalResourceClassGenPage.staticSearchFqResultCount(siteRequest_, o);
-		case "pk":
-			return BareMetalResourceClassGenPage.staticSearchFqPk(siteRequest_, o);
-		case "solrId":
-			return BareMetalResourceClassGenPage.staticSearchFqSolrId(siteRequest_, o);
-		case "pageUriBareMetalResourceClass":
-			return BareMetalResourceClassGenPage.staticSearchFqPageUriBareMetalResourceClass(siteRequest_, o);
-			default:
-				return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqBareMetalResourceClassGenPage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+    case "listBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSearchFqListBareMetalResourceClass(siteRequest_, o);
+    case "resultCount":
+      return BareMetalResourceClassGenPage.staticSearchFqResultCount(siteRequest_, o);
+    case "pk":
+      return BareMetalResourceClassGenPage.staticSearchFqPk(siteRequest_, o);
+    case "solrId":
+      return BareMetalResourceClassGenPage.staticSearchFqSolrId(siteRequest_, o);
+    case "pageUriBareMetalResourceClass":
+      return BareMetalResourceClassGenPage.staticSearchFqPageUriBareMetalResourceClass(siteRequest_, o);
+      default:
+        return PageLayout.staticSearchFqPageLayout(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "BareMetalResourceClassGenPage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage";
-	public static final String CLASS_AUTH_RESOURCE = "";
-	public static final String VAR_searchListBareMetalResourceClass_ = "searchListBareMetalResourceClass_";
-	public static final String VAR_listBareMetalResourceClass = "listBareMetalResourceClass";
-	public static final String VAR_resultCount = "resultCount";
-	public static final String VAR_result = "result";
-	public static final String VAR_pk = "pk";
-	public static final String VAR_solrId = "solrId";
-	public static final String VAR_pageUriBareMetalResourceClass = "pageUriBareMetalResourceClass";
+  public static final String CLASS_SIMPLE_NAME = "BareMetalResourceClassGenPage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage";
+  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String VAR_searchListBareMetalResourceClass_ = "searchListBareMetalResourceClass_";
+  public static final String VAR_listBareMetalResourceClass = "listBareMetalResourceClass";
+  public static final String VAR_resultCount = "resultCount";
+  public static final String VAR_result = "result";
+  public static final String VAR_pk = "pk";
+  public static final String VAR_solrId = "solrId";
+  public static final String VAR_pageUriBareMetalResourceClass = "pageUriBareMetalResourceClass";
 
-	public static final String DISPLAY_NAME_searchListBareMetalResourceClass_ = "";
-	public static final String DISPLAY_NAME_listBareMetalResourceClass = "";
-	public static final String DISPLAY_NAME_resultCount = "";
-	public static final String DISPLAY_NAME_result = "";
-	public static final String DISPLAY_NAME_pk = "";
-	public static final String DISPLAY_NAME_solrId = "";
-	public static final String DISPLAY_NAME_pageUriBareMetalResourceClass = "";
+  public static final String DISPLAY_NAME_searchListBareMetalResourceClass_ = "";
+  public static final String DISPLAY_NAME_listBareMetalResourceClass = "";
+  public static final String DISPLAY_NAME_resultCount = "";
+  public static final String DISPLAY_NAME_result = "";
+  public static final String DISPLAY_NAME_pk = "";
+  public static final String DISPLAY_NAME_solrId = "";
+  public static final String DISPLAY_NAME_pageUriBareMetalResourceClass = "";
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return BareMetalResourceClassGenPage.displayNameBareMetalResourceClassGenPage(var);
-	}
-	public static String displayNameBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-		case VAR_searchListBareMetalResourceClass_:
-			return DISPLAY_NAME_searchListBareMetalResourceClass_;
-		case VAR_listBareMetalResourceClass:
-			return DISPLAY_NAME_listBareMetalResourceClass;
-		case VAR_resultCount:
-			return DISPLAY_NAME_resultCount;
-		case VAR_result:
-			return DISPLAY_NAME_result;
-		case VAR_pk:
-			return DISPLAY_NAME_pk;
-		case VAR_solrId:
-			return DISPLAY_NAME_solrId;
-		case VAR_pageUriBareMetalResourceClass:
-			return DISPLAY_NAME_pageUriBareMetalResourceClass;
-		default:
-			return PageLayout.displayNamePageLayout(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return BareMetalResourceClassGenPage.displayNameBareMetalResourceClassGenPage(var);
+  }
+  public static String displayNameBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+    case VAR_searchListBareMetalResourceClass_:
+      return DISPLAY_NAME_searchListBareMetalResourceClass_;
+    case VAR_listBareMetalResourceClass:
+      return DISPLAY_NAME_listBareMetalResourceClass;
+    case VAR_resultCount:
+      return DISPLAY_NAME_resultCount;
+    case VAR_result:
+      return DISPLAY_NAME_result;
+    case VAR_pk:
+      return DISPLAY_NAME_pk;
+    case VAR_solrId:
+      return DISPLAY_NAME_solrId;
+    case VAR_pageUriBareMetalResourceClass:
+      return DISPLAY_NAME_pageUriBareMetalResourceClass;
+    default:
+      return PageLayout.displayNamePageLayout(var);
+    }
+  }
 
-	public static String descriptionBareMetalResourceClassGenPage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return PageLayout.descriptionPageLayout(var);
-		}
-	}
+  public static String descriptionBareMetalResourceClassGenPage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return PageLayout.descriptionPageLayout(var);
+    }
+  }
 
-	public static String classSimpleNameBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-		case VAR_searchListBareMetalResourceClass_:
-			return "SearchList";
-		case VAR_listBareMetalResourceClass:
-			return "JsonArray";
-		case VAR_resultCount:
-			return "Integer";
-		case VAR_result:
-			return "BareMetalResourceClass";
-		case VAR_pk:
-			return "Long";
-		case VAR_solrId:
-			return "String";
-		case VAR_pageUriBareMetalResourceClass:
-			return "String";
-			default:
-				return PageLayout.classSimpleNamePageLayout(var);
-		}
-	}
+  public static String classSimpleNameBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+    case VAR_searchListBareMetalResourceClass_:
+      return "SearchList";
+    case VAR_listBareMetalResourceClass:
+      return "JsonArray";
+    case VAR_resultCount:
+      return "Integer";
+    case VAR_result:
+      return "BareMetalResourceClass";
+    case VAR_pk:
+      return "Long";
+    case VAR_solrId:
+      return "String";
+    case VAR_pageUriBareMetalResourceClass:
+      return "String";
+      default:
+        return PageLayout.classSimpleNamePageLayout(var);
+    }
+  }
 
-	public static Integer htmColumnBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmColumnPageLayout(var);
-		}
-	}
+  public static Integer htmColumnBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmColumnPageLayout(var);
+    }
+  }
 
-	public static Integer htmRowBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmRowPageLayout(var);
-		}
-	}
+  public static Integer htmRowBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmRowPageLayout(var);
+    }
+  }
 
-	public static Integer htmCellBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.htmCellPageLayout(var);
-		}
-	}
+  public static Integer htmCellBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.htmCellPageLayout(var);
+    }
+  }
 
-	public static Integer lengthMinBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMinPageLayout(var);
-		}
-	}
+  public static Integer lengthMinBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMinPageLayout(var);
+    }
+  }
 
-	public static Integer lengthMaxBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.lengthMaxPageLayout(var);
-		}
-	}
+  public static Integer lengthMaxBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.lengthMaxPageLayout(var);
+    }
+  }
 
-	public static Integer maxBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.maxPageLayout(var);
-		}
-	}
+  public static Integer maxBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.maxPageLayout(var);
+    }
+  }
 
-	public static Integer minBareMetalResourceClassGenPage(String var) {
-		switch(var) {
-			default:
-				return PageLayout.minPageLayout(var);
-		}
-	}
+  public static Integer minBareMetalResourceClassGenPage(String var) {
+    switch(var) {
+      default:
+        return PageLayout.minPageLayout(var);
+    }
+  }
 }

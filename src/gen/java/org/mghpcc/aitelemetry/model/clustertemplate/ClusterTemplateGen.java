@@ -173,934 +173,958 @@ import org.computate.search.response.solr.SolrResponse;
  * Generated: true
  **/
 public abstract class ClusterTemplateGen<DEV> extends BaseModel {
-	protected static final Logger LOG = LoggerFactory.getLogger(ClusterTemplate.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(ClusterTemplate.class);
 
-	public static final String Description_enUS = "An OpenShift cluster template";
-	public static final String AName_enUS = "an OpenShift cluster template";
-	public static final String This_enUS = "this ";
-	public static final String ThisName_enUS = "this OpenShift cluster template";
-	public static final String A_enUS = "a ";
-	public static final String TheName_enUS = "theOpenShift cluster template";
-	public static final String SingularName_enUS = "OpenShift cluster template";
-	public static final String PluralName_enUS = "OpenShift cluster templates";
-	public static final String NameActual_enUS = "current OpenShift cluster template";
-	public static final String AllName_enUS = "all OpenShift cluster templates";
-	public static final String SearchAllNameBy_enUS = "search OpenShift cluster templates by ";
-	public static final String SearchAllName_enUS = "search OpenShift cluster templates";
-	public static final String Title_enUS = "OpenShift cluster templates";
-	public static final String ThePluralName_enUS = "the OpenShift cluster templates";
-	public static final String NoNameFound_enUS = "no OpenShift cluster template found";
-	public static final String ApiUri_enUS = "/en-us/api/cluster-template";
-	public static final String ApiUriSearchPage_enUS = "/en-us/search/cluster-template";
-	public static final String ApiUriEditPage_enUS = "/en-us/edit/cluster-template/{id}";
-	public static final String OfName_enUS = "of OpenShift cluster template";
-	public static final String ANameAdjective_enUS = "an OpenShift cluster template";
-	public static final String NameAdjectiveSingular_enUS = "OpenShift cluster template";
-	public static final String NameAdjectivePlural_enUS = "OpenShift cluster templates";
-	public static final String Search_enUS_OpenApiUri = "/en-us/api/cluster-template";
-	public static final String Search_enUS_StringFormatUri = "/en-us/api/cluster-template";
-	public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
-	public static final String GET_enUS_OpenApiUri = "/en-us/api/cluster-template/{id}";
-	public static final String GET_enUS_StringFormatUri = "/en-us/api/cluster-template/%s";
-	public static final String GET_enUS_StringFormatUrl = "%s/en-us/api/cluster-template/%s";
-	public static final String PATCH_enUS_OpenApiUri = "/en-us/api/cluster-template";
-	public static final String PATCH_enUS_StringFormatUri = "/en-us/api/cluster-template";
-	public static final String PATCH_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
-	public static final String POST_enUS_OpenApiUri = "/en-us/api/cluster-template";
-	public static final String POST_enUS_StringFormatUri = "/en-us/api/cluster-template";
-	public static final String POST_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
-	public static final String DELETE_enUS_OpenApiUri = "/en-us/api/cluster-template/{id}";
-	public static final String DELETE_enUS_StringFormatUri = "/en-us/api/cluster-template/%s";
-	public static final String DELETE_enUS_StringFormatUrl = "%s/en-us/api/cluster-template/%s";
-	public static final String PUTImport_enUS_OpenApiUri = "/en-us/api/cluster-template-import";
-	public static final String PUTImport_enUS_StringFormatUri = "/en-us/api/cluster-template-import";
-	public static final String PUTImport_enUS_StringFormatUrl = "%s/en-us/api/cluster-template-import";
-	public static final String SearchPage_enUS_OpenApiUri = "/en-us/search/cluster-template";
-	public static final String SearchPage_enUS_StringFormatUri = "/en-us/search/cluster-template";
-	public static final String SearchPage_enUS_StringFormatUrl = "%s/en-us/search/cluster-template";
-	public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/cluster-template/{id}";
-	public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/cluster-template/%s";
-	public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/cluster-template/%s";
-	public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/cluster-template";
-	public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/cluster-template";
-	public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
+  public static final String Description_enUS = "An OpenShift cluster template";
+  public static final String AName_enUS = "an OpenShift cluster template";
+  public static final String This_enUS = "this ";
+  public static final String ThisName_enUS = "this OpenShift cluster template";
+  public static final String A_enUS = "a ";
+  public static final String TheName_enUS = "theOpenShift cluster template";
+  public static final String SingularName_enUS = "OpenShift cluster template";
+  public static final String PluralName_enUS = "OpenShift cluster templates";
+  public static final String NameActual_enUS = "current OpenShift cluster template";
+  public static final String AllName_enUS = "all OpenShift cluster templates";
+  public static final String SearchAllNameBy_enUS = "search OpenShift cluster templates by ";
+  public static final String SearchAllName_enUS = "search OpenShift cluster templates";
+  public static final String Title_enUS = "OpenShift cluster templates";
+  public static final String ThePluralName_enUS = "the OpenShift cluster templates";
+  public static final String NoNameFound_enUS = "no OpenShift cluster template found";
+  public static final String ApiUri_enUS = "/en-us/api/cluster-template";
+  public static final String ApiUriSearchPage_enUS = "/en-us/search/cluster-template";
+  public static final String ApiUriEditPage_enUS = "/en-us/edit/cluster-template/{id}";
+  public static final String OfName_enUS = "of OpenShift cluster template";
+  public static final String ANameAdjective_enUS = "an OpenShift cluster template";
+  public static final String NameAdjectiveSingular_enUS = "OpenShift cluster template";
+  public static final String NameAdjectivePlural_enUS = "OpenShift cluster templates";
+  public static final String Search_enUS_OpenApiUri = "/en-us/api/cluster-template";
+  public static final String Search_enUS_StringFormatUri = "/en-us/api/cluster-template";
+  public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
+  public static final String GET_enUS_OpenApiUri = "/en-us/api/cluster-template/{id}";
+  public static final String GET_enUS_StringFormatUri = "/en-us/api/cluster-template/%s";
+  public static final String GET_enUS_StringFormatUrl = "%s/en-us/api/cluster-template/%s";
+  public static final String PATCH_enUS_OpenApiUri = "/en-us/api/cluster-template";
+  public static final String PATCH_enUS_StringFormatUri = "/en-us/api/cluster-template";
+  public static final String PATCH_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
+  public static final String POST_enUS_OpenApiUri = "/en-us/api/cluster-template";
+  public static final String POST_enUS_StringFormatUri = "/en-us/api/cluster-template";
+  public static final String POST_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
+  public static final String DELETE_enUS_OpenApiUri = "/en-us/api/cluster-template/{id}";
+  public static final String DELETE_enUS_StringFormatUri = "/en-us/api/cluster-template/%s";
+  public static final String DELETE_enUS_StringFormatUrl = "%s/en-us/api/cluster-template/%s";
+  public static final String PUTImport_enUS_OpenApiUri = "/en-us/api/cluster-template-import";
+  public static final String PUTImport_enUS_StringFormatUri = "/en-us/api/cluster-template-import";
+  public static final String PUTImport_enUS_StringFormatUrl = "%s/en-us/api/cluster-template-import";
+  public static final String SearchPage_enUS_OpenApiUri = "/en-us/search/cluster-template";
+  public static final String SearchPage_enUS_StringFormatUri = "/en-us/search/cluster-template";
+  public static final String SearchPage_enUS_StringFormatUrl = "%s/en-us/search/cluster-template";
+  public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/cluster-template/{id}";
+  public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/cluster-template/%s";
+  public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/cluster-template/%s";
+  public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/cluster-template";
+  public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/cluster-template";
+  public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/cluster-template";
 
-	public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
+  public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
 
 	////////
-	// id //
+  // id //
 	////////
 
 
-	/**	 The entity id
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String id;
+  /**
+   *  The entity id
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String id;
 
-	/**	<br> The entity id
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:id">Find the entity id in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _id(Wrap<String> w);
+  /**
+   * <br> The entity id
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:id">Find the entity id in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _id(Wrap<String> w);
 
-	public String getId() {
-		return id;
-	}
-	public void setId(String o) {
-		this.id = ClusterTemplate.staticSetId(siteRequest_, o);
-	}
-	public static String staticSetId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ClusterTemplate idInit() {
-		Wrap<String> idWrap = new Wrap<String>().var("id");
-		if(id == null) {
-			_id(idWrap);
-			Optional.ofNullable(idWrap.getO()).ifPresent(o -> {
-				setId(o);
-			});
-		}
-		return (ClusterTemplate)this;
-	}
+  public String getId() {
+    return id;
+  }
+  public void setId(String o) {
+    this.id = ClusterTemplate.staticSetId(siteRequest_, o);
+  }
+  public static String staticSetId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ClusterTemplate idInit() {
+    Wrap<String> idWrap = new Wrap<String>().var("id");
+    if(id == null) {
+      _id(idWrap);
+      Optional.ofNullable(idWrap.getO()).ifPresent(o -> {
+        setId(o);
+      });
+    }
+    return (ClusterTemplate)this;
+  }
 
-	public static String staticSearchId(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchId(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrId(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrId(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqId(SiteRequest siteRequest_, String o) {
-		return ClusterTemplate.staticSearchId(siteRequest_, ClusterTemplate.staticSetId(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqId(SiteRequest siteRequest_, String o) {
+    return ClusterTemplate.staticSearchId(siteRequest_, ClusterTemplate.staticSetId(siteRequest_, o)).toString();
+  }
 
-	public String sqlId() {
-		return id;
-	}
+  public String sqlId() {
+    return id;
+  }
+
+  public static String staticJsonId(String id) {
+    return id;
+  }
 
 	///////////
-	// title //
+  // title //
 	///////////
 
 
-	/**	 The entity title
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String title;
+  /**
+   *  The entity title
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String title;
 
-	/**	<br> The entity title
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:title">Find the entity title in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _title(Wrap<String> w);
+  /**
+   * <br> The entity title
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:title">Find the entity title in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _title(Wrap<String> w);
 
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String o) {
-		this.title = ClusterTemplate.staticSetTitle(siteRequest_, o);
-	}
-	public static String staticSetTitle(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ClusterTemplate titleInit() {
-		Wrap<String> titleWrap = new Wrap<String>().var("title");
-		if(title == null) {
-			_title(titleWrap);
-			Optional.ofNullable(titleWrap.getO()).ifPresent(o -> {
-				setTitle(o);
-			});
-		}
-		return (ClusterTemplate)this;
-	}
+  public String getTitle() {
+    return title;
+  }
+  public void setTitle(String o) {
+    this.title = ClusterTemplate.staticSetTitle(siteRequest_, o);
+  }
+  public static String staticSetTitle(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ClusterTemplate titleInit() {
+    Wrap<String> titleWrap = new Wrap<String>().var("title");
+    if(title == null) {
+      _title(titleWrap);
+      Optional.ofNullable(titleWrap.getO()).ifPresent(o -> {
+        setTitle(o);
+      });
+    }
+    return (ClusterTemplate)this;
+  }
 
-	public static String staticSearchTitle(SiteRequest siteRequest_, String o) {
-		return o;
-	}
+  public static String staticSearchTitle(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	public static String staticSearchStrTitle(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
+  public static String staticSearchStrTitle(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	public static String staticSearchFqTitle(SiteRequest siteRequest_, String o) {
-		return ClusterTemplate.staticSearchTitle(siteRequest_, ClusterTemplate.staticSetTitle(siteRequest_, o)).toString();
-	}
+  public static String staticSearchFqTitle(SiteRequest siteRequest_, String o) {
+    return ClusterTemplate.staticSearchTitle(siteRequest_, ClusterTemplate.staticSetTitle(siteRequest_, o)).toString();
+  }
 
-	public String sqlTitle() {
-		return title;
-	}
+  public String sqlTitle() {
+    return title;
+  }
 
-	/////////////////
-	// description //
-	/////////////////
-
-
-	/**	 The entity description
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonInclude(Include.NON_NULL)
-	protected String description;
-
-	/**	<br> The entity description
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:description">Find the entity description in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _description(Wrap<String> w);
-
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String o) {
-		this.description = ClusterTemplate.staticSetDescription(siteRequest_, o);
-	}
-	public static String staticSetDescription(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-	protected ClusterTemplate descriptionInit() {
-		Wrap<String> descriptionWrap = new Wrap<String>().var("description");
-		if(description == null) {
-			_description(descriptionWrap);
-			Optional.ofNullable(descriptionWrap.getO()).ifPresent(o -> {
-				setDescription(o);
-			});
-		}
-		return (ClusterTemplate)this;
-	}
-
-	public static String staticSearchDescription(SiteRequest siteRequest_, String o) {
-		return o;
-	}
-
-	public static String staticSearchStrDescription(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqDescription(SiteRequest siteRequest_, String o) {
-		return ClusterTemplate.staticSearchDescription(siteRequest_, ClusterTemplate.staticSetDescription(siteRequest_, o)).toString();
-	}
-
-	public String sqlDescription() {
-		return description;
-	}
-
-	////////////////
-	// parameters //
-	////////////////
-
-
-	/**	 The entity parameters
-	 *	 is defined as null before being initialized. 
-	 */
-	@JsonProperty
-	@JsonDeserialize(using = JsonArrayDeserializer.class)
-	@JsonInclude(Include.NON_NULL)
-	protected JsonArray parameters;
-
-	/**	<br> The entity parameters
-	 *  is defined as null before being initialized. 
-	 * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:parameters">Find the entity parameters in Solr</a>
-	 * <br>
-	 * @param w is for wrapping a value to assign to this entity during initialization. 
-	 **/
-	protected abstract void _parameters(Wrap<JsonArray> w);
-
-	public JsonArray getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(JsonArray parameters) {
-		this.parameters = parameters;
-	}
-	@JsonIgnore
-	public void setParameters(String o) {
-		this.parameters = ClusterTemplate.staticSetParameters(siteRequest_, o);
-	}
-	public static JsonArray staticSetParameters(SiteRequest siteRequest_, String o) {
-		if(o != null) {
-				return new JsonArray(o);
-		}
-		return null;
-	}
-	protected ClusterTemplate parametersInit() {
-		Wrap<JsonArray> parametersWrap = new Wrap<JsonArray>().var("parameters");
-		if(parameters == null) {
-			_parameters(parametersWrap);
-			Optional.ofNullable(parametersWrap.getO()).ifPresent(o -> {
-				setParameters(o);
-			});
-		}
-		return (ClusterTemplate)this;
-	}
-
-	public static String staticSearchParameters(SiteRequest siteRequest_, JsonArray o) {
-		return o.toString();
-	}
-
-	public static String staticSearchStrParameters(SiteRequest siteRequest_, String o) {
-		return o == null ? null : o.toString();
-	}
-
-	public static String staticSearchFqParameters(SiteRequest siteRequest_, String o) {
-		return ClusterTemplate.staticSearchParameters(siteRequest_, ClusterTemplate.staticSetParameters(siteRequest_, o)).toString();
-	}
-
-	public JsonArray sqlParameters() {
-		return parameters;
-	}
-
-	//////////////
-	// initDeep //
-	//////////////
-
-	public Future<ClusterTemplateGen<DEV>> promiseDeepClusterTemplate(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepClusterTemplate();
-	}
-
-	public Future<ClusterTemplateGen<DEV>> promiseDeepClusterTemplate() {
-		Promise<ClusterTemplateGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseClusterTemplate(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepBaseModel(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	public Future<Void> promiseClusterTemplate(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				idInit();
-				titleInit();
-				descriptionInit();
-				parametersInit();
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
-
-	@Override public Future<? extends ClusterTemplateGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepClusterTemplate(siteRequest_);
-	}
+  public static String staticJsonTitle(String title) {
+    return title;
+  }
 
 	/////////////////
-	// siteRequest //
+  // description //
 	/////////////////
 
-	public void siteRequestClusterTemplate(SiteRequest siteRequest_) {
-			super.siteRequestBaseModel(siteRequest_);
-	}
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestClusterTemplate(siteRequest_);
-	}
+  /**
+   *  The entity description
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String description;
 
-	/////////////
-	// obtain //
-	/////////////
+  /**
+   * <br> The entity description
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:description">Find the entity description in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _description(Wrap<String> w);
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainClusterTemplate(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainClusterTemplate(String var) {
-		ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
-		switch(var) {
-			case "id":
-				return oClusterTemplate.id;
-			case "title":
-				return oClusterTemplate.title;
-			case "description":
-				return oClusterTemplate.description;
-			case "parameters":
-				return oClusterTemplate.parameters;
-			default:
-				return super.obtainBaseModel(var);
-		}
-	}
+  public String getDescription() {
+    return description;
+  }
+  public void setDescription(String o) {
+    this.description = ClusterTemplate.staticSetDescription(siteRequest_, o);
+  }
+  public static String staticSetDescription(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected ClusterTemplate descriptionInit() {
+    Wrap<String> descriptionWrap = new Wrap<String>().var("description");
+    if(description == null) {
+      _description(descriptionWrap);
+      Optional.ofNullable(descriptionWrap.getO()).ifPresent(o -> {
+        setDescription(o);
+      });
+    }
+    return (ClusterTemplate)this;
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  public static String staticSearchDescription(SiteRequest siteRequest_, String o) {
+    return o;
+  }
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateClusterTemplate(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateClusterTemplate(String var, Object val) {
-		ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
-		switch(var) {
-			default:
-				return super.relateBaseModel(var, val);
-		}
-	}
+  public static String staticSearchStrDescription(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  public static String staticSearchFqDescription(SiteRequest siteRequest_, String o) {
+    return ClusterTemplate.staticSearchDescription(siteRequest_, ClusterTemplate.staticSetDescription(siteRequest_, o)).toString();
+  }
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ClusterTemplate o) {
-		return staticSetClusterTemplate(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetClusterTemplate(String entityVar, SiteRequest siteRequest_, String v, ClusterTemplate o) {
-		switch(entityVar) {
-		case "id":
-			return ClusterTemplate.staticSetId(siteRequest_, v);
-		case "title":
-			return ClusterTemplate.staticSetTitle(siteRequest_, v);
-		case "description":
-			return ClusterTemplate.staticSetDescription(siteRequest_, v);
-		case "parameters":
-			return ClusterTemplate.staticSetParameters(siteRequest_, v);
-			default:
-				return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public String sqlDescription() {
+    return description;
+  }
+
+  public static String staticJsonDescription(String description) {
+    return description;
+  }
 
 	////////////////
-	// staticSearch //
+  // parameters //
 	////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchClusterTemplate(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchClusterTemplate(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "id":
-			return ClusterTemplate.staticSearchId(siteRequest_, (String)o);
-		case "title":
-			return ClusterTemplate.staticSearchTitle(siteRequest_, (String)o);
-		case "description":
-			return ClusterTemplate.staticSearchDescription(siteRequest_, (String)o);
-		case "parameters":
-			return ClusterTemplate.staticSearchParameters(siteRequest_, (JsonArray)o);
-			default:
-				return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  /**
+   *  The entity parameters
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = JsonArrayDeserializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected JsonArray parameters;
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrClusterTemplate(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrClusterTemplate(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-		case "id":
-			return ClusterTemplate.staticSearchStrId(siteRequest_, (String)o);
-		case "title":
-			return ClusterTemplate.staticSearchStrTitle(siteRequest_, (String)o);
-		case "description":
-			return ClusterTemplate.staticSearchStrDescription(siteRequest_, (String)o);
-		case "parameters":
-			return ClusterTemplate.staticSearchStrParameters(siteRequest_, (String)o);
-			default:
-				return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
+  /**
+   * <br> The entity parameters
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate&fq=entiteVar_enUS_indexed_string:parameters">Find the entity parameters in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _parameters(Wrap<JsonArray> w);
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  public JsonArray getParameters() {
+    return parameters;
+  }
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqClusterTemplate(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqClusterTemplate(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-		case "id":
-			return ClusterTemplate.staticSearchFqId(siteRequest_, o);
-		case "title":
-			return ClusterTemplate.staticSearchFqTitle(siteRequest_, o);
-		case "description":
-			return ClusterTemplate.staticSearchFqDescription(siteRequest_, o);
-		case "parameters":
-			return ClusterTemplate.staticSearchFqParameters(siteRequest_, o);
-			default:
-				return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
-		}
-	}
+  public void setParameters(JsonArray parameters) {
+    this.parameters = parameters;
+  }
+  @JsonIgnore
+  public void setParameters(String o) {
+    this.parameters = ClusterTemplate.staticSetParameters(siteRequest_, o);
+  }
+  public static JsonArray staticSetParameters(SiteRequest siteRequest_, String o) {
+    if(o != null) {
+        return new JsonArray(o);
+    }
+    return null;
+  }
+  protected ClusterTemplate parametersInit() {
+    Wrap<JsonArray> parametersWrap = new Wrap<JsonArray>().var("parameters");
+    if(parameters == null) {
+      _parameters(parametersWrap);
+      Optional.ofNullable(parametersWrap.getO()).ifPresent(o -> {
+        setParameters(o);
+      });
+    }
+    return (ClusterTemplate)this;
+  }
 
-	/////////////
-	// persist //
-	/////////////
+  public static String staticSearchParameters(SiteRequest siteRequest_, JsonArray o) {
+    return o.toString();
+  }
 
-	@Override public boolean persistForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		if(val != null) {
-			for(String v : vars) {
-				if(o == null)
-					o = persistClusterTemplate(v, val);
-				else if(o instanceof BaseModel) {
-					BaseModel oBaseModel = (BaseModel)o;
-					o = oBaseModel.persistForClass(v, val);
-				}
-			}
-		}
-		return o != null;
-	}
-	public Object persistClusterTemplate(String var, Object val) {
-		String varLower = var.toLowerCase();
-			if("id".equals(varLower)) {
-				if(val instanceof String) {
-					setId((String)val);
-				}
-				saves.add("id");
-				return val;
-			} else if("title".equals(varLower)) {
-				if(val instanceof String) {
-					setTitle((String)val);
-				}
-				saves.add("title");
-				return val;
-			} else if("description".equals(varLower)) {
-				if(val instanceof String) {
-					setDescription((String)val);
-				}
-				saves.add("description");
-				return val;
-			} else if("parameters".equals(varLower)) {
-				if(val instanceof String) {
-					setParameters((String)val);
-				} else if(val instanceof JsonArray) {
-					setParameters((JsonArray)val);
-				}
-				saves.add("parameters");
-				return val;
-		} else {
-			return super.persistBaseModel(var, val);
-		}
-	}
+  public static String staticSearchStrParameters(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
 
-	/////////////
-	// populate //
-	/////////////
+  public static String staticSearchFqParameters(SiteRequest siteRequest_, String o) {
+    return ClusterTemplate.staticSearchParameters(siteRequest_, ClusterTemplate.staticSetParameters(siteRequest_, o)).toString();
+  }
 
-	@Override public void populateForClass(SolrResponse.Doc doc) {
-		populateClusterTemplate(doc);
-	}
-	public void populateClusterTemplate(SolrResponse.Doc doc) {
-		ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
-		saves = Optional.ofNullable((ArrayList<String>)doc.get("saves_docvalues_strings")).orElse(new ArrayList<String>());
-		if(saves != null) {
+  public JsonArray sqlParameters() {
+    return parameters;
+  }
 
-			if(saves.contains("id")) {
-				String id = (String)doc.get("id_docvalues_string");
-				if(id != null)
-					oClusterTemplate.setId(id);
-			}
+  public static JsonArray staticJsonParameters(JsonArray parameters) {
+    return parameters;
+  }
 
-			if(saves.contains("title")) {
-				String title = (String)doc.get("title_docvalues_string");
-				if(title != null)
-					oClusterTemplate.setTitle(title);
-			}
+  //////////////
+  // initDeep //
+  //////////////
 
-			if(saves.contains("description")) {
-				String description = (String)doc.get("description_docvalues_string");
-				if(description != null)
-					oClusterTemplate.setDescription(description);
-			}
+  public Future<ClusterTemplateGen<DEV>> promiseDeepClusterTemplate(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepClusterTemplate();
+  }
 
-			if(saves.contains("parameters")) {
-				String parameters = (String)doc.get("parameters_docvalues_string");
-				if(parameters != null)
-					oClusterTemplate.setParameters(parameters);
-			}
-		}
+  public Future<ClusterTemplateGen<DEV>> promiseDeepClusterTemplate() {
+    Promise<ClusterTemplateGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseClusterTemplate(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepBaseModel(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-		super.populateBaseModel(doc);
-	}
+  public Future<Void> promiseClusterTemplate(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        idInit();
+        titleInit();
+        descriptionInit();
+        parametersInit();
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public void indexClusterTemplate(JsonObject doc) {
-		if(id != null) {
-			doc.put("id_docvalues_string", id);
-		}
-		if(title != null) {
-			doc.put("title_docvalues_string", title);
-		}
-		if(description != null) {
-			doc.put("description_docvalues_string", description);
-		}
-		if(parameters != null) {
-			doc.put("parameters_docvalues_string", parameters.encode());
-		}
-		super.indexBaseModel(doc);
+  @Override public Future<? extends ClusterTemplateGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepClusterTemplate(siteRequest_);
+  }
 
-	}
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public static String varStoredClusterTemplate(String entityVar) {
-		switch(entityVar) {
-			case "id":
-				return "id_docvalues_string";
-			case "title":
-				return "title_docvalues_string";
-			case "description":
-				return "description_docvalues_string";
-			case "parameters":
-				return "parameters_docvalues_string";
-			default:
-				return BaseModel.varStoredBaseModel(entityVar);
-		}
-	}
+  public void siteRequestClusterTemplate(SiteRequest siteRequest_) {
+      super.siteRequestBaseModel(siteRequest_);
+  }
 
-	public static String varIndexedClusterTemplate(String entityVar) {
-		switch(entityVar) {
-			case "id":
-				return "id_docvalues_string";
-			case "title":
-				return "title_docvalues_string";
-			case "description":
-				return "description_docvalues_string";
-			case "parameters":
-				return "parameters_docvalues_string";
-			default:
-				return BaseModel.varIndexedBaseModel(entityVar);
-		}
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestClusterTemplate(siteRequest_);
+  }
 
-	public static String searchVarClusterTemplate(String searchVar) {
-		switch(searchVar) {
-			case "id_docvalues_string":
-				return "id";
-			case "title_docvalues_string":
-				return "title";
-			case "description_docvalues_string":
-				return "description";
-			case "parameters_docvalues_string":
-				return "parameters";
-			default:
-				return BaseModel.searchVarBaseModel(searchVar);
-		}
-	}
+  /////////////
+  // obtain //
+  /////////////
 
-	public static String varSearchClusterTemplate(String entityVar) {
-		switch(entityVar) {
-			default:
-				return BaseModel.varSearchBaseModel(entityVar);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainClusterTemplate(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainClusterTemplate(String var) {
+    ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
+    switch(var) {
+      case "id":
+        return oClusterTemplate.id;
+      case "title":
+        return oClusterTemplate.title;
+      case "description":
+        return oClusterTemplate.description;
+      case "parameters":
+        return oClusterTemplate.parameters;
+      default:
+        return super.obtainBaseModel(var);
+    }
+  }
 
-	public static String varSuggestedClusterTemplate(String entityVar) {
-		switch(entityVar) {
-			default:
-				return BaseModel.varSuggestedBaseModel(entityVar);
-		}
-	}
+  ///////////////
+  // relate //
+  ///////////////
 
-	/////////////
-	// store //
-	/////////////
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateClusterTemplate(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateClusterTemplate(String var, Object val) {
+    ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
+    switch(var) {
+      default:
+        return super.relateBaseModel(var, val);
+    }
+  }
 
-	@Override public void storeForClass(SolrResponse.Doc doc) {
-		storeClusterTemplate(doc);
-	}
-	public void storeClusterTemplate(SolrResponse.Doc doc) {
-		ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
-		SiteRequest siteRequest = oClusterTemplate.getSiteRequest_();
+  ///////////////
+  // staticSet //
+  ///////////////
 
-		oClusterTemplate.setId(Optional.ofNullable(doc.get("id_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oClusterTemplate.setTitle(Optional.ofNullable(doc.get("title_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oClusterTemplate.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
-		oClusterTemplate.setParameters(Optional.ofNullable(doc.get("parameters_docvalues_string")).map(v -> v.toString()).orElse(null));
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, ClusterTemplate o) {
+    return staticSetClusterTemplate(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetClusterTemplate(String entityVar, SiteRequest siteRequest_, String v, ClusterTemplate o) {
+    switch(entityVar) {
+    case "id":
+      return ClusterTemplate.staticSetId(siteRequest_, v);
+    case "title":
+      return ClusterTemplate.staticSetTitle(siteRequest_, v);
+    case "description":
+      return ClusterTemplate.staticSetDescription(siteRequest_, v);
+    case "parameters":
+      return ClusterTemplate.staticSetParameters(siteRequest_, v);
+      default:
+        return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-		super.storeBaseModel(doc);
-	}
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	//////////////////
-	// apiRequest //
-	//////////////////
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchClusterTemplate(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchClusterTemplate(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "id":
+      return ClusterTemplate.staticSearchId(siteRequest_, (String)o);
+    case "title":
+      return ClusterTemplate.staticSearchTitle(siteRequest_, (String)o);
+    case "description":
+      return ClusterTemplate.staticSearchDescription(siteRequest_, (String)o);
+    case "parameters":
+      return ClusterTemplate.staticSearchParameters(siteRequest_, (JsonArray)o);
+      default:
+        return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
 
-	public void apiRequestClusterTemplate() {
-		ApiRequest apiRequest = Optional.ofNullable(siteRequest_).map(r -> r.getApiRequest_()).orElse(null);
-		Object o = Optional.ofNullable(apiRequest).map(ApiRequest::getOriginal).orElse(null);
-		if(o != null && o instanceof ClusterTemplate) {
-			ClusterTemplate original = (ClusterTemplate)o;
-			if(!Objects.equals(id, original.getId()))
-				apiRequest.addVars("id");
-			if(!Objects.equals(title, original.getTitle()))
-				apiRequest.addVars("title");
-			if(!Objects.equals(description, original.getDescription()))
-				apiRequest.addVars("description");
-			if(!Objects.equals(parameters, original.getParameters()))
-				apiRequest.addVars("parameters");
-			super.apiRequestBaseModel();
-		}
-	}
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	//////////////
-	// toString //
-	//////////////
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrClusterTemplate(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrClusterTemplate(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+    case "id":
+      return ClusterTemplate.staticSearchStrId(siteRequest_, (String)o);
+    case "title":
+      return ClusterTemplate.staticSearchStrTitle(siteRequest_, (String)o);
+    case "description":
+      return ClusterTemplate.staticSearchStrDescription(siteRequest_, (String)o);
+    case "parameters":
+      return ClusterTemplate.staticSearchStrParameters(siteRequest_, (String)o);
+      default:
+        return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		sb.append(Optional.ofNullable(id).map(v -> "id: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(title).map(v -> "title: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
-		sb.append(Optional.ofNullable(parameters).map(v -> "parameters: " + v + "\n").orElse(""));
-		return sb.toString();
-	}
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static final String CLASS_SIMPLE_NAME = "ClusterTemplate";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate";
-	public static final String CLASS_AUTH_RESOURCE = "CLUSTERTEMPLATE";
-	public static final String CLASS_API_ADDRESS_ClusterTemplate = "ai-telemetry-enUS-ClusterTemplate";
-	public static String getClassApiAddress() {
-		return CLASS_API_ADDRESS_ClusterTemplate;
-	}
-	public static final String VAR_id = "id";
-	public static final String VAR_title = "title";
-	public static final String VAR_description = "description";
-	public static final String VAR_parameters = "parameters";
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqClusterTemplate(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqClusterTemplate(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+    case "id":
+      return ClusterTemplate.staticSearchFqId(siteRequest_, o);
+    case "title":
+      return ClusterTemplate.staticSearchFqTitle(siteRequest_, o);
+    case "description":
+      return ClusterTemplate.staticSearchFqDescription(siteRequest_, o);
+    case "parameters":
+      return ClusterTemplate.staticSearchFqParameters(siteRequest_, o);
+      default:
+        return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
+    }
+  }
 
-	public static List<String> varsQForClass() {
-		return ClusterTemplate.varsQClusterTemplate(new ArrayList<String>());
-	}
-	public static List<String> varsQClusterTemplate(List<String> vars) {
-		BaseModel.varsQBaseModel(vars);
-		return vars;
-	}
+  /////////////
+  // persist //
+  /////////////
 
-	public static List<String> varsFqForClass() {
-		return ClusterTemplate.varsFqClusterTemplate(new ArrayList<String>());
-	}
-	public static List<String> varsFqClusterTemplate(List<String> vars) {
-		vars.add(VAR_id);
-		vars.add(VAR_title);
-		vars.add(VAR_description);
-		vars.add(VAR_parameters);
-		BaseModel.varsFqBaseModel(vars);
-		return vars;
-	}
+  @Override public boolean persistForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    if(val != null) {
+      for(String v : vars) {
+        if(o == null)
+          o = persistClusterTemplate(v, val);
+        else if(o instanceof BaseModel) {
+          BaseModel oBaseModel = (BaseModel)o;
+          o = oBaseModel.persistForClass(v, val);
+        }
+      }
+    }
+    return o != null;
+  }
+  public Object persistClusterTemplate(String var, Object val) {
+    String varLower = var.toLowerCase();
+      if("id".equals(varLower)) {
+        if(val instanceof String) {
+          setId((String)val);
+        }
+        saves.add("id");
+        return val;
+      } else if("title".equals(varLower)) {
+        if(val instanceof String) {
+          setTitle((String)val);
+        }
+        saves.add("title");
+        return val;
+      } else if("description".equals(varLower)) {
+        if(val instanceof String) {
+          setDescription((String)val);
+        }
+        saves.add("description");
+        return val;
+      } else if("parameters".equals(varLower)) {
+        if(val instanceof String) {
+          setParameters((String)val);
+        } else if(val instanceof JsonArray) {
+          setParameters((JsonArray)val);
+        }
+        saves.add("parameters");
+        return val;
+    } else {
+      return super.persistBaseModel(var, val);
+    }
+  }
 
-	public static List<String> varsRangeForClass() {
-		return ClusterTemplate.varsRangeClusterTemplate(new ArrayList<String>());
-	}
-	public static List<String> varsRangeClusterTemplate(List<String> vars) {
-		vars.add(VAR_parameters);
-		BaseModel.varsRangeBaseModel(vars);
-		return vars;
-	}
+  /////////////
+  // populate //
+  /////////////
 
-	public static final String DISPLAY_NAME_id = "template ID";
-	public static final String DISPLAY_NAME_title = "template title";
-	public static final String DISPLAY_NAME_description = "template description";
-	public static final String DISPLAY_NAME_parameters = "template parameters";
+  @Override public void populateForClass(SolrResponse.Doc doc) {
+    populateClusterTemplate(doc);
+  }
+  public void populateClusterTemplate(SolrResponse.Doc doc) {
+    ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
+    saves = Optional.ofNullable((ArrayList<String>)doc.get("saves_docvalues_strings")).orElse(new ArrayList<String>());
+    if(saves != null) {
 
-	@Override
-	public String idForClass() {
-		return id;
-	}
+      if(saves.contains("id")) {
+        String id = (String)doc.get("id_docvalues_string");
+        if(id != null)
+          oClusterTemplate.setId(id);
+      }
 
-	@Override
-	public String titleForClass() {
-		return objectTitle;
-	}
+      if(saves.contains("title")) {
+        String title = (String)doc.get("title_docvalues_string");
+        if(title != null)
+          oClusterTemplate.setTitle(title);
+      }
 
-	@Override
-	public String nameForClass() {
-		return id;
-	}
+      if(saves.contains("description")) {
+        String description = (String)doc.get("description_docvalues_string");
+        if(description != null)
+          oClusterTemplate.setDescription(description);
+      }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return ClusterTemplate.NameAdjectiveSingular_enUS;
-	}
+      if(saves.contains("parameters")) {
+        String parameters = (String)doc.get("parameters_docvalues_string");
+        if(parameters != null)
+          oClusterTemplate.setParameters(parameters);
+      }
+    }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+    super.populateBaseModel(doc);
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return "%s/en-us/edit/cluster-template/%s";
-	}
+  public void indexClusterTemplate(JsonObject doc) {
+    if(id != null) {
+      doc.put("id_docvalues_string", id);
+    }
+    if(title != null) {
+      doc.put("title_docvalues_string", title);
+    }
+    if(description != null) {
+      doc.put("description_docvalues_string", description);
+    }
+    if(parameters != null) {
+      doc.put("parameters_docvalues_string", parameters.encode());
+    }
+    super.indexBaseModel(doc);
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
-
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
-
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
-
-	public static String displayNameForClass(String var) {
-		return ClusterTemplate.displayNameClusterTemplate(var);
-	}
-	public static String displayNameClusterTemplate(String var) {
-		switch(var) {
-		case VAR_id:
-			return DISPLAY_NAME_id;
-		case VAR_title:
-			return DISPLAY_NAME_title;
-		case VAR_description:
-			return DISPLAY_NAME_description;
-		case VAR_parameters:
-			return DISPLAY_NAME_parameters;
-		default:
-			return BaseModel.displayNameBaseModel(var);
-		}
 	}
 
-	public static String descriptionClusterTemplate(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-		case VAR_id:
-			return "The ID of this template";
-		case VAR_title:
-			return "The title of this template";
-		case VAR_description:
-			return "The description of this template";
-		case VAR_parameters:
-			return "The parameters of this template";
-			default:
-				return BaseModel.descriptionBaseModel(var);
-		}
-	}
+  public static String varStoredClusterTemplate(String entityVar) {
+    switch(entityVar) {
+      case "id":
+        return "id_docvalues_string";
+      case "title":
+        return "title_docvalues_string";
+      case "description":
+        return "description_docvalues_string";
+      case "parameters":
+        return "parameters_docvalues_string";
+      default:
+        return BaseModel.varStoredBaseModel(entityVar);
+    }
+  }
 
-	public static String classSimpleNameClusterTemplate(String var) {
-		switch(var) {
-		case VAR_id:
-			return "String";
-		case VAR_title:
-			return "String";
-		case VAR_description:
-			return "String";
-		case VAR_parameters:
-			return "JsonArray";
-			default:
-				return BaseModel.classSimpleNameBaseModel(var);
-		}
-	}
+  public static String varIndexedClusterTemplate(String entityVar) {
+    switch(entityVar) {
+      case "id":
+        return "id_docvalues_string";
+      case "title":
+        return "title_docvalues_string";
+      case "description":
+        return "description_docvalues_string";
+      case "parameters":
+        return "parameters_docvalues_string";
+      default:
+        return BaseModel.varIndexedBaseModel(entityVar);
+    }
+  }
 
-	public static Integer htmColumnClusterTemplate(String var) {
-		switch(var) {
-		case VAR_title:
-			return 1;
-		case VAR_description:
-			return 2;
-			default:
-				return BaseModel.htmColumnBaseModel(var);
-		}
-	}
+  public static String searchVarClusterTemplate(String searchVar) {
+    switch(searchVar) {
+      case "id_docvalues_string":
+        return "id";
+      case "title_docvalues_string":
+        return "title";
+      case "description_docvalues_string":
+        return "description";
+      case "parameters_docvalues_string":
+        return "parameters";
+      default:
+        return BaseModel.searchVarBaseModel(searchVar);
+    }
+  }
 
-	public static Integer htmRowClusterTemplate(String var) {
-		switch(var) {
-		case VAR_id:
-			return 3;
-		case VAR_title:
-			return 3;
-		case VAR_description:
-			return 3;
-		case VAR_parameters:
-			return 3;
-			default:
-				return BaseModel.htmRowBaseModel(var);
-		}
-	}
+  public static String varSearchClusterTemplate(String entityVar) {
+    switch(entityVar) {
+      default:
+        return BaseModel.varSearchBaseModel(entityVar);
+    }
+  }
 
-	public static Integer htmCellClusterTemplate(String var) {
-		switch(var) {
-		case VAR_id:
-			return 1;
-		case VAR_title:
-			return 2;
-		case VAR_description:
-			return 3;
-		case VAR_parameters:
-			return 4;
-			default:
-				return BaseModel.htmCellBaseModel(var);
-		}
-	}
+  public static String varSuggestedClusterTemplate(String entityVar) {
+    switch(entityVar) {
+      default:
+        return BaseModel.varSuggestedBaseModel(entityVar);
+    }
+  }
 
-	public static Integer lengthMinClusterTemplate(String var) {
-		switch(var) {
-			default:
-				return BaseModel.lengthMinBaseModel(var);
-		}
-	}
+  /////////////
+  // store //
+  /////////////
 
-	public static Integer lengthMaxClusterTemplate(String var) {
-		switch(var) {
-			default:
-				return BaseModel.lengthMaxBaseModel(var);
-		}
-	}
+  @Override public void storeForClass(SolrResponse.Doc doc) {
+    storeClusterTemplate(doc);
+  }
+  public void storeClusterTemplate(SolrResponse.Doc doc) {
+    ClusterTemplate oClusterTemplate = (ClusterTemplate)this;
+    SiteRequest siteRequest = oClusterTemplate.getSiteRequest_();
 
-	public static Integer maxClusterTemplate(String var) {
-		switch(var) {
-			default:
-				return BaseModel.maxBaseModel(var);
-		}
-	}
+    oClusterTemplate.setId(Optional.ofNullable(doc.get("id_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oClusterTemplate.setTitle(Optional.ofNullable(doc.get("title_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oClusterTemplate.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oClusterTemplate.setParameters(Optional.ofNullable(doc.get("parameters_docvalues_string")).map(v -> v.toString()).orElse(null));
 
-	public static Integer minClusterTemplate(String var) {
-		switch(var) {
-			default:
-				return BaseModel.minBaseModel(var);
-		}
-	}
+    super.storeBaseModel(doc);
+  }
+
+  //////////////////
+  // apiRequest //
+  //////////////////
+
+  public void apiRequestClusterTemplate() {
+    ApiRequest apiRequest = Optional.ofNullable(siteRequest_).map(r -> r.getApiRequest_()).orElse(null);
+    Object o = Optional.ofNullable(apiRequest).map(ApiRequest::getOriginal).orElse(null);
+    if(o != null && o instanceof ClusterTemplate) {
+      ClusterTemplate original = (ClusterTemplate)o;
+      if(!Objects.equals(id, original.getId()))
+        apiRequest.addVars("id");
+      if(!Objects.equals(title, original.getTitle()))
+        apiRequest.addVars("title");
+      if(!Objects.equals(description, original.getDescription()))
+        apiRequest.addVars("description");
+      if(!Objects.equals(parameters, original.getParameters()))
+        apiRequest.addVars("parameters");
+      super.apiRequestBaseModel();
+    }
+  }
+
+  //////////////
+  // toString //
+  //////////////
+
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    sb.append(Optional.ofNullable(id).map(v -> "id: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(title).map(v -> "title: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(parameters).map(v -> "parameters: " + v + "\n").orElse(""));
+    return sb.toString();
+  }
+
+  public static final String CLASS_SIMPLE_NAME = "ClusterTemplate";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate";
+  public static final String CLASS_AUTH_RESOURCE = "CLUSTERTEMPLATE";
+  public static final String CLASS_API_ADDRESS_ClusterTemplate = "ai-telemetry-enUS-ClusterTemplate";
+  public static String getClassApiAddress() {
+    return CLASS_API_ADDRESS_ClusterTemplate;
+  }
+  public static final String VAR_id = "id";
+  public static final String VAR_title = "title";
+  public static final String VAR_description = "description";
+  public static final String VAR_parameters = "parameters";
+
+  public static List<String> varsQForClass() {
+    return ClusterTemplate.varsQClusterTemplate(new ArrayList<String>());
+  }
+  public static List<String> varsQClusterTemplate(List<String> vars) {
+    BaseModel.varsQBaseModel(vars);
+    return vars;
+  }
+
+  public static List<String> varsFqForClass() {
+    return ClusterTemplate.varsFqClusterTemplate(new ArrayList<String>());
+  }
+  public static List<String> varsFqClusterTemplate(List<String> vars) {
+    vars.add(VAR_id);
+    vars.add(VAR_title);
+    vars.add(VAR_description);
+    vars.add(VAR_parameters);
+    BaseModel.varsFqBaseModel(vars);
+    return vars;
+  }
+
+  public static List<String> varsRangeForClass() {
+    return ClusterTemplate.varsRangeClusterTemplate(new ArrayList<String>());
+  }
+  public static List<String> varsRangeClusterTemplate(List<String> vars) {
+    vars.add(VAR_parameters);
+    BaseModel.varsRangeBaseModel(vars);
+    return vars;
+  }
+
+  public static final String DISPLAY_NAME_id = "template ID";
+  public static final String DISPLAY_NAME_title = "template title";
+  public static final String DISPLAY_NAME_description = "template description";
+  public static final String DISPLAY_NAME_parameters = "template parameters";
+
+  @Override
+  public String idForClass() {
+    return id;
+  }
+
+  @Override
+  public String titleForClass() {
+    return objectTitle;
+  }
+
+  @Override
+  public String nameForClass() {
+    return id;
+  }
+
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return ClusterTemplate.NameAdjectiveSingular_enUS;
+  }
+
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return "%s/en-us/edit/cluster-template/%s";
+  }
+
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
+
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
+
+  public static String displayNameForClass(String var) {
+    return ClusterTemplate.displayNameClusterTemplate(var);
+  }
+  public static String displayNameClusterTemplate(String var) {
+    switch(var) {
+    case VAR_id:
+      return DISPLAY_NAME_id;
+    case VAR_title:
+      return DISPLAY_NAME_title;
+    case VAR_description:
+      return DISPLAY_NAME_description;
+    case VAR_parameters:
+      return DISPLAY_NAME_parameters;
+    default:
+      return BaseModel.displayNameBaseModel(var);
+    }
+  }
+
+  public static String descriptionClusterTemplate(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+    case VAR_id:
+      return "The ID of this template";
+    case VAR_title:
+      return "The title of this template";
+    case VAR_description:
+      return "The description of this template";
+    case VAR_parameters:
+      return "The parameters of this template";
+      default:
+        return BaseModel.descriptionBaseModel(var);
+    }
+  }
+
+  public static String classSimpleNameClusterTemplate(String var) {
+    switch(var) {
+    case VAR_id:
+      return "String";
+    case VAR_title:
+      return "String";
+    case VAR_description:
+      return "String";
+    case VAR_parameters:
+      return "JsonArray";
+      default:
+        return BaseModel.classSimpleNameBaseModel(var);
+    }
+  }
+
+  public static Integer htmColumnClusterTemplate(String var) {
+    switch(var) {
+    case VAR_title:
+      return 1;
+    case VAR_description:
+      return 2;
+      default:
+        return BaseModel.htmColumnBaseModel(var);
+    }
+  }
+
+  public static Integer htmRowClusterTemplate(String var) {
+    switch(var) {
+    case VAR_id:
+      return 3;
+    case VAR_title:
+      return 3;
+    case VAR_description:
+      return 3;
+    case VAR_parameters:
+      return 3;
+      default:
+        return BaseModel.htmRowBaseModel(var);
+    }
+  }
+
+  public static Integer htmCellClusterTemplate(String var) {
+    switch(var) {
+    case VAR_id:
+      return 1;
+    case VAR_title:
+      return 2;
+    case VAR_description:
+      return 3;
+    case VAR_parameters:
+      return 4;
+      default:
+        return BaseModel.htmCellBaseModel(var);
+    }
+  }
+
+  public static Integer lengthMinClusterTemplate(String var) {
+    switch(var) {
+      default:
+        return BaseModel.lengthMinBaseModel(var);
+    }
+  }
+
+  public static Integer lengthMaxClusterTemplate(String var) {
+    switch(var) {
+      default:
+        return BaseModel.lengthMaxBaseModel(var);
+    }
+  }
+
+  public static Integer maxClusterTemplate(String var) {
+    switch(var) {
+      default:
+        return BaseModel.maxBaseModel(var);
+    }
+  }
+
+  public static Integer minClusterTemplate(String var) {
+    switch(var) {
+      default:
+        return BaseModel.minBaseModel(var);
+    }
+  }
 }

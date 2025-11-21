@@ -49,6 +49,12 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/request/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/result/ \
@@ -158,5 +164,19 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/vm/VirtualMachineGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachinePaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/ai-telemetry-developer/AiTelemetryDeveloperGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSidebar.htm \
     -type f -exec wc -l {} +
 echo AI generated

@@ -31,18 +31,18 @@ import io.vertx.ext.auth.authorization.AuthorizationProvider;
 @WebApiServiceGen
 @ProxyGen
 public interface ClusterOrderEnUSGenApiService {
-	public void searchClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void getClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void putimportClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void putimportClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void searchpageClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void editpageClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void getClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void putimportClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void putimportClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchpageClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void editpageClusterOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterClusterOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterClusterOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
 }

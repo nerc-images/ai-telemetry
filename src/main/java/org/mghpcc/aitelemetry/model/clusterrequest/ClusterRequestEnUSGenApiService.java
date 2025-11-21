@@ -31,19 +31,19 @@ import io.vertx.ext.auth.authorization.AuthorizationProvider;
 @WebApiServiceGen
 @ProxyGen
 public interface ClusterRequestEnUSGenApiService {
-	public void searchClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void getClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void putimportClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void putimportClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void searchpageClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void editpageClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void userpageClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void getClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void putimportClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void putimportClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchpageClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void editpageClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void userpageClusterRequest(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterClusterRequest(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterClusterRequestFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
 }

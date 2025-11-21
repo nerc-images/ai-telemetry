@@ -42,6 +42,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.pgclient.data.Point;
 import org.computate.vertx.serialize.pgclient.PgClientPointSerializer;
 import org.computate.vertx.serialize.pgclient.PgClientPointDeserializer;
+import org.computate.vertx.tool.VertxTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
@@ -264,14 +265,16 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	///////////
 
 
-  /**   The entity hubId
+  /**
+   *  The entity hubId
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String hubId;
 
-  /**  <br> The entity hubId
+  /**
+   * <br> The entity hubId
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:hubId">Find the entity hubId in Solr</a>
    * <br>
@@ -315,19 +318,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return hubId;
   }
 
+  public static String staticJsonHubId(String hubId) {
+    return hubId;
+  }
+
 	/////////////////
   // hubResource //
 	/////////////////
 
 
-  /**   The entity hubResource
+  /**
+   *  The entity hubResource
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String hubResource;
 
-  /**  <br> The entity hubResource
+  /**
+   * <br> The entity hubResource
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:hubResource">Find the entity hubResource in Solr</a>
    * <br>
@@ -371,19 +380,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return hubResource;
   }
 
+  public static String staticJsonHubResource(String hubResource) {
+    return hubResource;
+  }
+
 	/////////////////
   // clusterName //
 	/////////////////
 
 
-  /**   The entity clusterName
+  /**
+   *  The entity clusterName
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String clusterName;
 
-  /**  <br> The entity clusterName
+  /**
+   * <br> The entity clusterName
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:clusterName">Find the entity clusterName in Solr</a>
    * <br>
@@ -427,19 +442,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return clusterName;
   }
 
+  public static String staticJsonClusterName(String clusterName) {
+    return clusterName;
+  }
+
 	////////////////
   // hubCluster //
 	////////////////
 
 
-  /**   The entity hubCluster
+  /**
+   *  The entity hubCluster
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected Boolean hubCluster;
 
-  /**  <br> The entity hubCluster
+  /**
+   * <br> The entity hubCluster
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:hubCluster">Find the entity hubCluster in Solr</a>
    * <br>
@@ -488,19 +509,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return hubCluster;
   }
 
+  public static Boolean staticJsonHubCluster(Boolean hubCluster) {
+    return hubCluster;
+  }
+
 	////////////////////////
   // clusterNameMetrics //
 	////////////////////////
 
 
-  /**   The entity clusterNameMetrics
+  /**
+   *  The entity clusterNameMetrics
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String clusterNameMetrics;
 
-  /**  <br> The entity clusterNameMetrics
+  /**
+   * <br> The entity clusterNameMetrics
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:clusterNameMetrics">Find the entity clusterNameMetrics in Solr</a>
    * <br>
@@ -545,14 +572,16 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	/////////////////////
 
 
-  /**   The entity clusterResource
+  /**
+   *  The entity clusterResource
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String clusterResource;
 
-  /**  <br> The entity clusterResource
+  /**
+   * <br> The entity clusterResource
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:clusterResource">Find the entity clusterResource in Solr</a>
    * <br>
@@ -596,19 +625,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return clusterResource;
   }
 
+  public static String staticJsonClusterResource(String clusterResource) {
+    return clusterResource;
+  }
+
 	////////////////
   // uniqueName //
 	////////////////
 
 
-  /**   The entity uniqueName
+  /**
+   *  The entity uniqueName
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String uniqueName;
 
-  /**  <br> The entity uniqueName
+  /**
+   * <br> The entity uniqueName
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:uniqueName">Find the entity uniqueName in Solr</a>
    * <br>
@@ -653,14 +688,16 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	/////////////////
 
 
-  /**   The entity description
+  /**
+   *  The entity description
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String description;
 
-  /**  <br> The entity description
+  /**
+   * <br> The entity description
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:description">Find the entity description in Solr</a>
    * <br>
@@ -704,12 +741,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return description;
   }
 
+  public static String staticJsonDescription(String description) {
+    return description;
+  }
+
 	////////////////////
   // locationColors //
 	////////////////////
 
 
-  /**   The entity locationColors
+  /**
+   *  The entity locationColors
    *	 It is constructed before being initialized with the constructor by default. 
    */
   @JsonProperty
@@ -717,7 +759,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected List<String> locationColors = new ArrayList<String>();
 
-  /**  <br> The entity locationColors
+  /**
+   * <br> The entity locationColors
    *  It is constructed before being initialized with the constructor by default. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:locationColors">Find the entity locationColors in Solr</a>
    * <br>
@@ -784,7 +827,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	////////////////////
 
 
-  /**   The entity locationTitles
+  /**
+   *  The entity locationTitles
    *	 It is constructed before being initialized with the constructor by default. 
    */
   @JsonProperty
@@ -792,7 +836,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected List<String> locationTitles = new ArrayList<String>();
 
-  /**  <br> The entity locationTitles
+  /**
+   * <br> The entity locationTitles
    *  It is constructed before being initialized with the constructor by default. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:locationTitles">Find the entity locationTitles in Solr</a>
    * <br>
@@ -859,7 +904,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	///////////////////
 
 
-  /**   The entity locationLinks
+  /**
+   *  The entity locationLinks
    *	 It is constructed before being initialized with the constructor by default. 
    */
   @JsonProperty
@@ -867,7 +913,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected List<String> locationLinks = new ArrayList<String>();
 
-  /**  <br> The entity locationLinks
+  /**
+   * <br> The entity locationLinks
    *  It is constructed before being initialized with the constructor by default. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:locationLinks">Find the entity locationLinks in Solr</a>
    * <br>
@@ -934,7 +981,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	//////////////
 
 
-  /**   The entity location
+  /**
+   *  The entity location
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
@@ -943,7 +991,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected Point location;
 
-  /**  <br> The entity location
+  /**
+   * <br> The entity location
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:location">Find the entity location in Solr</a>
    * <br>
@@ -1033,19 +1082,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return location;
   }
 
+  public static JsonObject staticJsonLocation(Point location) {
+    return Optional.ofNullable(location).map(v -> VertxTool.toGeoJson(v)).orElse(null);
+  }
+
 	////////
   // id //
 	////////
 
 
-  /**   The entity id
+  /**
+   *  The entity id
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String id;
 
-  /**  <br> The entity id
+  /**
+   * <br> The entity id
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:id">Find the entity id in Solr</a>
    * <br>
@@ -1089,19 +1144,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return id;
   }
 
+  public static String staticJsonId(String id) {
+    return id;
+  }
+
 	///////////////////
   // entityShortId //
 	///////////////////
 
 
-  /**   The entity entityShortId
+  /**
+   *  The entity entityShortId
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String entityShortId;
 
-  /**  <br> The entity entityShortId
+  /**
+   * <br> The entity entityShortId
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:entityShortId">Find the entity entityShortId in Solr</a>
    * <br>
@@ -1146,14 +1207,16 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 	//////////////////
 
 
-  /**   The entity ngsildTenant
+  /**
+   *  The entity ngsildTenant
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String ngsildTenant;
 
-  /**  <br> The entity ngsildTenant
+  /**
+   * <br> The entity ngsildTenant
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:ngsildTenant">Find the entity ngsildTenant in Solr</a>
    * <br>
@@ -1197,19 +1260,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return ngsildTenant;
   }
 
+  public static String staticJsonNgsildTenant(String ngsildTenant) {
+    return ngsildTenant;
+  }
+
 	////////////////
   // ngsildPath //
 	////////////////
 
 
-  /**   The entity ngsildPath
+  /**
+   *  The entity ngsildPath
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String ngsildPath;
 
-  /**  <br> The entity ngsildPath
+  /**
+   * <br> The entity ngsildPath
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:ngsildPath">Find the entity ngsildPath in Solr</a>
    * <br>
@@ -1253,19 +1322,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return ngsildPath;
   }
 
+  public static String staticJsonNgsildPath(String ngsildPath) {
+    return ngsildPath;
+  }
+
 	///////////////////
   // ngsildContext //
 	///////////////////
 
 
-  /**   The entity ngsildContext
+  /**
+   *  The entity ngsildContext
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String ngsildContext;
 
-  /**  <br> The entity ngsildContext
+  /**
+   * <br> The entity ngsildContext
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:ngsildContext">Find the entity ngsildContext in Solr</a>
    * <br>
@@ -1309,12 +1384,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return ngsildContext;
   }
 
+  public static String staticJsonNgsildContext(String ngsildContext) {
+    return ngsildContext;
+  }
+
 	////////////////
   // ngsildData //
 	////////////////
 
 
-  /**   The entity ngsildData
+  /**
+   *  The entity ngsildData
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
@@ -1322,7 +1402,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected JsonObject ngsildData;
 
-  /**  <br> The entity ngsildData
+  /**
+   * <br> The entity ngsildData
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:ngsildData">Find the entity ngsildData in Solr</a>
    * <br>
@@ -1374,12 +1455,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return ngsildData;
   }
 
+  public static JsonObject staticJsonNgsildData(JsonObject ngsildData) {
+    return ngsildData;
+  }
+
 	//////////////////
   // aiNodesTotal //
 	//////////////////
 
 
-  /**   The entity aiNodesTotal
+  /**
+   *  The entity aiNodesTotal
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
@@ -1387,7 +1473,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected Integer aiNodesTotal;
 
-  /**  <br> The entity aiNodesTotal
+  /**
+   * <br> The entity aiNodesTotal
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:aiNodesTotal">Find the entity aiNodesTotal in Solr</a>
    * <br>
@@ -1438,12 +1525,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return aiNodesTotal;
   }
 
+  public static String staticJsonAiNodesTotal(Integer aiNodesTotal) {
+    return Optional.ofNullable(aiNodesTotal).map(v -> v.toString()).orElse(null);
+  }
+
 	/////////////////////
   // gpuDevicesTotal //
 	/////////////////////
 
 
-  /**   The entity gpuDevicesTotal
+  /**
+   *  The entity gpuDevicesTotal
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
@@ -1451,7 +1543,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected Integer gpuDevicesTotal;
 
-  /**  <br> The entity gpuDevicesTotal
+  /**
+   * <br> The entity gpuDevicesTotal
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:gpuDevicesTotal">Find the entity gpuDevicesTotal in Solr</a>
    * <br>
@@ -1502,12 +1595,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return gpuDevicesTotal;
   }
 
+  public static String staticJsonGpuDevicesTotal(Integer gpuDevicesTotal) {
+    return Optional.ofNullable(gpuDevicesTotal).map(v -> v.toString()).orElse(null);
+  }
+
 	//////////////
   // vmsTotal //
 	//////////////
 
 
-  /**   The entity vmsTotal
+  /**
+   *  The entity vmsTotal
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
@@ -1515,7 +1613,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected Integer vmsTotal;
 
-  /**  <br> The entity vmsTotal
+  /**
+   * <br> The entity vmsTotal
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:vmsTotal">Find the entity vmsTotal in Solr</a>
    * <br>
@@ -1566,12 +1665,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return vmsTotal;
   }
 
+  public static String staticJsonVmsTotal(Integer vmsTotal) {
+    return Optional.ofNullable(vmsTotal).map(v -> v.toString()).orElse(null);
+  }
+
 	///////////////////
   // cpuCoresTotal //
 	///////////////////
 
 
-  /**   The entity cpuCoresTotal
+  /**
+   *  The entity cpuCoresTotal
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
@@ -1579,7 +1683,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected Integer cpuCoresTotal;
 
-  /**  <br> The entity cpuCoresTotal
+  /**
+   * <br> The entity cpuCoresTotal
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:cpuCoresTotal">Find the entity cpuCoresTotal in Solr</a>
    * <br>
@@ -1630,12 +1735,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return cpuCoresTotal;
   }
 
+  public static String staticJsonCpuCoresTotal(Integer cpuCoresTotal) {
+    return Optional.ofNullable(cpuCoresTotal).map(v -> v.toString()).orElse(null);
+  }
+
 	//////////////////////
   // memoryBytesTotal //
 	//////////////////////
 
 
-  /**   The entity memoryBytesTotal
+  /**
+   *  The entity memoryBytesTotal
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
@@ -1643,7 +1753,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   @JsonInclude(Include.NON_NULL)
   protected Long memoryBytesTotal;
 
-  /**  <br> The entity memoryBytesTotal
+  /**
+   * <br> The entity memoryBytesTotal
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:memoryBytesTotal">Find the entity memoryBytesTotal in Solr</a>
    * <br>
@@ -1694,19 +1805,25 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return memoryBytesTotal;
   }
 
+  public static String staticJsonMemoryBytesTotal(Long memoryBytesTotal) {
+    return Optional.ofNullable(memoryBytesTotal).map(v -> v.toString()).orElse(null);
+  }
+
 	////////////////
   // grafanaUrl //
 	////////////////
 
 
-  /**   The entity grafanaUrl
+  /**
+   *  The entity grafanaUrl
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonInclude(Include.NON_NULL)
   protected String grafanaUrl;
 
-  /**  <br> The entity grafanaUrl
+  /**
+   * <br> The entity grafanaUrl
    *  is defined as null before being initialized. 
    * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:grafanaUrl">Find the entity grafanaUrl in Solr</a>
    * <br>

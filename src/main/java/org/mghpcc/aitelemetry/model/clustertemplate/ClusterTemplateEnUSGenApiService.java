@@ -31,18 +31,18 @@ import io.vertx.ext.auth.authorization.AuthorizationProvider;
 @WebApiServiceGen
 @ProxyGen
 public interface ClusterTemplateEnUSGenApiService {
-	public void searchClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void getClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void putimportClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void putimportClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void searchpageClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void editpageClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void getClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void putimportClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void putimportClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchpageClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void editpageClusterTemplate(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterClusterTemplate(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterClusterTemplateFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
 }

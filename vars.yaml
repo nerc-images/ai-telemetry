@@ -155,7 +155,7 @@ API_COUNTER_RESUME: 100
 ###################
 
 # The number of Vert.x instances to run per pod. 
-SITE_INSTANCES: 1
+SITE_INSTANCES: 3
 # The number of Vert.x worker instances to run per pod. 
 WORKER_POOL_SIZE: 2
 # The max event loop execute time in seconds. 
@@ -204,7 +204,7 @@ WEB_COMPONENTS_THEME: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_
 # An optional Web Awesome Pro Kit for Web Components. 
 WEB_COMPONENTS_KIT: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.WEB_COMPONENTS_KIT | default('', true) | b64decode | default('', true) }}"
 # Whether you are using the Web Awesome pro kit or free kit. 
-WEB_COMPONENTS_PRO: "{{ lookup('env', 'WEB_COMPONENTS_PRO') | default('false', true) }}"
+WEB_COMPONENTS_PRO: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.WEB_COMPONENTS_PRO | default('', true) | b64decode | default('', true) }}"
 # Site default font size. 
 SITE_FONT_SIZE: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE) | first | default({})).data.SITE_FONT_SIZE | default('', true) | b64decode | default('m', true) }}"
 # An optional FontAwesome Pro Kit for additional FontAwesome icons. 
@@ -610,6 +610,7 @@ WRITE_COMMENTS: true
 # extra vars #
 ##############
 
+STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/computate.org-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
 HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
 
 # Social media

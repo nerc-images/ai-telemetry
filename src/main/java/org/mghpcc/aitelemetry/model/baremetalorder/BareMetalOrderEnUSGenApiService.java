@@ -31,17 +31,17 @@ import io.vertx.ext.auth.authorization.AuthorizationProvider;
 @WebApiServiceGen
 @ProxyGen
 public interface BareMetalOrderEnUSGenApiService {
-	public void searchBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void getBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void patchBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void postBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deleteBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void searchpageBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void editpageBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void userpageBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
-	public void deletefilterBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void getBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void patchBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void postBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deleteBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void searchpageBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void editpageBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void userpageBareMetalOrder(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterBareMetalOrder(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
+  public void deletefilterBareMetalOrderFuture(JsonObject body, ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler);
 }

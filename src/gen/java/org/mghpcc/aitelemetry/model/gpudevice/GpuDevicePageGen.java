@@ -111,308 +111,308 @@ import io.vertx.core.json.JsonArray;
  * Generated: true
  **/
 public abstract class GpuDevicePageGen<DEV> extends GpuDeviceGenPage {
-	protected static final Logger LOG = LoggerFactory.getLogger(GpuDevicePage.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(GpuDevicePage.class);
 
-	//////////////
-	// initDeep //
-	//////////////
+  //////////////
+  // initDeep //
+  //////////////
 
-	public Future<GpuDevicePageGen<DEV>> promiseDeepGpuDevicePage(SiteRequest siteRequest_) {
-		setSiteRequest_(siteRequest_);
-		return promiseDeepGpuDevicePage();
-	}
+  public Future<GpuDevicePageGen<DEV>> promiseDeepGpuDevicePage(SiteRequest siteRequest_) {
+    setSiteRequest_(siteRequest_);
+    return promiseDeepGpuDevicePage();
+  }
 
-	public Future<GpuDevicePageGen<DEV>> promiseDeepGpuDevicePage() {
-		Promise<GpuDevicePageGen<DEV>> promise = Promise.promise();
-		Promise<Void> promise2 = Promise.promise();
-		promiseGpuDevicePage(promise2);
-		promise2.future().onSuccess(a -> {
-			super.promiseDeepGpuDeviceGenPage(siteRequest_).onSuccess(b -> {
-				promise.complete(this);
-			}).onFailure(ex -> {
-				promise.fail(ex);
-			});
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<GpuDevicePageGen<DEV>> promiseDeepGpuDevicePage() {
+    Promise<GpuDevicePageGen<DEV>> promise = Promise.promise();
+    Promise<Void> promise2 = Promise.promise();
+    promiseGpuDevicePage(promise2);
+    promise2.future().onSuccess(a -> {
+      super.promiseDeepGpuDeviceGenPage(siteRequest_).onSuccess(b -> {
+        promise.complete(this);
+      }).onFailure(ex -> {
+        promise.fail(ex);
+      });
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	public Future<Void> promiseGpuDevicePage(Promise<Void> promise) {
-		Future.future(a -> a.complete()).compose(a -> {
-			Promise<Void> promise2 = Promise.promise();
-			try {
-				promise2.complete();
-			} catch(Exception ex) {
-				promise2.fail(ex);
-			}
-			return promise2.future();
-		}).onSuccess(a -> {
-			promise.complete();
-		}).onFailure(ex -> {
-			promise.fail(ex);
-		});
-		return promise.future();
-	}
+  public Future<Void> promiseGpuDevicePage(Promise<Void> promise) {
+    Future.future(a -> a.complete()).compose(a -> {
+      Promise<Void> promise2 = Promise.promise();
+      try {
+        promise2.complete();
+      } catch(Exception ex) {
+        promise2.fail(ex);
+      }
+      return promise2.future();
+    }).onSuccess(a -> {
+      promise.complete();
+    }).onFailure(ex -> {
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
-	@Override public Future<? extends GpuDevicePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
-		return promiseDeepGpuDevicePage(siteRequest_);
-	}
+  @Override public Future<? extends GpuDevicePageGen<DEV>> promiseDeepForClass(SiteRequest siteRequest_) {
+    return promiseDeepGpuDevicePage(siteRequest_);
+  }
 
-	/////////////////
-	// siteRequest //
-	/////////////////
+  /////////////////
+  // siteRequest //
+  /////////////////
 
-	public void siteRequestGpuDevicePage(SiteRequest siteRequest_) {
-			super.siteRequestGpuDeviceGenPage(siteRequest_);
-	}
+  public void siteRequestGpuDevicePage(SiteRequest siteRequest_) {
+      super.siteRequestGpuDeviceGenPage(siteRequest_);
+  }
 
-	public void siteRequestForClass(SiteRequest siteRequest_) {
-		siteRequestGpuDevicePage(siteRequest_);
-	}
+  public void siteRequestForClass(SiteRequest siteRequest_) {
+    siteRequestGpuDevicePage(siteRequest_);
+  }
 
-	/////////////
-	// obtain //
-	/////////////
+  /////////////
+  // obtain //
+  /////////////
 
-	@Override public Object obtainForClass(String var) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = obtainGpuDevicePage(v);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.obtainForClass(v);
-			}
-			else if(o instanceof Map) {
-				Map<?, ?> map = (Map<?, ?>)o;
-				o = map.get(v);
-			}
-		}
-		return o;
-	}
-	public Object obtainGpuDevicePage(String var) {
-		GpuDevicePage oGpuDevicePage = (GpuDevicePage)this;
-		switch(var) {
-			default:
-				return super.obtainGpuDeviceGenPage(var);
-		}
-	}
+  @Override public Object obtainForClass(String var) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = obtainGpuDevicePage(v);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.obtainForClass(v);
+      }
+      else if(o instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>)o;
+        o = map.get(v);
+      }
+    }
+    return o;
+  }
+  public Object obtainGpuDevicePage(String var) {
+    GpuDevicePage oGpuDevicePage = (GpuDevicePage)this;
+    switch(var) {
+      default:
+        return super.obtainGpuDeviceGenPage(var);
+    }
+  }
 
-	///////////////
-	// relate //
-	///////////////
+  ///////////////
+  // relate //
+  ///////////////
 
-	@Override public boolean relateForClass(String var, Object val) {
-		String[] vars = StringUtils.split(var, ".");
-		Object o = null;
-		for(String v : vars) {
-			if(o == null)
-				o = relateGpuDevicePage(v, val);
-			else if(o instanceof BaseModel) {
-				BaseModel baseModel = (BaseModel)o;
-				o = baseModel.relateForClass(v, val);
-			}
-		}
-		return o != null;
-	}
-	public Object relateGpuDevicePage(String var, Object val) {
-		GpuDevicePage oGpuDevicePage = (GpuDevicePage)this;
-		switch(var) {
-			default:
-				return super.relateGpuDeviceGenPage(var, val);
-		}
-	}
+  @Override public boolean relateForClass(String var, Object val) {
+    String[] vars = StringUtils.split(var, ".");
+    Object o = null;
+    for(String v : vars) {
+      if(o == null)
+        o = relateGpuDevicePage(v, val);
+      else if(o instanceof BaseModel) {
+        BaseModel baseModel = (BaseModel)o;
+        o = baseModel.relateForClass(v, val);
+      }
+    }
+    return o != null;
+  }
+  public Object relateGpuDevicePage(String var, Object val) {
+    GpuDevicePage oGpuDevicePage = (GpuDevicePage)this;
+    switch(var) {
+      default:
+        return super.relateGpuDeviceGenPage(var, val);
+    }
+  }
 
-	///////////////
-	// staticSet //
-	///////////////
+  ///////////////
+  // staticSet //
+  ///////////////
 
-	public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, GpuDevicePage o) {
-		return staticSetGpuDevicePage(entityVar,  siteRequest_, v, o);
-	}
-	public static Object staticSetGpuDevicePage(String entityVar, SiteRequest siteRequest_, String v, GpuDevicePage o) {
-		switch(entityVar) {
-			default:
-				return GpuDeviceGenPage.staticSetGpuDeviceGenPage(entityVar,  siteRequest_, v, o);
-		}
-	}
+  public static Object staticSetForClass(String entityVar, SiteRequest siteRequest_, String v, GpuDevicePage o) {
+    return staticSetGpuDevicePage(entityVar,  siteRequest_, v, o);
+  }
+  public static Object staticSetGpuDevicePage(String entityVar, SiteRequest siteRequest_, String v, GpuDevicePage o) {
+    switch(entityVar) {
+      default:
+        return GpuDeviceGenPage.staticSetGpuDeviceGenPage(entityVar,  siteRequest_, v, o);
+    }
+  }
 
-	////////////////
-	// staticSearch //
-	////////////////
+  ////////////////
+  // staticSearch //
+  ////////////////
 
-	public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchGpuDevicePage(entityVar,  siteRequest_, o);
-	}
-	public static Object staticSearchGpuDevicePage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return GpuDeviceGenPage.staticSearchGpuDeviceGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchGpuDevicePage(entityVar,  siteRequest_, o);
+  }
+  public static Object staticSearchGpuDevicePage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return GpuDeviceGenPage.staticSearchGpuDeviceGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	///////////////////
-	// staticSearchStr //
-	///////////////////
+  ///////////////////
+  // staticSearchStr //
+  ///////////////////
 
-	public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
-		return staticSearchStrGpuDevicePage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchStrGpuDevicePage(String entityVar, SiteRequest siteRequest_, Object o) {
-		switch(entityVar) {
-			default:
-				return GpuDeviceGenPage.staticSearchStrGpuDeviceGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchStrForClass(String entityVar, SiteRequest siteRequest_, Object o) {
+    return staticSearchStrGpuDevicePage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchStrGpuDevicePage(String entityVar, SiteRequest siteRequest_, Object o) {
+    switch(entityVar) {
+      default:
+        return GpuDeviceGenPage.staticSearchStrGpuDeviceGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////////
-	// staticSearchFq //
-	//////////////////
+  //////////////////
+  // staticSearchFq //
+  //////////////////
 
-	public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
-		return staticSearchFqGpuDevicePage(entityVar,  siteRequest_, o);
-	}
-	public static String staticSearchFqGpuDevicePage(String entityVar, SiteRequest siteRequest_, String o) {
-		switch(entityVar) {
-			default:
-				return GpuDeviceGenPage.staticSearchFqGpuDeviceGenPage(entityVar,  siteRequest_, o);
-		}
-	}
+  public static String staticSearchFqForClass(String entityVar, SiteRequest siteRequest_, String o) {
+    return staticSearchFqGpuDevicePage(entityVar,  siteRequest_, o);
+  }
+  public static String staticSearchFqGpuDevicePage(String entityVar, SiteRequest siteRequest_, String o) {
+    switch(entityVar) {
+      default:
+        return GpuDeviceGenPage.staticSearchFqGpuDeviceGenPage(entityVar,  siteRequest_, o);
+    }
+  }
 
-	//////////////
-	// toString //
-	//////////////
+  //////////////
+  // toString //
+  //////////////
 
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		return sb.toString();
-	}
+  @Override public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(super.toString());
+    return sb.toString();
+  }
 
-	public static final String CLASS_SIMPLE_NAME = "GpuDevicePage";
-	public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.gpudevice.GpuDevicePage";
-	public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_SIMPLE_NAME = "GpuDevicePage";
+  public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.gpudevice.GpuDevicePage";
+  public static final String CLASS_AUTH_RESOURCE = "";
 
 
-	@Override
-	public String idForClass() {
-		return null;
-	}
+  @Override
+  public String idForClass() {
+    return null;
+  }
 
-	@Override
-	public String titleForClass() {
-		return null;
-	}
+  @Override
+  public String titleForClass() {
+    return null;
+  }
 
-	@Override
-	public String nameForClass() {
-		return null;
-	}
+  @Override
+  public String nameForClass() {
+    return null;
+  }
 
-	@Override
-	public String classNameAdjectiveSingularForClass() {
-		return null;
-	}
+  @Override
+  public String classNameAdjectiveSingularForClass() {
+    return null;
+  }
 
-	@Override
-	public String descriptionForClass() {
-		return null;
-	}
+  @Override
+  public String descriptionForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlEditPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlEditPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDisplayPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDisplayPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlUserPageForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlUserPageForClass() {
+    return null;
+  }
 
-	@Override
-	public String classStringFormatUrlDownloadForClass() {
-		return null;
-	}
+  @Override
+  public String classStringFormatUrlDownloadForClass() {
+    return null;
+  }
 
-	public static String displayNameForClass(String var) {
-		return GpuDevicePage.displayNameGpuDevicePage(var);
-	}
-	public static String displayNameGpuDevicePage(String var) {
-		switch(var) {
-		default:
-			return GpuDeviceGenPage.displayNameGpuDeviceGenPage(var);
-		}
-	}
+  public static String displayNameForClass(String var) {
+    return GpuDevicePage.displayNameGpuDevicePage(var);
+  }
+  public static String displayNameGpuDevicePage(String var) {
+    switch(var) {
+    default:
+      return GpuDeviceGenPage.displayNameGpuDeviceGenPage(var);
+    }
+  }
 
-	public static String descriptionGpuDevicePage(String var) {
-		if(var == null)
-			return null;
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.descriptionGpuDeviceGenPage(var);
-		}
-	}
+  public static String descriptionGpuDevicePage(String var) {
+    if(var == null)
+      return null;
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.descriptionGpuDeviceGenPage(var);
+    }
+  }
 
-	public static String classSimpleNameGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.classSimpleNameGpuDeviceGenPage(var);
-		}
-	}
+  public static String classSimpleNameGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.classSimpleNameGpuDeviceGenPage(var);
+    }
+  }
 
-	public static Integer htmColumnGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.htmColumnGpuDeviceGenPage(var);
-		}
-	}
+  public static Integer htmColumnGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.htmColumnGpuDeviceGenPage(var);
+    }
+  }
 
-	public static Integer htmRowGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.htmRowGpuDeviceGenPage(var);
-		}
-	}
+  public static Integer htmRowGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.htmRowGpuDeviceGenPage(var);
+    }
+  }
 
-	public static Integer htmCellGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.htmCellGpuDeviceGenPage(var);
-		}
-	}
+  public static Integer htmCellGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.htmCellGpuDeviceGenPage(var);
+    }
+  }
 
-	public static Integer lengthMinGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.lengthMinGpuDeviceGenPage(var);
-		}
-	}
+  public static Integer lengthMinGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.lengthMinGpuDeviceGenPage(var);
+    }
+  }
 
-	public static Integer lengthMaxGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.lengthMaxGpuDeviceGenPage(var);
-		}
-	}
+  public static Integer lengthMaxGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.lengthMaxGpuDeviceGenPage(var);
+    }
+  }
 
-	public static Integer maxGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.maxGpuDeviceGenPage(var);
-		}
-	}
+  public static Integer maxGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.maxGpuDeviceGenPage(var);
+    }
+  }
 
-	public static Integer minGpuDevicePage(String var) {
-		switch(var) {
-			default:
-				return GpuDeviceGenPage.minGpuDeviceGenPage(var);
-		}
-	}
+  public static Integer minGpuDevicePage(String var) {
+    switch(var) {
+      default:
+        return GpuDeviceGenPage.minGpuDeviceGenPage(var);
+    }
+  }
 }
