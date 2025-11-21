@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -118,19 +119,19 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
               AiNodeEnUSApiServiceImpl.queryAiNodesTotal(vertx, webClient, config, hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersAiNodesTotal -> {
                 VirtualMachineEnUSApiServiceImpl.queryVmsTotalForHub(vertx, webClient, config, hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersVmsTotal -> {
                   GpuDeviceEnUSApiServiceImpl.queryGpuDevicesTotalForHub(vertx, webClient, config, hub, Cluster.CLASS_SIMPLE_NAME, accessToken).onSuccess(clustersGpuDevicesTotal -> {
-                    List<JsonObject> clustersMemoryBytes = clustersMemoryBytesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).map(aiNodeResult -> aiNodeResult.put("clusterName", "local-cluster".equals(aiNodeResult.getJsonObject("metric").getValue("cluster")) ? hub.getLocalClusterName() : aiNodeResult.getJsonObject("metric").getValue("cluster"))).collect(Collectors.toList());
-                    List<JsonObject> clustersCpuCores = clustersCpuCoresTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                    List<JsonObject> clustersAiNodes = clustersAiNodesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                    List<JsonObject> clustersGpuDevices = clustersGpuDevicesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(aiNodeResult -> (JsonObject)aiNodeResult).collect(Collectors.toList());
-                    List<JsonObject> clustersVms = clustersVmsTotal.stream().filter(vmResult -> !((JsonObject)vmResult).getJsonArray("value").getString(1).equals("0")).map(vmResult -> (JsonObject)vmResult).collect(Collectors.toList());
+                    List<JsonObject> clustersMemoryBytes = clustersMemoryBytesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(result -> (JsonObject)result).map(result -> result.put("clusterName", "local-cluster".equals(result.getJsonObject("metric").getValue("cluster")) ? hub.getLocalClusterName() : result.getJsonObject("metric").getValue("cluster"))).collect(Collectors.toList());
+                    List<JsonObject> clustersCpuCores = clustersCpuCoresTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(result -> (JsonObject)result).collect(Collectors.toList());
+                    List<JsonObject> clustersAiNodes = clustersAiNodesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(result -> (JsonObject)result).collect(Collectors.toList());
+                    List<JsonObject> clustersGpuDevices = clustersGpuDevicesTotal.stream().filter(clusterResult -> !((JsonObject)clusterResult).getJsonArray("value").getString(1).equals("0")).map(result -> (JsonObject)result).collect(Collectors.toList());
+                    List<JsonObject> clustersVms = clustersVmsTotal.stream().filter(vmResult -> !((JsonObject)vmResult).getJsonArray("value").getString(1).equals("0")).map(result -> (JsonObject)result).collect(Collectors.toList());
                     List<Future<?>> futures = new ArrayList<>();
                     for(Integer i = 0; i < clustersMemoryBytes.size(); i++) {
                       JsonObject clusterMemoryBytesResult = clustersMemoryBytes.get(i);
                       String clusterName = clusterMemoryBytesResult.getJsonObject("metric").getString("cluster");
-                      JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
-                      JsonObject vmResult = clustersVms.stream().filter(cluster -> clusterName.equals(cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject clusterCpuCoresResult = clustersCpuCores.stream().filter(cluster -> Objects.equals(clusterName, cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject aiNodeResult = clustersAiNodes.stream().filter(cluster -> Objects.equals(clusterName, cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject gpuDeviceResult = clustersGpuDevices.stream().filter(cluster -> Objects.equals(clusterName, cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
+                      JsonObject vmResult = clustersVms.stream().filter(cluster -> Objects.equals(clusterName, cluster.getJsonObject("metric").getString("cluster"))).findFirst().orElse(null);
                       futures.add(Future.future(promise1 -> {
                         ClusterEnUSApiServiceImpl.importCluster(vertx, webClient, config, hub, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, clusterName, clusterMemoryBytesResult, clusterCpuCoresResult, aiNodeResult, gpuDeviceResult, vmResult).onComplete(b -> {
                           promise1.complete();

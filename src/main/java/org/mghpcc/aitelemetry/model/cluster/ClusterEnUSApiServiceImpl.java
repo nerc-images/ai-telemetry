@@ -76,13 +76,14 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
     try {
       String hubId = hub.getHubId();
       Boolean hubCluster = false;
-      if("local-cluster".equals(possibleClusterName) && hub.getLocalClusterName() != null) {
+      if("local-cluster".equals(possibleClusterName) 
+          && hub.getLocalClusterName() != null) {
         hubCluster = true;
         possibleClusterName = hub.getLocalClusterName();
       }
       String clusterName = possibleClusterName;
       String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
-      String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
+      String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
       JsonObject body = new JsonObject();
       body.put(Cluster.VAR_pk, clusterResource);
       body.put(Cluster.VAR_hubId, hubId);
@@ -267,11 +268,12 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
   public static Future<JsonArray> queryClusterCapacityMemoryBytes(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String accessToken) {
     Promise<JsonArray> promise = Promise.promise();
     try {
+      String hubId = hub.getHubId();
       String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_memory_bytes:sum{" + ("openshift-local".equals(hubId) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -294,11 +296,12 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
   public static Future<JsonArray> queryClusterCapacityCpuCores(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String accessToken) {
     Promise<JsonArray> promise = Promise.promise();
     try {
+      String hubId = hub.getHubId();
       String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("LOCALCLUSTER".equals(hubIdEnv) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=cluster:capacity_cpu_cores:sum{" + ("openshift-local".equals(hubId) ? "" : "label_node_role_kubernetes_io!=\"master\"") + "}");
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))

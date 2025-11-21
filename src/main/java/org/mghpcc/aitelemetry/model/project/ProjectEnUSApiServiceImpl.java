@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,12 +70,12 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                       String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
 
                       JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          clusterName.equals(metrics.getJsonObject("metric").getString("cluster")) 
+                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
                           && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
                           ).findFirst().orElse(null);
 
                       List<JsonObject> podRestartsResults = podRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          clusterName.equals(metrics.getJsonObject("metric").getString("cluster")) 
+                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
                           && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
                           ).collect(Collectors.toList());
                       Integer podRestartCount = Optional.ofNullable(podRestartsResults).map(l -> l.size()).orElse(0);
@@ -83,7 +84,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                           ).orElse(Arrays.asList());
 
                       List<JsonObject> initPodRestartsResults = initPodRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          clusterName.equals(metrics.getJsonObject("metric").getString("cluster")) 
+                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
                           && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
                           ).collect(Collectors.toList());
                       Integer initPodRestartCount = Optional.ofNullable(initPodRestartsResults).map(l -> l.size()).orElse(0);
@@ -92,7 +93,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                           ).orElse(Arrays.asList());
 
                       List<JsonObject> fullPvcsResults = fullPvcsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          clusterName.equals(metrics.getJsonObject("metric").getString("cluster")) 
+                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
                           && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
                           ).collect(Collectors.toList());
                       Integer fullPvcsCount = Optional.ofNullable(fullPvcsResults).map(l -> l.size()).orElse(0);
@@ -108,8 +109,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                         futures.add(Future.future(promise1 -> {
                           try {
                             String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
-                            String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
-                            String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
+                            String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
+                            String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
                             JsonObject body = new JsonObject();
                             body.put(Project.VAR_pk, projectResource);
                             body.put(Project.VAR_hubId, hubId);
@@ -201,12 +202,12 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
     try {
       String clusterName = body.getString(Project.VAR_clusterName);
       String projectName = body.getString(Project.VAR_projectName);
-      String groupName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
-      String policyId = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
-      String policyName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
-      String resourceName = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
-      String permissionName = String.format("%s-%s-%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
-      String resourceDisplayName = String.format("%s %s %s %s %s %s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName);
+      String groupName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String policyId = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String policyName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String resourceName = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String permissionName = String.format("%s-%s-%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String resourceDisplayName = String.format("%s %s %s %s %s %s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
       String authAdminUsername = config.getString(ComputateConfigKeys.AUTH_ADMIN_USERNAME);
       String authAdminPassword = config.getString(ComputateConfigKeys.AUTH_ADMIN_PASSWORD);
       Integer authPort = Integer.parseInt(config.getString(ComputateConfigKeys.AUTH_PORT));
@@ -324,7 +325,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("namespace:container_memory_usage_bytes:sum{cluster='%s'}", clusterName)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("namespace:container_memory_usage_bytes:sum{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}"));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -359,7 +360,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{cluster='%s', exported_namespace!=''}[1h:]) > bool 0)[31d:1d]))", clusterName)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + "exported_namespace!=''}[1h:]) > bool 0)[31d:1d]))"));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -388,7 +389,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("sum by (cluster, namespace, pod) (round(increase(kube_pod_container_status_restarts_total{cluster='%s'}[15m]))) > 0", clusterName, clusterName)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, namespace, pod) (round(increase(kube_pod_container_status_restarts_total{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}[15m]))) > 0"));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -417,7 +418,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("sum by (cluster, namespace, pod) (round(increase(kube_pod_init_container_status_restarts_total{cluster='%s'}[15m]))) > 0", clusterName, clusterName)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, namespace, pod) (round(increase(kube_pod_init_container_status_restarts_total{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}[15m]))) > 0"));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -446,7 +447,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(String.format("(sum(kubelet_volume_stats_used_bytes{cluster='%s'}) by (cluster, namespace, persistentvolumeclaim) / sum(kubelet_volume_stats_capacity_bytes) by (cluster, namespace, persistentvolumeclaim)) > 0.95", clusterName, clusterName)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("(sum(kubelet_volume_stats_used_bytes{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}) by (cluster, namespace, persistentvolumeclaim) / sum(kubelet_volume_stats_capacity_bytes) by (cluster, namespace, persistentvolumeclaim)) > 0.95"));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
