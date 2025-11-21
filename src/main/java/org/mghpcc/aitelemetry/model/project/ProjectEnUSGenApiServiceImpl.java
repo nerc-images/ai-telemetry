@@ -845,14 +845,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }));
             });
             break;
-          case "setClusterName":
-              o2.setClusterName(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_clusterName + "=$" + num);
-              num++;
-              bParams.add(o2.sqlClusterName());
-            break;
           case "setCreated":
               o2.setCreated(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -860,6 +852,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_created + "=$" + num);
               num++;
               bParams.add(o2.sqlCreated());
+            break;
+          case "setClusterName":
+              o2.setClusterName(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_clusterName + "=$" + num);
+              num++;
+              bParams.add(o2.sqlClusterName());
             break;
           case "setClusterResource":
             Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -892,14 +892,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }));
             });
             break;
-          case "setProjectName":
-              o2.setProjectName(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_projectName + "=$" + num);
-              num++;
-              bParams.add(o2.sqlProjectName());
-            break;
           case "setArchived":
               o2.setArchived(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -907,6 +899,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_archived + "=$" + num);
               num++;
               bParams.add(o2.sqlArchived());
+            break;
+          case "setProjectName":
+              o2.setProjectName(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_projectName + "=$" + num);
+              num++;
+              bParams.add(o2.sqlProjectName());
             break;
           case "setProjectResource":
               o2.setProjectResource(jsonObject.getString(entityVar));
@@ -924,14 +924,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlDescription());
             break;
-          case "setGpuEnabled":
-              o2.setGpuEnabled(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_gpuEnabled + "=$" + num);
-              num++;
-              bParams.add(o2.sqlGpuEnabled());
-            break;
           case "setSessionId":
               o2.setSessionId(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -940,13 +932,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlSessionId());
             break;
-          case "setPodRestartCount":
-              o2.setPodRestartCount(jsonObject.getString(entityVar));
+          case "setGpuEnabled":
+              o2.setGpuEnabled(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_podRestartCount + "=$" + num);
+              bSql.append(Project.VAR_gpuEnabled + "=$" + num);
               num++;
-              bParams.add(o2.sqlPodRestartCount());
+              bParams.add(o2.sqlGpuEnabled());
             break;
           case "setUserKey":
               o2.setUserKey(jsonObject.getString(entityVar));
@@ -955,6 +947,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_userKey + "=$" + num);
               num++;
               bParams.add(o2.sqlUserKey());
+            break;
+          case "setPodRestartCount":
+              o2.setPodRestartCount(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_podRestartCount + "=$" + num);
+              num++;
+              bParams.add(o2.sqlPodRestartCount());
             break;
           case "setPodsRestarting":
               o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
@@ -972,14 +972,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlFullPvcsCount());
             break;
-          case "setFullPvcs":
-              o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_fullPvcs + "=$" + num);
-              num++;
-              bParams.add(o2.sqlFullPvcs());
-            break;
           case "setObjectTitle":
               o2.setObjectTitle(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -987,6 +979,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_objectTitle + "=$" + num);
               num++;
               bParams.add(o2.sqlObjectTitle());
+            break;
+          case "setFullPvcs":
+              o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_fullPvcs + "=$" + num);
+              num++;
+              bParams.add(o2.sqlFullPvcs());
             break;
           case "setDisplayPage":
               o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -1437,15 +1437,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }));
             });
             break;
-          case Project.VAR_clusterName:
-            o2.setClusterName(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_clusterName + "=$" + num);
-            num++;
-            bParams.add(o2.sqlClusterName());
-            break;
           case Project.VAR_created:
             o2.setCreated(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1454,6 +1445,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_created + "=$" + num);
             num++;
             bParams.add(o2.sqlCreated());
+            break;
+          case Project.VAR_clusterName:
+            o2.setClusterName(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_clusterName + "=$" + num);
+            num++;
+            bParams.add(o2.sqlClusterName());
             break;
           case Project.VAR_clusterResource:
             Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
@@ -1475,15 +1475,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }));
             });
             break;
-          case Project.VAR_projectName:
-            o2.setProjectName(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_projectName + "=$" + num);
-            num++;
-            bParams.add(o2.sqlProjectName());
-            break;
           case Project.VAR_archived:
             o2.setArchived(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1492,6 +1483,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_archived + "=$" + num);
             num++;
             bParams.add(o2.sqlArchived());
+            break;
+          case Project.VAR_projectName:
+            o2.setProjectName(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_projectName + "=$" + num);
+            num++;
+            bParams.add(o2.sqlProjectName());
             break;
           case Project.VAR_projectResource:
             o2.setProjectResource(jsonObject.getString(entityVar));
@@ -1511,15 +1511,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlDescription());
             break;
-          case Project.VAR_gpuEnabled:
-            o2.setGpuEnabled(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_gpuEnabled + "=$" + num);
-            num++;
-            bParams.add(o2.sqlGpuEnabled());
-            break;
           case Project.VAR_sessionId:
             o2.setSessionId(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1529,14 +1520,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlSessionId());
             break;
-          case Project.VAR_podRestartCount:
-            o2.setPodRestartCount(jsonObject.getString(entityVar));
+          case Project.VAR_gpuEnabled:
+            o2.setGpuEnabled(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_podRestartCount + "=$" + num);
+            bSql.append(Project.VAR_gpuEnabled + "=$" + num);
             num++;
-            bParams.add(o2.sqlPodRestartCount());
+            bParams.add(o2.sqlGpuEnabled());
             break;
           case Project.VAR_userKey:
             o2.setUserKey(jsonObject.getString(entityVar));
@@ -1546,6 +1537,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_userKey + "=$" + num);
             num++;
             bParams.add(o2.sqlUserKey());
+            break;
+          case Project.VAR_podRestartCount:
+            o2.setPodRestartCount(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_podRestartCount + "=$" + num);
+            num++;
+            bParams.add(o2.sqlPodRestartCount());
             break;
           case Project.VAR_podsRestarting:
             o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
@@ -1565,15 +1565,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlFullPvcsCount());
             break;
-          case Project.VAR_fullPvcs:
-            o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_fullPvcs + "=$" + num);
-            num++;
-            bParams.add(o2.sqlFullPvcs());
-            break;
           case Project.VAR_objectTitle:
             o2.setObjectTitle(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1582,6 +1573,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_objectTitle + "=$" + num);
             num++;
             bParams.add(o2.sqlObjectTitle());
+            break;
+          case Project.VAR_fullPvcs:
+            o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_fullPvcs + "=$" + num);
+            num++;
+            bParams.add(o2.sqlFullPvcs());
             break;
           case Project.VAR_displayPage:
             o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -3878,7 +3878,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, created, clusterResource, projectName, archived, projectResource, description, gpuEnabled, sessionId, podRestartCount, userKey, podsRestarting, fullPvcsCount, fullPvcs, objectTitle, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, podRestartCount, podsRestarting, fullPvcsCount, objectTitle, fullPvcs, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4181,21 +4181,21 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 
       page.persistForClass(Project.VAR_hubId, Project.staticSetHubId(siteRequest2, (String)result.get(Project.VAR_hubId)));
       page.persistForClass(Project.VAR_hubResource, Project.staticSetHubResource(siteRequest2, (String)result.get(Project.VAR_hubResource)));
-      page.persistForClass(Project.VAR_clusterName, Project.staticSetClusterName(siteRequest2, (String)result.get(Project.VAR_clusterName)));
       page.persistForClass(Project.VAR_created, Project.staticSetCreated(siteRequest2, (String)result.get(Project.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      page.persistForClass(Project.VAR_clusterName, Project.staticSetClusterName(siteRequest2, (String)result.get(Project.VAR_clusterName)));
       page.persistForClass(Project.VAR_clusterResource, Project.staticSetClusterResource(siteRequest2, (String)result.get(Project.VAR_clusterResource)));
-      page.persistForClass(Project.VAR_projectName, Project.staticSetProjectName(siteRequest2, (String)result.get(Project.VAR_projectName)));
       page.persistForClass(Project.VAR_archived, Project.staticSetArchived(siteRequest2, (String)result.get(Project.VAR_archived)));
+      page.persistForClass(Project.VAR_projectName, Project.staticSetProjectName(siteRequest2, (String)result.get(Project.VAR_projectName)));
       page.persistForClass(Project.VAR_projectResource, Project.staticSetProjectResource(siteRequest2, (String)result.get(Project.VAR_projectResource)));
       page.persistForClass(Project.VAR_description, Project.staticSetDescription(siteRequest2, (String)result.get(Project.VAR_description)));
-      page.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
       page.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
-      page.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
+      page.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
       page.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
+      page.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
       page.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
       page.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
-      page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
       page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
+      page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
       page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
       page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
       page.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
