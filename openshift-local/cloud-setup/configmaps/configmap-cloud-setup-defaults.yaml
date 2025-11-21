@@ -555,7 +555,7 @@ data:
     # extra vars #
     ##############
 
-    STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/computate.org-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
+    STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
     HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
 
     # Social media
