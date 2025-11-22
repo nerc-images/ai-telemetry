@@ -42,6 +42,8 @@ spec:
               value: 'CLUSTER'
             - name: PROXY_PROJECT_KEY
               value: PROJECT
+            - name: OPENSHIFT_LOCAL
+              value: 'true'
           #image: quay.io/nerc-images/prom-keycloak-proxy:2.2.0
           image: quay.io/computate/prom-keycloak-proxy:openshift-local-support
           imagePullPolicy: Always

@@ -35,7 +35,7 @@ patches:
             - name: prom-keycloak-proxy
               env:
                 - name: PROXY_ACM_HUB
-                  value: local-cluster
+                  value: openshift-local
               envFrom:
                 - secretRef:
                     name: cloud-auth
