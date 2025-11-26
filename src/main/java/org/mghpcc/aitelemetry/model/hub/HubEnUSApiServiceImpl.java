@@ -376,7 +376,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
   }
 
   @Override
-  protected Future<Void> importData(Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest, String classCanonicalName,
+  public Future<Void> importData(Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest, String classCanonicalName,
       String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
     Promise<Void> promise = Promise.promise();
     // ZonedDateTime dateTimeStarted = ZonedDateTime.now();
