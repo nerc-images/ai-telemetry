@@ -1512,6 +1512,8 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
     try {
       SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateSearchPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
+      if(listAiTelemetryDeveloper.size() == 0)
+        pageTemplateUri = templateSearchPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -1679,6 +1681,8 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
     try {
       SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateEditPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
+      if(listAiTelemetryDeveloper.size() == 0)
+        pageTemplateUri = templateSearchPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));

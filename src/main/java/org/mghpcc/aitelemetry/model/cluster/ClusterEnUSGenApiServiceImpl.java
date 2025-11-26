@@ -2616,6 +2616,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     try {
       SiteRequest siteRequest = listCluster.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateSearchPageCluster(siteRequest.getServiceRequest());
+      if(listCluster.size() == 0)
+        pageTemplateUri = templateSearchPageCluster(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2818,6 +2820,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     try {
       SiteRequest siteRequest = listCluster.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateEditPageCluster(siteRequest.getServiceRequest());
+      if(listCluster.size() == 0)
+        pageTemplateUri = templateSearchPageCluster(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -3020,6 +3024,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     try {
       SiteRequest siteRequest = listCluster.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateUserPageCluster(siteRequest.getServiceRequest());
+      if(listCluster.size() == 0)
+        pageTemplateUri = templateSearchPageCluster(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));

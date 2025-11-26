@@ -139,7 +139,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Unique: true
    **/
   protected void _clusterResource(Wrap<String> w) {
-    w.o(String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName));
+    w.o(String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse("")));
   }
 
   /**
@@ -153,7 +153,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * VarName: true
    **/
   protected void _uniqueName(Wrap<String> w) {
-    w.o(String.format("%s in %s Hub", clusterName, hubId));
+    w.o(String.format("%s in %s Hub", Optional.ofNullable(clusterName).orElse("local-cluster"), hubId));
   }
 
   /**
@@ -235,7 +235,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Facet: true
    */
   protected void _id(Wrap<String> w) {
-    w.o(String.format("urn:ngsi-ld:%s:%s", CLASS_SIMPLE_NAME, toId(clusterName)));
+    w.o(String.format("urn:ngsi-ld:%s:%s", CLASS_SIMPLE_NAME, toId(Optional.ofNullable(clusterName).orElse(""))));
   }
 
   /**
