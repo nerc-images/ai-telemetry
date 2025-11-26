@@ -154,7 +154,7 @@ data:
     ###################
 
     # The number of Vert.x instances to run per pod. 
-    SITE_INSTANCES: 1
+    SITE_INSTANCES: 3
     # The number of Vert.x worker instances to run per pod. 
     WORKER_POOL_SIZE: 2
     # The max event loop execute time in seconds. 
