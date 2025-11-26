@@ -7,6 +7,9 @@ find \
   ~/.local/src/ai-telemetry/bin/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/config/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/BaseModel.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/timezone/TimeZoneGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/timezone/TimeZoneEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/timezone/TimeZoneEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiService.java \
@@ -66,7 +69,14 @@ find \
   ~/.local/src/ai-telemetry-static/webawesome/css/ \
   ~/.local/src/ai-telemetry-static/webawesome/fiware/ \
   ~/.local/src/ai-telemetry-static/webawesome/js/ \
-    ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/article/SitePageGenEditPage.htm \
+    ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/time-zone/TimeZoneGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZonePaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/article/SitePageGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageLocation.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePagePaginationButtons.htm \
