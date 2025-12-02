@@ -518,7 +518,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1145,7 +1145,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1755,7 +1755,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -2179,7 +2179,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -2621,6 +2621,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     try {
       SiteRequest siteRequest = listAiNode.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateSearchPageAiNode(siteRequest.getServiceRequest());
+      if(listAiNode.size() == 0)
+        pageTemplateUri = templateSearchPageAiNode(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2823,6 +2825,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     try {
       SiteRequest siteRequest = listAiNode.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateEditPageAiNode(siteRequest.getServiceRequest());
+      if(listAiNode.size() == 0)
+        pageTemplateUri = templateSearchPageAiNode(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -3025,6 +3029,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     try {
       SiteRequest siteRequest = listAiNode.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateUserPageAiNode(siteRequest.getServiceRequest());
+      if(listAiNode.size() == 0)
+        pageTemplateUri = templateSearchPageAiNode(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -3168,7 +3174,7 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",

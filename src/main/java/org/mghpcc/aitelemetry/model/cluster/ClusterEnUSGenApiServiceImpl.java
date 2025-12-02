@@ -516,7 +516,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1144,7 +1144,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1770,7 +1770,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -2174,7 +2174,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -3169,7 +3169,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               siteRequest.setFilteredScope(true);
             }
           }
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",

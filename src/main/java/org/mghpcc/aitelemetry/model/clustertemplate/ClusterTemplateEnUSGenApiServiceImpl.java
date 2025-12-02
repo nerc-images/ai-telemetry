@@ -341,7 +341,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         try {
           HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -809,7 +809,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         try {
           HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1274,7 +1274,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         try {
           HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1625,7 +1625,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         try {
           HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() && !scopes.contains("PUT")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1971,6 +1971,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     try {
       SiteRequest siteRequest = listClusterTemplate.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateSearchPageClusterTemplate(siteRequest.getServiceRequest());
+      if(listClusterTemplate.size() == 0)
+        pageTemplateUri = templateSearchPageClusterTemplate(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2140,6 +2142,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     try {
       SiteRequest siteRequest = listClusterTemplate.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateEditPageClusterTemplate(siteRequest.getServiceRequest());
+      if(listClusterTemplate.size() == 0)
+        pageTemplateUri = templateSearchPageClusterTemplate(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2250,7 +2254,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         try {
           HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",

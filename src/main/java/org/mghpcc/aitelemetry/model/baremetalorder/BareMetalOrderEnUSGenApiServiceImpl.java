@@ -422,7 +422,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
           scopes.add("GET");
           scopes.add("PATCH");
-          if(authorizationDecisionResponse.failed() && !scopes.contains("PATCH")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -980,7 +980,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
           scopes.add("GET");
           scopes.add("PATCH");
-          if(authorizationDecisionResponse.failed() && !scopes.contains("POST")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1531,7 +1531,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
           scopes.add("GET");
           scopes.add("PATCH");
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
@@ -1961,6 +1961,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = listBareMetalOrder.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateSearchPageBareMetalOrder(siteRequest.getServiceRequest());
+      if(listBareMetalOrder.size() == 0)
+        pageTemplateUri = templateSearchPageBareMetalOrder(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2131,6 +2133,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = listBareMetalOrder.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateEditPageBareMetalOrder(siteRequest.getServiceRequest());
+      if(listBareMetalOrder.size() == 0)
+        pageTemplateUri = templateSearchPageBareMetalOrder(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2301,6 +2305,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = listBareMetalOrder.getSiteRequest_(SiteRequest.class);
       String pageTemplateUri = templateUserPageBareMetalOrder(siteRequest.getServiceRequest());
+      if(listBareMetalOrder.size() == 0)
+        pageTemplateUri = templateSearchPageBareMetalOrder(siteRequest.getServiceRequest());
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2414,7 +2420,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
           scopes.add("GET");
           scopes.add("PATCH");
-          if(authorizationDecisionResponse.failed() && !scopes.contains("DELETE")) {
+          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
             String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
             eventHandler.handle(Future.succeededFuture(
               new ServiceResponse(403, "FORBIDDEN",
