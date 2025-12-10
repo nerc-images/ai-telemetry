@@ -1024,7 +1024,7 @@ public abstract class AiNodeGen<DEV> extends BaseModel {
         }
         return shape;
       } catch(Exception ex) {
-        ExceptionUtils.rethrow(ex);
+        LOG.error(String.format("Could not parse GeoJSON. %s: %s", ex.getMessage(), o));
       }
     }
     return null;
@@ -1042,7 +1042,7 @@ public abstract class AiNodeGen<DEV> extends BaseModel {
         shape.setY(coordinates.getDouble(1));
         return shape;
       } catch(Exception ex) {
-        ExceptionUtils.rethrow(ex);
+        LOG.error(String.format("Could not parse GeoJSON. %s: %s", ex.getMessage(), o));
       }
     }
     return null;
