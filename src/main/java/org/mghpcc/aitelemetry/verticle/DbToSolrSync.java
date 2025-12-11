@@ -52,7 +52,6 @@ import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrder;
 
 /**
  * Description: A Java class to start the Vert.x application as a main method. 
- * Keyword: classSimpleNameVerticle
  **/
 public class DbToSolrSync extends DbToSolrSyncGen<AbstractVerticle> {
   private static final Logger LOG = LoggerFactory.getLogger(DbToSolrSync.class);
