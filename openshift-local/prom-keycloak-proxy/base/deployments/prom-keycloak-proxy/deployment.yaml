@@ -44,8 +44,7 @@ spec:
               value: PROJECT
             - name: OPENSHIFT_LOCAL
               value: 'true'
-          #image: quay.io/nerc-images/prom-keycloak-proxy:2.2.0
-          image: quay.io/computate/prom-keycloak-proxy:openshift-local-support
+          image: quay.io/nerc-images/prom-keycloak-proxy:2.4.0
           imagePullPolicy: Always
           livenessProbe:
             exec:
