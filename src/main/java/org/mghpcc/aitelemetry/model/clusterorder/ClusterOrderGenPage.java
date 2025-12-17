@@ -43,6 +43,8 @@ import org.computate.search.tool.TimeTool;
 import org.computate.search.tool.SearchTool;
 import java.time.ZoneId;
 import io.vertx.pgclient.data.Point;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -151,7 +153,21 @@ public class ClusterOrderGenPage extends ClusterOrderGenPageGen<PageLayout> {
       json.put("classSimpleName", Optional.ofNullable(ClusterOrder.classSimpleNameClusterOrder(var)).map(d -> StringUtils.isBlank(d) ? var : d).orElse(var));
       Object v = searchListClusterOrder_.getRequest().getFilterQueries().stream().filter(fq -> fq.startsWith(ClusterOrder.varIndexedClusterOrder(var) + ":")).findFirst().map(s -> SearchTool.unescapeQueryChars(StringUtils.substringAfter(s, ":"))).orElse(null);
       if(v != null) {
-        json.put("val", v);
+        Matcher mFq = Pattern.compile("(\\w+):(.+?(?=(\\)|\\s+OR\\s+|\\s+AND\\s+|$)))").matcher(SearchTool.unescapeQueryChars((String)v));
+        StringBuffer sb = new StringBuffer();
+        while(mFq.find()) {
+          String entityVar = ClusterOrder.searchVarClusterOrder(varIndexed);
+          String valueIndexed = mFq.group(2).trim();
+          String entityFq = entityVar + ":" + valueIndexed;
+          if(var.equals(entityVar))
+            mFq.appendReplacement(sb, valueIndexed);
+          else
+            mFq.appendReplacement(sb, entityFq);
+        }
+        if(!sb.isEmpty()) {
+          mFq.appendTail(sb);
+          json.put("val", sb.toString());
+        }
         varsFqCount++;
       }
       Optional.ofNullable(stats).map(s -> s.get(varIndexed)).ifPresent(stat -> {

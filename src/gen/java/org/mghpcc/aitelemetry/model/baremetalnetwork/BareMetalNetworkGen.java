@@ -3215,6 +3215,8 @@ public abstract class BareMetalNetworkGen<DEV> extends BaseModel {
           setAvailabilityZoneHints((String)val);
         } else if(val instanceof JsonArray) {
           setAvailabilityZoneHints((JsonArray)val);
+        } else if(val instanceof JsonArray) {
+          setAvailabilityZoneHints((JsonArray)val);
         }
         saves.add("availabilityZoneHints");
         return val;
@@ -3235,6 +3237,8 @@ public abstract class BareMetalNetworkGen<DEV> extends BaseModel {
           setCreatedAt((String)val);
         } else if(val instanceof OffsetDateTime) {
           setCreatedAt(((OffsetDateTime)val).atZoneSameInstant(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE))));
+        } else if(val instanceof ZonedDateTime) {
+          setCreatedAt((ZonedDateTime)val);
         }
         saves.add("createdAt");
         return val;
@@ -3331,6 +3335,8 @@ public abstract class BareMetalNetworkGen<DEV> extends BaseModel {
           setUpdatedAt((String)val);
         } else if(val instanceof OffsetDateTime) {
           setUpdatedAt(((OffsetDateTime)val).atZoneSameInstant(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE))));
+        } else if(val instanceof ZonedDateTime) {
+          setUpdatedAt((ZonedDateTime)val);
         }
         saves.add("updatedAt");
         return val;

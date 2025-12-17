@@ -2365,6 +2365,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
           setLocation((String)val);
         } else if(val instanceof Point) {
           setLocation((Point)val);
+        } else if(val instanceof Point) {
+          setLocation((Point)val);
         }
         saves.add("location");
         return val;
@@ -2395,6 +2397,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       } else if("ngsilddata".equals(varLower)) {
         if(val instanceof String) {
           setNgsildData((String)val);
+        } else if(val instanceof JsonObject) {
+          setNgsildData((JsonObject)val);
         } else if(val instanceof JsonObject) {
           setNgsildData((JsonObject)val);
         }

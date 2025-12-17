@@ -1770,6 +1770,8 @@ public abstract class BaseModelGen<DEV> extends Object {
           setCreated((String)val);
         } else if(val instanceof OffsetDateTime) {
           setCreated(((OffsetDateTime)val).atZoneSameInstant(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE))));
+        } else if(val instanceof ZonedDateTime) {
+          setCreated((ZonedDateTime)val);
         }
         saves.add("created");
         return val;
