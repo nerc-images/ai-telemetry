@@ -157,13 +157,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -354,13 +354,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -490,13 +490,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(PATCH)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(PATCH)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -1125,13 +1125,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(POST)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(POST)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(POST)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(POST)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -1744,13 +1744,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -2168,13 +2168,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(PUT)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PUT)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(PUT)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PUT)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -2527,13 +2527,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -2755,13 +2755,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -2959,13 +2959,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
@@ -3163,13 +3163,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));

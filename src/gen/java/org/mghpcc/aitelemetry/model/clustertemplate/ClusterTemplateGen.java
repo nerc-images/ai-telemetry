@@ -740,6 +740,8 @@ public abstract class ClusterTemplateGen<DEV> extends BaseModel {
           setParameters((String)val);
         } else if(val instanceof JsonArray) {
           setParameters((JsonArray)val);
+        } else if(val instanceof JsonArray) {
+          setParameters((JsonArray)val);
         }
         saves.add("parameters");
         return val;

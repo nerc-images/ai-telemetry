@@ -1134,12 +1134,16 @@ public abstract class BareMetalNodeGen<DEV> extends BaseModel {
           setLeaseInfo((String)val);
         } else if(val instanceof JsonArray) {
           setLeaseInfo((JsonArray)val);
+        } else if(val instanceof JsonArray) {
+          setLeaseInfo((JsonArray)val);
         }
         saves.add("leaseInfo");
         return val;
       } else if("networkinfo".equals(varLower)) {
         if(val instanceof String) {
           setNetworkInfo((String)val);
+        } else if(val instanceof JsonArray) {
+          setNetworkInfo((JsonArray)val);
         } else if(val instanceof JsonArray) {
           setNetworkInfo((JsonArray)val);
         }
@@ -1162,6 +1166,8 @@ public abstract class BareMetalNodeGen<DEV> extends BaseModel {
       } else if("nodelinks".equals(varLower)) {
         if(val instanceof String) {
           setNodeLinks((String)val);
+        } else if(val instanceof JsonArray) {
+          setNodeLinks((JsonArray)val);
         } else if(val instanceof JsonArray) {
           setNodeLinks((JsonArray)val);
         }
