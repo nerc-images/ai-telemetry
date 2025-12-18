@@ -49,6 +49,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
         searchList.fq("clusterResource_docvalues_string:" + SearchTool.escapeQueryChars(result.getClusterResource()));
         searchList.bf("sum(podRestartCount_docvalues_int)");
         searchList.bf("sum(fullPvcsCount_docvalues_int)");
+        searchList.bq("namespaceTerminating_docvalues_boolean:true^1.0");
         searchList.defType("edismax");
         searchList.promiseDeepForClass(siteRequest).onSuccess(searchList2 -> {
           ctx.put("clusterProjects", searchList.getList().stream()

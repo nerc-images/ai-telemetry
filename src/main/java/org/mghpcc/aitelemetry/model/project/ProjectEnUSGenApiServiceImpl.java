@@ -157,19 +157,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -360,19 +360,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -502,19 +502,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(PATCH)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(PATCH)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(PATCH)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -996,6 +996,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlDisplayPage());
             break;
+          case "setNamespaceTerminating":
+              o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNamespaceTerminating());
+            break;
           case "setEditPage":
               o2.setEditPage(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1119,19 +1127,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(POST)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(POST)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(POST)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(POST)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(POST)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(POST)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -1592,6 +1600,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlDisplayPage());
             break;
+          case Project.VAR_namespaceTerminating:
+            o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNamespaceTerminating());
+            break;
           case Project.VAR_editPage:
             o2.setEditPage(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1717,19 +1734,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -2147,19 +2164,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(PUT)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PUT)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(PUT)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PUT)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(PUT)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(PUT)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -2512,19 +2529,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -2746,19 +2763,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -2956,19 +2973,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(GET)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -3166,19 +3183,19 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             List<String> fqs = new ArrayList<>();
             List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "hubResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "clusterResource", value));
                 });
             groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-(.*))-(DELETE)$").matcher(group);
+                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
                   return mPermission.find() ? mPermission.group(1) : null;
                 }).filter(v -> v != null).forEach(value -> {
                   fqs.add(String.format("%s:%s", "projectResource", value));
@@ -3884,7 +3901,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, podRestartCount, podsRestarting, fullPvcsCount, objectTitle, fullPvcs, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, podRestartCount, podsRestarting, fullPvcsCount, objectTitle, fullPvcs, displayPage, namespaceTerminating, editPage, userPage, download FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4203,6 +4220,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
       page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
       page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
+      page.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
       page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
       page.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
       page.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));

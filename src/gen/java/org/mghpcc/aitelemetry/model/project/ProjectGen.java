@@ -1106,6 +1106,73 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return a;
   }
 
+	//////////////////////////
+  // namespaceTerminating //
+	//////////////////////////
+
+
+  /**
+   *  The entity namespaceTerminating
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Boolean namespaceTerminating;
+
+  /**
+   * <br> The entity namespaceTerminating
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:namespaceTerminating">Find the entity namespaceTerminating in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _namespaceTerminating(Wrap<Boolean> w);
+
+  public Boolean getNamespaceTerminating() {
+    return namespaceTerminating;
+  }
+
+  public void setNamespaceTerminating(Boolean namespaceTerminating) {
+    this.namespaceTerminating = namespaceTerminating;
+  }
+  @JsonIgnore
+  public void setNamespaceTerminating(String o) {
+    this.namespaceTerminating = Project.staticSetNamespaceTerminating(siteRequest_, o);
+  }
+  public static Boolean staticSetNamespaceTerminating(SiteRequest siteRequest_, String o) {
+    return Boolean.parseBoolean(o);
+  }
+  protected Project namespaceTerminatingInit() {
+    Wrap<Boolean> namespaceTerminatingWrap = new Wrap<Boolean>().var("namespaceTerminating");
+    if(namespaceTerminating == null) {
+      _namespaceTerminating(namespaceTerminatingWrap);
+      Optional.ofNullable(namespaceTerminatingWrap.getO()).ifPresent(o -> {
+        setNamespaceTerminating(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static Boolean staticSearchNamespaceTerminating(SiteRequest siteRequest_, Boolean o) {
+    return o;
+  }
+
+  public static String staticSearchStrNamespaceTerminating(SiteRequest siteRequest_, Boolean o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqNamespaceTerminating(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchNamespaceTerminating(siteRequest_, Project.staticSetNamespaceTerminating(siteRequest_, o)).toString();
+  }
+
+  public Boolean sqlNamespaceTerminating() {
+    return namespaceTerminating;
+  }
+
+  public static Boolean staticJsonNamespaceTerminating(Boolean namespaceTerminating) {
+    return namespaceTerminating;
+  }
+
   //////////////
   // initDeep //
   //////////////
@@ -1148,6 +1215,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         podsRestartingInit();
         fullPvcsCountInit();
         fullPvcsInit();
+        namespaceTerminatingInit();
         promise2.complete();
       } catch(Exception ex) {
         promise2.fail(ex);
@@ -1227,6 +1295,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return oProject.fullPvcsCount;
       case "fullPvcs":
         return oProject.fullPvcs;
+      case "namespaceTerminating":
+        return oProject.namespaceTerminating;
       default:
         return super.obtainBaseModel(var);
     }
@@ -1304,6 +1374,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSetFullPvcsCount(siteRequest_, v);
     case "fullPvcs":
       return Project.staticSetFullPvcs(siteRequest_, v);
+    case "namespaceTerminating":
+      return Project.staticSetNamespaceTerminating(siteRequest_, v);
       default:
         return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
     }
@@ -1344,6 +1416,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFullPvcsCount(siteRequest_, (Integer)o);
     case "fullPvcs":
       return Project.staticSearchFullPvcs(siteRequest_, (String)o);
+    case "namespaceTerminating":
+      return Project.staticSearchNamespaceTerminating(siteRequest_, (Boolean)o);
       default:
         return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
     }
@@ -1384,6 +1458,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchStrFullPvcsCount(siteRequest_, (Integer)o);
     case "fullPvcs":
       return Project.staticSearchStrFullPvcs(siteRequest_, (String)o);
+    case "namespaceTerminating":
+      return Project.staticSearchStrNamespaceTerminating(siteRequest_, (Boolean)o);
       default:
         return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
     }
@@ -1424,6 +1500,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFqFullPvcsCount(siteRequest_, o);
     case "fullPvcs":
       return Project.staticSearchFqFullPvcs(siteRequest_, o);
+    case "namespaceTerminating":
+      return Project.staticSearchFqNamespaceTerminating(siteRequest_, o);
       default:
         return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
     }
@@ -1540,6 +1618,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
           saves.add("fullPvcs");
         }
         return val;
+      } else if("namespaceterminating".equals(varLower)) {
+        if(val instanceof Boolean) {
+          setNamespaceTerminating((Boolean)val);
+        } else {
+          setNamespaceTerminating(val == null ? null : val.toString());
+        }
+        saves.add("namespaceTerminating");
+        return val;
     } else {
       return super.persistBaseModel(var, val);
     }
@@ -1636,6 +1722,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
           });
         }
       }
+
+      if(saves.contains("namespaceTerminating")) {
+        Boolean namespaceTerminating = (Boolean)doc.get("namespaceTerminating_docvalues_boolean");
+        if(namespaceTerminating != null)
+          oProject.setNamespaceTerminating(namespaceTerminating);
+      }
     }
 
     super.populateBaseModel(doc);
@@ -1689,6 +1781,9 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         l.add(Project.staticSearchFullPvcs(siteRequest_, o));
       }
     }
+    if(namespaceTerminating != null) {
+      doc.put("namespaceTerminating_docvalues_boolean", namespaceTerminating);
+    }
     super.indexBaseModel(doc);
 
 	}
@@ -1721,6 +1816,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "fullPvcsCount_docvalues_int";
       case "fullPvcs":
         return "fullPvcs_docvalues_strings";
+      case "namespaceTerminating":
+        return "namespaceTerminating_docvalues_boolean";
       default:
         return BaseModel.varStoredBaseModel(entityVar);
     }
@@ -1754,6 +1851,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "fullPvcsCount_docvalues_int";
       case "fullPvcs":
         return "fullPvcs_docvalues_strings";
+      case "namespaceTerminating":
+        return "namespaceTerminating_docvalues_boolean";
       default:
         return BaseModel.varIndexedBaseModel(entityVar);
     }
@@ -1787,6 +1886,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "fullPvcsCount";
       case "fullPvcs_docvalues_strings":
         return "fullPvcs";
+      case "namespaceTerminating_docvalues_boolean":
+        return "namespaceTerminating";
       default:
         return BaseModel.searchVarBaseModel(searchVar);
     }
@@ -1834,6 +1935,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     Optional.ofNullable((List<?>)doc.get("fullPvcs_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
       oProject.addFullPvcs(Project.staticSetFullPvcs(siteRequest, v.toString()));
     });
+    oProject.setNamespaceTerminating(Optional.ofNullable(doc.get("namespaceTerminating_docvalues_boolean")).map(v -> v.toString()).orElse(null));
 
     super.storeBaseModel(doc);
   }
@@ -1873,6 +1975,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         apiRequest.addVars("fullPvcsCount");
       if(!Objects.equals(fullPvcs, original.getFullPvcs()))
         apiRequest.addVars("fullPvcs");
+      if(!Objects.equals(namespaceTerminating, original.getNamespaceTerminating()))
+        apiRequest.addVars("namespaceTerminating");
       super.apiRequestBaseModel();
     }
   }
@@ -1897,6 +2001,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(fullPvcsCount).map(v -> "fullPvcsCount: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(fullPvcs).map(v -> "fullPvcs: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(namespaceTerminating).map(v -> "namespaceTerminating: " + v + "\n").orElse(""));
     return sb.toString();
   }
 
@@ -1920,6 +2025,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String VAR_podsRestarting = "podsRestarting";
   public static final String VAR_fullPvcsCount = "fullPvcsCount";
   public static final String VAR_fullPvcs = "fullPvcs";
+  public static final String VAR_namespaceTerminating = "namespaceTerminating";
 
   public static List<String> varsQForClass() {
     return Project.varsQProject(new ArrayList<String>());
@@ -1946,6 +2052,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     vars.add(VAR_podsRestarting);
     vars.add(VAR_fullPvcsCount);
     vars.add(VAR_fullPvcs);
+    vars.add(VAR_namespaceTerminating);
     BaseModel.varsFqBaseModel(vars);
     return vars;
   }
@@ -1973,6 +2080,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
   public static final String DISPLAY_NAME_fullPvcsCount = "Full PVCs count";
   public static final String DISPLAY_NAME_fullPvcs = "pods restarting";
+  public static final String DISPLAY_NAME_namespaceTerminating = "namespace terminating";
 
   @Override
   public String idForClass() {
@@ -2050,6 +2158,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return DISPLAY_NAME_fullPvcsCount;
     case VAR_fullPvcs:
       return DISPLAY_NAME_fullPvcs;
+    case VAR_namespaceTerminating:
+      return DISPLAY_NAME_namespaceTerminating;
     default:
       return BaseModel.displayNameBaseModel(var);
     }
@@ -2085,6 +2195,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "The number of persistent volume claims that are running out of disk space in this project. ";
     case VAR_fullPvcs:
       return "The names of the persistent volume claims that are running out of disk space in this project. ";
+    case VAR_namespaceTerminating:
+      return "Whether namespace is stuck in terminating status. ";
       default:
         return BaseModel.descriptionBaseModel(var);
     }
@@ -2118,6 +2230,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "Integer";
     case VAR_fullPvcs:
       return "List";
+    case VAR_namespaceTerminating:
+      return "Boolean";
       default:
         return BaseModel.classSimpleNameBaseModel(var);
     }
@@ -2156,6 +2270,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 4;
     case VAR_fullPvcs:
       return 4;
+    case VAR_namespaceTerminating:
+      return 4;
       default:
         return BaseModel.htmRowBaseModel(var);
     }
@@ -2181,6 +2297,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 2;
     case VAR_fullPvcs:
       return 3;
+    case VAR_namespaceTerminating:
+      return 4;
       default:
         return BaseModel.htmCellBaseModel(var);
     }

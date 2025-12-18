@@ -23583,6 +23583,8 @@ components:
                     type: string
                   description:
                     type: string
+                  namespaceTerminating:
+                    type: boolean
                   gpuEnabled:
                     type: boolean
                   podRestartCount:
@@ -23657,6 +23659,13 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setNamespaceTerminating:
+              type: boolean
+              nullable: true
+            removeNamespaceTerminating:
+              type: boolean
+            removeAllNamespaceTerminating:
+              type: boolean
             setGpuEnabled:
               type: boolean
               nullable: true
@@ -23772,6 +23781,13 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setNamespaceTerminating:
+              type: boolean
+              nullable: true
+            removeNamespaceTerminating:
+              type: boolean
+            removeAllNamespaceTerminating:
+              type: boolean
             setGpuEnabled:
               type: boolean
               nullable: true
@@ -23847,6 +23863,8 @@ components:
               type: string
             description:
               type: string
+            namespaceTerminating:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -23881,6 +23899,8 @@ components:
               type: string
             description:
               type: string
+            namespaceTerminating:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -23915,6 +23935,8 @@ components:
               type: string
             description:
               type: string
+            namespaceTerminating:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -23954,6 +23976,8 @@ components:
                     type: string
                   description:
                     type: string
+                  namespaceTerminating:
+                    type: boolean
                   gpuEnabled:
                     type: boolean
                   podRestartCount:
@@ -23988,6 +24012,8 @@ components:
                     type: string
                   description:
                     type: string
+                  namespaceTerminating:
+                    type: boolean
                   gpuEnabled:
                     type: boolean
                   podRestartCount:
@@ -24022,6 +24048,8 @@ components:
               type: string
             description:
               type: string
+            namespaceTerminating:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -24056,6 +24084,8 @@ components:
               type: string
             description:
               type: string
+            namespaceTerminating:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:

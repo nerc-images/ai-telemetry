@@ -233,4 +233,18 @@ public class Project extends ProjectGen<BaseModel> {
    **/
   protected void _fullPvcs(List<String> l) {
   }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: namespace terminating
+   * Description: Whether namespace is stuck in terminating status. 
+   * HtmRow: 4
+   * HtmCell: 4
+   **/
+  protected void _namespaceTerminating(Wrap<Boolean> w) {
+    w.o(false);
+  }
 }
