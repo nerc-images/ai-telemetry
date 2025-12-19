@@ -996,6 +996,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlDisplayPage());
             break;
+          case "setNamespaceTerminating":
+              o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNamespaceTerminating());
+            break;
           case "setEditPage":
               o2.setEditPage(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1591,6 +1599,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_displayPage + "=$" + num);
             num++;
             bParams.add(o2.sqlDisplayPage());
+            break;
+          case Project.VAR_namespaceTerminating:
+            o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNamespaceTerminating());
             break;
           case Project.VAR_editPage:
             o2.setEditPage(jsonObject.getString(entityVar));
@@ -3884,7 +3901,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, podRestartCount, podsRestarting, fullPvcsCount, objectTitle, fullPvcs, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, projectName, projectResource, description, sessionId, gpuEnabled, userKey, podRestartCount, podsRestarting, fullPvcsCount, objectTitle, fullPvcs, displayPage, namespaceTerminating, editPage, userPage, download FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4203,6 +4220,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
       page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
       page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
+      page.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
       page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
       page.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
       page.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));

@@ -68,6 +68,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                       JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
                       String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
                       String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
+                      String namespacePhaseTerminating = namespaceResult.getJsonArray("value").getString(1);
+                      Boolean namespaceTerminating = "1".equals(namespacePhaseTerminating);
 
                       JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
                           Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
@@ -124,6 +126,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                             body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
                             body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
                             body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
+                            body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
 
                             JsonObject pageParams = new JsonObject();
                             pageParams.put("body", body);
@@ -325,7 +328,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("namespace:container_memory_usage_bytes:sum{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}"));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("kube_namespace_status_phase{phase='Terminating', " + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}"));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -339,7 +342,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
             !metrics.getJsonObject("metric").getString("namespace").startsWith("openshift-")
             && !metrics.getJsonObject("metric").getString("namespace").startsWith("open-cluster-management")
             ).forEach(metrics -> results.add(metrics));
-       promise.complete(results);
+        promise.complete(results);
       }).onFailure(ex -> {
         LOG.error(String.format("Querying non-openshift namespaces failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
@@ -360,7 +363,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + "exported_namespace!=''}[1h:]) > bool 0)[31d:1d]))"));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + "exported_namespace!=''}[1d:]) >= 0)[31d:1d]))"));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
