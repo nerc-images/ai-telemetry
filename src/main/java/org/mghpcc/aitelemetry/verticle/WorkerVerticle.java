@@ -36,12 +36,12 @@ import org.computate.vertx.api.ApiCounter;
 import org.computate.vertx.api.ApiRequest;
 import org.mghpcc.aitelemetry.config.ConfigKeys;
 import org.mghpcc.aitelemetry.request.SiteRequest;
-import org.mghpcc.aitelemetry.timezone.TimeZone;
-import org.mghpcc.aitelemetry.timezone.TimeZoneEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.timezone.TimeZoneEnUSGenApiService;
 import org.mghpcc.aitelemetry.page.SitePage;
 import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.tenant.Tenant;
+import org.mghpcc.aitelemetry.model.tenant.TenantEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.tenant.TenantEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSGenApiService;
@@ -752,10 +752,10 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       siteRequest.addScopes("GET");
       String templatePath = config().getString(ComputateConfigKeys.TEMPLATE_PATH);
 
-      TimeZoneEnUSApiServiceImpl apiTimeZone = new TimeZoneEnUSApiServiceImpl();
-      initializeApiService(apiTimeZone);
       SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
       initializeApiService(apiSitePage);
+      TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
+      initializeApiService(apiTenant);
       HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
       initializeApiService(apiHub);
       ClusterEnUSApiServiceImpl apiCluster = new ClusterEnUSApiServiceImpl();
@@ -785,8 +785,8 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
       initializeApiService(apiAiTelemetryDeveloper);
 
-      apiTimeZone.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, TimeZone.CLASS_CANONICAL_NAME, TimeZone.CLASS_SIMPLE_NAME, TimeZone.CLASS_API_ADDRESS_TimeZone, TimeZone.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q1 -> {
-        apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q2 -> {
+      apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q1 -> {
+        apiTenant.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Tenant.CLASS_CANONICAL_NAME, Tenant.CLASS_SIMPLE_NAME, Tenant.CLASS_API_ADDRESS_Tenant, Tenant.CLASS_AUTH_RESOURCE, "tenantId", "userPage", "download").onSuccess(q2 -> {
           apiHub.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubId", "userPage", "download").onSuccess(q3 -> {
             apiCluster.importTimer(Paths.get(templatePath, "/en-us/user/cluster"), vertx, siteRequest, Cluster.CLASS_CANONICAL_NAME, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, Cluster.CLASS_AUTH_RESOURCE, "clusterResource", "userPage", "download").onSuccess(q4 -> {
               apiAiNode.importTimer(Paths.get(templatePath, "/en-us/user/ai-node"), vertx, siteRequest, AiNode.CLASS_CANONICAL_NAME, AiNode.CLASS_SIMPLE_NAME, AiNode.CLASS_API_ADDRESS_AiNode, AiNode.CLASS_AUTH_RESOURCE, "nodeResource", "userPage", "download").onSuccess(q5 -> {

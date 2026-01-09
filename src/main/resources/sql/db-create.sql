@@ -23,6 +23,25 @@ ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS siteTheme text;
 ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS webComponentsTheme text;
 ALTER TABLE SiteUser ADD COLUMN IF NOT EXISTS customerProfileId text;
 
+CREATE TABLE IF NOT EXISTS Tenant();
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS pk bigserial primary key;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS created timestamp with time zone;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS archived boolean;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS sessionId text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS userKey bigint;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS objectTitle text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS displayPage text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS editPage text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS userPage text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS download text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS tenantName text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS tenantId text UNIQUE;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS tenantResource text UNIQUE;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS pageId text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS description text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS hubId text;
+ALTER TABLE Tenant ADD COLUMN IF NOT EXISTS clusterName text;
+
 CREATE TABLE IF NOT EXISTS Hub();
 ALTER TABLE Hub ADD COLUMN IF NOT EXISTS pk bigserial primary key;
 ALTER TABLE Hub ADD COLUMN IF NOT EXISTS created timestamp with time zone;
@@ -136,6 +155,8 @@ ALTER TABLE Project ADD COLUMN IF NOT EXISTS displayPage text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS editPage text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS userPage text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS download text;
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS tenantResource text references Tenant(tenantResource);
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS localClusterName text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS hubId text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS hubResource text references Hub(hubResource);
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS clusterName text;
@@ -143,12 +164,12 @@ ALTER TABLE Project ADD COLUMN IF NOT EXISTS clusterResource text references Clu
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectName text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectResource text UNIQUE;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS description text;
-ALTER TABLE Project ADD COLUMN IF NOT EXISTS namespaceTerminating boolean;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS gpuEnabled boolean;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS podRestartCount integer;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS podsRestarting text[];
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS fullPvcsCount integer;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS fullPvcs text[];
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS namespaceTerminating boolean;
 
 CREATE TABLE IF NOT EXISTS ClusterTemplate();
 ALTER TABLE ClusterTemplate ADD COLUMN IF NOT EXISTS pk bigserial primary key;

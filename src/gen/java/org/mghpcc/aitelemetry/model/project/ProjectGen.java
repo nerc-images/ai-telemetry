@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.math.RoundingMode;
 import java.util.Map;
 import java.lang.String;
+import org.mghpcc.aitelemetry.model.tenant.Tenant;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import java.lang.Boolean;
@@ -236,6 +237,130 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static final String Icon = "<i class=\"fa-regular fa-people-line\"></i>";
   public static final Integer Rows = 100;
+
+	////////////////////
+  // tenantResource //
+	////////////////////
+
+
+  /**
+   *  The entity tenantResource
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String tenantResource;
+
+  /**
+   * <br> The entity tenantResource
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:tenantResource">Find the entity tenantResource in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _tenantResource(Wrap<String> w);
+
+  public String getTenantResource() {
+    return tenantResource;
+  }
+  public void setTenantResource(String o) {
+    this.tenantResource = Project.staticSetTenantResource(siteRequest_, o);
+  }
+  public static String staticSetTenantResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project tenantResourceInit() {
+    Wrap<String> tenantResourceWrap = new Wrap<String>().var("tenantResource");
+    if(tenantResource == null) {
+      _tenantResource(tenantResourceWrap);
+      Optional.ofNullable(tenantResourceWrap.getO()).ifPresent(o -> {
+        setTenantResource(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchTenantResource(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrTenantResource(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqTenantResource(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchTenantResource(siteRequest_, Project.staticSetTenantResource(siteRequest_, o)).toString();
+  }
+
+  public String sqlTenantResource() {
+    return tenantResource;
+  }
+
+  public static String staticJsonTenantResource(String tenantResource) {
+    return tenantResource;
+  }
+
+	//////////////////////
+  // localClusterName //
+	//////////////////////
+
+
+  /**
+   *  The entity localClusterName
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String localClusterName;
+
+  /**
+   * <br> The entity localClusterName
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:localClusterName">Find the entity localClusterName in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _localClusterName(Wrap<String> w);
+
+  public String getLocalClusterName() {
+    return localClusterName;
+  }
+  public void setLocalClusterName(String o) {
+    this.localClusterName = Project.staticSetLocalClusterName(siteRequest_, o);
+  }
+  public static String staticSetLocalClusterName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project localClusterNameInit() {
+    Wrap<String> localClusterNameWrap = new Wrap<String>().var("localClusterName");
+    if(localClusterName == null) {
+      _localClusterName(localClusterNameWrap);
+      Optional.ofNullable(localClusterNameWrap.getO()).ifPresent(o -> {
+        setLocalClusterName(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchLocalClusterName(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrLocalClusterName(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqLocalClusterName(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchLocalClusterName(siteRequest_, Project.staticSetLocalClusterName(siteRequest_, o)).toString();
+  }
+
+  public String sqlLocalClusterName() {
+    return localClusterName;
+  }
+
+  public static String staticJsonLocalClusterName(String localClusterName) {
+    return localClusterName;
+  }
 
 	///////////
   // hubId //
@@ -1202,6 +1327,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     Future.future(a -> a.complete()).compose(a -> {
       Promise<Void> promise2 = Promise.promise();
       try {
+        tenantResourceInit();
+        localClusterNameInit();
         hubIdInit();
         hubResourceInit();
         clusterNameInit();
@@ -1269,6 +1396,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public Object obtainProject(String var) {
     Project oProject = (Project)this;
     switch(var) {
+      case "tenantResource":
+        return oProject.tenantResource;
+      case "localClusterName":
+        return oProject.localClusterName;
       case "hubId":
         return oProject.hubId;
       case "hubResource":
@@ -1322,6 +1453,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public Object relateProject(String var, Object val) {
     Project oProject = (Project)this;
     switch(var) {
+      case "tenantResource":
+        if(oProject.getTenantResource() == null)
+          oProject.setTenantResource(Optional.ofNullable(val).map(v -> v.toString()).orElse(null));
+        if(!saves.contains("tenantResource"))
+          saves.add("tenantResource");
+        return val;
       case "hubResource":
         if(oProject.getHubResource() == null)
           oProject.setHubResource(Optional.ofNullable(val).map(v -> v.toString()).orElse(null));
@@ -1348,6 +1485,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
   public static Object staticSetProject(String entityVar, SiteRequest siteRequest_, String v, Project o) {
     switch(entityVar) {
+    case "tenantResource":
+      return Project.staticSetTenantResource(siteRequest_, v);
+    case "localClusterName":
+      return Project.staticSetLocalClusterName(siteRequest_, v);
     case "hubId":
       return Project.staticSetHubId(siteRequest_, v);
     case "hubResource":
@@ -1390,6 +1531,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
   public static Object staticSearchProject(String entityVar, SiteRequest siteRequest_, Object o) {
     switch(entityVar) {
+    case "tenantResource":
+      return Project.staticSearchTenantResource(siteRequest_, (String)o);
+    case "localClusterName":
+      return Project.staticSearchLocalClusterName(siteRequest_, (String)o);
     case "hubId":
       return Project.staticSearchHubId(siteRequest_, (String)o);
     case "hubResource":
@@ -1432,6 +1577,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
   public static String staticSearchStrProject(String entityVar, SiteRequest siteRequest_, Object o) {
     switch(entityVar) {
+    case "tenantResource":
+      return Project.staticSearchStrTenantResource(siteRequest_, (String)o);
+    case "localClusterName":
+      return Project.staticSearchStrLocalClusterName(siteRequest_, (String)o);
     case "hubId":
       return Project.staticSearchStrHubId(siteRequest_, (String)o);
     case "hubResource":
@@ -1474,6 +1623,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
   public static String staticSearchFqProject(String entityVar, SiteRequest siteRequest_, String o) {
     switch(entityVar) {
+    case "tenantResource":
+      return Project.staticSearchFqTenantResource(siteRequest_, o);
+    case "localClusterName":
+      return Project.staticSearchFqLocalClusterName(siteRequest_, o);
     case "hubId":
       return Project.staticSearchFqHubId(siteRequest_, o);
     case "hubResource":
@@ -1528,7 +1681,19 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
   public Object persistProject(String var, Object val) {
     String varLower = var.toLowerCase();
-      if("hubid".equals(varLower)) {
+      if("tenantresource".equals(varLower)) {
+        if(val instanceof String) {
+          setTenantResource((String)val);
+        }
+        saves.add("tenantResource");
+        return val;
+      } else if("localclustername".equals(varLower)) {
+        if(val instanceof String) {
+          setLocalClusterName((String)val);
+        }
+        saves.add("localClusterName");
+        return val;
+      } else if("hubid".equals(varLower)) {
         if(val instanceof String) {
           setHubId((String)val);
         }
@@ -1643,6 +1808,16 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     saves = Optional.ofNullable((ArrayList<String>)doc.get("saves_docvalues_strings")).orElse(new ArrayList<String>());
     if(saves != null) {
 
+      String tenantResource = (String)doc.get("tenantResource_docvalues_string");
+      if(tenantResource != null)
+        oProject.setTenantResource(tenantResource);
+
+      if(saves.contains("localClusterName")) {
+        String localClusterName = (String)doc.get("localClusterName_docvalues_string");
+        if(localClusterName != null)
+          oProject.setLocalClusterName(localClusterName);
+      }
+
       if(saves.contains("hubId")) {
         String hubId = (String)doc.get("hubId_docvalues_string");
         if(hubId != null)
@@ -1734,6 +1909,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
 
   public void indexProject(JsonObject doc) {
+    if(tenantResource != null) {
+      doc.put("tenantResource_docvalues_string", tenantResource);
+    }
+    if(localClusterName != null) {
+      doc.put("localClusterName_docvalues_string", localClusterName);
+    }
     if(hubId != null) {
       doc.put("hubId_docvalues_string", hubId);
     }
@@ -1790,6 +1971,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static String varStoredProject(String entityVar) {
     switch(entityVar) {
+      case "tenantResource":
+        return "tenantResource_docvalues_string";
+      case "localClusterName":
+        return "localClusterName_docvalues_string";
       case "hubId":
         return "hubId_docvalues_string";
       case "hubResource":
@@ -1825,6 +2010,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static String varIndexedProject(String entityVar) {
     switch(entityVar) {
+      case "tenantResource":
+        return "tenantResource_docvalues_string";
+      case "localClusterName":
+        return "localClusterName_docvalues_string";
       case "hubId":
         return "hubId_docvalues_string";
       case "hubResource":
@@ -1860,6 +2049,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static String searchVarProject(String searchVar) {
     switch(searchVar) {
+      case "tenantResource_docvalues_string":
+        return "tenantResource";
+      case "localClusterName_docvalues_string":
+        return "localClusterName";
       case "hubId_docvalues_string":
         return "hubId";
       case "hubResource_docvalues_string":
@@ -1918,6 +2111,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     Project oProject = (Project)this;
     SiteRequest siteRequest = oProject.getSiteRequest_();
 
+    oProject.setTenantResource(Optional.ofNullable(doc.get("tenantResource_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setLocalClusterName(Optional.ofNullable(doc.get("localClusterName_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setHubId(Optional.ofNullable(doc.get("hubId_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setHubResource(Optional.ofNullable(doc.get("hubResource_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setClusterName(Optional.ofNullable(doc.get("clusterName_docvalues_string")).map(v -> v.toString()).orElse(null));
@@ -1949,6 +2144,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     Object o = Optional.ofNullable(apiRequest).map(ApiRequest::getOriginal).orElse(null);
     if(o != null && o instanceof Project) {
       Project original = (Project)o;
+      if(!Objects.equals(tenantResource, original.getTenantResource()))
+        apiRequest.addVars("tenantResource");
+      if(!Objects.equals(localClusterName, original.getLocalClusterName()))
+        apiRequest.addVars("localClusterName");
       if(!Objects.equals(hubId, original.getHubId()))
         apiRequest.addVars("hubId");
       if(!Objects.equals(hubResource, original.getHubResource()))
@@ -1988,6 +2187,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   @Override public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(super.toString());
+    sb.append(Optional.ofNullable(tenantResource).map(v -> "tenantResource: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(localClusterName).map(v -> "localClusterName: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(hubId).map(v -> "hubId: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(hubResource).map(v -> "hubResource: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(clusterName).map(v -> "clusterName: \"" + v + "\"\n" ).orElse(""));
@@ -2012,6 +2213,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static String getClassApiAddress() {
     return CLASS_API_ADDRESS_Project;
   }
+  public static final String VAR_tenantResource = "tenantResource";
+  public static final String VAR_localClusterName = "localClusterName";
   public static final String VAR_hubId = "hubId";
   public static final String VAR_hubResource = "hubResource";
   public static final String VAR_clusterName = "clusterName";
@@ -2039,6 +2242,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return Project.varsFqProject(new ArrayList<String>());
   }
   public static List<String> varsFqProject(List<String> vars) {
+    vars.add(VAR_localClusterName);
     vars.add(VAR_hubId);
     vars.add(VAR_hubResource);
     vars.add(VAR_clusterName);
@@ -2067,6 +2271,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return vars;
   }
 
+  public static final String DISPLAY_NAME_tenantResource = "tenant auth resource";
+  public static final String DISPLAY_NAME_localClusterName = "ACM cluster name";
   public static final String DISPLAY_NAME_hubId = "ACM Hub";
   public static final String DISPLAY_NAME_hubResource = "hub auth resource";
   public static final String DISPLAY_NAME_clusterName = "cluster name";
@@ -2132,6 +2338,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
   public static String displayNameProject(String var) {
     switch(var) {
+    case VAR_tenantResource:
+      return DISPLAY_NAME_tenantResource;
+    case VAR_localClusterName:
+      return DISPLAY_NAME_localClusterName;
     case VAR_hubId:
       return DISPLAY_NAME_hubId;
     case VAR_hubResource:
@@ -2169,6 +2379,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     if(var == null)
       return null;
     switch(var) {
+    case VAR_tenantResource:
+      return "The unique authorization resource for the tenant for multi-tenancy";
+    case VAR_localClusterName:
+      return "The actual name of the ACM local cluster. ";
     case VAR_hubId:
       return "The name of the ACM Hub for this cluster in Prometheus Keycloak Proxy. ";
     case VAR_hubResource:
@@ -2204,6 +2418,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static String classSimpleNameProject(String var) {
     switch(var) {
+    case VAR_tenantResource:
+      return "String";
+    case VAR_localClusterName:
+      return "String";
     case VAR_hubId:
       return "String";
     case VAR_hubResource:
@@ -2252,6 +2470,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static Integer htmRowProject(String var) {
     switch(var) {
+    case VAR_tenantResource:
+      return 3;
     case VAR_hubId:
       return 3;
     case VAR_clusterName:
@@ -2279,6 +2499,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static Integer htmCellProject(String var) {
     switch(var) {
+    case VAR_tenantResource:
+      return 0;
     case VAR_hubId:
       return 1;
     case VAR_clusterName:
