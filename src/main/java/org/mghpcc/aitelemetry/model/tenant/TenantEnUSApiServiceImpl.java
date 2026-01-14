@@ -67,13 +67,6 @@ public class TenantEnUSApiServiceImpl extends TenantEnUSGenApiServiceImpl {
     }
   }
 
-  @Override
-  public Future<Void> authorizeGroupData(String authToken, String classAuthResource, String groupName,
-      String[] scopes) {
-    // TODO Auto-generated method stub
-    return super.authorizeGroupData(authToken, classAuthResource, groupName, scopes);
-  }
-
   public Future<Void> importTenant(JsonObject tenantData, String classSimpleName, String classApiAddress, String tenantId) {
     Promise<Void> promise = Promise.promise();
     try {
