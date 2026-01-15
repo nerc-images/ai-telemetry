@@ -182,7 +182,6 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
     return promise.future();
   }
 
-
   public Future<Void> importHub(JsonObject hubData, String classSimpleName, String classApiAddress, String hubId) {
     Promise<Void> promise = Promise.promise();
     try {

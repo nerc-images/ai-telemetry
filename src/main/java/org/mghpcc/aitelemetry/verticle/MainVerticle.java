@@ -170,12 +170,12 @@ import org.mghpcc.aitelemetry.user.SiteUserEnUSGenApiService;
 import org.mghpcc.aitelemetry.user.SiteUserEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.result.BaseResult;
 import org.mghpcc.aitelemetry.model.BaseModel;
-import org.mghpcc.aitelemetry.timezone.TimeZoneEnUSGenApiService;
-import org.mghpcc.aitelemetry.timezone.TimeZoneEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.timezone.TimeZone;
 import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
 import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.page.SitePage;
+import org.mghpcc.aitelemetry.model.tenant.TenantEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.tenant.TenantEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.tenant.Tenant;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.hub.HubEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.hub.Hub;
@@ -353,10 +353,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       siteRequest.setConfig(config);
       siteRequest.setWebClient(webClient);
       siteRequest.initDeepSiteRequest(siteRequest);
-      TimeZoneEnUSApiServiceImpl apiTimeZone = new TimeZoneEnUSApiServiceImpl();
-      apiTimeZone.setVertx(vertx);
-      apiTimeZone.setConfig(config);
-      apiTimeZone.setWebClient(webClient);
       SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
       apiSiteUser.setVertx(vertx);
       apiSiteUser.setConfig(config);
@@ -365,6 +361,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiSitePage.setVertx(vertx);
       apiSitePage.setConfig(config);
       apiSitePage.setWebClient(webClient);
+      TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
+      apiTenant.setVertx(vertx);
+      apiTenant.setConfig(config);
+      apiTenant.setWebClient(webClient);
       HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
       apiHub.setVertx(vertx);
       apiHub.setConfig(config);
@@ -426,10 +426,12 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiAiTelemetryDeveloper.setConfig(config);
       apiAiTelemetryDeveloper.setWebClient(webClient);
       apiSiteUser.createAuthorizationScopes().onSuccess(authToken -> {
-        apiTimeZone.authorizeGroupData(authToken, TimeZone.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" })
-            .onSuccess(q1 -> {
-            apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
-                .compose(q3 -> apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
+          apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
+              .compose(q2 -> apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
+              .onSuccess(q2 -> {
+            apiTenant.authorizeGroupData(authToken, Tenant.CLASS_AUTH_RESOURCE, "TenantAdmin", new String[] { "GET" })
+                .compose(q3 -> apiTenant.authorizeGroupData(authToken, Tenant.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
+                .compose(q3 -> apiTenant.authorizeGroupData(authToken, Tenant.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }))
                 .onSuccess(q3 -> {
               apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
                   .compose(q4 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
@@ -488,7 +490,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
                                               .onSuccess(q18 -> {
                                             LOG.info("authorize data complete");
                                             promise.complete();
-                                          }).onFailure(ex -> promise.fail(ex));
+                                        }).onFailure(ex -> promise.fail(ex));
                                       }).onFailure(ex -> promise.fail(ex));
                                     }).onFailure(ex -> promise.fail(ex));
                                   }).onFailure(ex -> promise.fail(ex));
@@ -1501,8 +1503,8 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     Promise<Void> promise = Promise.promise();
     try {
       List<Future<?>> futures = new ArrayList<>();
-      List<String> authClassSimpleNames = Arrays.asList("SitePage","Hub","Cluster","AiNode","GpuDevice","Project","ClusterTemplate","ClusterOrder","ManagedCluster","ClusterRequest","BareMetalNetwork","BareMetalResourceClass","BareMetalNode","BareMetalOrder","VirtualMachine","AiTelemetryDeveloper");
-      List<String> authResources = Arrays.asList("SITEPAGE","HUB","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER","VIRTUALMACHINE","AITELEMETRYDEVELOPER");
+      List<String> authClassSimpleNames = Arrays.asList("SitePage","Tenant","Hub","Cluster","AiNode","GpuDevice","Project","ClusterTemplate","ClusterOrder","ManagedCluster","ClusterRequest","BareMetalNetwork","BareMetalResourceClass","BareMetalNode","BareMetalOrder","VirtualMachine","AiTelemetryDeveloper");
+      List<String> authResources = Arrays.asList("SITEPAGE","TENANT","HUB","CLUSTER","AINODE","GPUDEVICE","PROJECT","CLUSTERTEMPLATE","CLUSTERORDER","MANAGEDCLUSTER","CLUSTERREQUEST","BAREMETALNETWORK","BAREMETALRESOURCECLASS","BAREMETALNODE","BAREMETALORDER","VIRTUALMACHINE","AITELEMETRYDEVELOPER");
       List<String> publicClassSimpleNames = Arrays.asList("SitePage","ClusterTemplate","BareMetalResourceClass");
       SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
       initializeApiService(apiSiteUser);
@@ -1510,13 +1512,13 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiSiteUser.configureUserSearchApi(config().getString(ComputateConfigKeys.USER_SEARCH_URI), router, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_SiteUser, config(), webClient, authResources, authClassSimpleNames);
       apiSiteUser.configurePublicSearchApi(config().getString(ComputateConfigKeys.PUBLIC_SEARCH_URI), router, SiteRequest.class, config(), webClient, publicClassSimpleNames);
 
-      TimeZoneEnUSApiServiceImpl apiTimeZone = new TimeZoneEnUSApiServiceImpl();
-      initializeApiService(apiTimeZone);
-      registerApiService(TimeZoneEnUSGenApiService.class, apiTimeZone, TimeZone.getClassApiAddress());
-
       SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
       initializeApiService(apiSitePage);
       registerApiService(SitePageEnUSGenApiService.class, apiSitePage, SitePage.getClassApiAddress());
+
+      TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
+      initializeApiService(apiTenant);
+      registerApiService(TenantEnUSGenApiService.class, apiTenant, Tenant.getClassApiAddress());
 
       HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
       initializeApiService(apiHub);

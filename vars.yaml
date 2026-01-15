@@ -636,6 +636,7 @@ IMPORT_DATA_PERIOD_TimeZone: ""
 
 STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
 HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
+TENANTS: "{{ lookup('env', 'TENANTS') | default('{}', true) }}"
 
 # Social media
 YOUTUBE_URL: https://www.youtube.com/watch?v=5_y5PFtsTYk&list=PLcVjtgfCeLvQu8KDUjmwHzbFqbg5K70zN
@@ -715,6 +716,7 @@ IMPORT_DATA_PERIOD_BareMetalNode: 30 seconds
 IMPORT_DATA_START_TIME_BareMetalResourceClass: 12:00 America/New_York
 IMPORT_DATA_PERIOD_BareMetalResourceClass: 1 minute
 
+ENABLE_IMPORT_DATA_Tenant: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Tenant') | default('true', true) | bool }}"
 ENABLE_IMPORT_DATA_Cluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Cluster') | default('true', true) | bool }}"
 ENABLE_IMPORT_DATA_AiNode: "{{ lookup('env', 'ENABLE_IMPORT_DATA_AiNode') | default('true', true) | bool }}"
 ENABLE_IMPORT_DATA_Project: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Project') | default('true', true) | bool }}"

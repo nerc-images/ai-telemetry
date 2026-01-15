@@ -11,6 +11,7 @@ import org.computate.vertx.search.list.SearchList;
 import org.mghpcc.aitelemetry.model.BaseModel;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import org.mghpcc.aitelemetry.model.hub.Hub;
+import org.mghpcc.aitelemetry.model.tenant.Tenant;
 
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
@@ -58,6 +59,31 @@ import io.vertx.pgclient.data.Polygon;
 public class Project extends ProjectGen<BaseModel> {
 
   /**
+   * DocValues: true
+   * Persist: true
+   * DisplayName: tenant auth resource
+   * Description: The unique authorization resource for the tenant for multi-tenancy
+   * AuthorizationResource: TENANT
+   * Relate: Tenant.tenantResource
+   * HtmRowTitleOpen: project details
+   * HtmRow: 3
+   * HtmCell: 0
+   **/
+  protected void _tenantResource(Wrap<String> w) {
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: ACM cluster name
+   * Description: The actual name of the ACM local cluster. 
+   * Facet: true
+   **/
+  protected void _localClusterName(Wrap<String> w) {
+  }
+
+  /**
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
@@ -66,7 +92,6 @@ public class Project extends ProjectGen<BaseModel> {
    * HtmRow: 3
    * HtmCell: 1
    * HtmColumn: 1
-   * HtmRowTitleOpen: project details
    * Facet: true
    * DefaultFacet: true
    **/
