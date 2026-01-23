@@ -127,106 +127,122 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           ProjectEnUSApiServiceImpl.queryNonOpenShiftProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(nonOpenShiftNamespacesTotal -> {
             ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken, "31d", "1d").onSuccess(gpuDevicesTotal -> {
               ProjectEnUSApiServiceImpl.queryPodRestarts(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(podRestartsResponse -> {
-                ProjectEnUSApiServiceImpl.queryInitPodRestarts(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(initPodRestartsResponse -> {
-                  ProjectEnUSApiServiceImpl.queryPvcsFull(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(fullPvcsResponse -> {
-                    List<Future<?>> futures = new ArrayList<>();
-                    for(Integer i = 0; i < nonOpenShiftNamespacesTotal.size(); i++) {
-                      JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
-                      String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
-                      String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
-                      String namespacePhaseTerminating = namespaceResult.getJsonArray("value").getString(1);
-                      Boolean namespaceTerminating = "1".equals(namespacePhaseTerminating);
+                ProjectEnUSApiServiceImpl.queryPodTerminating(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(podTerminatingResponse -> {
+                  ProjectEnUSApiServiceImpl.queryInitPodRestarts(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(initPodRestartsResponse -> {
+                    ProjectEnUSApiServiceImpl.queryPvcsFull(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(fullPvcsResponse -> {
+                      List<Future<?>> futures = new ArrayList<>();
+                      for(Integer i = 0; i < nonOpenShiftNamespacesTotal.size(); i++) {
+                        JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
+                        String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
+                        String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
+                        String namespacePhaseTerminating = namespaceResult.getJsonArray("value").getString(1);
+                        Boolean namespaceTerminating = "1".equals(namespacePhaseTerminating);
 
-                      JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                          && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
-                          ).findFirst().orElse(null);
+                        JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                            Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                            && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
+                            ).findFirst().orElse(null);
 
-                      List<JsonObject> podRestartsResults = podRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                          && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                          ).collect(Collectors.toList());
-                      Integer podRestartCount = Optional.ofNullable(podRestartsResults).map(l -> l.size()).orElse(0);
-                      List<String> podsRestarting = Optional.ofNullable(podRestartsResults).map(l -> 
-                          l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                          ).orElse(Arrays.asList());
+                        List<JsonObject> podRestartsResults = podRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                            Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                            && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                            ).collect(Collectors.toList());
+                        Integer podRestartCount = Optional.ofNullable(podRestartsResults).map(l -> l.size()).orElse(0);
+                        List<String> podsRestarting = Optional.ofNullable(podRestartsResults).map(l -> 
+                            l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                            ).orElse(Arrays.asList());
 
-                      List<JsonObject> initPodRestartsResults = initPodRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                          && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                          ).collect(Collectors.toList());
-                      Integer initPodRestartCount = Optional.ofNullable(initPodRestartsResults).map(l -> l.size()).orElse(0);
-                      List<String> initPodsRestarting = Optional.ofNullable(initPodRestartsResults).map(l -> 
-                          l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                          ).orElse(Arrays.asList());
+                        List<JsonObject> podTerminatingResults = podTerminatingResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                            Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                            && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                            ).collect(Collectors.toList());
+                        Integer podTerminatingCount = Optional.ofNullable(podTerminatingResults).map(l -> l.size()).orElse(0);
+                        List<String> podsTerminating = Optional.ofNullable(podTerminatingResults).map(l -> 
+                            l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                            ).orElse(Arrays.asList());
 
-                      List<JsonObject> fullPvcsResults = fullPvcsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                          Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                          && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                          ).collect(Collectors.toList());
-                      Integer fullPvcsCount = Optional.ofNullable(fullPvcsResults).map(l -> l.size()).orElse(0);
-                      List<String> fullPvcs = Optional.ofNullable(fullPvcsResults).map(l -> 
-                          l.stream().map(o -> o.getJsonObject("metric").getString("persistentvolumeclaim")).collect(Collectors.toList())
-                          ).orElse(Arrays.asList());
+                        List<JsonObject> initPodRestartsResults = initPodRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                            Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                            && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                            ).collect(Collectors.toList());
+                        Integer initPodRestartCount = Optional.ofNullable(initPodRestartsResults).map(l -> l.size()).orElse(0);
+                        List<String> initPodsRestarting = Optional.ofNullable(initPodRestartsResults).map(l -> 
+                            l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                            ).orElse(Arrays.asList());
+                        Integer totalPodsRestarting = podRestartCount + initPodRestartCount;
+                        Set<String> allPodsRestarting = new HashSet<>();
+                        allPodsRestarting.addAll(podsRestarting);
+                        allPodsRestarting.addAll(initPodsRestarting);
 
-                      Integer totalPodsRestarting = podRestartCount + initPodRestartCount;
-                      Set<String> allPodsRestarting = new HashSet<>();
-                      allPodsRestarting.addAll(podsRestarting);
-                      allPodsRestarting.addAll(initPodsRestarting);
-                      if(projectName != null) {
-                        futures.add(Future.future(promise1 -> {
-                          try {
-                            String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
-                            String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
-                            String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-                            JsonObject body = new JsonObject();
-                            body.put(Project.VAR_pk, projectResource);
-                            body.put(Project.VAR_hubId, hubId);
-                            body.put(Project.VAR_hubResource, hubResource);
-                            body.put(Project.VAR_clusterName, clusterName);
-                            body.put(Project.VAR_clusterResource, clusterResource);
-                            body.put(Project.VAR_projectResource, projectResource);
-                            body.put(Project.VAR_projectName, projectName);
-                            body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
-                            body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
-                            body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
-                            body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
-                            body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
-                            body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
+                        List<JsonObject> fullPvcsResults = fullPvcsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                            Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                            && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                            ).collect(Collectors.toList());
+                        Integer fullPvcsCount = Optional.ofNullable(fullPvcsResults).map(l -> l.size()).orElse(0);
+                        List<String> fullPvcs = Optional.ofNullable(fullPvcsResults).map(l -> 
+                            l.stream().map(o -> o.getJsonObject("metric").getString("persistentvolumeclaim")).collect(Collectors.toList())
+                            ).orElse(Arrays.asList());
 
-                            JsonObject pageParams = new JsonObject();
-                            pageParams.put("body", body);
-                            pageParams.put("path", new JsonObject());
-                            pageParams.put("cookie", new JsonObject());
-                            pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
-                            pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
-                            JsonObject pageContext = new JsonObject().put("params", pageParams);
-                            JsonObject pageRequest = new JsonObject().put("context", pageContext);
+                        if(projectName != null) {
+                          futures.add(Future.future(promise1 -> {
+                            try {
+                              String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
+                              String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
+                              String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+                              JsonObject body = new JsonObject();
+                              body.put(Project.VAR_pk, projectResource);
+                              body.put(Project.VAR_hubId, hubId);
+                              body.put(Project.VAR_hubResource, hubResource);
+                              body.put(Project.VAR_clusterName, clusterName);
+                              body.put(Project.VAR_clusterResource, clusterResource);
+                              body.put(Project.VAR_projectResource, projectResource);
+                              body.put(Project.VAR_projectName, projectName);
+                              body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
+                              body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
+                              body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
+                              body.put(Project.VAR_podTerminatingCount, podTerminatingCount.toString());
+                              body.put(Project.VAR_podsTerminating, new ArrayList<>(podsTerminating));
+                              body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
+                              body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
+                              body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
 
-                            vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
-                                .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
-                                .addHeader("action", String.format("putimport%sFuture", classSimpleName))
-                                ).onSuccess(message -> {
-                              ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
-                                LOG.info(String.format("Imported %s project", projectResource));
-                                promise1.complete();
+                              JsonObject pageParams = new JsonObject();
+                              pageParams.put("body", body);
+                              pageParams.put("path", new JsonObject());
+                              pageParams.put("cookie", new JsonObject());
+                              pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
+                              pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
+                              JsonObject pageContext = new JsonObject().put("params", pageParams);
+                              JsonObject pageRequest = new JsonObject().put("context", pageContext);
+
+                              vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
+                                  .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
+                                  .addHeader("action", String.format("putimport%sFuture", classSimpleName))
+                                  ).onSuccess(message -> {
+                                ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
+                                  LOG.info(String.format("Imported %s project", projectResource));
+                                  promise1.complete();
+                                }).onFailure(ex -> {
+                                  LOG.error(String.format(importDataFail, classSimpleName), ex);
+                                  promise1.fail(ex);
+                                });
                               }).onFailure(ex -> {
                                 LOG.error(String.format(importDataFail, classSimpleName), ex);
                                 promise1.fail(ex);
                               });
-                            }).onFailure(ex -> {
+                            } catch(Exception ex) {
                               LOG.error(String.format(importDataFail, classSimpleName), ex);
                               promise1.fail(ex);
-                            });
-                          } catch(Exception ex) {
-                            LOG.error(String.format(importDataFail, classSimpleName), ex);
-                            promise1.fail(ex);
-                          }
-                        }));
+                            }
+                          }));
+                        }
                       }
-                    }
-                    Future.all(futures).onSuccess(b -> {
-                      promise.complete();
+                      Future.all(futures).onSuccess(b -> {
+                        promise.complete();
+                      }).onFailure(ex -> {
+                        LOG.error(String.format(importDataFail, classSimpleName), ex);
+                        promise.fail(ex);
+                      });
                     }).onFailure(ex -> {
                       LOG.error(String.format(importDataFail, classSimpleName), ex);
                       promise.fail(ex);
@@ -522,6 +538,35 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
         promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format("Querying pod restarts failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<JsonArray> queryPodTerminating(Vertx vertx, WebClient webClient, JsonObject config, JsonObject clusterJson, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubId = clusterJson.getString(Cluster.VAR_hubId);
+      String hubIdEnv = hubId.toUpperCase().replace("-", "");
+      String clusterName = clusterJson.getString(Cluster.VAR_clusterName);
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("time() - kube_pod_deletion_timestamp{job='kube-state-metrics', " + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "} > 300"));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format("Querying pods terminating failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
       });
     } catch(Throwable ex) {

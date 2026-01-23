@@ -24562,6 +24562,12 @@ components:
                     type: array
                     items:
                       type: string
+                  podTerminatingCount:
+                    type: string
+                  podsTerminating:
+                    type: array
+                    items:
+                      type: string
                   fullPvcsCount:
                     type: string
                   fullPvcs:
@@ -24672,6 +24678,30 @@ components:
             addPodsRestarting:
               type: string
             addAllPodsRestarting:
+              type: array
+              items:
+                type: string
+            setPodTerminatingCount:
+              type: string
+              nullable: true
+            removePodTerminatingCount:
+              type: string
+            removeAllPodTerminatingCount:
+              type: string
+            setPodsTerminating:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removePodsTerminating:
+              type: string
+            removeAllPodsTerminating:
+              type: array
+              items:
+                type: string
+            addPodsTerminating:
+              type: string
+            addAllPodsTerminating:
               type: array
               items:
                 type: string
@@ -24811,6 +24841,30 @@ components:
               type: array
               items:
                 type: string
+            setPodTerminatingCount:
+              type: string
+              nullable: true
+            removePodTerminatingCount:
+              type: string
+            removeAllPodTerminatingCount:
+              type: string
+            setPodsTerminating:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removePodsTerminating:
+              type: string
+            removeAllPodsTerminating:
+              type: array
+              items:
+                type: string
+            addPodsTerminating:
+              type: string
+            addAllPodsTerminating:
+              type: array
+              items:
+                type: string
             setFullPvcsCount:
               type: string
               nullable: true
@@ -24874,6 +24928,12 @@ components:
               type: array
               items:
                 type: string
+            podTerminatingCount:
+              type: string
+            podsTerminating:
+              type: array
+              items:
+                type: string
             fullPvcsCount:
               type: string
             fullPvcs:
@@ -24914,6 +24974,12 @@ components:
               type: array
               items:
                 type: string
+            podTerminatingCount:
+              type: string
+            podsTerminating:
+              type: array
+              items:
+                type: string
             fullPvcsCount:
               type: string
             fullPvcs:
@@ -24951,6 +25017,12 @@ components:
             podRestartCount:
               type: string
             podsRestarting:
+              type: array
+              items:
+                type: string
+            podTerminatingCount:
+              type: string
+            podsTerminating:
               type: array
               items:
                 type: string
@@ -24999,6 +25071,12 @@ components:
                     type: array
                     items:
                       type: string
+                  podTerminatingCount:
+                    type: string
+                  podsTerminating:
+                    type: array
+                    items:
+                      type: string
                   fullPvcsCount:
                     type: string
                   fullPvcs:
@@ -25036,6 +25114,12 @@ components:
                   podRestartCount:
                     type: string
                   podsRestarting:
+                    type: array
+                    items:
+                      type: string
+                  podTerminatingCount:
+                    type: string
+                  podsTerminating:
                     type: array
                     items:
                       type: string
@@ -25079,6 +25163,12 @@ components:
               type: array
               items:
                 type: string
+            podTerminatingCount:
+              type: string
+            podsTerminating:
+              type: array
+              items:
+                type: string
             fullPvcsCount:
               type: string
             fullPvcs:
@@ -25116,6 +25206,12 @@ components:
             podRestartCount:
               type: string
             podsRestarting:
+              type: array
+              items:
+                type: string
+            podTerminatingCount:
+              type: string
+            podsTerminating:
               type: array
               items:
                 type: string

@@ -1039,13 +1039,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlDisplayPage());
             break;
-          case "setFullPvcsCount":
-              o2.setFullPvcsCount(jsonObject.getString(entityVar));
+          case "setPodTerminatingCount":
+              o2.setPodTerminatingCount(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+              bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
               num++;
-              bParams.add(o2.sqlFullPvcsCount());
+              bParams.add(o2.sqlPodTerminatingCount());
             break;
           case "setEditPage":
               o2.setEditPage(jsonObject.getString(entityVar));
@@ -1055,13 +1055,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlEditPage());
             break;
-          case "setFullPvcs":
-              o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+          case "setPodsTerminating":
+              o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_fullPvcs + "=$" + num);
+              bSql.append(Project.VAR_podsTerminating + "=$" + num);
               num++;
-              bParams.add(o2.sqlFullPvcs());
+              bParams.add(o2.sqlPodsTerminating());
             break;
           case "setUserPage":
               o2.setUserPage(jsonObject.getString(entityVar));
@@ -1071,13 +1071,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlUserPage());
             break;
-          case "setNamespaceTerminating":
-              o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+          case "setFullPvcsCount":
+              o2.setFullPvcsCount(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+              bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
               num++;
-              bParams.add(o2.sqlNamespaceTerminating());
+              bParams.add(o2.sqlFullPvcsCount());
             break;
           case "setDownload":
               o2.setDownload(jsonObject.getString(entityVar));
@@ -1086,6 +1086,22 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_download + "=$" + num);
               num++;
               bParams.add(o2.sqlDownload());
+            break;
+          case "setFullPvcs":
+              o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_fullPvcs + "=$" + num);
+              num++;
+              bParams.add(o2.sqlFullPvcs());
+            break;
+          case "setNamespaceTerminating":
+              o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNamespaceTerminating());
             break;
         }
       }
@@ -1676,14 +1692,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlDisplayPage());
             break;
-          case Project.VAR_fullPvcsCount:
-            o2.setFullPvcsCount(jsonObject.getString(entityVar));
+          case Project.VAR_podTerminatingCount:
+            o2.setPodTerminatingCount(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+            bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
             num++;
-            bParams.add(o2.sqlFullPvcsCount());
+            bParams.add(o2.sqlPodTerminatingCount());
             break;
           case Project.VAR_editPage:
             o2.setEditPage(jsonObject.getString(entityVar));
@@ -1694,14 +1710,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlEditPage());
             break;
-          case Project.VAR_fullPvcs:
-            o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+          case Project.VAR_podsTerminating:
+            o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_fullPvcs + "=$" + num);
+            bSql.append(Project.VAR_podsTerminating + "=$" + num);
             num++;
-            bParams.add(o2.sqlFullPvcs());
+            bParams.add(o2.sqlPodsTerminating());
             break;
           case Project.VAR_userPage:
             o2.setUserPage(jsonObject.getString(entityVar));
@@ -1712,14 +1728,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlUserPage());
             break;
-          case Project.VAR_namespaceTerminating:
-            o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+          case Project.VAR_fullPvcsCount:
+            o2.setFullPvcsCount(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+            bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
             num++;
-            bParams.add(o2.sqlNamespaceTerminating());
+            bParams.add(o2.sqlFullPvcsCount());
             break;
           case Project.VAR_download:
             o2.setDownload(jsonObject.getString(entityVar));
@@ -1729,6 +1745,24 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_download + "=$" + num);
             num++;
             bParams.add(o2.sqlDownload());
+            break;
+          case Project.VAR_fullPvcs:
+            o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_fullPvcs + "=$" + num);
+            num++;
+            bParams.add(o2.sqlFullPvcs());
+            break;
+          case Project.VAR_namespaceTerminating:
+            o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNamespaceTerminating());
             break;
           }
         }
@@ -4071,7 +4105,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, description, gpuEnabled, podRestartCount, objectTitle, podsRestarting, displayPage, fullPvcsCount, editPage, fullPvcs, userPage, namespaceTerminating, download FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, description, gpuEnabled, podRestartCount, objectTitle, podsRestarting, displayPage, podTerminatingCount, editPage, podsTerminating, userPage, fullPvcsCount, download, fullPvcs, namespaceTerminating FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4425,12 +4459,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
       page.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
       page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
-      page.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
+      page.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
       page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
-      page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
+      page.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
       page.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
-      page.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
+      page.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
       page.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
+      page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
+      page.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
 
       page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
         try {
