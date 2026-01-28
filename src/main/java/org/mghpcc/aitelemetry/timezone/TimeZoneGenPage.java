@@ -524,13 +524,14 @@ public class TimeZoneGenPage extends TimeZoneGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/time-zone");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/time-zone");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/time-zone");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/time-zone");
   }
 
   @Override

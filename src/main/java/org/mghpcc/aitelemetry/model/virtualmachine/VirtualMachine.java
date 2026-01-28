@@ -21,7 +21,7 @@ import io.vertx.pgclient.data.Point;
 import io.vertx.pgclient.data.Polygon;
 
 /**
- * Order: 17
+ * Order: 11
  * Description: A Red Hat OpenShift virtual machine
  * AName: a virtual machine
  * Icon: <i class="fa-regular fa-sidebar"></i>

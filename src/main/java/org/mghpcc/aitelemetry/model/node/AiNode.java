@@ -19,8 +19,8 @@ import io.vertx.pgclient.data.Path;
 import io.vertx.pgclient.data.Point;
 import io.vertx.pgclient.data.Polygon;
 
-/**
- * Order: 6
+/** 
+ * Order: 8
  * Description: A Red Hat OpenShift node containing GPUs
  * AName: an AI node
  * Icon: <i class="fa-regular fa-computer"></i>

@@ -532,13 +532,14 @@ public class AiNodeGenPage extends AiNodeGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/ai-node");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/ai-node");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/ai-node");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/ai-node");
   }
 
   @Override

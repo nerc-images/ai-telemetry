@@ -21,10 +21,13 @@ import io.vertx.pgclient.data.Point;
 import io.vertx.pgclient.data.Polygon;
 
 /**
- * Order: 4
+ * Order: 6
  * Description: An Red Hat Advanced Cluster Management Hub cluster. 
- * AName: a hub
+ * AName: an ACM hub
  * Icon: <i class="fa-regular fa-sitemap"></i>
+ * MenuDetails: OpenShift clusters
+ * MenuDetailsOpen: true
+ * MenuDetailsFeature: ENABLE_FEATURE_OBSERVABILITY
  *
  * SearchPageUri: /en-us/search/hub
  * EditPageUri: /en-us/edit/hub/{hubId}

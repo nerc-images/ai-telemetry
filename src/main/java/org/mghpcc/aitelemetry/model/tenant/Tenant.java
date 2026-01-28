@@ -21,10 +21,12 @@ import io.vertx.pgclient.data.Point;
 import io.vertx.pgclient.data.Polygon;
 
 /**
- * Order: 3
+ * Order: 5
  * Description: Tenants are separate organizations sharing the same cloud resources. 
  * AName: a tenant
  * Icon: <i class="fa-regular fa-buildings"></i>
+ * MenuDetails: multi-tenancy
+ * MenuDetailsOpen: true
  *
  * SearchPageUri: /en-us/search/tenant
  * EditPageUri: /en-us/edit/tenant/{tenantId}

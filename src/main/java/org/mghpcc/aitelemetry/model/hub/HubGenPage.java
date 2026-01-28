@@ -521,21 +521,22 @@ public class HubGenPage extends HubGenPageGen<PageLayout> {
     if(result != null && result.getObjectTitle() != null)
       c.o(result.getObjectTitle());
     else if(result != null)
-      c.o("hubs");
+      c.o("ACM hubs");
     else if(searchListHub_ == null || resultCount == 0)
-      c.o("no hub found");
+      c.o("no ACM hub found");
     else
-      c.o("hubs");
+      c.o("ACM hubs");
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/hub");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/hub");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/hub");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/hub");
   }
 
   @Override

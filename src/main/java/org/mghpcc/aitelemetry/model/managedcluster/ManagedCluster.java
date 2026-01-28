@@ -4,10 +4,11 @@ import org.computate.search.wrap.Wrap;
 import org.mghpcc.aitelemetry.model.BaseModel;
 
 /**
- * Order: 11
+ * Order: 15
  * Description: An OpenShift tenant cluster
  * AName: a tenant cluster
  * Icon: <i class="fa-regular fa-server"></i>
+ * Feature: ENABLE_FEATURE_ORDER_CLUSTER or ENABLE_FEATURE_OBSERVE_CLUSTER
  * 
  * SearchPageUri: /en-us/search/managed-cluster
  * EditPageUri: /en-us/edit/managed-cluster/{id}

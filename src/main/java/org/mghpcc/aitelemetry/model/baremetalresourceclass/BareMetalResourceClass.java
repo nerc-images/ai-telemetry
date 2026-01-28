@@ -4,7 +4,7 @@ import org.computate.search.wrap.Wrap;
 import org.mghpcc.aitelemetry.model.BaseModel;
 
 /**
- * Order: 14
+ * Order: 17
  * Description: A bare metal resource class
  * AName: a bare metal resource class
  * PluralName: bare metal resource classes

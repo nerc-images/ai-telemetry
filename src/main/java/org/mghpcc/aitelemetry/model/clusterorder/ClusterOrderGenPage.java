@@ -529,13 +529,14 @@ public class ClusterOrderGenPage extends ClusterOrderGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/cluster-order");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/cluster-order");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/cluster-order");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/cluster-order");
   }
 
   @Override

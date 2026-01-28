@@ -120,82 +120,88 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
   public void searchTenant(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
+            }
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
+                response200SearchTenant(listTenant).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("searchTenant succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("searchTenant failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
                 });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
-            }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
-              response200SearchTenant(listTenant).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("searchTenant succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("searchTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("searchTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("searchTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("searchTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -311,82 +317,88 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
   public void getTenant(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
+            }
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
+                response200GETTenant(listTenant).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("getTenant succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("getTenant failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
                 });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
-            }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
-              response200GETTenant(listTenant).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("getTenant succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("getTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("getTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("getTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("getTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("getTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -441,116 +453,122 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     LOG.debug(String.format("patchTenant started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "PATCH"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("PATCH") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "PATCH"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("PATCH") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("PATCH");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("PATCH");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchTenantList(siteRequest, false, true, true).onSuccess(listTenant -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listTenant.getRequest().getRows());
-                apiRequest.setNumFound(listTenant.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listTenant.first());
-                apiRequest.setId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getTenantId().toString()).orElse(null));
-                apiRequest.setSolrId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchTenantList(siteRequest, false, true, true).onSuccess(listTenant -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listTenant.getRequest().getRows());
+                  apiRequest.setNumFound(listTenant.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listTenant.first());
+                  apiRequest.setId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getTenantId().toString()).orElse(null));
+                  apiRequest.setSolrId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
 
-                listPATCHTenant(apiRequest, listTenant).onSuccess(e -> {
-                  response200PATCHTenant(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("patchTenant succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listPATCHTenant(apiRequest, listTenant).onSuccess(e -> {
+                    response200PATCHTenant(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("patchTenant succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("patchTenant failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchTenant failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("patchTenant failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("patchTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("patchTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("patchTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("patchTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("patchTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -626,6 +644,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -960,117 +979,123 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     LOG.debug(String.format("postTenant started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "POST"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("POST") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(POST)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "POST"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("POST") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(POST)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("POST");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
+            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              ApiRequest apiRequest = new ApiRequest();
+              apiRequest.setRows(1L);
+              apiRequest.setNumFound(1L);
+              apiRequest.setNumPATCH(0L);
+              apiRequest.initDeepApiRequest(siteRequest);
+              siteRequest.setApiRequest_(apiRequest);
+              eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
+              JsonObject params = new JsonObject();
+              params.put("body", siteRequest.getJsonObject());
+              params.put("path", new JsonObject());
+              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
+              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
+              params.put("form", new JsonObject());
+              JsonObject query = new JsonObject();
+              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+              if(softCommit == null && commitWithin == null)
+                softCommit = true;
+              if(softCommit != null)
+                query.put("softCommit", softCommit);
+              if(commitWithin != null)
+                query.put("commitWithin", commitWithin);
+              params.put("query", query);
+              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
+              JsonObject json = new JsonObject().put("context", context);
+              eventBus.request(Tenant.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postTenantFuture")).onSuccess(a -> {
+                JsonObject responseMessage = (JsonObject)a.body();
+                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+                apiRequest.setSolrId(responseBody.getString(Tenant.VAR_solrId));
+                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+                LOG.debug(String.format("postTenant succeeded. "));
+              }).onFailure(ex -> {
+                LOG.error(String.format("postTenant failed. "), ex);
+                error(siteRequest, eventHandler, ex);
+              });
             }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("POST");
-              siteRequest.setFilteredScope(true);
-            }
+          } catch(Exception ex) {
+            LOG.error(String.format("postTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            ApiRequest apiRequest = new ApiRequest();
-            apiRequest.setRows(1L);
-            apiRequest.setNumFound(1L);
-            apiRequest.setNumPATCH(0L);
-            apiRequest.initDeepApiRequest(siteRequest);
-            siteRequest.setApiRequest_(apiRequest);
-            eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
-            JsonObject params = new JsonObject();
-            params.put("body", siteRequest.getJsonObject());
-            params.put("path", new JsonObject());
-            params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-            params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-            params.put("form", new JsonObject());
-            JsonObject query = new JsonObject();
-            Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-            Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-            if(softCommit == null && commitWithin == null)
-              softCommit = true;
-            if(softCommit != null)
-              query.put("softCommit", softCommit);
-            if(commitWithin != null)
-              query.put("commitWithin", commitWithin);
-            params.put("query", query);
-            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-            JsonObject json = new JsonObject().put("context", context);
-            eventBus.request(Tenant.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postTenantFuture")).onSuccess(a -> {
-              JsonObject responseMessage = (JsonObject)a.body();
-              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-              apiRequest.setSolrId(responseBody.getString(Tenant.VAR_solrId));
-              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
-              LOG.debug(String.format("postTenant succeeded. "));
-            }).onFailure(ex -> {
-              LOG.error(String.format("postTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
-          }
-        } catch(Exception ex) {
-          LOG.error(String.format("postTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("postTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -1102,6 +1127,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
           scopes.stream().map(v -> v.toString()).forEach(scope -> {
             siteRequest.addScopes(scope);
@@ -1479,115 +1505,121 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     LOG.debug(String.format("deleteTenant started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "DELETE"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("DELETE") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "DELETE"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("DELETE") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("DELETE");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("DELETE");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchTenantList(siteRequest, false, true, true).onSuccess(listTenant -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listTenant.getRequest().getRows());
-                apiRequest.setNumFound(listTenant.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listTenant.first());
-                apiRequest.setSolrId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchTenantList(siteRequest, false, true, true).onSuccess(listTenant -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listTenant.getRequest().getRows());
+                  apiRequest.setNumFound(listTenant.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listTenant.first());
+                  apiRequest.setSolrId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
 
-                listDELETETenant(apiRequest, listTenant).onSuccess(e -> {
-                  response200DELETETenant(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("deleteTenant succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listDELETETenant(apiRequest, listTenant).onSuccess(e -> {
+                    response200DELETETenant(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("deleteTenant succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("deleteTenant failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteTenant failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("deleteTenant failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("deleteTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("deleteTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("deleteTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("deleteTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("deleteTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -1663,6 +1695,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -1857,89 +1890,95 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     LOG.debug(String.format("putimportTenant started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "PUT"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("PUT") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PUT)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "PUT"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("PUT") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("PUT");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("PUT");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            ApiRequest apiRequest = new ApiRequest();
-            JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-            apiRequest.setRows(Long.valueOf(jsonArray.size()));
-            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-            apiRequest.setNumPATCH(0L);
-            apiRequest.initDeepApiRequest(siteRequest);
-            siteRequest.setApiRequest_(apiRequest);
-            eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
-            varsTenant(siteRequest).onSuccess(d -> {
-              listPUTImportTenant(apiRequest, siteRequest).onSuccess(e -> {
-                response200PUTImportTenant(siteRequest).onSuccess(response -> {
-                  LOG.debug(String.format("putimportTenant succeeded. "));
-                  eventHandler.handle(Future.succeededFuture(response));
+            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              ApiRequest apiRequest = new ApiRequest();
+              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+              apiRequest.setRows(Long.valueOf(jsonArray.size()));
+              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+              apiRequest.setNumPATCH(0L);
+              apiRequest.initDeepApiRequest(siteRequest);
+              siteRequest.setApiRequest_(apiRequest);
+              eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
+              varsTenant(siteRequest).onSuccess(d -> {
+                listPUTImportTenant(apiRequest, siteRequest).onSuccess(e -> {
+                  response200PUTImportTenant(siteRequest).onSuccess(response -> {
+                    LOG.debug(String.format("putimportTenant succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
+                  }).onFailure(ex -> {
+                    LOG.error(String.format("putimportTenant failed. "), ex);
+                    error(siteRequest, eventHandler, ex);
+                  });
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportTenant failed. "), ex);
                   error(siteRequest, eventHandler, ex);
@@ -1948,16 +1987,16 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
                 LOG.error(String.format("putimportTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("putimportTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("putimportTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("putimportTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("putimportTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2036,6 +2075,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
           scopes.stream().map(v -> v.toString()).forEach(scope -> {
             siteRequest.addScopes(scope);
@@ -2210,82 +2250,88 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       serviceRequest.setUser(user.principal());
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
+            }
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
+                response200SearchPageTenant(listTenant).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("searchpageTenant succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("searchpageTenant failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
                 });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
-            }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
-              response200SearchPageTenant(listTenant).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("searchpageTenant succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("searchpageTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("searchpageTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("searchpageTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("searchpageTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2337,6 +2383,15 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
   }
 
   public void searchpageTenantPageInit(JsonObject ctx, TenantPage page, SearchList<Tenant> listTenant, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/tenant"));
+    ctx.put("enUSUrlPage", String.format("%s%s", siteBaseUrl, "/en-us/search/tenant"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
     promise.complete();
   }
 
@@ -2431,83 +2486,89 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
   public void editpageTenant(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      form.add("permission", String.format("%s-%s#%s", Tenant.CLASS_AUTH_RESOURCE, tenantId, "GET"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s-%s#%s", Tenant.CLASS_AUTH_RESOURCE, tenantId, "GET"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+              )
+              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+              .sendForm(form)
+              .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
+            }
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
+                response200EditPageTenant(listTenant).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("editpageTenant succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("editpageTenant failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
                 });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
-            }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchTenantList(siteRequest, false, true, false).onSuccess(listTenant -> {
-              response200EditPageTenant(listTenant).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("editpageTenant succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              });
-            }).onFailure(ex -> {
-              LOG.error(String.format("editpageTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
             });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("editpageTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("editpageTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("editpageTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2535,6 +2596,15 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
   }
 
   public void editpageTenantPageInit(JsonObject ctx, TenantPage page, SearchList<Tenant> listTenant, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/tenant"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
     promise.complete();
   }
 
@@ -2630,115 +2700,121 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     LOG.debug(String.format("deletefilterTenant started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
-      String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
-      if(tenantId != null)
-        form.add("permission", String.format("%s#%s", tenantId, "DELETE"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("DELETE") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String tenantId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("tenantId");
+        String TENANT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("TENANT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Tenant.CLASS_AUTH_RESOURCE, "PUT"));
+        if(tenantId != null)
+          form.add("permission", String.format("%s#%s", tenantId, "DELETE"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("DELETE") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("DELETE");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("DELETE");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchTenantList(siteRequest, false, true, true).onSuccess(listTenant -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listTenant.getRequest().getRows());
-                apiRequest.setNumFound(listTenant.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listTenant.first());
-                apiRequest.setSolrId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchTenantList(siteRequest, false, true, true).onSuccess(listTenant -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listTenant.getRequest().getRows());
+                  apiRequest.setNumFound(listTenant.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listTenant.first());
+                  apiRequest.setSolrId(Optional.ofNullable(listTenant.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketTenant", JsonObject.mapFrom(apiRequest).toString());
 
-                listDELETEFilterTenant(apiRequest, listTenant).onSuccess(e -> {
-                  response200DELETEFilterTenant(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("deletefilterTenant succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listDELETEFilterTenant(apiRequest, listTenant).onSuccess(e -> {
+                    response200DELETEFilterTenant(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("deletefilterTenant succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("deletefilterTenant failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterTenant failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("deletefilterTenant failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("deletefilterTenant failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("deletefilterTenant failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("deletefilterTenant failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("deletefilterTenant failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("deletefilterTenant failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2814,6 +2890,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
