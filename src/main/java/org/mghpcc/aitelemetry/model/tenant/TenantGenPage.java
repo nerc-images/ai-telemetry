@@ -529,13 +529,14 @@ public class TenantGenPage extends TenantGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/tenant");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/tenant");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/tenant");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/tenant");
   }
 
   @Override

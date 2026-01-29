@@ -531,13 +531,14 @@ public class ProjectGenPage extends ProjectGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/project");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/project");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/project");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/project");
   }
 
   @Override

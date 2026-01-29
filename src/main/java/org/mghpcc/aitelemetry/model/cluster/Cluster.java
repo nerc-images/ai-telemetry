@@ -23,7 +23,7 @@ import io.vertx.pgclient.data.Point;
 import io.vertx.pgclient.data.Polygon;
 
 /**
- * Order: 5
+ * Order: 7
  * Description: A Red Hat OpenShift cluster containing GPUs
  * AName: an OpenShift cluster
  * Icon: <i class="fa-regular fa-server"></i>

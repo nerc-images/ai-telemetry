@@ -15,6 +15,9 @@ import io.vertx.core.Promise;
  * Description: A bare metal order
  * AName: a bare metal order
  * Icon: <i class="fa-regular fa-share-nodes"></i>
+ * MenuDetails: bare metal
+ * MenuDetailsOpen: true
+ * Feature: ENABLE_FEATURE_ORDER_BARE_METAL
  *
  * SearchPageUri: /en-us/search/bare-metal-order
  * EditPageUri: /en-us/edit/bare-metal-order/{pk}

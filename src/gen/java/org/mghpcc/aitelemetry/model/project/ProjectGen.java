@@ -72,36 +72,6 @@ import org.computate.search.response.solr.SolrResponse;
  * <h2>Api: true</h2>
  * <p>This class contains a comment <b>"Api: true"</b>, which means this class will have Java Vert.x API backend code generated for these objects. 
  * </p>
- * <h2>ApiMethode: Search</h2>
- * <p>This class contains a comment <b>"ApiMethod: Search"</b>, which creates an API "Search". 
- * </p>
- * <h2>ApiMethode: GET</h2>
- * <p>This class contains a comment <b>"ApiMethod: GET"</b>, which creates an API "GET". 
- * </p>
- * <h2>ApiMethode: PATCH</h2>
- * <p>This class contains a comment <b>"ApiMethod: PATCH"</b>, which creates an API "PATCH". 
- * </p>
- * <h2>ApiMethode: POST</h2>
- * <p>This class contains a comment <b>"ApiMethod: POST"</b>, which creates an API "POST". 
- * </p>
- * <h2>ApiMethode: DELETE</h2>
- * <p>This class contains a comment <b>"ApiMethod: DELETE"</b>, which creates an API "DELETE". 
- * </p>
- * <h2>ApiMethode: PUTImport</h2>
- * <p>This class contains a comment <b>"ApiMethod: PUTImport"</b>, which creates an API "PUTImport". 
- * </p>
- * <h2>ApiMethode: SearchPage</h2>
- * <p>This class contains a comment <b>"ApiMethod: SearchPage"</b>, which creates an API "SearchPage". 
- * </p>
- * <h2>ApiMethode: EditPage</h2>
- * <p>This class contains a comment <b>"ApiMethod: EditPage"</b>, which creates an API "EditPage". 
- * </p>
- * <h2>ApiMethode: UserPage</h2>
- * <p>This class contains a comment <b>"ApiMethod: UserPage"</b>, which creates an API "UserPage". 
- * </p>
- * <h2>ApiMethode: DELETEFilter</h2>
- * <p>This class contains a comment <b>"ApiMethod: DELETEFilter"</b>, which creates an API "DELETEFilter". 
- * </p>
  * <h2>ApiTag.enUS: true</h2>
  * <p>This class contains a comment <b>"ApiTag: projects"</b>, which groups all of the OpenAPIs for Project objects under the tag "projects". 
  * </p>
@@ -120,11 +90,11 @@ import org.computate.search.response.solr.SolrResponse;
  * <p>This class contains a comment <b>"Rows: 100"</b>, which means the Project API will return a default of 100 records instead of 10 by default. 
  * Each API has built in pagination of the search records to ensure a user can query all the data a page at a time without running the application out of memory. 
  * </p>
- * <h2>Order: 8</h2>
- * <p>This class contains a comment <b>"Order: 8"</b>, which means this class will be sorted by the given number 8 ascending when code that relates to multiple classes at the same time is generated. 
+ * <h2>Order: 10</h2>
+ * <p>This class contains a comment <b>"Order: 10"</b>, which means this class will be sorted by the given number 10 ascending when code that relates to multiple classes at the same time is generated. 
  * </p>
- * <h2>SqlOrder: 8</h2>
- * <p>This class contains a comment <b>"SqlOrder: 8"</b>, which means this class will be sorted by the given number 8 ascending when SQL code to create and drop the tables is generated. 
+ * <h2>SqlOrder: 10</h2>
+ * <p>This class contains a comment <b>"SqlOrder: 10"</b>, which means this class will be sorted by the given number 10 ascending when SQL code to create and drop the tables is generated. 
  * </p>
  * <h2>Model: true</h2>
  * <p>This class contains a comment <b>"Model: true"</b>, which means this class will be stored in the database. 
@@ -1074,6 +1044,163 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return a;
   }
 
+	/////////////////////////
+  // podTerminatingCount //
+	/////////////////////////
+
+
+  /**
+   *  The entity podTerminatingCount
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer podTerminatingCount;
+
+  /**
+   * <br> The entity podTerminatingCount
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podTerminatingCount">Find the entity podTerminatingCount in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _podTerminatingCount(Wrap<Integer> w);
+
+  public Integer getPodTerminatingCount() {
+    return podTerminatingCount;
+  }
+
+  public void setPodTerminatingCount(Integer podTerminatingCount) {
+    this.podTerminatingCount = podTerminatingCount;
+  }
+  @JsonIgnore
+  public void setPodTerminatingCount(String o) {
+    this.podTerminatingCount = Project.staticSetPodTerminatingCount(siteRequest_, o);
+  }
+  public static Integer staticSetPodTerminatingCount(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected Project podTerminatingCountInit() {
+    Wrap<Integer> podTerminatingCountWrap = new Wrap<Integer>().var("podTerminatingCount");
+    if(podTerminatingCount == null) {
+      _podTerminatingCount(podTerminatingCountWrap);
+      Optional.ofNullable(podTerminatingCountWrap.getO()).ifPresent(o -> {
+        setPodTerminatingCount(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static Integer staticSearchPodTerminatingCount(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
+
+  public static String staticSearchStrPodTerminatingCount(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqPodTerminatingCount(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchPodTerminatingCount(siteRequest_, Project.staticSetPodTerminatingCount(siteRequest_, o)).toString();
+  }
+
+  public Integer sqlPodTerminatingCount() {
+    return podTerminatingCount;
+  }
+
+  public static String staticJsonPodTerminatingCount(Integer podTerminatingCount) {
+    return Optional.ofNullable(podTerminatingCount).map(v -> v.toString()).orElse(null);
+  }
+
+	/////////////////////
+  // podsTerminating //
+	/////////////////////
+
+
+  /**
+   *  The entity podsTerminating
+   *	 It is constructed before being initialized with the constructor by default. 
+   */
+  @JsonProperty
+  @JsonFormat(shape = JsonFormat.Shape.ARRAY)
+  @JsonInclude(Include.NON_NULL)
+  protected List<String> podsTerminating = new ArrayList<String>();
+
+  /**
+   * <br> The entity podsTerminating
+   *  It is constructed before being initialized with the constructor by default. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:podsTerminating">Find the entity podsTerminating in Solr</a>
+   * <br>
+   * @param l is the entity already constructed. 
+   **/
+  protected abstract void _podsTerminating(List<String> l);
+
+  public List<String> getPodsTerminating() {
+    return podsTerminating;
+  }
+
+  public void setPodsTerminating(List<String> podsTerminating) {
+    this.podsTerminating = podsTerminating;
+  }
+  @JsonIgnore
+  public void setPodsTerminating(String o) {
+    String l = Project.staticSetPodsTerminating(siteRequest_, o);
+    if(l != null)
+      addPodsTerminating(l);
+  }
+  public static String staticSetPodsTerminating(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  public Project addPodsTerminating(String...objects) {
+    for(String o : objects) {
+      addPodsTerminating(o);
+    }
+    return (Project)this;
+  }
+  public Project addPodsTerminating(String o) {
+    if(o != null)
+      this.podsTerminating.add(o);
+    return (Project)this;
+  }
+  @JsonIgnore
+  public void setPodsTerminating(JsonArray objects) {
+    podsTerminating.clear();
+    if(objects == null)
+      return;
+    for(int i = 0; i < objects.size(); i++) {
+      String o = objects.getString(i);
+      addPodsTerminating(o);
+    }
+  }
+  protected Project podsTerminatingInit() {
+    _podsTerminating(podsTerminating);
+    return (Project)this;
+  }
+
+  public static String staticSearchPodsTerminating(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrPodsTerminating(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqPodsTerminating(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchPodsTerminating(siteRequest_, Project.staticSetPodsTerminating(siteRequest_, o)).toString();
+  }
+
+  public String[] sqlPodsTerminating() {
+    return podsTerminating.stream().map(v -> (String)v).toArray(String[]::new);
+  }
+
+  public static JsonArray staticJsonPodsTerminating(List<String> podsTerminating) {
+    JsonArray a = new JsonArray();
+    podsTerminating.stream().forEach(v -> a.add(v.toString()));
+    return a;
+  }
+
 	///////////////////
   // fullPvcsCount //
 	///////////////////
@@ -1340,6 +1467,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         gpuEnabledInit();
         podRestartCountInit();
         podsRestartingInit();
+        podTerminatingCountInit();
+        podsTerminatingInit();
         fullPvcsCountInit();
         fullPvcsInit();
         namespaceTerminatingInit();
@@ -1422,6 +1551,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return oProject.podRestartCount;
       case "podsRestarting":
         return oProject.podsRestarting;
+      case "podTerminatingCount":
+        return oProject.podTerminatingCount;
+      case "podsTerminating":
+        return oProject.podsTerminating;
       case "fullPvcsCount":
         return oProject.fullPvcsCount;
       case "fullPvcs":
@@ -1511,6 +1644,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSetPodRestartCount(siteRequest_, v);
     case "podsRestarting":
       return Project.staticSetPodsRestarting(siteRequest_, v);
+    case "podTerminatingCount":
+      return Project.staticSetPodTerminatingCount(siteRequest_, v);
+    case "podsTerminating":
+      return Project.staticSetPodsTerminating(siteRequest_, v);
     case "fullPvcsCount":
       return Project.staticSetFullPvcsCount(siteRequest_, v);
     case "fullPvcs":
@@ -1557,6 +1694,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchPodRestartCount(siteRequest_, (Integer)o);
     case "podsRestarting":
       return Project.staticSearchPodsRestarting(siteRequest_, (String)o);
+    case "podTerminatingCount":
+      return Project.staticSearchPodTerminatingCount(siteRequest_, (Integer)o);
+    case "podsTerminating":
+      return Project.staticSearchPodsTerminating(siteRequest_, (String)o);
     case "fullPvcsCount":
       return Project.staticSearchFullPvcsCount(siteRequest_, (Integer)o);
     case "fullPvcs":
@@ -1603,6 +1744,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchStrPodRestartCount(siteRequest_, (Integer)o);
     case "podsRestarting":
       return Project.staticSearchStrPodsRestarting(siteRequest_, (String)o);
+    case "podTerminatingCount":
+      return Project.staticSearchStrPodTerminatingCount(siteRequest_, (Integer)o);
+    case "podsTerminating":
+      return Project.staticSearchStrPodsTerminating(siteRequest_, (String)o);
     case "fullPvcsCount":
       return Project.staticSearchStrFullPvcsCount(siteRequest_, (Integer)o);
     case "fullPvcs":
@@ -1649,6 +1794,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFqPodRestartCount(siteRequest_, o);
     case "podsRestarting":
       return Project.staticSearchFqPodsRestarting(siteRequest_, o);
+    case "podTerminatingCount":
+      return Project.staticSearchFqPodTerminatingCount(siteRequest_, o);
+    case "podsTerminating":
+      return Project.staticSearchFqPodsTerminating(siteRequest_, o);
     case "fullPvcsCount":
       return Project.staticSearchFqFullPvcsCount(siteRequest_, o);
     case "fullPvcs":
@@ -1761,6 +1910,26 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         }
         if(!saves.contains("podsRestarting")) {
           saves.add("podsRestarting");
+        }
+        return val;
+      } else if("podterminatingcount".equals(varLower)) {
+        if(val instanceof Integer) {
+          setPodTerminatingCount((Integer)val);
+        } else {
+          setPodTerminatingCount(val == null ? null : val.toString());
+        }
+        saves.add("podTerminatingCount");
+        return val;
+      } else if("podsterminating".equals(varLower)) {
+        if(val instanceof List<?>) {
+          ((List<String>)val).stream().forEach(v -> addPodsTerminating(v));
+        } else if(val instanceof String[]) {
+          Arrays.asList((String[])val).stream().forEach(v -> addPodsTerminating((String)v));
+        } else if(val instanceof JsonArray) {
+          ((JsonArray)val).stream().forEach(v -> addPodsTerminating(staticSetPodsTerminating(siteRequest_, v.toString())));
+        }
+        if(!saves.contains("podsTerminating")) {
+          saves.add("podsTerminating");
         }
         return val;
       } else if("fullpvcscount".equals(varLower)) {
@@ -1883,6 +2052,21 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         }
       }
 
+      if(saves.contains("podTerminatingCount")) {
+        Integer podTerminatingCount = (Integer)doc.get("podTerminatingCount_docvalues_int");
+        if(podTerminatingCount != null)
+          oProject.setPodTerminatingCount(podTerminatingCount);
+      }
+
+      if(saves.contains("podsTerminating")) {
+        List<String> podsTerminating = (List<String>)doc.get("podsTerminating_docvalues_strings");
+        if(podsTerminating != null) {
+          podsTerminating.stream().forEach( v -> {
+            oProject.podsTerminating.add(Project.staticSetPodsTerminating(siteRequest_, v));
+          });
+        }
+      }
+
       if(saves.contains("fullPvcsCount")) {
         Integer fullPvcsCount = (Integer)doc.get("fullPvcsCount_docvalues_int");
         if(fullPvcsCount != null)
@@ -1952,6 +2136,16 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         l.add(Project.staticSearchPodsRestarting(siteRequest_, o));
       }
     }
+    if(podTerminatingCount != null) {
+      doc.put("podTerminatingCount_docvalues_int", podTerminatingCount);
+    }
+    if(podsTerminating != null) {
+      JsonArray l = new JsonArray();
+      doc.put("podsTerminating_docvalues_strings", l);
+      for(String o : podsTerminating) {
+        l.add(Project.staticSearchPodsTerminating(siteRequest_, o));
+      }
+    }
     if(fullPvcsCount != null) {
       doc.put("fullPvcsCount_docvalues_int", fullPvcsCount);
     }
@@ -1997,6 +2191,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "podRestartCount_docvalues_int";
       case "podsRestarting":
         return "podsRestarting_docvalues_strings";
+      case "podTerminatingCount":
+        return "podTerminatingCount_docvalues_int";
+      case "podsTerminating":
+        return "podsTerminating_docvalues_strings";
       case "fullPvcsCount":
         return "fullPvcsCount_docvalues_int";
       case "fullPvcs":
@@ -2036,6 +2234,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "podRestartCount_docvalues_int";
       case "podsRestarting":
         return "podsRestarting_docvalues_strings";
+      case "podTerminatingCount":
+        return "podTerminatingCount_docvalues_int";
+      case "podsTerminating":
+        return "podsTerminating_docvalues_strings";
       case "fullPvcsCount":
         return "fullPvcsCount_docvalues_int";
       case "fullPvcs":
@@ -2075,6 +2277,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "podRestartCount";
       case "podsRestarting_docvalues_strings":
         return "podsRestarting";
+      case "podTerminatingCount_docvalues_int":
+        return "podTerminatingCount";
+      case "podsTerminating_docvalues_strings":
+        return "podsTerminating";
       case "fullPvcsCount_docvalues_int":
         return "fullPvcsCount";
       case "fullPvcs_docvalues_strings":
@@ -2126,6 +2332,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     Optional.ofNullable((List<?>)doc.get("podsRestarting_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
       oProject.addPodsRestarting(Project.staticSetPodsRestarting(siteRequest, v.toString()));
     });
+    oProject.setPodTerminatingCount(Optional.ofNullable(doc.get("podTerminatingCount_docvalues_int")).map(v -> v.toString()).orElse(null));
+    Optional.ofNullable((List<?>)doc.get("podsTerminating_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
+      oProject.addPodsTerminating(Project.staticSetPodsTerminating(siteRequest, v.toString()));
+    });
     oProject.setFullPvcsCount(Optional.ofNullable(doc.get("fullPvcsCount_docvalues_int")).map(v -> v.toString()).orElse(null));
     Optional.ofNullable((List<?>)doc.get("fullPvcs_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
       oProject.addFullPvcs(Project.staticSetFullPvcs(siteRequest, v.toString()));
@@ -2170,6 +2380,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         apiRequest.addVars("podRestartCount");
       if(!Objects.equals(podsRestarting, original.getPodsRestarting()))
         apiRequest.addVars("podsRestarting");
+      if(!Objects.equals(podTerminatingCount, original.getPodTerminatingCount()))
+        apiRequest.addVars("podTerminatingCount");
+      if(!Objects.equals(podsTerminating, original.getPodsTerminating()))
+        apiRequest.addVars("podsTerminating");
       if(!Objects.equals(fullPvcsCount, original.getFullPvcsCount()))
         apiRequest.addVars("fullPvcsCount");
       if(!Objects.equals(fullPvcs, original.getFullPvcs()))
@@ -2200,6 +2414,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(podRestartCount).map(v -> "podRestartCount: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(podTerminatingCount).map(v -> "podTerminatingCount: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(podsTerminating).map(v -> "podsTerminating: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(fullPvcsCount).map(v -> "fullPvcsCount: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(fullPvcs).map(v -> "fullPvcs: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(namespaceTerminating).map(v -> "namespaceTerminating: " + v + "\n").orElse(""));
@@ -2226,6 +2442,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String VAR_gpuEnabled = "gpuEnabled";
   public static final String VAR_podRestartCount = "podRestartCount";
   public static final String VAR_podsRestarting = "podsRestarting";
+  public static final String VAR_podTerminatingCount = "podTerminatingCount";
+  public static final String VAR_podsTerminating = "podsTerminating";
   public static final String VAR_fullPvcsCount = "fullPvcsCount";
   public static final String VAR_fullPvcs = "fullPvcs";
   public static final String VAR_namespaceTerminating = "namespaceTerminating";
@@ -2254,6 +2472,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     vars.add(VAR_gpuEnabled);
     vars.add(VAR_podRestartCount);
     vars.add(VAR_podsRestarting);
+    vars.add(VAR_podTerminatingCount);
+    vars.add(VAR_podsTerminating);
     vars.add(VAR_fullPvcsCount);
     vars.add(VAR_fullPvcs);
     vars.add(VAR_namespaceTerminating);
@@ -2266,6 +2486,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
   public static List<String> varsRangeProject(List<String> vars) {
     vars.add(VAR_podRestartCount);
+    vars.add(VAR_podTerminatingCount);
     vars.add(VAR_fullPvcsCount);
     BaseModel.varsRangeBaseModel(vars);
     return vars;
@@ -2284,6 +2505,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
   public static final String DISPLAY_NAME_podRestartCount = "pod restarts";
   public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
+  public static final String DISPLAY_NAME_podTerminatingCount = "pods terminating";
+  public static final String DISPLAY_NAME_podsTerminating = "pods terminating";
   public static final String DISPLAY_NAME_fullPvcsCount = "Full PVCs count";
   public static final String DISPLAY_NAME_fullPvcs = "pods restarting";
   public static final String DISPLAY_NAME_namespaceTerminating = "namespace terminating";
@@ -2314,22 +2537,22 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String classStringFormatUrlEditPageForClass() {
+  public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/project/%s";
   }
 
   @Override
-  public String classStringFormatUrlDisplayPageForClass() {
+  public String enUSStringFormatUrlDisplayPageForClass() {
     return null;
   }
 
   @Override
-  public String classStringFormatUrlUserPageForClass() {
+  public String enUSStringFormatUrlUserPageForClass() {
     return "%s/en-us/user/project/%s";
   }
 
   @Override
-  public String classStringFormatUrlDownloadForClass() {
+  public String enUSStringFormatUrlDownloadForClass() {
     return null;
   }
 
@@ -2364,6 +2587,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return DISPLAY_NAME_podRestartCount;
     case VAR_podsRestarting:
       return DISPLAY_NAME_podsRestarting;
+    case VAR_podTerminatingCount:
+      return DISPLAY_NAME_podTerminatingCount;
+    case VAR_podsTerminating:
+      return DISPLAY_NAME_podsTerminating;
     case VAR_fullPvcsCount:
       return DISPLAY_NAME_fullPvcsCount;
     case VAR_fullPvcs:
@@ -2405,6 +2632,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "The number of pod restarts in this project. ";
     case VAR_podsRestarting:
       return "The names of the pods restarting in this project. ";
+    case VAR_podTerminatingCount:
+      return "The number of pods terminating in this project. ";
+    case VAR_podsTerminating:
+      return "The names of the pods terminating in this project. ";
     case VAR_fullPvcsCount:
       return "The number of persistent volume claims that are running out of disk space in this project. ";
     case VAR_fullPvcs:
@@ -2443,6 +2674,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     case VAR_podRestartCount:
       return "Integer";
     case VAR_podsRestarting:
+      return "List";
+    case VAR_podTerminatingCount:
+      return "Integer";
+    case VAR_podsTerminating:
       return "List";
     case VAR_fullPvcsCount:
       return "Integer";
@@ -2486,6 +2721,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 4;
     case VAR_podsRestarting:
       return 4;
+    case VAR_podTerminatingCount:
+      return 4;
+    case VAR_podsTerminating:
+      return 4;
     case VAR_fullPvcsCount:
       return 4;
     case VAR_fullPvcs:
@@ -2515,12 +2754,16 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 0;
     case VAR_podsRestarting:
       return 1;
-    case VAR_fullPvcsCount:
+    case VAR_podTerminatingCount:
+      return 1;
+    case VAR_podsTerminating:
       return 2;
-    case VAR_fullPvcs:
+    case VAR_fullPvcsCount:
       return 3;
-    case VAR_namespaceTerminating:
+    case VAR_fullPvcs:
       return 4;
+    case VAR_namespaceTerminating:
+      return 5;
       default:
         return BaseModel.htmCellBaseModel(var);
     }

@@ -6,10 +6,11 @@ import org.mghpcc.aitelemetry.model.BaseModel;
 import io.vertx.core.json.JsonArray;
 
 /**
- * Order: 9
+ * Order: 14
  * Description: An OpenShift cluster template
  * AName: an OpenShift cluster template
  * Icon: <i class="fa-regular fa-server"></i>
+ * Feature: ENABLE_FEATURE_ORDER_CLUSTER or ENABLE_FEATURE_OBSERVE_CLUSTER
  * 
  * SearchPageUri: /en-us/search/cluster-template
  * EditPageUri: /en-us/edit/cluster-template/{id}

@@ -21,7 +21,7 @@ import io.vertx.pgclient.data.Point;
 import io.vertx.pgclient.data.Polygon;
 
 /**
- * Order: 7
+ * Order: 9
  * Description: A Red Hat OpenShift GPU device containing GPUs
  * AName: a GPU device
  * Icon: <i class="fa-regular fa-memory"></i>

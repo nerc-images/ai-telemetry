@@ -70,35 +70,8 @@ import org.computate.search.response.solr.SolrResponse;
  * <h2>Api: true</h2>
  * <p>This class contains a comment <b>"Api: true"</b>, which means this class will have Java Vert.x API backend code generated for these objects. 
  * </p>
- * <h2>ApiMethode: Search</h2>
- * <p>This class contains a comment <b>"ApiMethod: Search"</b>, which creates an API "Search". 
- * </p>
- * <h2>ApiMethode: GET</h2>
- * <p>This class contains a comment <b>"ApiMethod: GET"</b>, which creates an API "GET". 
- * </p>
- * <h2>ApiMethode: PATCH</h2>
- * <p>This class contains a comment <b>"ApiMethod: PATCH"</b>, which creates an API "PATCH". 
- * </p>
- * <h2>ApiMethode: POST</h2>
- * <p>This class contains a comment <b>"ApiMethod: POST"</b>, which creates an API "POST". 
- * </p>
- * <h2>ApiMethode: DELETE</h2>
- * <p>This class contains a comment <b>"ApiMethod: DELETE"</b>, which creates an API "DELETE". 
- * </p>
- * <h2>ApiMethode: PUTImport</h2>
- * <p>This class contains a comment <b>"ApiMethod: PUTImport"</b>, which creates an API "PUTImport". 
- * </p>
- * <h2>ApiMethode: SearchPage</h2>
- * <p>This class contains a comment <b>"ApiMethod: SearchPage"</b>, which creates an API "SearchPage". 
- * </p>
- * <h2>ApiMethode: EditPage</h2>
- * <p>This class contains a comment <b>"ApiMethod: EditPage"</b>, which creates an API "EditPage". 
- * </p>
- * <h2>ApiMethode: DELETEFilter</h2>
- * <p>This class contains a comment <b>"ApiMethod: DELETEFilter"</b>, which creates an API "DELETEFilter". 
- * </p>
  * <h2>ApiTag.enUS: true</h2>
- * <p>This class contains a comment <b>"ApiTag: hubs"</b>, which groups all of the OpenAPIs for Hub objects under the tag "hubs". 
+ * <p>This class contains a comment <b>"ApiTag: ACM hubs"</b>, which groups all of the OpenAPIs for Hub objects under the tag "ACM hubs". 
  * </p>
  * <h2>ApiUri.enUS: /en-us/api/hub</h2>
  * <p>This class contains a comment <b>"ApiUri: /en-us/api/hub"</b>, which defines the base API URI for Hub objects as "/en-us/api/hub" in the OpenAPI spec. 
@@ -112,11 +85,11 @@ import org.computate.search.response.solr.SolrResponse;
  * <p>By adding a class comment "{@inheritDoc}", the Hub class will inherit the helpful inherited class comments from the super class HubGen. 
  * </p>
  * <h2>Rows: null</h2>
- * <h2>Order: 4</h2>
- * <p>This class contains a comment <b>"Order: 4"</b>, which means this class will be sorted by the given number 4 ascending when code that relates to multiple classes at the same time is generated. 
+ * <h2>Order: 6</h2>
+ * <p>This class contains a comment <b>"Order: 6"</b>, which means this class will be sorted by the given number 6 ascending when code that relates to multiple classes at the same time is generated. 
  * </p>
- * <h2>SqlOrder: 4</h2>
- * <p>This class contains a comment <b>"SqlOrder: 4"</b>, which means this class will be sorted by the given number 4 ascending when SQL code to create and drop the tables is generated. 
+ * <h2>SqlOrder: 6</h2>
+ * <p>This class contains a comment <b>"SqlOrder: 6"</b>, which means this class will be sorted by the given number 6 ascending when SQL code to create and drop the tables is generated. 
  * </p>
  * <h2>Model: true</h2>
  * <p>This class contains a comment <b>"Model: true"</b>, which means this class will be stored in the database. 
@@ -154,8 +127,8 @@ import org.computate.search.response.solr.SolrResponse;
  * <p>
  *   If a super class of this Java class with `Model: true`, then the child class will also inherit `Promise: true`. 
  * </p>
- * <h2>AName.enUS: a hub</h2>
- * <p>This class contains a comment <b>"AName.enUS: a hub"</b>, which identifies the language context to describe a Hub as "a hub". 
+ * <h2>AName.enUS: an ACM hub</h2>
+ * <p>This class contains a comment <b>"AName.enUS: an ACM hub"</b>, which identifies the language context to describe a Hub as "an ACM hub". 
  * </p>
  * <p>
  * Delete the class Hub in Solr: 
@@ -175,27 +148,27 @@ public abstract class HubGen<DEV> extends BaseModel {
   protected static final Logger LOG = LoggerFactory.getLogger(Hub.class);
 
   public static final String Description_enUS = "An Red Hat Advanced Cluster Management Hub cluster. ";
-  public static final String AName_enUS = "a hub";
+  public static final String AName_enUS = "an ACM hub";
   public static final String This_enUS = "this ";
-  public static final String ThisName_enUS = "this hub";
+  public static final String ThisName_enUS = "this ACM hub";
   public static final String A_enUS = "a ";
-  public static final String TheName_enUS = "thehub";
-  public static final String SingularName_enUS = "hub";
-  public static final String PluralName_enUS = "hubs";
-  public static final String NameActual_enUS = "current hub";
-  public static final String AllName_enUS = "all hubs";
-  public static final String SearchAllNameBy_enUS = "search hubs by ";
-  public static final String SearchAllName_enUS = "search hubs";
-  public static final String Title_enUS = "hubs";
-  public static final String ThePluralName_enUS = "the hubs";
-  public static final String NoNameFound_enUS = "no hub found";
+  public static final String TheName_enUS = "theACM hub";
+  public static final String SingularName_enUS = "ACM hub";
+  public static final String PluralName_enUS = "ACM hubs";
+  public static final String NameActual_enUS = "current ACM hub";
+  public static final String AllName_enUS = "all ACM hubs";
+  public static final String SearchAllNameBy_enUS = "search ACM hubs by ";
+  public static final String SearchAllName_enUS = "search ACM hubs";
+  public static final String Title_enUS = "ACM hubs";
+  public static final String ThePluralName_enUS = "the ACM hubs";
+  public static final String NoNameFound_enUS = "no ACM hub found";
   public static final String ApiUri_enUS = "/en-us/api/hub";
   public static final String ApiUriSearchPage_enUS = "/en-us/search/hub";
   public static final String ApiUriEditPage_enUS = "/en-us/edit/hub/{hubId}";
-  public static final String OfName_enUS = "of hub";
-  public static final String ANameAdjective_enUS = "an hub";
-  public static final String NameAdjectiveSingular_enUS = "hub";
-  public static final String NameAdjectivePlural_enUS = "hubs";
+  public static final String OfName_enUS = "of ACM hub";
+  public static final String ANameAdjective_enUS = "an ACM hub";
+  public static final String NameAdjectiveSingular_enUS = "ACM hub";
+  public static final String NameAdjectivePlural_enUS = "ACM hubs";
   public static final String Search_enUS_OpenApiUri = "/en-us/api/hub";
   public static final String Search_enUS_StringFormatUri = "/en-us/api/hub";
   public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/hub";
@@ -1179,22 +1152,22 @@ public abstract class HubGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String classStringFormatUrlEditPageForClass() {
+  public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/hub/%s";
   }
 
   @Override
-  public String classStringFormatUrlDisplayPageForClass() {
+  public String enUSStringFormatUrlDisplayPageForClass() {
     return null;
   }
 
   @Override
-  public String classStringFormatUrlUserPageForClass() {
+  public String enUSStringFormatUrlUserPageForClass() {
     return null;
   }
 
   @Override
-  public String classStringFormatUrlDownloadForClass() {
+  public String enUSStringFormatUrlDownloadForClass() {
     return null;
   }
 

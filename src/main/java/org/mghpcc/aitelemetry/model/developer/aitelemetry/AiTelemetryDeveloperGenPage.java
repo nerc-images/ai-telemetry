@@ -526,13 +526,14 @@ public class AiTelemetryDeveloperGenPage extends AiTelemetryDeveloperGenPageGen<
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/ai-telemetry-developer");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/ai-telemetry-developer");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/ai-telemetry-developer");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/ai-telemetry-developer");
   }
 
   @Override

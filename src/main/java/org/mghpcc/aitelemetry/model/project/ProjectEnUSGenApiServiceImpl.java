@@ -126,100 +126,106 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   public void searchProject(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
-              response200SearchProject(listProject).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("searchProject succeeded. "));
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
+                response200SearchProject(listProject).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("searchProject succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("searchProject failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("searchProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("searchProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("searchProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("searchProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("searchProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -335,100 +341,106 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   public void getProject(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
-              response200GETProject(listProject).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("getProject succeeded. "));
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
+                response200GETProject(listProject).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("getProject succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("getProject failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("getProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("getProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("getProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("getProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("getProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -483,134 +495,140 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     LOG.debug(String.format("patchProject started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "PATCH"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("PATCH") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "PATCH"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("PATCH") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("PATCH");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("PATCH");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listProject.getRequest().getRows());
-                apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listProject.first());
-                apiRequest.setId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getProjectResource().toString()).orElse(null));
-                apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listProject.getRequest().getRows());
+                  apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listProject.first());
+                  apiRequest.setId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getProjectResource().toString()).orElse(null));
+                  apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
 
-                listPATCHProject(apiRequest, listProject).onSuccess(e -> {
-                  response200PATCHProject(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("patchProject succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listPATCHProject(apiRequest, listProject).onSuccess(e -> {
+                    response200PATCHProject(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("patchProject succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("patchProject failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchProject failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("patchProject failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("patchProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("patchProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("patchProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("patchProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("patchProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -686,6 +704,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -1039,13 +1058,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlDisplayPage());
             break;
-          case "setFullPvcsCount":
-              o2.setFullPvcsCount(jsonObject.getString(entityVar));
+          case "setPodTerminatingCount":
+              o2.setPodTerminatingCount(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+              bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
               num++;
-              bParams.add(o2.sqlFullPvcsCount());
+              bParams.add(o2.sqlPodTerminatingCount());
             break;
           case "setEditPage":
               o2.setEditPage(jsonObject.getString(entityVar));
@@ -1055,13 +1074,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlEditPage());
             break;
-          case "setFullPvcs":
-              o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+          case "setPodsTerminating":
+              o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_fullPvcs + "=$" + num);
+              bSql.append(Project.VAR_podsTerminating + "=$" + num);
               num++;
-              bParams.add(o2.sqlFullPvcs());
+              bParams.add(o2.sqlPodsTerminating());
             break;
           case "setUserPage":
               o2.setUserPage(jsonObject.getString(entityVar));
@@ -1071,13 +1090,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlUserPage());
             break;
-          case "setNamespaceTerminating":
-              o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+          case "setFullPvcsCount":
+              o2.setFullPvcsCount(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+              bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
               num++;
-              bParams.add(o2.sqlNamespaceTerminating());
+              bParams.add(o2.sqlFullPvcsCount());
             break;
           case "setDownload":
               o2.setDownload(jsonObject.getString(entityVar));
@@ -1086,6 +1105,22 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_download + "=$" + num);
               num++;
               bParams.add(o2.sqlDownload());
+            break;
+          case "setFullPvcs":
+              o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_fullPvcs + "=$" + num);
+              num++;
+              bParams.add(o2.sqlFullPvcs());
+            break;
+          case "setNamespaceTerminating":
+              o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNamespaceTerminating());
             break;
         }
       }
@@ -1153,135 +1188,141 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     LOG.debug(String.format("postProject started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "POST"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("POST") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(POST)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(POST)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(POST)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(POST)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "POST"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("POST") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(POST)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(POST)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(POST)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(POST)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("POST");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
+            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              ApiRequest apiRequest = new ApiRequest();
+              apiRequest.setRows(1L);
+              apiRequest.setNumFound(1L);
+              apiRequest.setNumPATCH(0L);
+              apiRequest.initDeepApiRequest(siteRequest);
+              siteRequest.setApiRequest_(apiRequest);
+              eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+              JsonObject params = new JsonObject();
+              params.put("body", siteRequest.getJsonObject());
+              params.put("path", new JsonObject());
+              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
+              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
+              params.put("form", new JsonObject());
+              JsonObject query = new JsonObject();
+              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+              if(softCommit == null && commitWithin == null)
+                softCommit = true;
+              if(softCommit != null)
+                query.put("softCommit", softCommit);
+              if(commitWithin != null)
+                query.put("commitWithin", commitWithin);
+              params.put("query", query);
+              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
+              JsonObject json = new JsonObject().put("context", context);
+              eventBus.request(Project.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postProjectFuture")).onSuccess(a -> {
+                JsonObject responseMessage = (JsonObject)a.body();
+                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+                apiRequest.setSolrId(responseBody.getString(Project.VAR_solrId));
+                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+                LOG.debug(String.format("postProject succeeded. "));
+              }).onFailure(ex -> {
+                LOG.error(String.format("postProject failed. "), ex);
+                error(siteRequest, eventHandler, ex);
+              });
             }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("POST");
-              siteRequest.setFilteredScope(true);
-            }
+          } catch(Exception ex) {
+            LOG.error(String.format("postProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            ApiRequest apiRequest = new ApiRequest();
-            apiRequest.setRows(1L);
-            apiRequest.setNumFound(1L);
-            apiRequest.setNumPATCH(0L);
-            apiRequest.initDeepApiRequest(siteRequest);
-            siteRequest.setApiRequest_(apiRequest);
-            eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
-            JsonObject params = new JsonObject();
-            params.put("body", siteRequest.getJsonObject());
-            params.put("path", new JsonObject());
-            params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-            params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-            params.put("form", new JsonObject());
-            JsonObject query = new JsonObject();
-            Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-            Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-            if(softCommit == null && commitWithin == null)
-              softCommit = true;
-            if(softCommit != null)
-              query.put("softCommit", softCommit);
-            if(commitWithin != null)
-              query.put("commitWithin", commitWithin);
-            params.put("query", query);
-            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-            JsonObject json = new JsonObject().put("context", context);
-            eventBus.request(Project.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postProjectFuture")).onSuccess(a -> {
-              JsonObject responseMessage = (JsonObject)a.body();
-              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-              apiRequest.setSolrId(responseBody.getString(Project.VAR_solrId));
-              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
-              LOG.debug(String.format("postProject succeeded. "));
-            }).onFailure(ex -> {
-              LOG.error(String.format("postProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
-          }
-        } catch(Exception ex) {
-          LOG.error(String.format("postProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("postProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -1313,6 +1354,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
           scopes.stream().map(v -> v.toString()).forEach(scope -> {
             siteRequest.addScopes(scope);
@@ -1676,14 +1718,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlDisplayPage());
             break;
-          case Project.VAR_fullPvcsCount:
-            o2.setFullPvcsCount(jsonObject.getString(entityVar));
+          case Project.VAR_podTerminatingCount:
+            o2.setPodTerminatingCount(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+            bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
             num++;
-            bParams.add(o2.sqlFullPvcsCount());
+            bParams.add(o2.sqlPodTerminatingCount());
             break;
           case Project.VAR_editPage:
             o2.setEditPage(jsonObject.getString(entityVar));
@@ -1694,14 +1736,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlEditPage());
             break;
-          case Project.VAR_fullPvcs:
-            o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+          case Project.VAR_podsTerminating:
+            o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_fullPvcs + "=$" + num);
+            bSql.append(Project.VAR_podsTerminating + "=$" + num);
             num++;
-            bParams.add(o2.sqlFullPvcs());
+            bParams.add(o2.sqlPodsTerminating());
             break;
           case Project.VAR_userPage:
             o2.setUserPage(jsonObject.getString(entityVar));
@@ -1712,14 +1754,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlUserPage());
             break;
-          case Project.VAR_namespaceTerminating:
-            o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+          case Project.VAR_fullPvcsCount:
+            o2.setFullPvcsCount(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+            bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
             num++;
-            bParams.add(o2.sqlNamespaceTerminating());
+            bParams.add(o2.sqlFullPvcsCount());
             break;
           case Project.VAR_download:
             o2.setDownload(jsonObject.getString(entityVar));
@@ -1729,6 +1771,24 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_download + "=$" + num);
             num++;
             bParams.add(o2.sqlDownload());
+            break;
+          case Project.VAR_fullPvcs:
+            o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_fullPvcs + "=$" + num);
+            num++;
+            bParams.add(o2.sqlFullPvcs());
+            break;
+          case Project.VAR_namespaceTerminating:
+            o2.setNamespaceTerminating(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_namespaceTerminating + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNamespaceTerminating());
             break;
           }
         }
@@ -1795,133 +1855,139 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     LOG.debug(String.format("deleteProject started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "DELETE"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("DELETE") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "DELETE"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("DELETE") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("DELETE");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("DELETE");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listProject.getRequest().getRows());
-                apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listProject.first());
-                apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listProject.getRequest().getRows());
+                  apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listProject.first());
+                  apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
 
-                listDELETEProject(apiRequest, listProject).onSuccess(e -> {
-                  response200DELETEProject(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("deleteProject succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listDELETEProject(apiRequest, listProject).onSuccess(e -> {
+                    response200DELETEProject(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("deleteProject succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("deleteProject failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteProject failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("deleteProject failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("deleteProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("deleteProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("deleteProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("deleteProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("deleteProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -1997,6 +2063,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -2251,107 +2318,113 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     LOG.debug(String.format("putimportProject started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "PUT"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("PUT") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PUT)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PUT)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PUT)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(PUT)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "PUT"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("PUT") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("PUT");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("PUT");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            ApiRequest apiRequest = new ApiRequest();
-            JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-            apiRequest.setRows(Long.valueOf(jsonArray.size()));
-            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-            apiRequest.setNumPATCH(0L);
-            apiRequest.initDeepApiRequest(siteRequest);
-            siteRequest.setApiRequest_(apiRequest);
-            eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
-            varsProject(siteRequest).onSuccess(d -> {
-              listPUTImportProject(apiRequest, siteRequest).onSuccess(e -> {
-                response200PUTImportProject(siteRequest).onSuccess(response -> {
-                  LOG.debug(String.format("putimportProject succeeded. "));
-                  eventHandler.handle(Future.succeededFuture(response));
+            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              ApiRequest apiRequest = new ApiRequest();
+              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+              apiRequest.setRows(Long.valueOf(jsonArray.size()));
+              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+              apiRequest.setNumPATCH(0L);
+              apiRequest.initDeepApiRequest(siteRequest);
+              siteRequest.setApiRequest_(apiRequest);
+              eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+              varsProject(siteRequest).onSuccess(d -> {
+                listPUTImportProject(apiRequest, siteRequest).onSuccess(e -> {
+                  response200PUTImportProject(siteRequest).onSuccess(response -> {
+                    LOG.debug(String.format("putimportProject succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
+                  }).onFailure(ex -> {
+                    LOG.error(String.format("putimportProject failed. "), ex);
+                    error(siteRequest, eventHandler, ex);
+                  });
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportProject failed. "), ex);
                   error(siteRequest, eventHandler, ex);
@@ -2360,16 +2433,16 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 LOG.error(String.format("putimportProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("putimportProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("putimportProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("putimportProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("putimportProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2448,6 +2521,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
           scopes.stream().map(v -> v.toString()).forEach(scope -> {
             siteRequest.addScopes(scope);
@@ -2622,100 +2696,106 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       serviceRequest.setUser(user.principal());
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
-              response200SearchPageProject(listProject).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("searchpageProject succeeded. "));
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
+                response200SearchPageProject(listProject).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("searchpageProject succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("searchpageProject failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("searchpageProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("searchpageProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("searchpageProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("searchpageProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2767,6 +2847,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   }
 
   public void searchpageProjectPageInit(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/project"));
+    ctx.put("enUSUrlPage", String.format("%s%s", siteBaseUrl, "/en-us/search/project"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
     promise.complete();
   }
 
@@ -2861,101 +2950,107 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   public void editpageProject(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+              )
+              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+              .sendForm(form)
+              .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
-              response200EditPageProject(listProject).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("editpageProject succeeded. "));
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
+                response200EditPageProject(listProject).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("editpageProject succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("editpageProject failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              });
-            }).onFailure(ex -> {
-              LOG.error(String.format("editpageProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
             });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("editpageProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("editpageProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("editpageProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2983,6 +3078,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   }
 
   public void editpageProjectPageInit(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/project"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
     promise.complete();
   }
 
@@ -3077,101 +3181,107 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   public void userpageProject(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("GET") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+              )
+              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+              .sendForm(form)
+              .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("GET");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
-              response200UserPageProject(listProject).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("userpageProject succeeded. "));
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
+                response200UserPageProject(listProject).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("userpageProject succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("userpageProject failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("userpageProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              });
-            }).onFailure(ex -> {
-              LOG.error(String.format("userpageProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
             });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("userpageProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("userpageProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("userpageProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -3199,6 +3309,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   }
 
   public void userpageProjectPageInit(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/project"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
     promise.complete();
   }
 
@@ -3294,133 +3413,139 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     LOG.debug(String.format("deletefilterProject started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-      String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-      if(projectResource != null)
-        form.add("permission", String.format("%s#%s", projectResource, "DELETE"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(!scopes.contains("DELETE") && !classPublicRead) {
-            //
-            List<String> fqs = new ArrayList<>();
-            List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "hubResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", value));
-                });
-            groups.stream().map(group -> {
-                  Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
-                  return mPermission.find() ? mPermission.group(1) : null;
-                }).filter(v -> v != null).forEach(value -> {
-                  fqs.add(String.format("%s:%s", "projectResource", value));
-                });
-            JsonObject authParams = siteRequest.getServiceRequest().getParams();
-            JsonObject authQuery = authParams.getJsonObject("query");
-            if(authQuery == null) {
-              authQuery = new JsonObject();
-              authParams.put("query", authQuery);
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "DELETE"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("DELETE") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("DELETE");
+                siteRequest.setFilteredScope(true);
+              }
             }
-            JsonArray fq = authQuery.getJsonArray("fq");
-            if(fq == null) {
-              fq = new JsonArray();
-              authQuery.put("fq", fq);
-            }
-            if(fqs.size() > 0) {
-              fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-              scopes.add("DELETE");
-              siteRequest.setFilteredScope(true);
-            }
-          }
-          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listProject.getRequest().getRows());
-                apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listProject.first());
-                apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, true).onSuccess(listProject -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listProject.getRequest().getRows());
+                  apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listProject.first());
+                  apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
 
-                listDELETEFilterProject(apiRequest, listProject).onSuccess(e -> {
-                  response200DELETEFilterProject(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("deletefilterProject succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listDELETEFilterProject(apiRequest, listProject).onSuccess(e -> {
+                    response200DELETEFilterProject(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("deletefilterProject succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("deletefilterProject failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterProject failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("deletefilterProject failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("deletefilterProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("deletefilterProject failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("deletefilterProject failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("deletefilterProject failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("deletefilterProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -3496,6 +3621,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -4071,7 +4197,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, description, gpuEnabled, podRestartCount, objectTitle, podsRestarting, displayPage, fullPvcsCount, editPage, fullPvcs, userPage, namespaceTerminating, download FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, description, gpuEnabled, podRestartCount, objectTitle, podsRestarting, displayPage, podTerminatingCount, editPage, podsTerminating, userPage, fullPvcsCount, download, fullPvcs, namespaceTerminating FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4425,12 +4551,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
       page.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
       page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
-      page.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
+      page.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
       page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
-      page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
+      page.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
       page.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
-      page.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
+      page.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
       page.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
+      page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
+      page.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
 
       page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
         try {

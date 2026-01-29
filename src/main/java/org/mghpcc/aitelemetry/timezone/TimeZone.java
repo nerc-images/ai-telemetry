@@ -5,12 +5,14 @@ import org.computate.search.wrap.Wrap;
 import org.mghpcc.aitelemetry.result.BaseResult;
 
 /**
- * Order: 0
+ * Order: 2
  * Description: A timezone
  * AName: a time zone
  * Icon: <i class="fa-duotone fa-regular fa-globe"></i>
  * Rows: 10
  * Ignore: true
+ * MenuDetails: info
+ * MenuDetailsOpen: true
  * 
  * SearchPageUri: /en-us/search/time-zone
  * EditPageUri: /en-us/edit/time-zone/{id}

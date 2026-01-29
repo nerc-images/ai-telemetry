@@ -530,13 +530,14 @@ public class BareMetalNodeGenPage extends BareMetalNodeGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/bare-metal-node");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/bare-metal-node");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/bare-metal-node");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/bare-metal-node");
   }
 
   @Override

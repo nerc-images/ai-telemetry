@@ -200,11 +200,11 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * VarUrlDisplayPage: true
    */
   protected void _displayPage(Wrap<String> w) {
-    String f = classStringFormatUrlDisplayPageForClass();
+    String f = enUSStringFormatUrlDisplayPageForClass();
     if(f != null) {
       w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
     } else {
-      f = classStringFormatUrlEditPageForClass();
+      f = enUSStringFormatUrlEditPageForClass();
       if(f != null) {
         w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
       }
@@ -221,9 +221,11 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Link: true
    * Icon: <i class="fa-duotone fa-solid fa-pen-to-square"></i>
    * VarUrlEditPage: true
+	 * LocationUrl: true
+	 * AreaUrl: true
    */
   protected void _editPage(Wrap<String> w) {
-    String f = classStringFormatUrlEditPageForClass();
+    String f = enUSStringFormatUrlEditPageForClass();
     if(f != null)
       w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
   }
@@ -239,7 +241,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * VarUrlUserPage: true
    */
   protected void _userPage(Wrap<String> w) {
-    String f = classStringFormatUrlUserPageForClass();
+    String f = enUSStringFormatUrlUserPageForClass();
     if(f != null)
       w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
   }
@@ -255,7 +257,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * VarUrlDownload: true
    */
   protected void _download(Wrap<String> w) {
-    String f = classStringFormatUrlDownloadForClass();
+    String f = enUSStringFormatUrlDownloadForClass();
     if(f != null)
       w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
   }

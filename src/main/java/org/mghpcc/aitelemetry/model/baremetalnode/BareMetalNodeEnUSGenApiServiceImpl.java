@@ -120,55 +120,61 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
   public void searchBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-              response200SearchBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("searchBareMetalNode succeeded. "));
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
+                response200SearchBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("searchBareMetalNode succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("searchBareMetalNode failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("searchBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("searchBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("searchBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("searchBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("searchBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -284,55 +290,61 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
   public void getBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-              response200GETBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("getBareMetalNode succeeded. "));
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
+                response200GETBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("getBareMetalNode succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("getBareMetalNode failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("getBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("getBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("getBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("getBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("getBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -387,89 +399,95 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     LOG.debug(String.format("patchBareMetalNode started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "PATCH"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-                apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listBareMetalNode.first());
-                apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getNodeId().toString()).orElse(null));
-                apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "PATCH"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listBareMetalNode.getRequest().getRows());
+                  apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listBareMetalNode.first());
+                  apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getNodeId().toString()).orElse(null));
+                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
 
-                listPATCHBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-                  response200PATCHBareMetalNode(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("patchBareMetalNode succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listPATCHBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
+                    response200PATCHBareMetalNode(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("patchBareMetalNode succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("patchBareMetalNode failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchBareMetalNode failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("patchBareMetalNode failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("patchBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("patchBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("patchBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("patchBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("patchBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -545,6 +563,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -701,14 +720,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               num++;
               bParams.add(o2.sqlNetworkInfo());
             break;
-          case "setNodeId":
-              o2.setNodeId(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalNode.VAR_nodeId + "=$" + num);
-              num++;
-              bParams.add(o2.sqlNodeId());
-            break;
           case "setCreated":
               o2.setCreated(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -716,6 +727,14 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               bSql.append(BareMetalNode.VAR_created + "=$" + num);
               num++;
               bParams.add(o2.sqlCreated());
+            break;
+          case "setNodeId":
+              o2.setNodeId(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalNode.VAR_nodeId + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNodeId());
             break;
           case "setNodeIsMaintenance":
               o2.setNodeIsMaintenance(jsonObject.getString(entityVar));
@@ -725,14 +744,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               num++;
               bParams.add(o2.sqlNodeIsMaintenance());
             break;
-          case "setNodeLinks":
-              o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalNode.VAR_nodeLinks + "=$" + num);
-              num++;
-              bParams.add(o2.sqlNodeLinks());
-            break;
           case "setArchived":
               o2.setArchived(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -740,6 +751,14 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               bSql.append(BareMetalNode.VAR_archived + "=$" + num);
               num++;
               bParams.add(o2.sqlArchived());
+            break;
+          case "setNodeLinks":
+              o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalNode.VAR_nodeLinks + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNodeLinks());
             break;
           case "setNodeName":
               o2.setNodeName(jsonObject.getString(entityVar));
@@ -765,14 +784,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               num++;
               bParams.add(o2.sqlNodeProvisionState());
             break;
-          case "setNodeResourceClass":
-              o2.setNodeResourceClass(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
-              num++;
-              bParams.add(o2.sqlNodeResourceClass());
-            break;
           case "setSessionId":
               o2.setSessionId(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -780,6 +791,14 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               bSql.append(BareMetalNode.VAR_sessionId + "=$" + num);
               num++;
               bParams.add(o2.sqlSessionId());
+            break;
+          case "setNodeResourceClass":
+              o2.setNodeResourceClass(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNodeResourceClass());
             break;
           case "setUserKey":
               o2.setUserKey(jsonObject.getString(entityVar));
@@ -895,90 +914,96 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     LOG.debug(String.format("postBareMetalNode started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "POST"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            ApiRequest apiRequest = new ApiRequest();
-            apiRequest.setRows(1L);
-            apiRequest.setNumFound(1L);
-            apiRequest.setNumPATCH(0L);
-            apiRequest.initDeepApiRequest(siteRequest);
-            siteRequest.setApiRequest_(apiRequest);
-            eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
-            JsonObject params = new JsonObject();
-            params.put("body", siteRequest.getJsonObject());
-            params.put("path", new JsonObject());
-            params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-            params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-            params.put("form", new JsonObject());
-            JsonObject query = new JsonObject();
-            Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-            Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-            if(softCommit == null && commitWithin == null)
-              softCommit = true;
-            if(softCommit != null)
-              query.put("softCommit", softCommit);
-            if(commitWithin != null)
-              query.put("commitWithin", commitWithin);
-            params.put("query", query);
-            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-            JsonObject json = new JsonObject().put("context", context);
-            eventBus.request(BareMetalNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postBareMetalNodeFuture")).onSuccess(a -> {
-              JsonObject responseMessage = (JsonObject)a.body();
-              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-              apiRequest.setSolrId(responseBody.getString(BareMetalNode.VAR_solrId));
-              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
-              LOG.debug(String.format("postBareMetalNode succeeded. "));
-            }).onFailure(ex -> {
-              LOG.error(String.format("postBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "POST"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              ApiRequest apiRequest = new ApiRequest();
+              apiRequest.setRows(1L);
+              apiRequest.setNumFound(1L);
+              apiRequest.setNumPATCH(0L);
+              apiRequest.initDeepApiRequest(siteRequest);
+              siteRequest.setApiRequest_(apiRequest);
+              eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+              JsonObject params = new JsonObject();
+              params.put("body", siteRequest.getJsonObject());
+              params.put("path", new JsonObject());
+              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
+              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
+              params.put("form", new JsonObject());
+              JsonObject query = new JsonObject();
+              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+              if(softCommit == null && commitWithin == null)
+                softCommit = true;
+              if(softCommit != null)
+                query.put("softCommit", softCommit);
+              if(commitWithin != null)
+                query.put("commitWithin", commitWithin);
+              params.put("query", query);
+              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
+              JsonObject json = new JsonObject().put("context", context);
+              eventBus.request(BareMetalNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postBareMetalNodeFuture")).onSuccess(a -> {
+                JsonObject responseMessage = (JsonObject)a.body();
+                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+                apiRequest.setSolrId(responseBody.getString(BareMetalNode.VAR_solrId));
+                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+                LOG.debug(String.format("postBareMetalNode succeeded. "));
+              }).onFailure(ex -> {
+                LOG.error(String.format("postBareMetalNode failed. "), ex);
+                error(siteRequest, eventHandler, ex);
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("postBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("postBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("postBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -1010,6 +1035,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
           scopes.stream().map(v -> v.toString()).forEach(scope -> {
             siteRequest.addScopes(scope);
@@ -1196,15 +1222,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             num++;
             bParams.add(o2.sqlNetworkInfo());
             break;
-          case BareMetalNode.VAR_nodeId:
-            o2.setNodeId(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalNode.VAR_nodeId + "=$" + num);
-            num++;
-            bParams.add(o2.sqlNodeId());
-            break;
           case BareMetalNode.VAR_created:
             o2.setCreated(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1213,6 +1230,15 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             bSql.append(BareMetalNode.VAR_created + "=$" + num);
             num++;
             bParams.add(o2.sqlCreated());
+            break;
+          case BareMetalNode.VAR_nodeId:
+            o2.setNodeId(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalNode.VAR_nodeId + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNodeId());
             break;
           case BareMetalNode.VAR_nodeIsMaintenance:
             o2.setNodeIsMaintenance(jsonObject.getString(entityVar));
@@ -1223,15 +1249,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             num++;
             bParams.add(o2.sqlNodeIsMaintenance());
             break;
-          case BareMetalNode.VAR_nodeLinks:
-            o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalNode.VAR_nodeLinks + "=$" + num);
-            num++;
-            bParams.add(o2.sqlNodeLinks());
-            break;
           case BareMetalNode.VAR_archived:
             o2.setArchived(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1240,6 +1257,15 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             bSql.append(BareMetalNode.VAR_archived + "=$" + num);
             num++;
             bParams.add(o2.sqlArchived());
+            break;
+          case BareMetalNode.VAR_nodeLinks:
+            o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalNode.VAR_nodeLinks + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNodeLinks());
             break;
           case BareMetalNode.VAR_nodeName:
             o2.setNodeName(jsonObject.getString(entityVar));
@@ -1268,15 +1294,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             num++;
             bParams.add(o2.sqlNodeProvisionState());
             break;
-          case BareMetalNode.VAR_nodeResourceClass:
-            o2.setNodeResourceClass(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
-            num++;
-            bParams.add(o2.sqlNodeResourceClass());
-            break;
           case BareMetalNode.VAR_sessionId:
             o2.setSessionId(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1285,6 +1302,15 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             bSql.append(BareMetalNode.VAR_sessionId + "=$" + num);
             num++;
             bParams.add(o2.sqlSessionId());
+            break;
+          case BareMetalNode.VAR_nodeResourceClass:
+            o2.setNodeResourceClass(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNodeResourceClass());
             break;
           case BareMetalNode.VAR_userKey:
             o2.setUserKey(jsonObject.getString(entityVar));
@@ -1405,88 +1431,94 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     LOG.debug(String.format("deleteBareMetalNode started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "DELETE"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-                apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listBareMetalNode.first());
-                apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "DELETE"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listBareMetalNode.getRequest().getRows());
+                  apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listBareMetalNode.first());
+                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
 
-                listDELETEBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-                  response200DELETEBareMetalNode(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("deleteBareMetalNode succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listDELETEBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
+                    response200DELETEBareMetalNode(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("deleteBareMetalNode succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteBareMetalNode failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("deleteBareMetalNode failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("deleteBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("deleteBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("deleteBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -1562,6 +1594,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -1756,62 +1789,68 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     LOG.debug(String.format("putimportBareMetalNode started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "PUT"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            ApiRequest apiRequest = new ApiRequest();
-            JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-            apiRequest.setRows(Long.valueOf(jsonArray.size()));
-            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-            apiRequest.setNumPATCH(0L);
-            apiRequest.initDeepApiRequest(siteRequest);
-            siteRequest.setApiRequest_(apiRequest);
-            eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
-            varsBareMetalNode(siteRequest).onSuccess(d -> {
-              listPUTImportBareMetalNode(apiRequest, siteRequest).onSuccess(e -> {
-                response200PUTImportBareMetalNode(siteRequest).onSuccess(response -> {
-                  LOG.debug(String.format("putimportBareMetalNode succeeded. "));
-                  eventHandler.handle(Future.succeededFuture(response));
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "PUT"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              ApiRequest apiRequest = new ApiRequest();
+              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+              apiRequest.setRows(Long.valueOf(jsonArray.size()));
+              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+              apiRequest.setNumPATCH(0L);
+              apiRequest.initDeepApiRequest(siteRequest);
+              siteRequest.setApiRequest_(apiRequest);
+              eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+              varsBareMetalNode(siteRequest).onSuccess(d -> {
+                listPUTImportBareMetalNode(apiRequest, siteRequest).onSuccess(e -> {
+                  response200PUTImportBareMetalNode(siteRequest).onSuccess(response -> {
+                    LOG.debug(String.format("putimportBareMetalNode succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
+                  }).onFailure(ex -> {
+                    LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+                    error(siteRequest, eventHandler, ex);
+                  });
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportBareMetalNode failed. "), ex);
                   error(siteRequest, eventHandler, ex);
@@ -1820,16 +1859,16 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
                 LOG.error(String.format("putimportBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("putimportBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("putimportBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -1908,6 +1947,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
           scopes.stream().map(v -> v.toString()).forEach(scope -> {
             siteRequest.addScopes(scope);
@@ -2080,55 +2120,61 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
   public void searchpageBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-              response200SearchPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("searchpageBareMetalNode succeeded. "));
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
+                response200SearchPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("searchpageBareMetalNode succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
               });
-            }).onFailure(ex -> {
-              LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2156,6 +2202,15 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
   }
 
   public void searchpageBareMetalNodePageInit(JsonObject ctx, BareMetalNodePage page, SearchList<BareMetalNode> listBareMetalNode, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/bare-metal-node"));
+    ctx.put("enUSUrlPage", String.format("%s%s", siteBaseUrl, "/en-us/search/bare-metal-node"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
     promise.complete();
   }
 
@@ -2250,56 +2305,62 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
   public void editpageBareMetalNode(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "GET"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "GET"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
-              response200EditPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                eventHandler.handle(Future.succeededFuture(response));
-                LOG.debug(String.format("editpageBareMetalNode succeeded. "));
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "GET"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+              )
+              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+              .sendForm(form)
+              .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchBareMetalNodeList(siteRequest, false, true, false).onSuccess(listBareMetalNode -> {
+                response200EditPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("editpageBareMetalNode succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              });
-            }).onFailure(ex -> {
-              LOG.error(String.format("editpageBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
             });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("editpageBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2327,6 +2388,15 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
   }
 
   public void editpageBareMetalNodePageInit(JsonObject ctx, BareMetalNodePage page, SearchList<BareMetalNode> listBareMetalNode, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/bare-metal-node"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
     promise.complete();
   }
 
@@ -2422,88 +2492,94 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     LOG.debug(String.format("deletefilterBareMetalNode started. "));
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-      String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-      MultiMap form = MultiMap.caseInsensitiveMultiMap();
-      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-      form.add("response_mode", "permissions");
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-      form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
-      if(nodeId != null)
-        form.add("permission", String.format("%s#%s", nodeId, "DELETE"));
-      webClient.post(
-          config.getInteger(ComputateConfigKeys.AUTH_PORT)
-          , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-          , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-          )
-          .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-          .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-          .sendForm(form)
-          .expecting(HttpResponseExpectation.SC_OK)
-      .onComplete(authorizationDecisionResponse -> {
-        try {
-          HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-          JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-          if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-            String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-            eventHandler.handle(Future.succeededFuture(
-              new ServiceResponse(403, "FORBIDDEN",
-                Buffer.buffer().appendString(
-                  new JsonObject()
-                    .put("errorCode", "403")
-                    .put("errorMessage", msg)
-                    .encodePrettily()
-                  ), MultiMap.caseInsensitiveMultiMap()
-              )
-            ));
-          } else {
-            siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-            List<String> scopes2 = siteRequest.getScopes();
-            searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
-              try {
-                ApiRequest apiRequest = new ApiRequest();
-                apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-                apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
-                apiRequest.setNumPATCH(0L);
-                apiRequest.initDeepApiRequest(siteRequest);
-                siteRequest.setApiRequest_(apiRequest);
-                if(apiRequest.getNumFound() == 1L)
-                  apiRequest.setOriginal(listBareMetalNode.first());
-                apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+      try {
+        siteRequest.setLang("enUS");
+        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
+        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PUT"));
+        if(nodeId != null)
+          form.add("permission", String.format("%s#%s", nodeId, "DELETE"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
+              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
+              eventHandler.handle(Future.succeededFuture(
+                new ServiceResponse(403, "FORBIDDEN",
+                  Buffer.buffer().appendString(
+                    new JsonObject()
+                      .put("errorCode", "403")
+                      .put("errorMessage", msg)
+                      .encodePrettily()
+                    ), MultiMap.caseInsensitiveMultiMap()
+                )
+              ));
+            } else {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchBareMetalNodeList(siteRequest, false, true, true).onSuccess(listBareMetalNode -> {
+                try {
+                  ApiRequest apiRequest = new ApiRequest();
+                  apiRequest.setRows(listBareMetalNode.getRequest().getRows());
+                  apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+                  apiRequest.setNumPATCH(0L);
+                  apiRequest.initDeepApiRequest(siteRequest);
+                  siteRequest.setApiRequest_(apiRequest);
+                  if(apiRequest.getNumFound() == 1L)
+                    apiRequest.setOriginal(listBareMetalNode.first());
+                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                  eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
 
-                listDELETEFilterBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-                  response200DELETEFilterBareMetalNode(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("deletefilterBareMetalNode succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
+                  listDELETEFilterBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
+                    response200DELETEFilterBareMetalNode(siteRequest).onSuccess(response -> {
+                      LOG.debug(String.format("deletefilterBareMetalNode succeeded. "));
+                      eventHandler.handle(Future.succeededFuture(response));
+                    }).onFailure(ex -> {
+                      LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+                      error(siteRequest, eventHandler, ex);
+                    });
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
                     error(siteRequest, eventHandler, ex);
                   });
-                }).onFailure(ex -> {
+                } catch(Exception ex) {
                   LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
                   error(siteRequest, eventHandler, ex);
-                });
-              } catch(Exception ex) {
+                }
+              }).onFailure(ex -> {
                 LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
-              }
-            }).onFailure(ex -> {
-              LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
-              error(siteRequest, eventHandler, ex);
-            });
+              });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+            error(null, eventHandler, ex);
           }
-        } catch(Exception ex) {
-          LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
-          error(null, eventHandler, ex);
-        }
-      });
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+        error(null, eventHandler, ex);
+      }
     }).onFailure(ex -> {
       if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
         try {
@@ -2579,6 +2655,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     Boolean classPublicRead = false;
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
+        siteRequest.setLang("enUS");
         siteRequest.setJsonObject(body);
         serviceRequest.getParams().getJsonObject("query").put("rows", 1);
         Optional.ofNullable(serviceRequest.getParams().getJsonArray("scopes")).ifPresent(scopes -> {
@@ -3091,7 +3168,7 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT leaseInfo, networkInfo, nodeId, created, nodeIsMaintenance, nodeLinks, archived, nodeName, nodePowerState, nodeProvisionState, nodeResourceClass, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM BareMetalNode WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT leaseInfo, networkInfo, created, nodeId, nodeIsMaintenance, archived, nodeLinks, nodeName, nodePowerState, nodeProvisionState, sessionId, nodeResourceClass, userKey, objectTitle, displayPage, editPage, userPage, download FROM BareMetalNode WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -3298,16 +3375,16 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 
       page.persistForClass(BareMetalNode.VAR_leaseInfo, BareMetalNode.staticSetLeaseInfo(siteRequest2, (String)result.get(BareMetalNode.VAR_leaseInfo)));
       page.persistForClass(BareMetalNode.VAR_networkInfo, BareMetalNode.staticSetNetworkInfo(siteRequest2, (String)result.get(BareMetalNode.VAR_networkInfo)));
-      page.persistForClass(BareMetalNode.VAR_nodeId, BareMetalNode.staticSetNodeId(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeId)));
       page.persistForClass(BareMetalNode.VAR_created, BareMetalNode.staticSetCreated(siteRequest2, (String)result.get(BareMetalNode.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      page.persistForClass(BareMetalNode.VAR_nodeId, BareMetalNode.staticSetNodeId(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeId)));
       page.persistForClass(BareMetalNode.VAR_nodeIsMaintenance, BareMetalNode.staticSetNodeIsMaintenance(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeIsMaintenance)));
-      page.persistForClass(BareMetalNode.VAR_nodeLinks, BareMetalNode.staticSetNodeLinks(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeLinks)));
       page.persistForClass(BareMetalNode.VAR_archived, BareMetalNode.staticSetArchived(siteRequest2, (String)result.get(BareMetalNode.VAR_archived)));
+      page.persistForClass(BareMetalNode.VAR_nodeLinks, BareMetalNode.staticSetNodeLinks(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeLinks)));
       page.persistForClass(BareMetalNode.VAR_nodeName, BareMetalNode.staticSetNodeName(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeName)));
       page.persistForClass(BareMetalNode.VAR_nodePowerState, BareMetalNode.staticSetNodePowerState(siteRequest2, (String)result.get(BareMetalNode.VAR_nodePowerState)));
       page.persistForClass(BareMetalNode.VAR_nodeProvisionState, BareMetalNode.staticSetNodeProvisionState(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeProvisionState)));
-      page.persistForClass(BareMetalNode.VAR_nodeResourceClass, BareMetalNode.staticSetNodeResourceClass(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeResourceClass)));
       page.persistForClass(BareMetalNode.VAR_sessionId, BareMetalNode.staticSetSessionId(siteRequest2, (String)result.get(BareMetalNode.VAR_sessionId)));
+      page.persistForClass(BareMetalNode.VAR_nodeResourceClass, BareMetalNode.staticSetNodeResourceClass(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeResourceClass)));
       page.persistForClass(BareMetalNode.VAR_userKey, BareMetalNode.staticSetUserKey(siteRequest2, (String)result.get(BareMetalNode.VAR_userKey)));
       page.persistForClass(BareMetalNode.VAR_objectTitle, BareMetalNode.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalNode.VAR_objectTitle)));
       page.persistForClass(BareMetalNode.VAR_displayPage, BareMetalNode.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalNode.VAR_displayPage)));

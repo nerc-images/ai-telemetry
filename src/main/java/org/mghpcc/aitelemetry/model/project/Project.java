@@ -21,7 +21,7 @@ import io.vertx.pgclient.data.Point;
 import io.vertx.pgclient.data.Polygon;
 
 /**
- * Order: 8
+ * Order: 10
  * Description: A research project using AI and GPUs
  * AName: an project
  * PluralName: projects
@@ -238,10 +238,36 @@ public class Project extends ProjectGen<BaseModel> {
    * DocValues: true
    * Persist: true
    * Facet: true
+   * DisplayName: pods terminating
+   * Description: The number of pods terminating in this project. 
+   * HtmRow: 4
+   * HtmCell: 1
+   **/
+  protected void _podTerminatingCount(Wrap<Integer> w) {
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: pods terminating
+   * Description: The names of the pods terminating in this project. 
+   * HtmRow: 4
+   * HtmCell: 2
+   **/
+  protected void _podsTerminating(List<String> l) {
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
    * DisplayName: Full PVCs count
    * Description: The number of persistent volume claims that are running out of disk space in this project. 
    * HtmRow: 4
-   * HtmCell: 2
+   * HtmCell: 3
    **/
   protected void _fullPvcsCount(Wrap<Integer> w) {
   }
@@ -254,7 +280,7 @@ public class Project extends ProjectGen<BaseModel> {
    * DisplayName: pods restarting
    * Description: The names of the persistent volume claims that are running out of disk space in this project. 
    * HtmRow: 4
-   * HtmCell: 3
+   * HtmCell: 4
    **/
   protected void _fullPvcs(List<String> l) {
   }
@@ -267,7 +293,7 @@ public class Project extends ProjectGen<BaseModel> {
    * DisplayName: namespace terminating
    * Description: Whether namespace is stuck in terminating status. 
    * HtmRow: 4
-   * HtmCell: 4
+   * HtmCell: 5
    **/
   protected void _namespaceTerminating(Wrap<Boolean> w) {
     w.o(false);

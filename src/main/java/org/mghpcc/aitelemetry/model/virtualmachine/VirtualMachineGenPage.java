@@ -531,13 +531,14 @@ public class VirtualMachineGenPage extends VirtualMachineGenPageGen<PageLayout> 
   }
 
   @Override
-  protected void _pageUri(Wrap<String> c) {
-    c.o("/en-us/search/vm");
+  protected void _pageUri(Wrap<String> w) {
+    if("enUS".equals(lang))
+      w.o("/en-us/search/vm");
   }
 
   @Override
-  protected void _apiUri(Wrap<String> c) {
-    c.o("/en-us/api/vm");
+  protected void _apiUri(Wrap<String> w) {
+    w.o("/en-us/api/vm");
   }
 
   @Override
