@@ -36,6 +36,9 @@ import io.vertx.pgclient.data.Polygon;
  * UserPageUri: /en-us/user/project/{projectResource}
  * ApiUri: /en-us/api/project
  * ApiMethod:
+ *   UserPage:
+ *     VarTemplateUri: statusPageTemplateUri
+ *     Scope: GETManager
  *   Search:
  *   GET:
  *   PATCH:
@@ -48,10 +51,12 @@ import io.vertx.pgclient.data.Polygon;
  *     GET:
  *   Admin:
  *     GET:
+ *     GETManager:
  *   SuperAdmin:
  *     POST:
  *     PATCH:
  *     GET:
+ *     GETManager:
  *     DELETE:
  *     Admin:
  *     SuperAdmin:
@@ -297,5 +302,24 @@ public class Project extends ProjectGen<BaseModel> {
    **/
   protected void _namespaceTerminating(Wrap<Boolean> w) {
     w.o(false);
+  }
+
+  /**
+   * DocValues: true
+   * Persist: true
+   * DisplayName: status page template URI
+   * Description: The relative path in the static content to the page template for this project. 
+   */
+  protected void _statusPageTemplateUri(Wrap<String> w) {
+  }
+
+  /**
+   * 
+   * HtmRow: 3
+   * HtmCell: 9
+   */
+  @Override
+  protected void _userPage(Wrap<String> w) {
+    super._userPage(w);
   }
 }

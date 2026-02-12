@@ -316,6 +316,17 @@ public class SitePage extends SitePageGen<BaseResult> {
 
   /**
    * {@inheritDoc}
+   * Stored: true
+   * Persist: true
+   * DisplayName: page template
+   * Description: The optional page template as a String of this page. 
+   * VarPageTemplate: true
+   */
+  protected void _pageTemplate(Wrap<String> w) {
+  }
+
+  /**
+   * {@inheritDoc}
    * DocValues: true
    * Persist: true
    * DisplayName: prerequisite article IDs

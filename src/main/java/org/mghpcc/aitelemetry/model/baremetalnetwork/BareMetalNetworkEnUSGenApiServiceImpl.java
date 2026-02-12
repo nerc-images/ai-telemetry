@@ -61,6 +61,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -245,7 +247,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -387,7 +389,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -531,7 +533,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHBareMetalNetwork failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -542,18 +544,18 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHBareMetalNetwork failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -643,42 +645,42 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
                   }
                   promise1.complete(bareMetalNetwork);
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalNetwork -> {
         Promise<BareMetalNetwork> promise2 = Promise.promise();
         refreshBareMetalNetwork(bareMetalNetwork).onSuccess(a -> {
           promise2.complete(bareMetalNetwork);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalNetwork -> {
         promise.complete(bareMetalNetwork);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchBareMetalNetworkFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1074,15 +1076,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise.complete(o3);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPATCHBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPATCHBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPATCHBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1102,7 +1104,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1169,6 +1171,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -1300,29 +1303,29 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
                   indexBareMetalNetwork(bareMetalNetwork).onSuccess(o2 -> {
                     promise1.complete(bareMetalNetwork);
                   }).onFailure(ex -> {
-                    promise1.fail(ex);
+                    promise1.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalNetwork -> {
         Promise<BareMetalNetwork> promise2 = Promise.promise();
         refreshBareMetalNetwork(bareMetalNetwork).onSuccess(a -> {
@@ -1336,10 +1339,10 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             promise2.complete(bareMetalNetwork);
           } catch(Exception ex) {
             LOG.error(String.format("postBareMetalNetworkFuture failed. "), ex);
-            promise2.fail(ex);
+            promise2.tryFail(ex);
           }
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalNetwork -> {
@@ -1353,14 +1356,14 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise.complete(bareMetalNetwork);
         } catch(Exception ex) {
           LOG.error(String.format("postBareMetalNetworkFuture failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postBareMetalNetworkFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1815,15 +1818,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise.complete(o2);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPOSTBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPOSTBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPOSTBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1844,7 +1847,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1987,7 +1990,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEBareMetalNetwork failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -1998,18 +2001,18 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEBareMetalNetwork failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2093,39 +2096,39 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalNetwork -> {
         Promise<BareMetalNetwork> promise2 = Promise.promise();
         refreshBareMetalNetwork(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalNetwork -> {
         promise.complete(bareMetalNetwork);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteBareMetalNetworkFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2174,15 +2177,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2202,7 +2205,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2349,7 +2352,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportBareMetalNetwork failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -2358,11 +2361,11 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2534,7 +2537,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2639,19 +2642,75 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     promise.complete();
   }
 
-  public String templateSearchPageBareMetalNetwork(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageBareMetalNetwork(ServiceRequest serviceRequest, BareMetalNetwork result) {
     return "en-us/search/bare-metal-network/BareMetalNetworkSearchPage.htm";
+  }
+  public void templateSearchPageBareMetalNetwork(JsonObject ctx, BareMetalNetworkPage page, SearchList<BareMetalNetwork> listBareMetalNetwork, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listBareMetalNetwork.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      BareMetalNetwork result = listBareMetalNetwork.first();
+      String pageTemplateUri = templateUriSearchPageBareMetalNetwork(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageBareMetalNetwork failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageBareMetalNetwork(SearchList<BareMetalNetwork> listBareMetalNetwork) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listBareMetalNetwork.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageBareMetalNetwork(siteRequest.getServiceRequest());
-      if(listBareMetalNetwork.size() == 0)
-        pageTemplateUri = templateSearchPageBareMetalNetwork(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       BareMetalNetworkPage page = new BareMetalNetworkPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2670,22 +2729,32 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           Promise<Void> promise1 = Promise.promise();
           searchpageBareMetalNetworkPageInit(ctx, page, listBareMetalNetwork, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageBareMetalNetwork(ctx, page, listBareMetalNetwork, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageBareMetalNetwork failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2825,19 +2894,75 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     promise.complete();
   }
 
-  public String templateEditPageBareMetalNetwork(ServiceRequest serviceRequest) {
+  public String templateUriEditPageBareMetalNetwork(ServiceRequest serviceRequest, BareMetalNetwork result) {
     return "en-us/edit/bare-metal-network/BareMetalNetworkEditPage.htm";
+  }
+  public void templateEditPageBareMetalNetwork(JsonObject ctx, BareMetalNetworkPage page, SearchList<BareMetalNetwork> listBareMetalNetwork, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listBareMetalNetwork.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      BareMetalNetwork result = listBareMetalNetwork.first();
+      String pageTemplateUri = templateUriEditPageBareMetalNetwork(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageBareMetalNetwork failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageBareMetalNetwork(SearchList<BareMetalNetwork> listBareMetalNetwork) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listBareMetalNetwork.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageBareMetalNetwork(siteRequest.getServiceRequest());
-      if(listBareMetalNetwork.size() == 0)
-        pageTemplateUri = templateSearchPageBareMetalNetwork(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       BareMetalNetworkPage page = new BareMetalNetworkPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2856,22 +2981,32 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           Promise<Void> promise1 = Promise.promise();
           editpageBareMetalNetworkPageInit(ctx, page, listBareMetalNetwork, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageBareMetalNetwork(ctx, page, listBareMetalNetwork, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageBareMetalNetwork failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3048,7 +3183,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterBareMetalNetwork failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -3059,18 +3194,18 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterBareMetalNetwork failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -3154,39 +3289,39 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalNetwork -> {
         Promise<BareMetalNetwork> promise2 = Promise.promise();
         refreshBareMetalNetwork(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalNetwork -> {
         promise.complete(bareMetalNetwork);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterBareMetalNetworkFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3235,15 +3370,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEFilterBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEFilterBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEFilterBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3263,7 +3398,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3290,11 +3425,11 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error("createBareMetalNetwork failed. ", ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("createBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3360,13 +3495,13 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3569,18 +3704,18 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchBareMetalNetwork failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3615,20 +3750,20 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistBareMetalNetwork failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistBareMetalNetwork failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("persistBareMetalNetwork failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("persistBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3676,11 +3811,11 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexBareMetalNetwork failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3713,15 +3848,15 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexBareMetalNetwork failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexBareMetalNetwork failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3749,7 +3884,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
           params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
           params.put("form", new JsonObject());
           params.put("path", new JsonObject());
-          params.put("scopes", new JsonArray().add("GET").add("PATCH"));
+          params.put("scopes", siteRequest.getScopes());
           JsonObject query = new JsonObject();
           Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
           Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -3769,95 +3904,95 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             if(statusCode.equals(200))
               promise.complete();
             else
-              promise.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+              promise.tryFail(new RuntimeException(responseMessage.getString("statusMessage")));
           }).onFailure(ex -> {
             LOG.error("Refresh relations failed. ", ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
           LOG.error("Refresh relations failed. ", ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } else {
         promise.complete();
       }
     } catch(Exception ex) {
       LOG.error(String.format("refreshBareMetalNetwork failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      BareMetalNetwork page = new BareMetalNetwork();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      BareMetalNetwork o = new BareMetalNetwork();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(BareMetalNetwork.VAR_id, BareMetalNetwork.staticSetId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_id)));
-      page.persistForClass(BareMetalNetwork.VAR_name, BareMetalNetwork.staticSetName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_name)));
-      page.persistForClass(BareMetalNetwork.VAR_created, BareMetalNetwork.staticSetCreated(siteRequest2, (String)result.get(BareMetalNetwork.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(BareMetalNetwork.VAR_description, BareMetalNetwork.staticSetDescription(siteRequest2, (String)result.get(BareMetalNetwork.VAR_description)));
-      page.persistForClass(BareMetalNetwork.VAR_availabilityZoneHints, BareMetalNetwork.staticSetAvailabilityZoneHints(siteRequest2, (String)result.get(BareMetalNetwork.VAR_availabilityZoneHints)));
-      page.persistForClass(BareMetalNetwork.VAR_archived, BareMetalNetwork.staticSetArchived(siteRequest2, (String)result.get(BareMetalNetwork.VAR_archived)));
-      page.persistForClass(BareMetalNetwork.VAR_availabilityZones, BareMetalNetwork.staticSetAvailabilityZones(siteRequest2, (String)result.get(BareMetalNetwork.VAR_availabilityZones)));
-      page.persistForClass(BareMetalNetwork.VAR_createdAt, BareMetalNetwork.staticSetCreatedAt(siteRequest2, (String)result.get(BareMetalNetwork.VAR_createdAt), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(BareMetalNetwork.VAR_dnsDomain, BareMetalNetwork.staticSetDnsDomain(siteRequest2, (String)result.get(BareMetalNetwork.VAR_dnsDomain)));
-      page.persistForClass(BareMetalNetwork.VAR_mtu, BareMetalNetwork.staticSetMtu(siteRequest2, (String)result.get(BareMetalNetwork.VAR_mtu)));
-      page.persistForClass(BareMetalNetwork.VAR_sessionId, BareMetalNetwork.staticSetSessionId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_sessionId)));
-      page.persistForClass(BareMetalNetwork.VAR_projectId, BareMetalNetwork.staticSetProjectId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_projectId)));
-      page.persistForClass(BareMetalNetwork.VAR_userKey, BareMetalNetwork.staticSetUserKey(siteRequest2, (String)result.get(BareMetalNetwork.VAR_userKey)));
-      page.persistForClass(BareMetalNetwork.VAR_providerNetworkType, BareMetalNetwork.staticSetProviderNetworkType(siteRequest2, (String)result.get(BareMetalNetwork.VAR_providerNetworkType)));
-      page.persistForClass(BareMetalNetwork.VAR_providerPhysicalNetwork, BareMetalNetwork.staticSetProviderPhysicalNetwork(siteRequest2, (String)result.get(BareMetalNetwork.VAR_providerPhysicalNetwork)));
-      page.persistForClass(BareMetalNetwork.VAR_providerSegmentationId, BareMetalNetwork.staticSetProviderSegmentationId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_providerSegmentationId)));
-      page.persistForClass(BareMetalNetwork.VAR_objectTitle, BareMetalNetwork.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalNetwork.VAR_objectTitle)));
-      page.persistForClass(BareMetalNetwork.VAR_qosPolicyId, BareMetalNetwork.staticSetQosPolicyId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_qosPolicyId)));
-      page.persistForClass(BareMetalNetwork.VAR_displayPage, BareMetalNetwork.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_displayPage)));
-      page.persistForClass(BareMetalNetwork.VAR_revisionNumber, BareMetalNetwork.staticSetRevisionNumber(siteRequest2, (String)result.get(BareMetalNetwork.VAR_revisionNumber)));
-      page.persistForClass(BareMetalNetwork.VAR_editPage, BareMetalNetwork.staticSetEditPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_editPage)));
-      page.persistForClass(BareMetalNetwork.VAR_status, BareMetalNetwork.staticSetStatus(siteRequest2, (String)result.get(BareMetalNetwork.VAR_status)));
-      page.persistForClass(BareMetalNetwork.VAR_userPage, BareMetalNetwork.staticSetUserPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_userPage)));
-      page.persistForClass(BareMetalNetwork.VAR_subnetIds, BareMetalNetwork.staticSetSubnetIds(siteRequest2, (String)result.get(BareMetalNetwork.VAR_subnetIds)));
-      page.persistForClass(BareMetalNetwork.VAR_download, BareMetalNetwork.staticSetDownload(siteRequest2, (String)result.get(BareMetalNetwork.VAR_download)));
-      page.persistForClass(BareMetalNetwork.VAR_tags, BareMetalNetwork.staticSetTags(siteRequest2, (String)result.get(BareMetalNetwork.VAR_tags)));
-      page.persistForClass(BareMetalNetwork.VAR_tenantId, BareMetalNetwork.staticSetTenantId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_tenantId)));
-      page.persistForClass(BareMetalNetwork.VAR_updatedAt, BareMetalNetwork.staticSetUpdatedAt(siteRequest2, (String)result.get(BareMetalNetwork.VAR_updatedAt), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(BareMetalNetwork.VAR_isAdminStateUp, BareMetalNetwork.staticSetIsAdminStateUp(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isAdminStateUp)));
-      page.persistForClass(BareMetalNetwork.VAR_isDefault, BareMetalNetwork.staticSetIsDefault(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isDefault)));
-      page.persistForClass(BareMetalNetwork.VAR_isPortSecurityEnabled, BareMetalNetwork.staticSetIsPortSecurityEnabled(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isPortSecurityEnabled)));
-      page.persistForClass(BareMetalNetwork.VAR_isRouterExternal, BareMetalNetwork.staticSetIsRouterExternal(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isRouterExternal)));
-      page.persistForClass(BareMetalNetwork.VAR_isShared, BareMetalNetwork.staticSetIsShared(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isShared)));
-      page.persistForClass(BareMetalNetwork.VAR_isVlanQueing, BareMetalNetwork.staticSetIsVlanQueing(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isVlanQueing)));
-      page.persistForClass(BareMetalNetwork.VAR_isVlanTransparent, BareMetalNetwork.staticSetIsVlanTransparent(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isVlanTransparent)));
-      page.persistForClass(BareMetalNetwork.VAR_l2Adjacency, BareMetalNetwork.staticSetL2Adjacency(siteRequest2, (String)result.get(BareMetalNetwork.VAR_l2Adjacency)));
-      page.persistForClass(BareMetalNetwork.VAR_locationCloud, BareMetalNetwork.staticSetLocationCloud(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationCloud)));
-      page.persistForClass(BareMetalNetwork.VAR_locationProjectDomainId, BareMetalNetwork.staticSetLocationProjectDomainId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectDomainId)));
-      page.persistForClass(BareMetalNetwork.VAR_locationProjectDomainName, BareMetalNetwork.staticSetLocationProjectDomainName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectDomainName)));
-      page.persistForClass(BareMetalNetwork.VAR_locationProjectId, BareMetalNetwork.staticSetLocationProjectId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectId)));
-      page.persistForClass(BareMetalNetwork.VAR_locationProjectName, BareMetalNetwork.staticSetLocationProjectName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectName)));
-      page.persistForClass(BareMetalNetwork.VAR_locationRegionName, BareMetalNetwork.staticSetLocationRegionName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationRegionName)));
-      page.persistForClass(BareMetalNetwork.VAR_locationZone, BareMetalNetwork.staticSetLocationZone(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationZone)));
+      o.persistForClass(BareMetalNetwork.VAR_id, BareMetalNetwork.staticSetId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_id)));
+      o.persistForClass(BareMetalNetwork.VAR_name, BareMetalNetwork.staticSetName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_name)));
+      o.persistForClass(BareMetalNetwork.VAR_created, BareMetalNetwork.staticSetCreated(siteRequest2, (String)result.get(BareMetalNetwork.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(BareMetalNetwork.VAR_description, BareMetalNetwork.staticSetDescription(siteRequest2, (String)result.get(BareMetalNetwork.VAR_description)));
+      o.persistForClass(BareMetalNetwork.VAR_availabilityZoneHints, BareMetalNetwork.staticSetAvailabilityZoneHints(siteRequest2, (String)result.get(BareMetalNetwork.VAR_availabilityZoneHints)));
+      o.persistForClass(BareMetalNetwork.VAR_archived, BareMetalNetwork.staticSetArchived(siteRequest2, (String)result.get(BareMetalNetwork.VAR_archived)));
+      o.persistForClass(BareMetalNetwork.VAR_availabilityZones, BareMetalNetwork.staticSetAvailabilityZones(siteRequest2, (String)result.get(BareMetalNetwork.VAR_availabilityZones)));
+      o.persistForClass(BareMetalNetwork.VAR_createdAt, BareMetalNetwork.staticSetCreatedAt(siteRequest2, (String)result.get(BareMetalNetwork.VAR_createdAt), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(BareMetalNetwork.VAR_dnsDomain, BareMetalNetwork.staticSetDnsDomain(siteRequest2, (String)result.get(BareMetalNetwork.VAR_dnsDomain)));
+      o.persistForClass(BareMetalNetwork.VAR_mtu, BareMetalNetwork.staticSetMtu(siteRequest2, (String)result.get(BareMetalNetwork.VAR_mtu)));
+      o.persistForClass(BareMetalNetwork.VAR_sessionId, BareMetalNetwork.staticSetSessionId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_sessionId)));
+      o.persistForClass(BareMetalNetwork.VAR_projectId, BareMetalNetwork.staticSetProjectId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_projectId)));
+      o.persistForClass(BareMetalNetwork.VAR_userKey, BareMetalNetwork.staticSetUserKey(siteRequest2, (String)result.get(BareMetalNetwork.VAR_userKey)));
+      o.persistForClass(BareMetalNetwork.VAR_providerNetworkType, BareMetalNetwork.staticSetProviderNetworkType(siteRequest2, (String)result.get(BareMetalNetwork.VAR_providerNetworkType)));
+      o.persistForClass(BareMetalNetwork.VAR_providerPhysicalNetwork, BareMetalNetwork.staticSetProviderPhysicalNetwork(siteRequest2, (String)result.get(BareMetalNetwork.VAR_providerPhysicalNetwork)));
+      o.persistForClass(BareMetalNetwork.VAR_providerSegmentationId, BareMetalNetwork.staticSetProviderSegmentationId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_providerSegmentationId)));
+      o.persistForClass(BareMetalNetwork.VAR_objectTitle, BareMetalNetwork.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalNetwork.VAR_objectTitle)));
+      o.persistForClass(BareMetalNetwork.VAR_qosPolicyId, BareMetalNetwork.staticSetQosPolicyId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_qosPolicyId)));
+      o.persistForClass(BareMetalNetwork.VAR_displayPage, BareMetalNetwork.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_displayPage)));
+      o.persistForClass(BareMetalNetwork.VAR_revisionNumber, BareMetalNetwork.staticSetRevisionNumber(siteRequest2, (String)result.get(BareMetalNetwork.VAR_revisionNumber)));
+      o.persistForClass(BareMetalNetwork.VAR_editPage, BareMetalNetwork.staticSetEditPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_editPage)));
+      o.persistForClass(BareMetalNetwork.VAR_status, BareMetalNetwork.staticSetStatus(siteRequest2, (String)result.get(BareMetalNetwork.VAR_status)));
+      o.persistForClass(BareMetalNetwork.VAR_userPage, BareMetalNetwork.staticSetUserPage(siteRequest2, (String)result.get(BareMetalNetwork.VAR_userPage)));
+      o.persistForClass(BareMetalNetwork.VAR_subnetIds, BareMetalNetwork.staticSetSubnetIds(siteRequest2, (String)result.get(BareMetalNetwork.VAR_subnetIds)));
+      o.persistForClass(BareMetalNetwork.VAR_download, BareMetalNetwork.staticSetDownload(siteRequest2, (String)result.get(BareMetalNetwork.VAR_download)));
+      o.persistForClass(BareMetalNetwork.VAR_tags, BareMetalNetwork.staticSetTags(siteRequest2, (String)result.get(BareMetalNetwork.VAR_tags)));
+      o.persistForClass(BareMetalNetwork.VAR_tenantId, BareMetalNetwork.staticSetTenantId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_tenantId)));
+      o.persistForClass(BareMetalNetwork.VAR_updatedAt, BareMetalNetwork.staticSetUpdatedAt(siteRequest2, (String)result.get(BareMetalNetwork.VAR_updatedAt), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(BareMetalNetwork.VAR_isAdminStateUp, BareMetalNetwork.staticSetIsAdminStateUp(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isAdminStateUp)));
+      o.persistForClass(BareMetalNetwork.VAR_isDefault, BareMetalNetwork.staticSetIsDefault(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isDefault)));
+      o.persistForClass(BareMetalNetwork.VAR_isPortSecurityEnabled, BareMetalNetwork.staticSetIsPortSecurityEnabled(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isPortSecurityEnabled)));
+      o.persistForClass(BareMetalNetwork.VAR_isRouterExternal, BareMetalNetwork.staticSetIsRouterExternal(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isRouterExternal)));
+      o.persistForClass(BareMetalNetwork.VAR_isShared, BareMetalNetwork.staticSetIsShared(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isShared)));
+      o.persistForClass(BareMetalNetwork.VAR_isVlanQueing, BareMetalNetwork.staticSetIsVlanQueing(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isVlanQueing)));
+      o.persistForClass(BareMetalNetwork.VAR_isVlanTransparent, BareMetalNetwork.staticSetIsVlanTransparent(siteRequest2, (String)result.get(BareMetalNetwork.VAR_isVlanTransparent)));
+      o.persistForClass(BareMetalNetwork.VAR_l2Adjacency, BareMetalNetwork.staticSetL2Adjacency(siteRequest2, (String)result.get(BareMetalNetwork.VAR_l2Adjacency)));
+      o.persistForClass(BareMetalNetwork.VAR_locationCloud, BareMetalNetwork.staticSetLocationCloud(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationCloud)));
+      o.persistForClass(BareMetalNetwork.VAR_locationProjectDomainId, BareMetalNetwork.staticSetLocationProjectDomainId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectDomainId)));
+      o.persistForClass(BareMetalNetwork.VAR_locationProjectDomainName, BareMetalNetwork.staticSetLocationProjectDomainName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectDomainName)));
+      o.persistForClass(BareMetalNetwork.VAR_locationProjectId, BareMetalNetwork.staticSetLocationProjectId(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectId)));
+      o.persistForClass(BareMetalNetwork.VAR_locationProjectName, BareMetalNetwork.staticSetLocationProjectName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationProjectName)));
+      o.persistForClass(BareMetalNetwork.VAR_locationRegionName, BareMetalNetwork.staticSetLocationRegionName(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationRegionName)));
+      o.persistForClass(BareMetalNetwork.VAR_locationZone, BareMetalNetwork.staticSetLocationZone(siteRequest2, (String)result.get(BareMetalNetwork.VAR_locationZone)));
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }

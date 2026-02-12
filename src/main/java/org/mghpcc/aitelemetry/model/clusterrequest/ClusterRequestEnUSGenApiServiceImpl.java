@@ -65,6 +65,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,7 +252,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -393,7 +395,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -540,7 +542,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHClusterRequest failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -551,18 +553,18 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHClusterRequest failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -652,42 +654,42 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   }
                   promise1.complete(clusterRequest);
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(clusterRequest -> {
         Promise<ClusterRequest> promise2 = Promise.promise();
         refreshClusterRequest(clusterRequest).onSuccess(a -> {
           promise2.complete(clusterRequest);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(clusterRequest -> {
         promise.complete(clusterRequest);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchClusterRequestFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -733,10 +735,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_clusterTemplateTitle, ClusterTemplate.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -747,7 +749,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 sql(siteRequest).update(ClusterRequest.class, pk).setToNull(ClusterRequest.VAR_clusterTemplateTitle, ClusterTemplate.class, null).onSuccess(a -> {
                   promise2.complete();
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -772,10 +774,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_userId, SiteUser.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -786,7 +788,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 sql(siteRequest).update(ClusterRequest.class, pk).setToNull(ClusterRequest.VAR_userId, SiteUser.class, null).onSuccess(a -> {
                   promise2.complete();
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -881,15 +883,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(o3);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPATCHClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPATCHClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPATCHClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -909,7 +911,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -979,6 +981,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -1110,29 +1113,29 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   indexClusterRequest(clusterRequest).onSuccess(o2 -> {
                     promise1.complete(clusterRequest);
                   }).onFailure(ex -> {
-                    promise1.fail(ex);
+                    promise1.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(clusterRequest -> {
         Promise<ClusterRequest> promise2 = Promise.promise();
         refreshClusterRequest(clusterRequest).onSuccess(a -> {
@@ -1146,10 +1149,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise2.complete(clusterRequest);
           } catch(Exception ex) {
             LOG.error(String.format("postClusterRequestFuture failed. "), ex);
-            promise2.fail(ex);
+            promise2.tryFail(ex);
           }
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(clusterRequest -> {
@@ -1163,14 +1166,14 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(clusterRequest);
         } catch(Exception ex) {
           LOG.error(String.format("postClusterRequestFuture failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postClusterRequestFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1235,10 +1238,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_clusterTemplateTitle, ClusterTemplate.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1264,10 +1267,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_userId, SiteUser.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1368,15 +1371,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(o2);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPOSTClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPOSTClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPOSTClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1397,7 +1400,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1543,7 +1546,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEClusterRequest failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -1554,18 +1557,18 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEClusterRequest failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -1649,39 +1652,39 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(clusterRequest -> {
         Promise<ClusterRequest> promise2 = Promise.promise();
         refreshClusterRequest(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(clusterRequest -> {
         promise.complete(clusterRequest);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteClusterRequestFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1720,10 +1723,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_clusterTemplateTitle, ClusterTemplate.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1740,10 +1743,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_userId, SiteUser.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1770,15 +1773,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1798,7 +1801,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1948,7 +1951,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportClusterRequest failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -1957,11 +1960,11 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2133,7 +2136,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2239,19 +2242,75 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     promise.complete();
   }
 
-  public String templateSearchPageClusterRequest(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageClusterRequest(ServiceRequest serviceRequest, ClusterRequest result) {
     return "en-us/search/cluster-request/ClusterRequestSearchPage.htm";
+  }
+  public void templateSearchPageClusterRequest(JsonObject ctx, ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listClusterRequest.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      ClusterRequest result = listClusterRequest.first();
+      String pageTemplateUri = templateUriSearchPageClusterRequest(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageClusterRequest failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageClusterRequest(SearchList<ClusterRequest> listClusterRequest) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listClusterRequest.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageClusterRequest(siteRequest.getServiceRequest());
-      if(listClusterRequest.size() == 0)
-        pageTemplateUri = templateSearchPageClusterRequest(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       ClusterRequestPage page = new ClusterRequestPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2270,22 +2329,32 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           searchpageClusterRequestPageInit(ctx, page, listClusterRequest, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageClusterRequest(ctx, page, listClusterRequest, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageClusterRequest failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2426,19 +2495,75 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     promise.complete();
   }
 
-  public String templateEditPageClusterRequest(ServiceRequest serviceRequest) {
+  public String templateUriEditPageClusterRequest(ServiceRequest serviceRequest, ClusterRequest result) {
     return "en-us/edit/cluster-request/ClusterRequestEditPage.htm";
+  }
+  public void templateEditPageClusterRequest(JsonObject ctx, ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listClusterRequest.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      ClusterRequest result = listClusterRequest.first();
+      String pageTemplateUri = templateUriEditPageClusterRequest(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageClusterRequest failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageClusterRequest(SearchList<ClusterRequest> listClusterRequest) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listClusterRequest.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageClusterRequest(siteRequest.getServiceRequest());
-      if(listClusterRequest.size() == 0)
-        pageTemplateUri = templateSearchPageClusterRequest(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       ClusterRequestPage page = new ClusterRequestPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2457,22 +2582,32 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           editpageClusterRequestPageInit(ctx, page, listClusterRequest, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageClusterRequest(ctx, page, listClusterRequest, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageClusterRequest failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2613,19 +2748,75 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     promise.complete();
   }
 
-  public String templateUserPageClusterRequest(ServiceRequest serviceRequest) {
+  public String templateUriUserPageClusterRequest(ServiceRequest serviceRequest, ClusterRequest result) {
     return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
+  }
+  public void templateUserPageClusterRequest(JsonObject ctx, ClusterRequestPage page, SearchList<ClusterRequest> listClusterRequest, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listClusterRequest.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      ClusterRequest result = listClusterRequest.first();
+      String pageTemplateUri = templateUriUserPageClusterRequest(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateUserPageClusterRequest failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200UserPageClusterRequest(SearchList<ClusterRequest> listClusterRequest) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listClusterRequest.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateUserPageClusterRequest(siteRequest.getServiceRequest());
-      if(listClusterRequest.size() == 0)
-        pageTemplateUri = templateSearchPageClusterRequest(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       ClusterRequestPage page = new ClusterRequestPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2644,22 +2835,32 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           userpageClusterRequestPageInit(ctx, page, listClusterRequest, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateUserPageClusterRequest(ctx, page, listClusterRequest, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200UserPageClusterRequest failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200UserPageClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200UserPageClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2839,7 +3040,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterClusterRequest failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -2850,18 +3051,18 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterClusterRequest failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2945,39 +3146,39 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(clusterRequest -> {
         Promise<ClusterRequest> promise2 = Promise.promise();
         refreshClusterRequest(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(clusterRequest -> {
         promise.complete(clusterRequest);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterClusterRequestFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3016,10 +3217,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_clusterTemplateTitle, ClusterTemplate.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -3036,10 +3237,10 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(ClusterRequest.class, pk).set(ClusterRequest.VAR_userId, SiteUser.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -3066,15 +3267,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEFilterClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEFilterClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEFilterClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3094,7 +3295,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3121,11 +3322,11 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error("createClusterRequest failed. ", ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("createClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3191,13 +3392,13 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3405,18 +3606,18 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchClusterRequest failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3451,20 +3652,20 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistClusterRequest failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("persistClusterRequest failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("persistClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3487,16 +3688,16 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete();
         } catch(Exception ex) {
           LOG.error(String.format("relateClusterRequest failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("relateClusterRequest failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("relateClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3538,11 +3739,11 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexClusterRequest failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3575,15 +3776,15 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexClusterRequest failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexClusterRequest failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3616,6 +3817,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 if(o2 != null) {
                   JsonObject params = new JsonObject();
                   params.put("body", new JsonObject());
+                  params.put("scopes", siteRequest.getScopes());
                   params.put("cookie", new JsonObject());
                   params.put("path", new JsonObject());
                   params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
@@ -3651,6 +3853,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 if(o2 != null) {
                   JsonObject params = new JsonObject();
                   params.put("body", new JsonObject());
+                  params.put("scopes", siteRequest.getScopes());
                   params.put("cookie", new JsonObject());
                   params.put("path", new JsonObject());
                   params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
@@ -3681,7 +3884,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
           params.put("form", new JsonObject());
           params.put("path", new JsonObject());
-          params.put("scopes", new JsonArray().add("GET").add("PATCH"));
+          params.put("scopes", siteRequest.getScopes());
           JsonObject query = new JsonObject();
           Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
           Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -3701,64 +3904,64 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             if(statusCode.equals(200))
               promise.complete();
             else
-              promise.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+              promise.tryFail(new RuntimeException(responseMessage.getString("statusMessage")));
           }).onFailure(ex -> {
             LOG.error("Refresh relations failed. ", ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
           LOG.error("Refresh relations failed. ", ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } else {
         promise.complete();
       }
     } catch(Exception ex) {
       LOG.error(String.format("refreshClusterRequest failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      ClusterRequest page = new ClusterRequest();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      ClusterRequest o = new ClusterRequest();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(ClusterRequest.VAR_name, ClusterRequest.staticSetName(siteRequest2, (String)result.get(ClusterRequest.VAR_name)));
-      page.persistForClass(ClusterRequest.VAR_clusterTemplateTitle, ClusterRequest.staticSetClusterTemplateTitle(siteRequest2, (String)result.get(ClusterRequest.VAR_clusterTemplateTitle)));
-      page.persistForClass(ClusterRequest.VAR_created, ClusterRequest.staticSetCreated(siteRequest2, (String)result.get(ClusterRequest.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(ClusterRequest.VAR_userId, ClusterRequest.staticSetUserId(siteRequest2, (String)result.get(ClusterRequest.VAR_userId)));
-      page.persistForClass(ClusterRequest.VAR_archived, ClusterRequest.staticSetArchived(siteRequest2, (String)result.get(ClusterRequest.VAR_archived)));
-      page.persistForClass(ClusterRequest.VAR_sessionId, ClusterRequest.staticSetSessionId(siteRequest2, (String)result.get(ClusterRequest.VAR_sessionId)));
-      page.persistForClass(ClusterRequest.VAR_userKey, ClusterRequest.staticSetUserKey(siteRequest2, (String)result.get(ClusterRequest.VAR_userKey)));
-      page.persistForClass(ClusterRequest.VAR_objectTitle, ClusterRequest.staticSetObjectTitle(siteRequest2, (String)result.get(ClusterRequest.VAR_objectTitle)));
-      page.persistForClass(ClusterRequest.VAR_displayPage, ClusterRequest.staticSetDisplayPage(siteRequest2, (String)result.get(ClusterRequest.VAR_displayPage)));
-      page.persistForClass(ClusterRequest.VAR_editPage, ClusterRequest.staticSetEditPage(siteRequest2, (String)result.get(ClusterRequest.VAR_editPage)));
-      page.persistForClass(ClusterRequest.VAR_userPage, ClusterRequest.staticSetUserPage(siteRequest2, (String)result.get(ClusterRequest.VAR_userPage)));
-      page.persistForClass(ClusterRequest.VAR_download, ClusterRequest.staticSetDownload(siteRequest2, (String)result.get(ClusterRequest.VAR_download)));
+      o.persistForClass(ClusterRequest.VAR_name, ClusterRequest.staticSetName(siteRequest2, (String)result.get(ClusterRequest.VAR_name)));
+      o.persistForClass(ClusterRequest.VAR_clusterTemplateTitle, ClusterRequest.staticSetClusterTemplateTitle(siteRequest2, (String)result.get(ClusterRequest.VAR_clusterTemplateTitle)));
+      o.persistForClass(ClusterRequest.VAR_created, ClusterRequest.staticSetCreated(siteRequest2, (String)result.get(ClusterRequest.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(ClusterRequest.VAR_userId, ClusterRequest.staticSetUserId(siteRequest2, (String)result.get(ClusterRequest.VAR_userId)));
+      o.persistForClass(ClusterRequest.VAR_archived, ClusterRequest.staticSetArchived(siteRequest2, (String)result.get(ClusterRequest.VAR_archived)));
+      o.persistForClass(ClusterRequest.VAR_sessionId, ClusterRequest.staticSetSessionId(siteRequest2, (String)result.get(ClusterRequest.VAR_sessionId)));
+      o.persistForClass(ClusterRequest.VAR_userKey, ClusterRequest.staticSetUserKey(siteRequest2, (String)result.get(ClusterRequest.VAR_userKey)));
+      o.persistForClass(ClusterRequest.VAR_objectTitle, ClusterRequest.staticSetObjectTitle(siteRequest2, (String)result.get(ClusterRequest.VAR_objectTitle)));
+      o.persistForClass(ClusterRequest.VAR_displayPage, ClusterRequest.staticSetDisplayPage(siteRequest2, (String)result.get(ClusterRequest.VAR_displayPage)));
+      o.persistForClass(ClusterRequest.VAR_editPage, ClusterRequest.staticSetEditPage(siteRequest2, (String)result.get(ClusterRequest.VAR_editPage)));
+      o.persistForClass(ClusterRequest.VAR_userPage, ClusterRequest.staticSetUserPage(siteRequest2, (String)result.get(ClusterRequest.VAR_userPage)));
+      o.persistForClass(ClusterRequest.VAR_download, ClusterRequest.staticSetDownload(siteRequest2, (String)result.get(ClusterRequest.VAR_download)));
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }

@@ -61,6 +61,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -272,7 +274,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -441,7 +443,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -612,7 +614,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHHub failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -623,18 +625,18 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHHub failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -724,42 +726,42 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                   }
                   promise1.complete(hub);
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(hub -> {
         Promise<Hub> promise2 = Promise.promise();
         refreshHub(hub).onSuccess(a -> {
           promise2.complete(hub);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(hub -> {
         promise.complete(hub);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchHubFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -801,14 +803,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               num++;
               bParams.add(o2.sqlHubId());
             break;
-          case "setCreated":
-              o2.setCreated(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Hub.VAR_created + "=$" + num);
-              num++;
-              bParams.add(o2.sqlCreated());
-            break;
           case "setHubResource":
               o2.setHubResource(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -816,6 +810,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               bSql.append(Hub.VAR_hubResource + "=$" + num);
               num++;
               bParams.add(o2.sqlHubResource());
+            break;
+          case "setCreated":
+              o2.setCreated(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Hub.VAR_created + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCreated());
             break;
           case "setPageId":
               o2.setPageId(jsonObject.getString(entityVar));
@@ -825,14 +827,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               num++;
               bParams.add(o2.sqlPageId());
             break;
-          case "setArchived":
-              o2.setArchived(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Hub.VAR_archived + "=$" + num);
-              num++;
-              bParams.add(o2.sqlArchived());
-            break;
           case "setDescription":
               o2.setDescription(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -840,6 +834,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               bSql.append(Hub.VAR_description + "=$" + num);
               num++;
               bParams.add(o2.sqlDescription());
+            break;
+          case "setArchived":
+              o2.setArchived(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Hub.VAR_archived + "=$" + num);
+              num++;
+              bParams.add(o2.sqlArchived());
             break;
           case "setLocalClusterName":
               o2.setLocalClusterName(jsonObject.getString(entityVar));
@@ -931,15 +933,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise.complete(o3);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPATCHHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPATCHHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPATCHHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -959,7 +961,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1053,6 +1055,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -1184,29 +1187,29 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                   indexHub(hub).onSuccess(o2 -> {
                     promise1.complete(hub);
                   }).onFailure(ex -> {
-                    promise1.fail(ex);
+                    promise1.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(hub -> {
         Promise<Hub> promise2 = Promise.promise();
         refreshHub(hub).onSuccess(a -> {
@@ -1220,10 +1223,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             promise2.complete(hub);
           } catch(Exception ex) {
             LOG.error(String.format("postHubFuture failed. "), ex);
-            promise2.fail(ex);
+            promise2.tryFail(ex);
           }
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(hub -> {
@@ -1237,14 +1240,14 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise.complete(hub);
         } catch(Exception ex) {
           LOG.error(String.format("postHubFuture failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postHubFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1306,15 +1309,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             num++;
             bParams.add(o2.sqlHubId());
             break;
-          case Hub.VAR_created:
-            o2.setCreated(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Hub.VAR_created + "=$" + num);
-            num++;
-            bParams.add(o2.sqlCreated());
-            break;
           case Hub.VAR_hubResource:
             o2.setHubResource(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1323,6 +1317,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             bSql.append(Hub.VAR_hubResource + "=$" + num);
             num++;
             bParams.add(o2.sqlHubResource());
+            break;
+          case Hub.VAR_created:
+            o2.setCreated(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Hub.VAR_created + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCreated());
             break;
           case Hub.VAR_pageId:
             o2.setPageId(jsonObject.getString(entityVar));
@@ -1333,15 +1336,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             num++;
             bParams.add(o2.sqlPageId());
             break;
-          case Hub.VAR_archived:
-            o2.setArchived(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Hub.VAR_archived + "=$" + num);
-            num++;
-            bParams.add(o2.sqlArchived());
-            break;
           case Hub.VAR_description:
             o2.setDescription(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1350,6 +1344,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             bSql.append(Hub.VAR_description + "=$" + num);
             num++;
             bParams.add(o2.sqlDescription());
+            break;
+          case Hub.VAR_archived:
+            o2.setArchived(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Hub.VAR_archived + "=$" + num);
+            num++;
+            bParams.add(o2.sqlArchived());
             break;
           case Hub.VAR_localClusterName:
             o2.setLocalClusterName(jsonObject.getString(entityVar));
@@ -1447,15 +1450,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise.complete(o2);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPOSTHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPOSTHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPOSTHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1476,7 +1479,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1646,7 +1649,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEHub failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -1657,18 +1660,18 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEHub failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -1752,39 +1755,39 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(hub -> {
         Promise<Hub> promise2 = Promise.promise();
         refreshHub(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(hub -> {
         promise.complete(hub);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteHubFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1833,15 +1836,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1861,7 +1864,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2035,7 +2038,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportHub failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -2044,11 +2047,11 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2220,7 +2223,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2378,19 +2381,75 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
     promise.complete();
   }
 
-  public String templateSearchPageHub(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageHub(ServiceRequest serviceRequest, Hub result) {
     return "en-us/search/hub/HubSearchPage.htm";
+  }
+  public void templateSearchPageHub(JsonObject ctx, HubPage page, SearchList<Hub> listHub, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listHub.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      Hub result = listHub.first();
+      String pageTemplateUri = templateUriSearchPageHub(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageHub failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageHub(SearchList<Hub> listHub) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listHub.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageHub(siteRequest.getServiceRequest());
-      if(listHub.size() == 0)
-        pageTemplateUri = templateSearchPageHub(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       HubPage page = new HubPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2409,22 +2468,32 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           Promise<Void> promise1 = Promise.promise();
           searchpageHubPageInit(ctx, page, listHub, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageHub(ctx, page, listHub, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageHub failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2591,19 +2660,75 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
     promise.complete();
   }
 
-  public String templateEditPageHub(ServiceRequest serviceRequest) {
+  public String templateUriEditPageHub(ServiceRequest serviceRequest, Hub result) {
     return "en-us/edit/hub/HubEditPage.htm";
+  }
+  public void templateEditPageHub(JsonObject ctx, HubPage page, SearchList<Hub> listHub, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listHub.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      Hub result = listHub.first();
+      String pageTemplateUri = templateUriEditPageHub(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageHub failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageHub(SearchList<Hub> listHub) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listHub.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageHub(siteRequest.getServiceRequest());
-      if(listHub.size() == 0)
-        pageTemplateUri = templateSearchPageHub(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       HubPage page = new HubPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2622,22 +2747,32 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           Promise<Void> promise1 = Promise.promise();
           editpageHubPageInit(ctx, page, listHub, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageHub(ctx, page, listHub, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageHub failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2841,7 +2976,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterHub failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -2852,18 +2987,18 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterHub failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2947,39 +3082,39 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(hub -> {
         Promise<Hub> promise2 = Promise.promise();
         refreshHub(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(hub -> {
         promise.complete(hub);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterHubFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3028,15 +3163,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEFilterHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEFilterHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEFilterHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3056,7 +3191,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3083,11 +3218,11 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error("createHub failed. ", ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("createHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3153,13 +3288,13 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3362,18 +3497,18 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchHub failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3386,7 +3521,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT hubName, hubId, created, hubResource, pageId, archived, description, localClusterName, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM Hub WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT hubName, hubId, hubResource, created, pageId, description, archived, localClusterName, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM Hub WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -3408,20 +3543,20 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistHub failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistHub failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("persistHub failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("persistHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3469,11 +3604,11 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexHub failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3506,15 +3641,15 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexHub failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexHub failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3542,7 +3677,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
           params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
           params.put("form", new JsonObject());
           params.put("path", new JsonObject());
-          params.put("scopes", new JsonArray().add("GET").add("PATCH"));
+          params.put("scopes", siteRequest.getScopes());
           JsonObject query = new JsonObject();
           Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
           Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -3562,67 +3697,67 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(statusCode.equals(200))
               promise.complete();
             else
-              promise.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+              promise.tryFail(new RuntimeException(responseMessage.getString("statusMessage")));
           }).onFailure(ex -> {
             LOG.error("Refresh relations failed. ", ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
           LOG.error("Refresh relations failed. ", ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } else {
         promise.complete();
       }
     } catch(Exception ex) {
       LOG.error(String.format("refreshHub failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      Hub page = new Hub();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      Hub o = new Hub();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(Hub.VAR_hubName, Hub.staticSetHubName(siteRequest2, (String)result.get(Hub.VAR_hubName)));
-      page.persistForClass(Hub.VAR_hubId, Hub.staticSetHubId(siteRequest2, (String)result.get(Hub.VAR_hubId)));
-      page.persistForClass(Hub.VAR_created, Hub.staticSetCreated(siteRequest2, (String)result.get(Hub.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(Hub.VAR_hubResource, Hub.staticSetHubResource(siteRequest2, (String)result.get(Hub.VAR_hubResource)));
-      page.persistForClass(Hub.VAR_pageId, Hub.staticSetPageId(siteRequest2, (String)result.get(Hub.VAR_pageId)));
-      page.persistForClass(Hub.VAR_archived, Hub.staticSetArchived(siteRequest2, (String)result.get(Hub.VAR_archived)));
-      page.persistForClass(Hub.VAR_description, Hub.staticSetDescription(siteRequest2, (String)result.get(Hub.VAR_description)));
-      page.persistForClass(Hub.VAR_localClusterName, Hub.staticSetLocalClusterName(siteRequest2, (String)result.get(Hub.VAR_localClusterName)));
-      page.persistForClass(Hub.VAR_sessionId, Hub.staticSetSessionId(siteRequest2, (String)result.get(Hub.VAR_sessionId)));
-      page.persistForClass(Hub.VAR_userKey, Hub.staticSetUserKey(siteRequest2, (String)result.get(Hub.VAR_userKey)));
-      page.persistForClass(Hub.VAR_objectTitle, Hub.staticSetObjectTitle(siteRequest2, (String)result.get(Hub.VAR_objectTitle)));
-      page.persistForClass(Hub.VAR_displayPage, Hub.staticSetDisplayPage(siteRequest2, (String)result.get(Hub.VAR_displayPage)));
-      page.persistForClass(Hub.VAR_editPage, Hub.staticSetEditPage(siteRequest2, (String)result.get(Hub.VAR_editPage)));
-      page.persistForClass(Hub.VAR_userPage, Hub.staticSetUserPage(siteRequest2, (String)result.get(Hub.VAR_userPage)));
-      page.persistForClass(Hub.VAR_download, Hub.staticSetDownload(siteRequest2, (String)result.get(Hub.VAR_download)));
+      o.persistForClass(Hub.VAR_hubName, Hub.staticSetHubName(siteRequest2, (String)result.get(Hub.VAR_hubName)));
+      o.persistForClass(Hub.VAR_hubId, Hub.staticSetHubId(siteRequest2, (String)result.get(Hub.VAR_hubId)));
+      o.persistForClass(Hub.VAR_hubResource, Hub.staticSetHubResource(siteRequest2, (String)result.get(Hub.VAR_hubResource)));
+      o.persistForClass(Hub.VAR_created, Hub.staticSetCreated(siteRequest2, (String)result.get(Hub.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(Hub.VAR_pageId, Hub.staticSetPageId(siteRequest2, (String)result.get(Hub.VAR_pageId)));
+      o.persistForClass(Hub.VAR_description, Hub.staticSetDescription(siteRequest2, (String)result.get(Hub.VAR_description)));
+      o.persistForClass(Hub.VAR_archived, Hub.staticSetArchived(siteRequest2, (String)result.get(Hub.VAR_archived)));
+      o.persistForClass(Hub.VAR_localClusterName, Hub.staticSetLocalClusterName(siteRequest2, (String)result.get(Hub.VAR_localClusterName)));
+      o.persistForClass(Hub.VAR_sessionId, Hub.staticSetSessionId(siteRequest2, (String)result.get(Hub.VAR_sessionId)));
+      o.persistForClass(Hub.VAR_userKey, Hub.staticSetUserKey(siteRequest2, (String)result.get(Hub.VAR_userKey)));
+      o.persistForClass(Hub.VAR_objectTitle, Hub.staticSetObjectTitle(siteRequest2, (String)result.get(Hub.VAR_objectTitle)));
+      o.persistForClass(Hub.VAR_displayPage, Hub.staticSetDisplayPage(siteRequest2, (String)result.get(Hub.VAR_displayPage)));
+      o.persistForClass(Hub.VAR_editPage, Hub.staticSetEditPage(siteRequest2, (String)result.get(Hub.VAR_editPage)));
+      o.persistForClass(Hub.VAR_userPage, Hub.staticSetUserPage(siteRequest2, (String)result.get(Hub.VAR_userPage)));
+      o.persistForClass(Hub.VAR_download, Hub.staticSetDownload(siteRequest2, (String)result.get(Hub.VAR_download)));
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }

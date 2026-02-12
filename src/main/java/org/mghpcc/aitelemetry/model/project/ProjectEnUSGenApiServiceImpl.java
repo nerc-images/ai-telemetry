@@ -67,6 +67,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +121,303 @@ import org.mghpcc.aitelemetry.model.project.ProjectPage;
 public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements ProjectEnUSGenApiService {
 
   protected static final Logger LOG = LoggerFactory.getLogger(ProjectEnUSGenApiServiceImpl.class);
+
+  // UserPage //
+
+  @Override
+  public void userpageProject(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
+    Boolean classPublicRead = false;
+    user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
+      try {
+        siteRequest.setLang("enUS");
+        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
+        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+        form.add("response_mode", "permissions");
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
+        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
+        if(projectResource != null)
+          form.add("permission", String.format("%s#%s", projectResource, "GET"));
+        webClient.post(
+            config.getInteger(ComputateConfigKeys.AUTH_PORT)
+              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+              )
+              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+              .sendForm(form)
+              .expecting(HttpResponseExpectation.SC_OK)
+        .onComplete(authorizationDecisionResponse -> {
+          try {
+            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            if(!scopes.contains("GET") && !classPublicRead) {
+              //
+              List<String> fqs = new ArrayList<>();
+              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "tenantResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "hubResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "clusterResource", value));
+                  });
+              groups.stream().map(group -> {
+                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
+                    return mPermission.find() ? mPermission.group(1) : null;
+                  }).filter(v -> v != null).forEach(value -> {
+                    fqs.add(String.format("%s:%s", "projectResource", value));
+                  });
+              JsonObject authParams = siteRequest.getServiceRequest().getParams();
+              JsonObject authQuery = authParams.getJsonObject("query");
+              if(authQuery == null) {
+                authQuery = new JsonObject();
+                authParams.put("query", authQuery);
+              }
+              JsonArray fq = authQuery.getJsonArray("fq");
+              if(fq == null) {
+                fq = new JsonArray();
+                authQuery.put("fq", fq);
+              }
+              if(fqs.size() > 0) {
+                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                scopes.add("GET");
+                siteRequest.setFilteredScope(true);
+              }
+            }
+            {
+              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+              List<String> scopes2 = siteRequest.getScopes();
+              searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
+                response200UserPageProject(listProject).onSuccess(response -> {
+                  eventHandler.handle(Future.succeededFuture(response));
+                  LOG.debug(String.format("userpageProject succeeded. "));
+                }).onFailure(ex -> {
+                  LOG.error(String.format("userpageProject failed. "), ex);
+                  error(siteRequest, eventHandler, ex);
+                });
+              }).onFailure(ex -> {
+                LOG.error(String.format("userpageProject failed. "), ex);
+                error(siteRequest, eventHandler, ex);
+            });
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("userpageProject failed. "), ex);
+            error(null, eventHandler, ex);
+          }
+        });
+      } catch(Exception ex) {
+        LOG.error(String.format("userpageProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
+    }).onFailure(ex -> {
+      if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
+        try {
+          eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
+        } catch(Exception ex2) {
+          LOG.error(String.format("userpageProject failed. ", ex2));
+          error(null, eventHandler, ex2);
+        }
+      } else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
+        eventHandler.handle(Future.succeededFuture(
+          new ServiceResponse(401, "UNAUTHORIZED",
+            Buffer.buffer().appendString(
+              new JsonObject()
+                .put("errorCode", "401")
+                .put("errorMessage", "SSO Resource Permission check returned DENY")
+                .encodePrettily()
+              ), MultiMap.caseInsensitiveMultiMap()
+              )
+          ));
+      } else {
+        LOG.error(String.format("userpageProject failed. "), ex);
+        error(null, eventHandler, ex);
+      }
+    });
+  }
+
+  public void userpageProjectPageInit(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<Void> promise) {
+    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
+
+    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/project"));
+    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
+    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
+    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
+    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
+
+    promise.complete();
+  }
+
+  public String templateUriUserPageProject(ServiceRequest serviceRequest, Project result) {
+    return Optional.ofNullable(result.getStatusPageTemplateUri()).orElse(String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?")));
+  }
+  public void templateUserPageProject(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      Project result = listProject.first();
+      String pageTemplateUri = templateUriUserPageProject(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateUserPageProject failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
+  }
+  public Future<ServiceResponse> response200UserPageProject(SearchList<Project> listProject) {
+    Promise<ServiceResponse> promise = Promise.promise();
+    try {
+      SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
+      ProjectPage page = new ProjectPage();
+      MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
+      siteRequest.setRequestHeaders(requestHeaders);
+
+      if(listProject.size() >= 1)
+        siteRequest.setRequestPk(listProject.get(0).getPk());
+      page.setSearchListProject_(listProject);
+      page.setSiteRequest_(siteRequest);
+      page.setServiceRequest(siteRequest.getServiceRequest());
+      page.setWebClient(webClient);
+      page.setVertx(vertx);
+      page.promiseDeepProjectPage(siteRequest).onSuccess(a -> {
+        try {
+          JsonObject ctx = ConfigKeys.getPageContext(config);
+          ctx.mergeIn(JsonObject.mapFrom(page));
+          Promise<Void> promise1 = Promise.promise();
+          userpageProjectPageInit(ctx, page, listProject, promise1);
+          promise1.future().onSuccess(b -> {
+            Promise<String> promise2 = Promise.promise();
+            templateUserPageProject(ctx, page, listProject, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200UserPageProject failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
+          }).onFailure(ex -> {
+            promise.tryFail(ex);
+          });
+        } catch(Exception ex) {
+          LOG.error(String.format("response200UserPageProject failed. "), ex);
+          promise.tryFail(ex);
+        }
+      }).onFailure(ex -> {
+        promise.tryFail(ex);
+      });
+    } catch(Exception ex) {
+      LOG.error(String.format("response200UserPageProject failed. "), ex);
+      promise.tryFail(ex);
+    }
+    return promise.future();
+  }
+  public void responsePivotUserPageProject(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
+    if(pivots != null) {
+      for(SolrResponse.Pivot pivotField : pivots) {
+        String entityIndexed = pivotField.getField();
+        String entityVar = StringUtils.substringBefore(entityIndexed, "_docvalues_");
+        JsonObject pivotJson = new JsonObject();
+        pivotArray.add(pivotJson);
+        pivotJson.put("field", entityVar);
+        pivotJson.put("value", pivotField.getValue());
+        pivotJson.put("count", pivotField.getCount());
+        Collection<SolrResponse.PivotRange> pivotRanges = pivotField.getRanges().values();
+        List<SolrResponse.Pivot> pivotFields2 = pivotField.getPivotList();
+        if(pivotRanges != null) {
+          JsonObject rangeJson = new JsonObject();
+          pivotJson.put("ranges", rangeJson);
+          for(SolrResponse.PivotRange rangeFacet : pivotRanges) {
+            JsonObject rangeFacetJson = new JsonObject();
+            String rangeFacetVar = StringUtils.substringBefore(rangeFacet.getName(), "_docvalues_");
+            rangeJson.put(rangeFacetVar, rangeFacetJson);
+            JsonObject rangeFacetCountsObject = new JsonObject();
+            rangeFacetJson.put("counts", rangeFacetCountsObject);
+            rangeFacet.getCounts().forEach((value, count) -> {
+              rangeFacetCountsObject.put(value, count);
+            });
+          }
+        }
+        if(pivotFields2 != null) {
+          JsonArray pivotArray2 = new JsonArray();
+          pivotJson.put("pivot", pivotArray2);
+          responsePivotUserPageProject(pivotFields2, pivotArray2);
+        }
+      }
+    }
+  }
 
   // Search //
 
@@ -296,7 +595,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -483,7 +782,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -672,7 +971,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHProject failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -683,18 +982,18 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHProject failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -784,42 +1083,42 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   }
                   promise1.complete(project);
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(project -> {
         Promise<Project> promise2 = Promise.promise();
         refreshProject(project).onSuccess(a -> {
           promise2.complete(project);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(project -> {
         promise.complete(project);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchProjectFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -857,10 +1156,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_tenantResource, Tenant.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -871,7 +1170,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 sql(siteRequest).update(Project.class, pk).setToNull(Project.VAR_tenantResource, Tenant.class, null).onSuccess(a -> {
                   promise2.complete();
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -912,10 +1211,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_hubResource, Hub.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -926,7 +1225,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 sql(siteRequest).update(Project.class, pk).setToNull(Project.VAR_hubResource, Hub.class, null).onSuccess(a -> {
                   promise2.complete();
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -959,10 +1258,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_clusterResource, Cluster.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -973,7 +1272,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 sql(siteRequest).update(Project.class, pk).setToNull(Project.VAR_clusterResource, Cluster.class, null).onSuccess(a -> {
                   promise2.complete();
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1122,6 +1421,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlNamespaceTerminating());
             break;
+          case "setStatusPageTemplateUri":
+              o2.setStatusPageTemplateUri(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_statusPageTemplateUri + "=$" + num);
+              num++;
+              bParams.add(o2.sqlStatusPageTemplateUri());
+            break;
         }
       }
       bSql.append(" WHERE pk=$" + num);
@@ -1148,15 +1455,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise.complete(o3);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPATCHProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPATCHProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPATCHProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1176,7 +1483,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1288,6 +1595,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -1419,29 +1727,29 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   indexProject(project).onSuccess(o2 -> {
                     promise1.complete(project);
                   }).onFailure(ex -> {
-                    promise1.fail(ex);
+                    promise1.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(project -> {
         Promise<Project> promise2 = Promise.promise();
         refreshProject(project).onSuccess(a -> {
@@ -1455,10 +1763,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             promise2.complete(project);
           } catch(Exception ex) {
             LOG.error(String.format("postProjectFuture failed. "), ex);
-            promise2.fail(ex);
+            promise2.tryFail(ex);
           }
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(project -> {
@@ -1472,14 +1780,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise.complete(project);
         } catch(Exception ex) {
           LOG.error(String.format("postProjectFuture failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postProjectFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1535,10 +1843,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_tenantResource, Tenant.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1582,10 +1890,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_hubResource, Hub.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1620,10 +1928,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_clusterResource, Cluster.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1790,6 +2098,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlNamespaceTerminating());
             break;
+          case Project.VAR_statusPageTemplateUri:
+            o2.setStatusPageTemplateUri(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_statusPageTemplateUri + "=$" + num);
+            num++;
+            bParams.add(o2.sqlStatusPageTemplateUri());
+            break;
           }
         }
       }
@@ -1814,15 +2131,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise.complete(o2);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPOSTProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPOSTProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPOSTProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1843,7 +2160,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2031,7 +2348,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEProject failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -2042,18 +2359,18 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEProject failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2137,39 +2454,39 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(project -> {
         Promise<Project> promise2 = Promise.promise();
         refreshProject(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(project -> {
         promise.complete(project);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteProjectFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2208,10 +2525,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_tenantResource, Tenant.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -2228,10 +2545,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_hubResource, Hub.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -2248,10 +2565,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_clusterResource, Cluster.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -2278,15 +2595,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2306,7 +2623,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2498,7 +2815,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportProject failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -2507,11 +2824,11 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2683,7 +3000,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2859,19 +3176,75 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     promise.complete();
   }
 
-  public String templateSearchPageProject(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageProject(ServiceRequest serviceRequest, Project result) {
     return "en-us/search/project/ProjectSearchPage.htm";
+  }
+  public void templateSearchPageProject(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      Project result = listProject.first();
+      String pageTemplateUri = templateUriSearchPageProject(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageProject failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageProject(SearchList<Project> listProject) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageProject(siteRequest.getServiceRequest());
-      if(listProject.size() == 0)
-        pageTemplateUri = templateSearchPageProject(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       ProjectPage page = new ProjectPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2890,22 +3263,32 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           Promise<Void> promise1 = Promise.promise();
           searchpageProjectPageInit(ctx, page, listProject, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageProject(ctx, page, listProject, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageProject failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3090,19 +3473,75 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     promise.complete();
   }
 
-  public String templateEditPageProject(ServiceRequest serviceRequest) {
+  public String templateUriEditPageProject(ServiceRequest serviceRequest, Project result) {
     return "en-us/edit/project/ProjectEditPage.htm";
+  }
+  public void templateEditPageProject(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      Project result = listProject.first();
+      String pageTemplateUri = templateUriEditPageProject(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageProject failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageProject(SearchList<Project> listProject) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageProject(siteRequest.getServiceRequest());
-      if(listProject.size() == 0)
-        pageTemplateUri = templateSearchPageProject(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       ProjectPage page = new ProjectPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -3121,22 +3560,32 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           Promise<Void> promise1 = Promise.promise();
           editpageProjectPageInit(ctx, page, listProject, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageProject(ctx, page, listProject, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageProject failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3170,237 +3619,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           JsonArray pivotArray2 = new JsonArray();
           pivotJson.put("pivot", pivotArray2);
           responsePivotEditPageProject(pivotFields2, pivotArray2);
-        }
-      }
-    }
-  }
-
-  // UserPage //
-
-  @Override
-  public void userpageProject(ServiceRequest serviceRequest, Handler<AsyncResult<ServiceResponse>> eventHandler) {
-    Boolean classPublicRead = false;
-    user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
-      try {
-        siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", Project.CLASS_AUTH_RESOURCE, projectResource, "GET"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET") && !classPublicRead) {
-              //
-              List<String> fqs = new ArrayList<>();
-              List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-              groups.stream().map(group -> {
-                    Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                    return mPermission.find() ? mPermission.group(1) : null;
-                  }).filter(v -> v != null).forEach(value -> {
-                    fqs.add(String.format("%s:%s", "tenantResource", value));
-                  });
-              groups.stream().map(group -> {
-                    Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                    return mPermission.find() ? mPermission.group(1) : null;
-                  }).filter(v -> v != null).forEach(value -> {
-                    fqs.add(String.format("%s:%s", "hubResource", value));
-                  });
-              groups.stream().map(group -> {
-                    Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                    return mPermission.find() ? mPermission.group(1) : null;
-                  }).filter(v -> v != null).forEach(value -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", value));
-                  });
-              groups.stream().map(group -> {
-                    Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(GET)$").matcher(group);
-                    return mPermission.find() ? mPermission.group(1) : null;
-                  }).filter(v -> v != null).forEach(value -> {
-                    fqs.add(String.format("%s:%s", "projectResource", value));
-                  });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, false).onSuccess(listProject -> {
-                response200UserPageProject(listProject).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("userpageProject succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("userpageProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
-              }).onFailure(ex -> {
-                LOG.error(String.format("userpageProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-            });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("userpageProject failed. "), ex);
-            error(null, eventHandler, ex);
-          }
-        });
-      } catch(Exception ex) {
-        LOG.error(String.format("userpageProject failed. "), ex);
-        error(null, eventHandler, ex);
-      }
-    }).onFailure(ex -> {
-      if("Inactive Token".equals(ex.getMessage()) || StringUtils.startsWith(ex.getMessage(), "invalid_grant:")) {
-        try {
-          eventHandler.handle(Future.succeededFuture(new ServiceResponse(302, "Found", null, MultiMap.caseInsensitiveMultiMap().add(HttpHeaders.LOCATION, "/logout?redirect_uri=" + URLEncoder.encode(serviceRequest.getExtra().getString("uri"), "UTF-8")))));
-        } catch(Exception ex2) {
-          LOG.error(String.format("userpageProject failed. ", ex2));
-          error(null, eventHandler, ex2);
-        }
-      } else if(StringUtils.startsWith(ex.getMessage(), "401 UNAUTHORIZED ")) {
-        eventHandler.handle(Future.succeededFuture(
-          new ServiceResponse(401, "UNAUTHORIZED",
-            Buffer.buffer().appendString(
-              new JsonObject()
-                .put("errorCode", "401")
-                .put("errorMessage", "SSO Resource Permission check returned DENY")
-                .encodePrettily()
-              ), MultiMap.caseInsensitiveMultiMap()
-              )
-          ));
-      } else {
-        LOG.error(String.format("userpageProject failed. "), ex);
-        error(null, eventHandler, ex);
-      }
-    });
-  }
-
-  public void userpageProjectPageInit(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<Void> promise) {
-    String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-
-    ctx.put("enUSUrlSearchPage", String.format("%s%s", siteBaseUrl, "/en-us/search/project"));
-    ctx.put("enUSUrlDisplayPage", Optional.ofNullable(page.getResult()).map(o -> o.getDisplayPage()));
-    ctx.put("enUSUrlEditPage", Optional.ofNullable(page.getResult()).map(o -> o.getEditPage()));
-    ctx.put("enUSUrlUserPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
-    ctx.put("enUSUrlPage", Optional.ofNullable(page.getResult()).map(o -> o.getUserPage()));
-    ctx.put("enUSUrlDownload", Optional.ofNullable(page.getResult()).map(o -> o.getDownload()));
-
-    promise.complete();
-  }
-
-  public String templateUserPageProject(ServiceRequest serviceRequest) {
-    return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
-  }
-  public Future<ServiceResponse> response200UserPageProject(SearchList<Project> listProject) {
-    Promise<ServiceResponse> promise = Promise.promise();
-    try {
-      SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateUserPageProject(siteRequest.getServiceRequest());
-      if(listProject.size() == 0)
-        pageTemplateUri = templateSearchPageProject(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      ProjectPage page = new ProjectPage();
-      MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
-      siteRequest.setRequestHeaders(requestHeaders);
-
-      if(listProject.size() >= 1)
-        siteRequest.setRequestPk(listProject.get(0).getPk());
-      page.setSearchListProject_(listProject);
-      page.setSiteRequest_(siteRequest);
-      page.setServiceRequest(siteRequest.getServiceRequest());
-      page.setWebClient(webClient);
-      page.setVertx(vertx);
-      page.promiseDeepProjectPage(siteRequest).onSuccess(a -> {
-        try {
-          JsonObject ctx = ConfigKeys.getPageContext(config);
-          ctx.mergeIn(JsonObject.mapFrom(page));
-          Promise<Void> promise1 = Promise.promise();
-          userpageProjectPageInit(ctx, page, listProject, promise1);
-          promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-          }).onFailure(ex -> {
-            promise.fail(ex);
-          });
-        } catch(Exception ex) {
-          LOG.error(String.format("response200UserPageProject failed. "), ex);
-          promise.fail(ex);
-        }
-      }).onFailure(ex -> {
-        promise.fail(ex);
-      });
-    } catch(Exception ex) {
-      LOG.error(String.format("response200UserPageProject failed. "), ex);
-      promise.fail(ex);
-    }
-    return promise.future();
-  }
-  public void responsePivotUserPageProject(List<SolrResponse.Pivot> pivots, JsonArray pivotArray) {
-    if(pivots != null) {
-      for(SolrResponse.Pivot pivotField : pivots) {
-        String entityIndexed = pivotField.getField();
-        String entityVar = StringUtils.substringBefore(entityIndexed, "_docvalues_");
-        JsonObject pivotJson = new JsonObject();
-        pivotArray.add(pivotJson);
-        pivotJson.put("field", entityVar);
-        pivotJson.put("value", pivotField.getValue());
-        pivotJson.put("count", pivotField.getCount());
-        Collection<SolrResponse.PivotRange> pivotRanges = pivotField.getRanges().values();
-        List<SolrResponse.Pivot> pivotFields2 = pivotField.getPivotList();
-        if(pivotRanges != null) {
-          JsonObject rangeJson = new JsonObject();
-          pivotJson.put("ranges", rangeJson);
-          for(SolrResponse.PivotRange rangeFacet : pivotRanges) {
-            JsonObject rangeFacetJson = new JsonObject();
-            String rangeFacetVar = StringUtils.substringBefore(rangeFacet.getName(), "_docvalues_");
-            rangeJson.put(rangeFacetVar, rangeFacetJson);
-            JsonObject rangeFacetCountsObject = new JsonObject();
-            rangeFacetJson.put("counts", rangeFacetCountsObject);
-            rangeFacet.getCounts().forEach((value, count) -> {
-              rangeFacetCountsObject.put(value, count);
-            });
-          }
-        }
-        if(pivotFields2 != null) {
-          JsonArray pivotArray2 = new JsonArray();
-          pivotJson.put("pivot", pivotArray2);
-          responsePivotUserPageProject(pivotFields2, pivotArray2);
         }
       }
     }
@@ -3589,7 +3807,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterProject failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -3600,18 +3818,18 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterProject failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -3695,39 +3913,39 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(project -> {
         Promise<Project> promise2 = Promise.promise();
         refreshProject(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(project -> {
         promise.complete(project);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterProjectFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3766,10 +3984,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_tenantResource, Tenant.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -3786,10 +4004,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_hubResource, Hub.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -3806,10 +4024,10 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   sql(siteRequest).update(Project.class, pk).set(Project.VAR_clusterResource, Cluster.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -3836,15 +4054,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEFilterProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEFilterProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEFilterProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3864,7 +4082,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3891,11 +4109,11 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error("createProject failed. ", ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("createProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3961,13 +4179,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4173,18 +4391,18 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchProject failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4197,7 +4415,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, description, gpuEnabled, podRestartCount, objectTitle, podsRestarting, displayPage, podTerminatingCount, editPage, podsTerminating, userPage, fullPvcsCount, download, fullPvcs, namespaceTerminating FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, description, gpuEnabled, podRestartCount, objectTitle, podsRestarting, displayPage, podTerminatingCount, editPage, podsTerminating, userPage, fullPvcsCount, download, fullPvcs, namespaceTerminating, statusPageTemplateUri FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4219,20 +4437,20 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistProject failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("persistProject failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("persistProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4255,16 +4473,16 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise.complete();
         } catch(Exception ex) {
           LOG.error(String.format("relateProject failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("relateProject failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("relateProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4306,11 +4524,11 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexProject failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4343,15 +4561,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexProject failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexProject failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4384,6 +4602,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 if(o2 != null) {
                   JsonObject params = new JsonObject();
                   params.put("body", new JsonObject());
+                  params.put("scopes", siteRequest.getScopes());
                   params.put("cookie", new JsonObject());
                   params.put("path", new JsonObject());
                   params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
@@ -4419,6 +4638,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 if(o2 != null) {
                   JsonObject params = new JsonObject();
                   params.put("body", new JsonObject());
+                  params.put("scopes", siteRequest.getScopes());
                   params.put("cookie", new JsonObject());
                   params.put("path", new JsonObject());
                   params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
@@ -4454,6 +4674,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 if(o2 != null) {
                   JsonObject params = new JsonObject();
                   params.put("body", new JsonObject());
+                  params.put("scopes", siteRequest.getScopes());
                   params.put("cookie", new JsonObject());
                   params.put("path", new JsonObject());
                   params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
@@ -4484,7 +4705,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
           params.put("form", new JsonObject());
           params.put("path", new JsonObject());
-          params.put("scopes", new JsonArray().add("GET").add("PATCH"));
+          params.put("scopes", siteRequest.getScopes());
           JsonObject query = new JsonObject();
           Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
           Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -4504,78 +4725,82 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             if(statusCode.equals(200))
               promise.complete();
             else
-              promise.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+              promise.tryFail(new RuntimeException(responseMessage.getString("statusMessage")));
           }).onFailure(ex -> {
             LOG.error("Refresh relations failed. ", ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
           LOG.error("Refresh relations failed. ", ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } else {
         promise.complete();
       }
     } catch(Exception ex) {
       LOG.error(String.format("refreshProject failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      Project page = new Project();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      Project o = new Project();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(Project.VAR_tenantResource, Project.staticSetTenantResource(siteRequest2, (String)result.get(Project.VAR_tenantResource)));
-      page.persistForClass(Project.VAR_localClusterName, Project.staticSetLocalClusterName(siteRequest2, (String)result.get(Project.VAR_localClusterName)));
-      page.persistForClass(Project.VAR_created, Project.staticSetCreated(siteRequest2, (String)result.get(Project.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(Project.VAR_hubId, Project.staticSetHubId(siteRequest2, (String)result.get(Project.VAR_hubId)));
-      page.persistForClass(Project.VAR_hubResource, Project.staticSetHubResource(siteRequest2, (String)result.get(Project.VAR_hubResource)));
-      page.persistForClass(Project.VAR_archived, Project.staticSetArchived(siteRequest2, (String)result.get(Project.VAR_archived)));
-      page.persistForClass(Project.VAR_clusterName, Project.staticSetClusterName(siteRequest2, (String)result.get(Project.VAR_clusterName)));
-      page.persistForClass(Project.VAR_clusterResource, Project.staticSetClusterResource(siteRequest2, (String)result.get(Project.VAR_clusterResource)));
-      page.persistForClass(Project.VAR_projectName, Project.staticSetProjectName(siteRequest2, (String)result.get(Project.VAR_projectName)));
-      page.persistForClass(Project.VAR_projectResource, Project.staticSetProjectResource(siteRequest2, (String)result.get(Project.VAR_projectResource)));
-      page.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
-      page.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
-      page.persistForClass(Project.VAR_description, Project.staticSetDescription(siteRequest2, (String)result.get(Project.VAR_description)));
-      page.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
-      page.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
-      page.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
-      page.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
-      page.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
-      page.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
-      page.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
-      page.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
-      page.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
-      page.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
-      page.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
-      page.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
-      page.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
+      o.persistForClass(Project.VAR_tenantResource, Project.staticSetTenantResource(siteRequest2, (String)result.get(Project.VAR_tenantResource)));
+      o.persistForClass(Project.VAR_localClusterName, Project.staticSetLocalClusterName(siteRequest2, (String)result.get(Project.VAR_localClusterName)));
+      o.persistForClass(Project.VAR_created, Project.staticSetCreated(siteRequest2, (String)result.get(Project.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(Project.VAR_hubId, Project.staticSetHubId(siteRequest2, (String)result.get(Project.VAR_hubId)));
+      o.persistForClass(Project.VAR_hubResource, Project.staticSetHubResource(siteRequest2, (String)result.get(Project.VAR_hubResource)));
+      o.persistForClass(Project.VAR_archived, Project.staticSetArchived(siteRequest2, (String)result.get(Project.VAR_archived)));
+      o.persistForClass(Project.VAR_clusterName, Project.staticSetClusterName(siteRequest2, (String)result.get(Project.VAR_clusterName)));
+      o.persistForClass(Project.VAR_clusterResource, Project.staticSetClusterResource(siteRequest2, (String)result.get(Project.VAR_clusterResource)));
+      o.persistForClass(Project.VAR_projectName, Project.staticSetProjectName(siteRequest2, (String)result.get(Project.VAR_projectName)));
+      o.persistForClass(Project.VAR_projectResource, Project.staticSetProjectResource(siteRequest2, (String)result.get(Project.VAR_projectResource)));
+      o.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
+      o.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
+      o.persistForClass(Project.VAR_description, Project.staticSetDescription(siteRequest2, (String)result.get(Project.VAR_description)));
+      o.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
+      o.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
+      o.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
+      o.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
+      o.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
+      o.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
+      o.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
+      o.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
+      o.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
+      o.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
+      o.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
+      o.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
+      o.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
+      o.persistForClass(Project.VAR_statusPageTemplateUri, Project.staticSetStatusPageTemplateUri(siteRequest2, (String)result.get(Project.VAR_statusPageTemplateUri)));
+      if(templatePath.startsWith(String.format("%s%s", config.getString(ComputateConfigKeys.TEMPLATE_PATH), "/en-us/user/project/"))) {
+        o.persistForClass(Project.VAR_statusPageTemplateUri, Project.staticSetStatusPageTemplateUri(siteRequest2, StringUtils.substringAfter(templatePath, config.getString(ComputateConfigKeys.TEMPLATE_PATH))));
+      }
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }

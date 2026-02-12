@@ -61,6 +61,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -272,7 +274,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -441,7 +443,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -612,7 +614,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHTenant failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -623,18 +625,18 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHTenant failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -724,42 +726,42 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
                   }
                   promise1.complete(tenant);
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(tenant -> {
         Promise<Tenant> promise2 = Promise.promise();
         refreshTenant(tenant).onSuccess(a -> {
           promise2.complete(tenant);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(tenant -> {
         promise.complete(tenant);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchTenantFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -939,15 +941,15 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise.complete(o3);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPATCHTenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPATCHTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPATCHTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -967,7 +969,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1061,6 +1063,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -1192,29 +1195,29 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
                   indexTenant(tenant).onSuccess(o2 -> {
                     promise1.complete(tenant);
                   }).onFailure(ex -> {
-                    promise1.fail(ex);
+                    promise1.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(tenant -> {
         Promise<Tenant> promise2 = Promise.promise();
         refreshTenant(tenant).onSuccess(a -> {
@@ -1228,10 +1231,10 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             promise2.complete(tenant);
           } catch(Exception ex) {
             LOG.error(String.format("postTenantFuture failed. "), ex);
-            promise2.fail(ex);
+            promise2.tryFail(ex);
           }
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(tenant -> {
@@ -1245,14 +1248,14 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise.complete(tenant);
         } catch(Exception ex) {
           LOG.error(String.format("postTenantFuture failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postTenantFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1464,15 +1467,15 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise.complete(o2);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPOSTTenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPOSTTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPOSTTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1493,7 +1496,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1663,7 +1666,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETETenant failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -1674,18 +1677,18 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETETenant failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETETenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETETenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -1769,39 +1772,39 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(tenant -> {
         Promise<Tenant> promise2 = Promise.promise();
         refreshTenant(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(tenant -> {
         promise.complete(tenant);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteTenantFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1850,15 +1853,15 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETETenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETETenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETETenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1878,7 +1881,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETETenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2052,7 +2055,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportTenant failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -2061,11 +2064,11 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2237,7 +2240,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2395,19 +2398,75 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     promise.complete();
   }
 
-  public String templateSearchPageTenant(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageTenant(ServiceRequest serviceRequest, Tenant result) {
     return "en-us/search/tenant/TenantSearchPage.htm";
+  }
+  public void templateSearchPageTenant(JsonObject ctx, TenantPage page, SearchList<Tenant> listTenant, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listTenant.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      Tenant result = listTenant.first();
+      String pageTemplateUri = templateUriSearchPageTenant(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageTenant failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageTenant(SearchList<Tenant> listTenant) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listTenant.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageTenant(siteRequest.getServiceRequest());
-      if(listTenant.size() == 0)
-        pageTemplateUri = templateSearchPageTenant(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       TenantPage page = new TenantPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2426,22 +2485,32 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           Promise<Void> promise1 = Promise.promise();
           searchpageTenantPageInit(ctx, page, listTenant, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageTenant(ctx, page, listTenant, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageTenant failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageTenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2608,19 +2677,75 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
     promise.complete();
   }
 
-  public String templateEditPageTenant(ServiceRequest serviceRequest) {
+  public String templateUriEditPageTenant(ServiceRequest serviceRequest, Tenant result) {
     return "en-us/edit/tenant/TenantEditPage.htm";
+  }
+  public void templateEditPageTenant(JsonObject ctx, TenantPage page, SearchList<Tenant> listTenant, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listTenant.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      Tenant result = listTenant.first();
+      String pageTemplateUri = templateUriEditPageTenant(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageTenant failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageTenant(SearchList<Tenant> listTenant) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listTenant.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageTenant(siteRequest.getServiceRequest());
-      if(listTenant.size() == 0)
-        pageTemplateUri = templateSearchPageTenant(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       TenantPage page = new TenantPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2639,22 +2764,32 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           Promise<Void> promise1 = Promise.promise();
           editpageTenantPageInit(ctx, page, listTenant, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageTenant(ctx, page, listTenant, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageTenant failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageTenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2858,7 +2993,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterTenant failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -2869,18 +3004,18 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterTenant failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2964,39 +3099,39 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(tenant -> {
         Promise<Tenant> promise2 = Promise.promise();
         refreshTenant(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(tenant -> {
         promise.complete(tenant);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterTenantFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3045,15 +3180,15 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEFilterTenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEFilterTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEFilterTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3073,7 +3208,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3100,11 +3235,11 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error("createTenant failed. ", ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("createTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3170,13 +3305,13 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchTenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3379,18 +3514,18 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchTenant failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3425,20 +3560,20 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistTenant failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistTenant failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("persistTenant failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("persistTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3486,11 +3621,11 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexTenant failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3523,15 +3658,15 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexTenant failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexTenant failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3559,7 +3694,7 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
           params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
           params.put("form", new JsonObject());
           params.put("path", new JsonObject());
-          params.put("scopes", new JsonArray().add("GET").add("PATCH"));
+          params.put("scopes", siteRequest.getScopes());
           JsonObject query = new JsonObject();
           Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
           Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -3579,68 +3714,68 @@ public class TenantEnUSGenApiServiceImpl extends BaseApiServiceImpl implements T
             if(statusCode.equals(200))
               promise.complete();
             else
-              promise.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+              promise.tryFail(new RuntimeException(responseMessage.getString("statusMessage")));
           }).onFailure(ex -> {
             LOG.error("Refresh relations failed. ", ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
           LOG.error("Refresh relations failed. ", ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } else {
         promise.complete();
       }
     } catch(Exception ex) {
       LOG.error(String.format("refreshTenant failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      Tenant page = new Tenant();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      Tenant o = new Tenant();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(Tenant.VAR_tenantName, Tenant.staticSetTenantName(siteRequest2, (String)result.get(Tenant.VAR_tenantName)));
-      page.persistForClass(Tenant.VAR_tenantId, Tenant.staticSetTenantId(siteRequest2, (String)result.get(Tenant.VAR_tenantId)));
-      page.persistForClass(Tenant.VAR_created, Tenant.staticSetCreated(siteRequest2, (String)result.get(Tenant.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(Tenant.VAR_tenantResource, Tenant.staticSetTenantResource(siteRequest2, (String)result.get(Tenant.VAR_tenantResource)));
-      page.persistForClass(Tenant.VAR_pageId, Tenant.staticSetPageId(siteRequest2, (String)result.get(Tenant.VAR_pageId)));
-      page.persistForClass(Tenant.VAR_archived, Tenant.staticSetArchived(siteRequest2, (String)result.get(Tenant.VAR_archived)));
-      page.persistForClass(Tenant.VAR_description, Tenant.staticSetDescription(siteRequest2, (String)result.get(Tenant.VAR_description)));
-      page.persistForClass(Tenant.VAR_hubId, Tenant.staticSetHubId(siteRequest2, (String)result.get(Tenant.VAR_hubId)));
-      page.persistForClass(Tenant.VAR_clusterName, Tenant.staticSetClusterName(siteRequest2, (String)result.get(Tenant.VAR_clusterName)));
-      page.persistForClass(Tenant.VAR_sessionId, Tenant.staticSetSessionId(siteRequest2, (String)result.get(Tenant.VAR_sessionId)));
-      page.persistForClass(Tenant.VAR_userKey, Tenant.staticSetUserKey(siteRequest2, (String)result.get(Tenant.VAR_userKey)));
-      page.persistForClass(Tenant.VAR_objectTitle, Tenant.staticSetObjectTitle(siteRequest2, (String)result.get(Tenant.VAR_objectTitle)));
-      page.persistForClass(Tenant.VAR_displayPage, Tenant.staticSetDisplayPage(siteRequest2, (String)result.get(Tenant.VAR_displayPage)));
-      page.persistForClass(Tenant.VAR_editPage, Tenant.staticSetEditPage(siteRequest2, (String)result.get(Tenant.VAR_editPage)));
-      page.persistForClass(Tenant.VAR_userPage, Tenant.staticSetUserPage(siteRequest2, (String)result.get(Tenant.VAR_userPage)));
-      page.persistForClass(Tenant.VAR_download, Tenant.staticSetDownload(siteRequest2, (String)result.get(Tenant.VAR_download)));
+      o.persistForClass(Tenant.VAR_tenantName, Tenant.staticSetTenantName(siteRequest2, (String)result.get(Tenant.VAR_tenantName)));
+      o.persistForClass(Tenant.VAR_tenantId, Tenant.staticSetTenantId(siteRequest2, (String)result.get(Tenant.VAR_tenantId)));
+      o.persistForClass(Tenant.VAR_created, Tenant.staticSetCreated(siteRequest2, (String)result.get(Tenant.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(Tenant.VAR_tenantResource, Tenant.staticSetTenantResource(siteRequest2, (String)result.get(Tenant.VAR_tenantResource)));
+      o.persistForClass(Tenant.VAR_pageId, Tenant.staticSetPageId(siteRequest2, (String)result.get(Tenant.VAR_pageId)));
+      o.persistForClass(Tenant.VAR_archived, Tenant.staticSetArchived(siteRequest2, (String)result.get(Tenant.VAR_archived)));
+      o.persistForClass(Tenant.VAR_description, Tenant.staticSetDescription(siteRequest2, (String)result.get(Tenant.VAR_description)));
+      o.persistForClass(Tenant.VAR_hubId, Tenant.staticSetHubId(siteRequest2, (String)result.get(Tenant.VAR_hubId)));
+      o.persistForClass(Tenant.VAR_clusterName, Tenant.staticSetClusterName(siteRequest2, (String)result.get(Tenant.VAR_clusterName)));
+      o.persistForClass(Tenant.VAR_sessionId, Tenant.staticSetSessionId(siteRequest2, (String)result.get(Tenant.VAR_sessionId)));
+      o.persistForClass(Tenant.VAR_userKey, Tenant.staticSetUserKey(siteRequest2, (String)result.get(Tenant.VAR_userKey)));
+      o.persistForClass(Tenant.VAR_objectTitle, Tenant.staticSetObjectTitle(siteRequest2, (String)result.get(Tenant.VAR_objectTitle)));
+      o.persistForClass(Tenant.VAR_displayPage, Tenant.staticSetDisplayPage(siteRequest2, (String)result.get(Tenant.VAR_displayPage)));
+      o.persistForClass(Tenant.VAR_editPage, Tenant.staticSetEditPage(siteRequest2, (String)result.get(Tenant.VAR_editPage)));
+      o.persistForClass(Tenant.VAR_userPage, Tenant.staticSetUserPage(siteRequest2, (String)result.get(Tenant.VAR_userPage)));
+      o.persistForClass(Tenant.VAR_download, Tenant.staticSetDownload(siteRequest2, (String)result.get(Tenant.VAR_download)));
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }

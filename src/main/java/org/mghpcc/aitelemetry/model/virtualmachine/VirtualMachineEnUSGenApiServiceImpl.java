@@ -65,6 +65,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -282,7 +284,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -457,7 +459,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -634,7 +636,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -645,18 +647,18 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -746,42 +748,42 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   }
                   promise1.complete(virtualMachine);
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(virtualMachine -> {
         Promise<VirtualMachine> promise2 = Promise.promise();
         refreshVirtualMachine(virtualMachine).onSuccess(a -> {
           promise2.complete(virtualMachine);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(virtualMachine -> {
         promise.complete(virtualMachine);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchVirtualMachineFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -827,10 +829,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -841,7 +843,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 sql(siteRequest).update(VirtualMachine.class, pk).setToNull(VirtualMachine.VAR_hubResource, Hub.class, null).onSuccess(a -> {
                   promise2.complete();
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -874,10 +876,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -888,7 +890,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 sql(siteRequest).update(VirtualMachine.class, pk).setToNull(VirtualMachine.VAR_clusterResource, Cluster.class, null).onSuccess(a -> {
                   promise2.complete();
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1071,15 +1073,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(o3);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPATCHVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPATCHVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPATCHVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1099,7 +1101,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1199,6 +1201,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -1330,29 +1333,29 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   indexVirtualMachine(virtualMachine).onSuccess(o2 -> {
                     promise1.complete(virtualMachine);
                   }).onFailure(ex -> {
-                    promise1.fail(ex);
+                    promise1.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(virtualMachine -> {
         Promise<VirtualMachine> promise2 = Promise.promise();
         refreshVirtualMachine(virtualMachine).onSuccess(a -> {
@@ -1366,10 +1369,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise2.complete(virtualMachine);
           } catch(Exception ex) {
             LOG.error(String.format("postVirtualMachineFuture failed. "), ex);
-            promise2.fail(ex);
+            promise2.tryFail(ex);
           }
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(virtualMachine -> {
@@ -1383,14 +1386,14 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(virtualMachine);
         } catch(Exception ex) {
           LOG.error(String.format("postVirtualMachineFuture failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postVirtualMachineFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1455,10 +1458,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1493,10 +1496,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, solrId2, val).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -1696,15 +1699,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(o2);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPOSTVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPOSTVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPOSTVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1725,7 +1728,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1901,7 +1904,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -1912,18 +1915,18 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2007,39 +2010,39 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(virtualMachine -> {
         Promise<VirtualMachine> promise2 = Promise.promise();
         refreshVirtualMachine(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(virtualMachine -> {
         promise.complete(virtualMachine);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteVirtualMachineFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2078,10 +2081,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -2098,10 +2101,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -2128,15 +2131,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2156,7 +2159,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2336,7 +2339,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportVirtualMachine failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -2345,11 +2348,11 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2521,7 +2524,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2685,19 +2688,75 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     promise.complete();
   }
 
-  public String templateSearchPageVirtualMachine(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageVirtualMachine(ServiceRequest serviceRequest, VirtualMachine result) {
     return "en-us/search/vm/VirtualMachineSearchPage.htm";
+  }
+  public void templateSearchPageVirtualMachine(JsonObject ctx, VirtualMachinePage page, SearchList<VirtualMachine> listVirtualMachine, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      VirtualMachine result = listVirtualMachine.first();
+      String pageTemplateUri = templateUriSearchPageVirtualMachine(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageVirtualMachine failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageVirtualMachine(siteRequest.getServiceRequest());
-      if(listVirtualMachine.size() == 0)
-        pageTemplateUri = templateSearchPageVirtualMachine(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       VirtualMachinePage page = new VirtualMachinePage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2716,22 +2775,32 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           searchpageVirtualMachinePageInit(ctx, page, listVirtualMachine, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageVirtualMachine(ctx, page, listVirtualMachine, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageVirtualMachine failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2904,19 +2973,75 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     promise.complete();
   }
 
-  public String templateEditPageVirtualMachine(ServiceRequest serviceRequest) {
+  public String templateUriEditPageVirtualMachine(ServiceRequest serviceRequest, VirtualMachine result) {
     return "en-us/edit/vm/VirtualMachineEditPage.htm";
+  }
+  public void templateEditPageVirtualMachine(JsonObject ctx, VirtualMachinePage page, SearchList<VirtualMachine> listVirtualMachine, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      VirtualMachine result = listVirtualMachine.first();
+      String pageTemplateUri = templateUriEditPageVirtualMachine(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageVirtualMachine failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageVirtualMachine(siteRequest.getServiceRequest());
-      if(listVirtualMachine.size() == 0)
-        pageTemplateUri = templateSearchPageVirtualMachine(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       VirtualMachinePage page = new VirtualMachinePage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2935,22 +3060,32 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           editpageVirtualMachinePageInit(ctx, page, listVirtualMachine, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageVirtualMachine(ctx, page, listVirtualMachine, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageVirtualMachine failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3123,19 +3258,75 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     promise.complete();
   }
 
-  public String templateUserPageVirtualMachine(ServiceRequest serviceRequest) {
+  public String templateUriUserPageVirtualMachine(ServiceRequest serviceRequest, VirtualMachine result) {
     return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
+  }
+  public void templateUserPageVirtualMachine(JsonObject ctx, VirtualMachinePage page, SearchList<VirtualMachine> listVirtualMachine, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      VirtualMachine result = listVirtualMachine.first();
+      String pageTemplateUri = templateUriUserPageVirtualMachine(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateUserPageVirtualMachine failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200UserPageVirtualMachine(SearchList<VirtualMachine> listVirtualMachine) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listVirtualMachine.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateUserPageVirtualMachine(siteRequest.getServiceRequest());
-      if(listVirtualMachine.size() == 0)
-        pageTemplateUri = templateSearchPageVirtualMachine(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       VirtualMachinePage page = new VirtualMachinePage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -3154,22 +3345,32 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           userpageVirtualMachinePageInit(ctx, page, listVirtualMachine, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateUserPageVirtualMachine(ctx, page, listVirtualMachine, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200UserPageVirtualMachine failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200UserPageVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200UserPageVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3379,7 +3580,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -3390,18 +3591,18 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -3485,39 +3686,39 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(virtualMachine -> {
         Promise<VirtualMachine> promise2 = Promise.promise();
         refreshVirtualMachine(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(virtualMachine -> {
         promise.complete(virtualMachine);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterVirtualMachineFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3556,10 +3757,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_hubResource, Hub.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -3576,10 +3777,10 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                   sql(siteRequest).update(VirtualMachine.class, pk).set(VirtualMachine.VAR_clusterResource, Cluster.class, null, null).onSuccess(a -> {
                     promise2.complete();
                   }).onFailure(ex -> {
-                    promise2.fail(ex);
+                    promise2.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise2.fail(ex);
+                  promise2.tryFail(ex);
                 });
               }));
             });
@@ -3606,15 +3807,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEFilterVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEFilterVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEFilterVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3634,7 +3835,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3661,11 +3862,11 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error("createVirtualMachine failed. ", ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("createVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3731,13 +3932,13 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3944,18 +4145,18 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchVirtualMachine failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3990,20 +4191,20 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistVirtualMachine failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("persistVirtualMachine failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("persistVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4026,16 +4227,16 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete();
         } catch(Exception ex) {
           LOG.error(String.format("relateVirtualMachine failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("relateVirtualMachine failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("relateVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4077,11 +4278,11 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexVirtualMachine failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4114,15 +4315,15 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexVirtualMachine failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexVirtualMachine failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -4155,6 +4356,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 if(o2 != null) {
                   JsonObject params = new JsonObject();
                   params.put("body", new JsonObject());
+                  params.put("scopes", siteRequest.getScopes());
                   params.put("cookie", new JsonObject());
                   params.put("path", new JsonObject());
                   params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
@@ -4190,6 +4392,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
                 if(o2 != null) {
                   JsonObject params = new JsonObject();
                   params.put("body", new JsonObject());
+                  params.put("scopes", siteRequest.getScopes());
                   params.put("cookie", new JsonObject());
                   params.put("path", new JsonObject());
                   params.put("query", new JsonObject().put("q", "*:*").put("fq", new JsonArray().add("solrId:" + solrId2)).put("var", new JsonArray().add("refresh:false")));
@@ -4220,7 +4423,7 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
           params.put("form", new JsonObject());
           params.put("path", new JsonObject());
-          params.put("scopes", new JsonArray().add("GET").add("PATCH"));
+          params.put("scopes", siteRequest.getScopes());
           JsonObject query = new JsonObject();
           Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
           Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -4240,76 +4443,76 @@ public class VirtualMachineEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             if(statusCode.equals(200))
               promise.complete();
             else
-              promise.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+              promise.tryFail(new RuntimeException(responseMessage.getString("statusMessage")));
           }).onFailure(ex -> {
             LOG.error("Refresh relations failed. ", ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
           LOG.error("Refresh relations failed. ", ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } else {
         promise.complete();
       }
     } catch(Exception ex) {
       LOG.error(String.format("refreshVirtualMachine failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      VirtualMachine page = new VirtualMachine();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      VirtualMachine o = new VirtualMachine();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(VirtualMachine.VAR_hubId, VirtualMachine.staticSetHubId(siteRequest2, (String)result.get(VirtualMachine.VAR_hubId)));
-      page.persistForClass(VirtualMachine.VAR_hubResource, VirtualMachine.staticSetHubResource(siteRequest2, (String)result.get(VirtualMachine.VAR_hubResource)));
-      page.persistForClass(VirtualMachine.VAR_created, VirtualMachine.staticSetCreated(siteRequest2, (String)result.get(VirtualMachine.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(VirtualMachine.VAR_clusterName, VirtualMachine.staticSetClusterName(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterName)));
-      page.persistForClass(VirtualMachine.VAR_clusterResource, VirtualMachine.staticSetClusterResource(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterResource)));
-      page.persistForClass(VirtualMachine.VAR_archived, VirtualMachine.staticSetArchived(siteRequest2, (String)result.get(VirtualMachine.VAR_archived)));
-      page.persistForClass(VirtualMachine.VAR_vmProject, VirtualMachine.staticSetVmProject(siteRequest2, (String)result.get(VirtualMachine.VAR_vmProject)));
-      page.persistForClass(VirtualMachine.VAR_vmName, VirtualMachine.staticSetVmName(siteRequest2, (String)result.get(VirtualMachine.VAR_vmName)));
-      page.persistForClass(VirtualMachine.VAR_os, VirtualMachine.staticSetOs(siteRequest2, (String)result.get(VirtualMachine.VAR_os)));
-      page.persistForClass(VirtualMachine.VAR_vmResource, VirtualMachine.staticSetVmResource(siteRequest2, (String)result.get(VirtualMachine.VAR_vmResource)));
-      page.persistForClass(VirtualMachine.VAR_sessionId, VirtualMachine.staticSetSessionId(siteRequest2, (String)result.get(VirtualMachine.VAR_sessionId)));
-      page.persistForClass(VirtualMachine.VAR_userKey, VirtualMachine.staticSetUserKey(siteRequest2, (String)result.get(VirtualMachine.VAR_userKey)));
-      page.persistForClass(VirtualMachine.VAR_description, VirtualMachine.staticSetDescription(siteRequest2, (String)result.get(VirtualMachine.VAR_description)));
-      page.persistForClass(VirtualMachine.VAR_objectTitle, VirtualMachine.staticSetObjectTitle(siteRequest2, (String)result.get(VirtualMachine.VAR_objectTitle)));
-      page.persistForClass(VirtualMachine.VAR_displayPage, VirtualMachine.staticSetDisplayPage(siteRequest2, (String)result.get(VirtualMachine.VAR_displayPage)));
-      page.persistForClass(VirtualMachine.VAR_location, VirtualMachine.staticSetLocation(siteRequest2, (String)result.get(VirtualMachine.VAR_location)));
-      page.persistForClass(VirtualMachine.VAR_editPage, VirtualMachine.staticSetEditPage(siteRequest2, (String)result.get(VirtualMachine.VAR_editPage)));
-      page.persistForClass(VirtualMachine.VAR_id, VirtualMachine.staticSetId(siteRequest2, (String)result.get(VirtualMachine.VAR_id)));
-      page.persistForClass(VirtualMachine.VAR_userPage, VirtualMachine.staticSetUserPage(siteRequest2, (String)result.get(VirtualMachine.VAR_userPage)));
-      page.persistForClass(VirtualMachine.VAR_download, VirtualMachine.staticSetDownload(siteRequest2, (String)result.get(VirtualMachine.VAR_download)));
-      page.persistForClass(VirtualMachine.VAR_ngsildTenant, VirtualMachine.staticSetNgsildTenant(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildTenant)));
-      page.persistForClass(VirtualMachine.VAR_ngsildPath, VirtualMachine.staticSetNgsildPath(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildPath)));
-      page.persistForClass(VirtualMachine.VAR_ngsildContext, VirtualMachine.staticSetNgsildContext(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildContext)));
-      page.persistForClass(VirtualMachine.VAR_ngsildData, VirtualMachine.staticSetNgsildData(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildData)));
+      o.persistForClass(VirtualMachine.VAR_hubId, VirtualMachine.staticSetHubId(siteRequest2, (String)result.get(VirtualMachine.VAR_hubId)));
+      o.persistForClass(VirtualMachine.VAR_hubResource, VirtualMachine.staticSetHubResource(siteRequest2, (String)result.get(VirtualMachine.VAR_hubResource)));
+      o.persistForClass(VirtualMachine.VAR_created, VirtualMachine.staticSetCreated(siteRequest2, (String)result.get(VirtualMachine.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(VirtualMachine.VAR_clusterName, VirtualMachine.staticSetClusterName(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterName)));
+      o.persistForClass(VirtualMachine.VAR_clusterResource, VirtualMachine.staticSetClusterResource(siteRequest2, (String)result.get(VirtualMachine.VAR_clusterResource)));
+      o.persistForClass(VirtualMachine.VAR_archived, VirtualMachine.staticSetArchived(siteRequest2, (String)result.get(VirtualMachine.VAR_archived)));
+      o.persistForClass(VirtualMachine.VAR_vmProject, VirtualMachine.staticSetVmProject(siteRequest2, (String)result.get(VirtualMachine.VAR_vmProject)));
+      o.persistForClass(VirtualMachine.VAR_vmName, VirtualMachine.staticSetVmName(siteRequest2, (String)result.get(VirtualMachine.VAR_vmName)));
+      o.persistForClass(VirtualMachine.VAR_os, VirtualMachine.staticSetOs(siteRequest2, (String)result.get(VirtualMachine.VAR_os)));
+      o.persistForClass(VirtualMachine.VAR_vmResource, VirtualMachine.staticSetVmResource(siteRequest2, (String)result.get(VirtualMachine.VAR_vmResource)));
+      o.persistForClass(VirtualMachine.VAR_sessionId, VirtualMachine.staticSetSessionId(siteRequest2, (String)result.get(VirtualMachine.VAR_sessionId)));
+      o.persistForClass(VirtualMachine.VAR_userKey, VirtualMachine.staticSetUserKey(siteRequest2, (String)result.get(VirtualMachine.VAR_userKey)));
+      o.persistForClass(VirtualMachine.VAR_description, VirtualMachine.staticSetDescription(siteRequest2, (String)result.get(VirtualMachine.VAR_description)));
+      o.persistForClass(VirtualMachine.VAR_objectTitle, VirtualMachine.staticSetObjectTitle(siteRequest2, (String)result.get(VirtualMachine.VAR_objectTitle)));
+      o.persistForClass(VirtualMachine.VAR_displayPage, VirtualMachine.staticSetDisplayPage(siteRequest2, (String)result.get(VirtualMachine.VAR_displayPage)));
+      o.persistForClass(VirtualMachine.VAR_location, VirtualMachine.staticSetLocation(siteRequest2, (String)result.get(VirtualMachine.VAR_location)));
+      o.persistForClass(VirtualMachine.VAR_editPage, VirtualMachine.staticSetEditPage(siteRequest2, (String)result.get(VirtualMachine.VAR_editPage)));
+      o.persistForClass(VirtualMachine.VAR_id, VirtualMachine.staticSetId(siteRequest2, (String)result.get(VirtualMachine.VAR_id)));
+      o.persistForClass(VirtualMachine.VAR_userPage, VirtualMachine.staticSetUserPage(siteRequest2, (String)result.get(VirtualMachine.VAR_userPage)));
+      o.persistForClass(VirtualMachine.VAR_download, VirtualMachine.staticSetDownload(siteRequest2, (String)result.get(VirtualMachine.VAR_download)));
+      o.persistForClass(VirtualMachine.VAR_ngsildTenant, VirtualMachine.staticSetNgsildTenant(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildTenant)));
+      o.persistForClass(VirtualMachine.VAR_ngsildPath, VirtualMachine.staticSetNgsildPath(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildPath)));
+      o.persistForClass(VirtualMachine.VAR_ngsildContext, VirtualMachine.staticSetNgsildContext(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildContext)));
+      o.persistForClass(VirtualMachine.VAR_ngsildData, VirtualMachine.staticSetNgsildData(siteRequest2, (String)result.get(VirtualMachine.VAR_ngsildData)));
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
