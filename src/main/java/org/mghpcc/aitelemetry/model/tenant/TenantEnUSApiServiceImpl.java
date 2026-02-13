@@ -97,9 +97,14 @@ public class TenantEnUSApiServiceImpl extends TenantEnUSGenApiServiceImpl {
           .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
           .addHeader("action", String.format("putimport%sFuture", classSimpleName))
           ).onSuccess(message -> {
-        importTenantAuth(tenantId, classSimpleName, classApiAddress, body).onSuccess(a -> {
-          LOG.info(String.format("Imported %s Tenant", tenantId));
-          promise.complete();
+        importTenantAuth(tenantId, classSimpleName, classApiAddress, body, "GET").onSuccess(a -> {
+          importTenantAuth(tenantId, classSimpleName, classApiAddress, body, "GETManager").onSuccess(b -> {
+            LOG.info(String.format("Imported %s Tenant", tenantId));
+            promise.complete();
+          }).onFailure(ex -> {
+            LOG.error(String.format(importDataFail, classSimpleName), ex);
+            promise.fail(ex);
+          });
         }).onFailure(ex -> {
           LOG.error(String.format(importDataFail, classSimpleName), ex);
           promise.fail(ex);
@@ -115,14 +120,14 @@ public class TenantEnUSApiServiceImpl extends TenantEnUSGenApiServiceImpl {
     return promise.future();
   }
 
-  public Future<Void> importTenantAuth(String tenantId, String classSimpleName, String classApiAddress, JsonObject body) {
+  public Future<Void> importTenantAuth(String tenantId, String classSimpleName, String classApiAddress, JsonObject body, String scope) {
     Promise<Void> promise = Promise.promise();
     try {
-      String groupName = String.format("%s-%s-GET", Tenant.CLASS_AUTH_RESOURCE, tenantId);
-      String policyId = String.format("%s-%s-GET", Tenant.CLASS_AUTH_RESOURCE, tenantId);
-      String policyName = String.format("%s-%s-GET", Tenant.CLASS_AUTH_RESOURCE, tenantId);
+      String groupName = String.format("%s-%s-%s", Tenant.CLASS_AUTH_RESOURCE, tenantId, scope);
+      String policyId = String.format("%s-%s-%s", Tenant.CLASS_AUTH_RESOURCE, tenantId, scope);
+      String policyName = String.format("%s-%s-%s", Tenant.CLASS_AUTH_RESOURCE, tenantId, scope);
       String resourceName = String.format("%s-%s", Tenant.CLASS_AUTH_RESOURCE, tenantId);
-      String permissionName = String.format("%s-%s-GET-permission", Tenant.CLASS_AUTH_RESOURCE, tenantId);
+      String permissionName = String.format("%s-%s-%s-permission", Tenant.CLASS_AUTH_RESOURCE, tenantId, scope);
       String resourceDisplayName = String.format("%s %s", Tenant.CLASS_AUTH_RESOURCE, tenantId);
       String authAdminUsername = config.getString(ComputateConfigKeys.AUTH_ADMIN_USERNAME);
       String authAdminPassword = config.getString(ComputateConfigKeys.AUTH_ADMIN_PASSWORD);
@@ -166,7 +171,7 @@ public class TenantEnUSApiServiceImpl extends TenantEnUSGenApiServiceImpl {
                           .sendJson(new JsonObject()
                               .put("name", resourceName)
                               .put("displayName", resourceDisplayName)
-                              .put("scopes", new JsonArray().add("GET").add("PATCH"))
+                              .put("scopes", new JsonArray().add("GET").add("GETManager").add("PATCH"))
                               )
                           .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
                           .onSuccess(createResourceResponse -> {
@@ -174,15 +179,15 @@ public class TenantEnUSApiServiceImpl extends TenantEnUSGenApiServiceImpl {
                             .putHeader("Authorization", String.format("Bearer %s", authToken))
                             .sendJson(new JsonObject()
                                 .put("name", permissionName)
-                                .put("description", String.format("GET %s", groupName))
+                                .put("description", String.format("%s %s", scope, groupName))
                                 .put("decisionStrategy", "AFFIRMATIVE")
                                 .put("resources", new JsonArray().add(resourceName))
                                 .put("policies", new JsonArray().add(policyName))
-                                .put("scopes", new JsonArray().add(String.format("%s-GET", authRealm)))
+                                .put("scopes", new JsonArray().add(String.format("%s-%s", authRealm, scope)))
                                 )
                             .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
                             .onSuccess(createPermissionResponse -> {
-                          LOG.info(String.format("Successfully granted %s access to %s", "GET", resourceName));
+                          LOG.info(String.format("Successfully granted %s access to %s", scope, resourceName));
                           promise.complete();
                         }).onFailure(ex -> {
                           LOG.error(String.format("Failed to create an auth permission for resource %s. ", resourceName), ex);

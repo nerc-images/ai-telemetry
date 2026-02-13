@@ -315,8 +315,11 @@ public class Project extends ProjectGen<BaseModel> {
 
   /**
    * 
-   * HtmRow: 3
-   * HtmCell: 9
+   * HtmRowTitleOpen: current status
+   * HtmRow: 4
+   * HtmCell: 0
+   * DisplayName: status report
+   * Description: View the current status report for this project. 
    */
   @Override
   protected void _userPage(Wrap<String> w) {
