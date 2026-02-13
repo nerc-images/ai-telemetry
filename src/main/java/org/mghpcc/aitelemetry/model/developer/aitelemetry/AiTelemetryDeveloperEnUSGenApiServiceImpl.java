@@ -61,6 +61,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -245,7 +247,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -387,7 +389,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -530,7 +532,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHAiTelemetryDeveloper failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -541,18 +543,18 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHAiTelemetryDeveloper failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHAiTelemetryDeveloper failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -635,14 +637,14 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           }
           promise.complete(o);
         }).onFailure(ex -> {
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchAiTelemetryDeveloperFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -662,7 +664,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -729,6 +731,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -853,17 +856,17 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           indexAiTelemetryDeveloper(aiTelemetryDeveloper).onSuccess(o2 -> {
             promise.complete(aiTelemetryDeveloper);
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postAiTelemetryDeveloperFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -884,7 +887,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1026,7 +1029,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEAiTelemetryDeveloper failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -1037,18 +1040,18 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEAiTelemetryDeveloper failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEAiTelemetryDeveloper failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -1117,11 +1120,11 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       unindexAiTelemetryDeveloper(o).onSuccess(e -> {
         promise.complete(o);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteAiTelemetryDeveloperFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1141,7 +1144,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1288,7 +1291,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportAiTelemetryDeveloper failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -1297,11 +1300,11 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportAiTelemetryDeveloper failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1454,7 +1457,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1559,19 +1562,75 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
     promise.complete();
   }
 
-  public String templateSearchPageAiTelemetryDeveloper(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageAiTelemetryDeveloper(ServiceRequest serviceRequest, AiTelemetryDeveloper result) {
     return "en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchPage.htm";
+  }
+  public void templateSearchPageAiTelemetryDeveloper(JsonObject ctx, AiTelemetryDeveloperPage page, SearchList<AiTelemetryDeveloper> listAiTelemetryDeveloper, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      AiTelemetryDeveloper result = listAiTelemetryDeveloper.first();
+      String pageTemplateUri = templateUriSearchPageAiTelemetryDeveloper(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageAiTelemetryDeveloper failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageAiTelemetryDeveloper(SearchList<AiTelemetryDeveloper> listAiTelemetryDeveloper) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
-      if(listAiTelemetryDeveloper.size() == 0)
-        pageTemplateUri = templateSearchPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       AiTelemetryDeveloperPage page = new AiTelemetryDeveloperPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -1588,22 +1647,32 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           Promise<Void> promise1 = Promise.promise();
           searchpageAiTelemetryDeveloperPageInit(ctx, page, listAiTelemetryDeveloper, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageAiTelemetryDeveloper(ctx, page, listAiTelemetryDeveloper, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageAiTelemetryDeveloper failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageAiTelemetryDeveloper failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1743,19 +1812,75 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
     promise.complete();
   }
 
-  public String templateEditPageAiTelemetryDeveloper(ServiceRequest serviceRequest) {
+  public String templateUriEditPageAiTelemetryDeveloper(ServiceRequest serviceRequest, AiTelemetryDeveloper result) {
     return "en-us/edit/ai-telemetry-developer/AiTelemetryDeveloperEditPage.htm";
+  }
+  public void templateEditPageAiTelemetryDeveloper(JsonObject ctx, AiTelemetryDeveloperPage page, SearchList<AiTelemetryDeveloper> listAiTelemetryDeveloper, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      AiTelemetryDeveloper result = listAiTelemetryDeveloper.first();
+      String pageTemplateUri = templateUriEditPageAiTelemetryDeveloper(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageAiTelemetryDeveloper failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageAiTelemetryDeveloper(SearchList<AiTelemetryDeveloper> listAiTelemetryDeveloper) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
-      if(listAiTelemetryDeveloper.size() == 0)
-        pageTemplateUri = templateSearchPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       AiTelemetryDeveloperPage page = new AiTelemetryDeveloperPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -1772,22 +1897,32 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           Promise<Void> promise1 = Promise.promise();
           editpageAiTelemetryDeveloperPageInit(ctx, page, listAiTelemetryDeveloper, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageAiTelemetryDeveloper(ctx, page, listAiTelemetryDeveloper, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageAiTelemetryDeveloper failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageAiTelemetryDeveloper failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1927,19 +2062,75 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
     promise.complete();
   }
 
-  public String templateUserPageAiTelemetryDeveloper(ServiceRequest serviceRequest) {
+  public String templateUriUserPageAiTelemetryDeveloper(ServiceRequest serviceRequest, AiTelemetryDeveloper result) {
     return String.format("%s.htm", StringUtils.substringBefore(serviceRequest.getExtra().getString("uri").substring(1), "?"));
+  }
+  public void templateUserPageAiTelemetryDeveloper(JsonObject ctx, AiTelemetryDeveloperPage page, SearchList<AiTelemetryDeveloper> listAiTelemetryDeveloper, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      AiTelemetryDeveloper result = listAiTelemetryDeveloper.first();
+      String pageTemplateUri = templateUriUserPageAiTelemetryDeveloper(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateUserPageAiTelemetryDeveloper failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200UserPageAiTelemetryDeveloper(SearchList<AiTelemetryDeveloper> listAiTelemetryDeveloper) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listAiTelemetryDeveloper.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateUserPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
-      if(listAiTelemetryDeveloper.size() == 0)
-        pageTemplateUri = templateSearchPageAiTelemetryDeveloper(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       AiTelemetryDeveloperPage page = new AiTelemetryDeveloperPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -1956,22 +2147,32 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           Promise<Void> promise1 = Promise.promise();
           userpageAiTelemetryDeveloperPageInit(ctx, page, listAiTelemetryDeveloper, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateUserPageAiTelemetryDeveloper(ctx, page, listAiTelemetryDeveloper, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200UserPageAiTelemetryDeveloper failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200UserPageAiTelemetryDeveloper failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200UserPageAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2147,7 +2348,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterAiTelemetryDeveloper failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -2158,18 +2359,18 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterAiTelemetryDeveloper failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterAiTelemetryDeveloper failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2238,11 +2439,11 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       unindexAiTelemetryDeveloper(o).onSuccess(e -> {
         promise.complete(o);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterAiTelemetryDeveloperFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2262,7 +2463,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2277,7 +2478,7 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
       promise.complete(o);
     } catch(Exception ex) {
       LOG.error(String.format("createAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2343,13 +2544,13 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchAiTelemetryDeveloper failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2553,18 +2754,18 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchAiTelemetryDeveloper failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchAiTelemetryDeveloper failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2599,15 +2800,15 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistAiTelemetryDeveloper failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistAiTelemetryDeveloper failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
     } catch(Exception ex) {
       LOG.error(String.format("persistAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2649,11 +2850,11 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexAiTelemetryDeveloper failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2686,68 +2887,68 @@ public class AiTelemetryDeveloperEnUSGenApiServiceImpl extends BaseApiServiceImp
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexAiTelemetryDeveloper failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexAiTelemetryDeveloper failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexAiTelemetryDeveloper failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      AiTelemetryDeveloper page = new AiTelemetryDeveloper();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      AiTelemetryDeveloper o = new AiTelemetryDeveloper();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(AiTelemetryDeveloper.VAR_created, AiTelemetryDeveloper.staticSetCreated(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(AiTelemetryDeveloper.VAR_name, AiTelemetryDeveloper.staticSetName(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_name)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_description, AiTelemetryDeveloper.staticSetDescription(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_description)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_archived, AiTelemetryDeveloper.staticSetArchived(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_archived)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_pageId, AiTelemetryDeveloper.staticSetPageId(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_pageId)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_courseNum, AiTelemetryDeveloper.staticSetCourseNum(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_courseNum)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_lessonNum, AiTelemetryDeveloper.staticSetLessonNum(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_lessonNum)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_authorName, AiTelemetryDeveloper.staticSetAuthorName(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_authorName)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_authorUrl, AiTelemetryDeveloper.staticSetAuthorUrl(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_authorUrl)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_pageImageUri, AiTelemetryDeveloper.staticSetPageImageUri(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_pageImageUri)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_objectTitle, AiTelemetryDeveloper.staticSetObjectTitle(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_objectTitle)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_displayPage, AiTelemetryDeveloper.staticSetDisplayPage(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_displayPage)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_editPage, AiTelemetryDeveloper.staticSetEditPage(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_editPage)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_userPage, AiTelemetryDeveloper.staticSetUserPage(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_userPage)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_pageImageAlt, AiTelemetryDeveloper.staticSetPageImageAlt(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_pageImageAlt)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_download, AiTelemetryDeveloper.staticSetDownload(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_download)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_prerequisiteArticleIds, AiTelemetryDeveloper.staticSetPrerequisiteArticleIds(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_prerequisiteArticleIds)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_solrId, AiTelemetryDeveloper.staticSetSolrId(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_solrId)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_nextArticleIds, AiTelemetryDeveloper.staticSetNextArticleIds(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_nextArticleIds)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_labelsString, AiTelemetryDeveloper.staticSetLabelsString(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_labelsString)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_labels, AiTelemetryDeveloper.staticSetLabels(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_labels)));
-      page.persistForClass(AiTelemetryDeveloper.VAR_relatedArticleIds, AiTelemetryDeveloper.staticSetRelatedArticleIds(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_relatedArticleIds)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_created, AiTelemetryDeveloper.staticSetCreated(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(AiTelemetryDeveloper.VAR_name, AiTelemetryDeveloper.staticSetName(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_name)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_description, AiTelemetryDeveloper.staticSetDescription(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_description)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_archived, AiTelemetryDeveloper.staticSetArchived(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_archived)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_pageId, AiTelemetryDeveloper.staticSetPageId(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_pageId)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_courseNum, AiTelemetryDeveloper.staticSetCourseNum(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_courseNum)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_lessonNum, AiTelemetryDeveloper.staticSetLessonNum(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_lessonNum)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_authorName, AiTelemetryDeveloper.staticSetAuthorName(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_authorName)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_authorUrl, AiTelemetryDeveloper.staticSetAuthorUrl(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_authorUrl)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_pageImageUri, AiTelemetryDeveloper.staticSetPageImageUri(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_pageImageUri)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_objectTitle, AiTelemetryDeveloper.staticSetObjectTitle(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_objectTitle)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_displayPage, AiTelemetryDeveloper.staticSetDisplayPage(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_displayPage)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_editPage, AiTelemetryDeveloper.staticSetEditPage(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_editPage)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_userPage, AiTelemetryDeveloper.staticSetUserPage(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_userPage)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_pageImageAlt, AiTelemetryDeveloper.staticSetPageImageAlt(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_pageImageAlt)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_download, AiTelemetryDeveloper.staticSetDownload(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_download)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_prerequisiteArticleIds, AiTelemetryDeveloper.staticSetPrerequisiteArticleIds(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_prerequisiteArticleIds)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_solrId, AiTelemetryDeveloper.staticSetSolrId(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_solrId)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_nextArticleIds, AiTelemetryDeveloper.staticSetNextArticleIds(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_nextArticleIds)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_labelsString, AiTelemetryDeveloper.staticSetLabelsString(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_labelsString)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_labels, AiTelemetryDeveloper.staticSetLabels(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_labels)));
+      o.persistForClass(AiTelemetryDeveloper.VAR_relatedArticleIds, AiTelemetryDeveloper.staticSetRelatedArticleIds(siteRequest2, (String)result.get(AiTelemetryDeveloper.VAR_relatedArticleIds)));
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }

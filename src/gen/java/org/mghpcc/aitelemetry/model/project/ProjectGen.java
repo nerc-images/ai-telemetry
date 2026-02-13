@@ -137,15 +137,21 @@ import org.computate.search.response.solr.SolrResponse;
  * </p>
  * <p>
  * Delete the class Project in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * <pre>
+ * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&lt;/query&gt;&lt;/delete&gt;'
+ * </pre>
  * </p>
  * <p>
  * Delete  the package org.mghpcc.aitelemetry.model.project in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.mghpcc.aitelemetry.model.project&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * <pre>
+ * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.mghpcc.aitelemetry.model.project&lt;/query&gt;&lt;/delete&gt;'
+ * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * <pre>
+ * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * </pre>
  * </p>
  * Generated: true
  **/
@@ -174,6 +180,9 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String ANameAdjective_enUS = "a project";
   public static final String NameAdjectiveSingular_enUS = "project";
   public static final String NameAdjectivePlural_enUS = "projects";
+  public static final String UserPage_enUS_OpenApiUri = "/en-us/user/project/{projectResource}";
+  public static final String UserPage_enUS_StringFormatUri = "/en-us/user/project/%s";
+  public static final String UserPage_enUS_StringFormatUrl = "%s/en-us/user/project/%s";
   public static final String Search_enUS_OpenApiUri = "/en-us/api/project";
   public static final String Search_enUS_StringFormatUri = "/en-us/api/project";
   public static final String Search_enUS_StringFormatUrl = "%s/en-us/api/project";
@@ -198,9 +207,6 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String EditPage_enUS_OpenApiUri = "/en-us/edit/project/{projectResource}";
   public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/project/%s";
   public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/project/%s";
-  public static final String UserPage_enUS_OpenApiUri = "/en-us/user/project/{projectResource}";
-  public static final String UserPage_enUS_StringFormatUri = "/en-us/user/project/%s";
-  public static final String UserPage_enUS_StringFormatUrl = "%s/en-us/user/project/%s";
   public static final String DELETEFilter_enUS_OpenApiUri = "/en-us/api/project";
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/project";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/project";
@@ -1425,6 +1431,68 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return namespaceTerminating;
   }
 
+	///////////////////////////
+  // statusPageTemplateUri //
+	///////////////////////////
+
+
+  /**
+   *  The entity statusPageTemplateUri
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String statusPageTemplateUri;
+
+  /**
+   * <br> The entity statusPageTemplateUri
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:statusPageTemplateUri">Find the entity statusPageTemplateUri in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _statusPageTemplateUri(Wrap<String> w);
+
+  public String getStatusPageTemplateUri() {
+    return statusPageTemplateUri;
+  }
+  public void setStatusPageTemplateUri(String o) {
+    this.statusPageTemplateUri = Project.staticSetStatusPageTemplateUri(siteRequest_, o);
+  }
+  public static String staticSetStatusPageTemplateUri(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project statusPageTemplateUriInit() {
+    Wrap<String> statusPageTemplateUriWrap = new Wrap<String>().var("statusPageTemplateUri");
+    if(statusPageTemplateUri == null) {
+      _statusPageTemplateUri(statusPageTemplateUriWrap);
+      Optional.ofNullable(statusPageTemplateUriWrap.getO()).ifPresent(o -> {
+        setStatusPageTemplateUri(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchStatusPageTemplateUri(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrStatusPageTemplateUri(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqStatusPageTemplateUri(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchStatusPageTemplateUri(siteRequest_, Project.staticSetStatusPageTemplateUri(siteRequest_, o)).toString();
+  }
+
+  public String sqlStatusPageTemplateUri() {
+    return statusPageTemplateUri;
+  }
+
+  public static String staticJsonStatusPageTemplateUri(String statusPageTemplateUri) {
+    return statusPageTemplateUri;
+  }
+
   //////////////
   // initDeep //
   //////////////
@@ -1472,6 +1540,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         fullPvcsCountInit();
         fullPvcsInit();
         namespaceTerminatingInit();
+        statusPageTemplateUriInit();
         promise2.complete();
       } catch(Exception ex) {
         promise2.fail(ex);
@@ -1561,6 +1630,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return oProject.fullPvcs;
       case "namespaceTerminating":
         return oProject.namespaceTerminating;
+      case "statusPageTemplateUri":
+        return oProject.statusPageTemplateUri;
       default:
         return super.obtainBaseModel(var);
     }
@@ -1654,6 +1725,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSetFullPvcs(siteRequest_, v);
     case "namespaceTerminating":
       return Project.staticSetNamespaceTerminating(siteRequest_, v);
+    case "statusPageTemplateUri":
+      return Project.staticSetStatusPageTemplateUri(siteRequest_, v);
       default:
         return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
     }
@@ -1704,6 +1777,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFullPvcs(siteRequest_, (String)o);
     case "namespaceTerminating":
       return Project.staticSearchNamespaceTerminating(siteRequest_, (Boolean)o);
+    case "statusPageTemplateUri":
+      return Project.staticSearchStatusPageTemplateUri(siteRequest_, (String)o);
       default:
         return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
     }
@@ -1754,6 +1829,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchStrFullPvcs(siteRequest_, (String)o);
     case "namespaceTerminating":
       return Project.staticSearchStrNamespaceTerminating(siteRequest_, (Boolean)o);
+    case "statusPageTemplateUri":
+      return Project.staticSearchStrStatusPageTemplateUri(siteRequest_, (String)o);
       default:
         return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
     }
@@ -1804,6 +1881,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFqFullPvcs(siteRequest_, o);
     case "namespaceTerminating":
       return Project.staticSearchFqNamespaceTerminating(siteRequest_, o);
+    case "statusPageTemplateUri":
+      return Project.staticSearchFqStatusPageTemplateUri(siteRequest_, o);
       default:
         return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
     }
@@ -1960,6 +2039,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         }
         saves.add("namespaceTerminating");
         return val;
+      } else if("statuspagetemplateuri".equals(varLower)) {
+        if(val instanceof String) {
+          setStatusPageTemplateUri((String)val);
+        }
+        saves.add("statusPageTemplateUri");
+        return val;
     } else {
       return super.persistBaseModel(var, val);
     }
@@ -2087,6 +2172,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         if(namespaceTerminating != null)
           oProject.setNamespaceTerminating(namespaceTerminating);
       }
+
+      if(saves.contains("statusPageTemplateUri")) {
+        String statusPageTemplateUri = (String)doc.get("statusPageTemplateUri_docvalues_string");
+        if(statusPageTemplateUri != null)
+          oProject.setStatusPageTemplateUri(statusPageTemplateUri);
+      }
     }
 
     super.populateBaseModel(doc);
@@ -2159,6 +2250,9 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     if(namespaceTerminating != null) {
       doc.put("namespaceTerminating_docvalues_boolean", namespaceTerminating);
     }
+    if(statusPageTemplateUri != null) {
+      doc.put("statusPageTemplateUri_docvalues_string", statusPageTemplateUri);
+    }
     super.indexBaseModel(doc);
 
 	}
@@ -2201,6 +2295,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "fullPvcs_docvalues_strings";
       case "namespaceTerminating":
         return "namespaceTerminating_docvalues_boolean";
+      case "statusPageTemplateUri":
+        return "statusPageTemplateUri_docvalues_string";
       default:
         return BaseModel.varStoredBaseModel(entityVar);
     }
@@ -2244,6 +2340,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "fullPvcs_docvalues_strings";
       case "namespaceTerminating":
         return "namespaceTerminating_docvalues_boolean";
+      case "statusPageTemplateUri":
+        return "statusPageTemplateUri_docvalues_string";
       default:
         return BaseModel.varIndexedBaseModel(entityVar);
     }
@@ -2287,6 +2385,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "fullPvcs";
       case "namespaceTerminating_docvalues_boolean":
         return "namespaceTerminating";
+      case "statusPageTemplateUri_docvalues_string":
+        return "statusPageTemplateUri";
       default:
         return BaseModel.searchVarBaseModel(searchVar);
     }
@@ -2341,6 +2441,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       oProject.addFullPvcs(Project.staticSetFullPvcs(siteRequest, v.toString()));
     });
     oProject.setNamespaceTerminating(Optional.ofNullable(doc.get("namespaceTerminating_docvalues_boolean")).map(v -> v.toString()).orElse(null));
+    oProject.setStatusPageTemplateUri(Optional.ofNullable(doc.get("statusPageTemplateUri_docvalues_string")).map(v -> v.toString()).orElse(null));
 
     super.storeBaseModel(doc);
   }
@@ -2390,6 +2491,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         apiRequest.addVars("fullPvcs");
       if(!Objects.equals(namespaceTerminating, original.getNamespaceTerminating()))
         apiRequest.addVars("namespaceTerminating");
+      if(!Objects.equals(statusPageTemplateUri, original.getStatusPageTemplateUri()))
+        apiRequest.addVars("statusPageTemplateUri");
       super.apiRequestBaseModel();
     }
   }
@@ -2419,6 +2522,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(fullPvcsCount).map(v -> "fullPvcsCount: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(fullPvcs).map(v -> "fullPvcs: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(namespaceTerminating).map(v -> "namespaceTerminating: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(statusPageTemplateUri).map(v -> "statusPageTemplateUri: \"" + v + "\"\n" ).orElse(""));
     return sb.toString();
   }
 
@@ -2447,6 +2551,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String VAR_fullPvcsCount = "fullPvcsCount";
   public static final String VAR_fullPvcs = "fullPvcs";
   public static final String VAR_namespaceTerminating = "namespaceTerminating";
+  public static final String VAR_statusPageTemplateUri = "statusPageTemplateUri";
 
   public static List<String> varsQForClass() {
     return Project.varsQProject(new ArrayList<String>());
@@ -2510,6 +2615,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_fullPvcsCount = "Full PVCs count";
   public static final String DISPLAY_NAME_fullPvcs = "pods restarting";
   public static final String DISPLAY_NAME_namespaceTerminating = "namespace terminating";
+  public static final String DISPLAY_NAME_statusPageTemplateUri = "status page template URI";
 
   @Override
   public String idForClass() {
@@ -2597,6 +2703,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return DISPLAY_NAME_fullPvcs;
     case VAR_namespaceTerminating:
       return DISPLAY_NAME_namespaceTerminating;
+    case VAR_statusPageTemplateUri:
+      return DISPLAY_NAME_statusPageTemplateUri;
     default:
       return BaseModel.displayNameBaseModel(var);
     }
@@ -2642,6 +2750,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "The names of the persistent volume claims that are running out of disk space in this project. ";
     case VAR_namespaceTerminating:
       return "Whether namespace is stuck in terminating status. ";
+    case VAR_statusPageTemplateUri:
+      return "The relative path in the static content to the page template for this project. ";
       default:
         return BaseModel.descriptionBaseModel(var);
     }
@@ -2685,6 +2795,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "List";
     case VAR_namespaceTerminating:
       return "Boolean";
+    case VAR_statusPageTemplateUri:
+      return "String";
       default:
         return BaseModel.classSimpleNameBaseModel(var);
     }

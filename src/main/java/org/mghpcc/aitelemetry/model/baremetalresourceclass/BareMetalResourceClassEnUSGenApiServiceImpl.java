@@ -61,6 +61,8 @@ import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.ext.reactivestreams.ReactiveReadStream;
 import io.vertx.ext.reactivestreams.ReactiveWriteStream;
 import io.vertx.core.MultiMap;
+import org.computate.i18n.I18n;
+import org.yaml.snakeyaml.Yaml;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,7 +210,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -313,7 +315,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200GETBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -457,7 +459,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listPATCHBareMetalResourceClass failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -468,18 +470,18 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPATCHBareMetalResourceClass failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listPATCHBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listPATCHBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -569,42 +571,42 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
                   }
                   promise1.complete(bareMetalResourceClass);
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalResourceClass -> {
         Promise<BareMetalResourceClass> promise2 = Promise.promise();
         refreshBareMetalResourceClass(bareMetalResourceClass).onSuccess(a -> {
           promise2.complete(bareMetalResourceClass);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalResourceClass -> {
         promise.complete(bareMetalResourceClass);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("patchBareMetalResourceClassFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -744,15 +746,15 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise.complete(o3);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPATCHBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPATCHBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPATCHBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -772,7 +774,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -839,6 +841,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
               JsonObject params = new JsonObject();
               params.put("body", siteRequest.getJsonObject());
               params.put("path", new JsonObject());
+              params.put("scopes", scopes2);
               params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
               params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
               params.put("form", new JsonObject());
@@ -970,29 +973,29 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
                   indexBareMetalResourceClass(bareMetalResourceClass).onSuccess(o2 -> {
                     promise1.complete(bareMetalResourceClass);
                   }).onFailure(ex -> {
-                    promise1.fail(ex);
+                    promise1.tryFail(ex);
                   });
                 }).onFailure(ex -> {
-                  promise1.fail(ex);
+                  promise1.tryFail(ex);
                 });
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalResourceClass -> {
         Promise<BareMetalResourceClass> promise2 = Promise.promise();
         refreshBareMetalResourceClass(bareMetalResourceClass).onSuccess(a -> {
@@ -1006,10 +1009,10 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             promise2.complete(bareMetalResourceClass);
           } catch(Exception ex) {
             LOG.error(String.format("postBareMetalResourceClassFuture failed. "), ex);
-            promise2.fail(ex);
+            promise2.tryFail(ex);
           }
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalResourceClass -> {
@@ -1023,14 +1026,14 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise.complete(bareMetalResourceClass);
         } catch(Exception ex) {
           LOG.error(String.format("postBareMetalResourceClassFuture failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("postBareMetalResourceClassFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1197,15 +1200,15 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise.complete(o2);
         }).onFailure(ex -> {
           LOG.error(String.format("sqlPOSTBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlPOSTBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlPOSTBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1226,7 +1229,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1369,7 +1372,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEBareMetalResourceClass failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -1380,18 +1383,18 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEBareMetalResourceClass failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -1475,39 +1478,39 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalResourceClass -> {
         Promise<BareMetalResourceClass> promise2 = Promise.promise();
         refreshBareMetalResourceClass(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalResourceClass -> {
         promise.complete(bareMetalResourceClass);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deleteBareMetalResourceClassFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1556,15 +1559,15 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1584,7 +1587,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1731,7 +1734,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listPUTImportBareMetalResourceClass failed. "), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       });
@@ -1740,11 +1743,11 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("listPUTImportBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("listPUTImportBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1916,7 +1919,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -1984,19 +1987,75 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
     promise.complete();
   }
 
-  public String templateSearchPageBareMetalResourceClass(ServiceRequest serviceRequest) {
+  public String templateUriSearchPageBareMetalResourceClass(ServiceRequest serviceRequest, BareMetalResourceClass result) {
     return "en-us/search/bare-metal-resource-class/BareMetalResourceClassSearchPage.htm";
+  }
+  public void templateSearchPageBareMetalResourceClass(JsonObject ctx, BareMetalResourceClassPage page, SearchList<BareMetalResourceClass> listBareMetalResourceClass, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listBareMetalResourceClass.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      BareMetalResourceClass result = listBareMetalResourceClass.first();
+      String pageTemplateUri = templateUriSearchPageBareMetalResourceClass(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateSearchPageBareMetalResourceClass failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200SearchPageBareMetalResourceClass(SearchList<BareMetalResourceClass> listBareMetalResourceClass) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listBareMetalResourceClass.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateSearchPageBareMetalResourceClass(siteRequest.getServiceRequest());
-      if(listBareMetalResourceClass.size() == 0)
-        pageTemplateUri = templateSearchPageBareMetalResourceClass(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       BareMetalResourceClassPage page = new BareMetalResourceClassPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2015,22 +2074,32 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           Promise<Void> promise1 = Promise.promise();
           searchpageBareMetalResourceClassPageInit(ctx, page, listBareMetalResourceClass, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateSearchPageBareMetalResourceClass(ctx, page, listBareMetalResourceClass, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200SearchPageBareMetalResourceClass failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200SearchPageBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchPageBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2170,19 +2239,75 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
     promise.complete();
   }
 
-  public String templateEditPageBareMetalResourceClass(ServiceRequest serviceRequest) {
+  public String templateUriEditPageBareMetalResourceClass(ServiceRequest serviceRequest, BareMetalResourceClass result) {
     return "en-us/edit/bare-metal-resource-class/BareMetalResourceClassEditPage.htm";
+  }
+  public void templateEditPageBareMetalResourceClass(JsonObject ctx, BareMetalResourceClassPage page, SearchList<BareMetalResourceClass> listBareMetalResourceClass, Promise<String> promise) {
+    try {
+      SiteRequest siteRequest = listBareMetalResourceClass.getSiteRequest_(SiteRequest.class);
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      BareMetalResourceClass result = listBareMetalResourceClass.first();
+      String pageTemplateUri = templateUriEditPageBareMetalResourceClass(serviceRequest, result);
+      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
+      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
+      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+      if(pageTemplateUri.endsWith(".md")) {
+        String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+        Map<String, Object> data = new HashMap<>();
+        String body = "";
+        if(template.startsWith("---\n")) {
+          Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+          if(mMeta.find()) {
+            String meta = mMeta.group(1);
+            body = mMeta.group(2);
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(meta);
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+            map.forEach((resultKey, value) -> {
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx.getMap());
+                  data.put(key, rendered);
+                } else {
+                  data.put(key, val);
+                }
+              }
+            });
+          }
+        }
+        org.commonmark.parser.Parser parser = org.commonmark.parser.Parser.builder().build();
+        org.commonmark.node.Node document = parser.parse(body);
+        org.commonmark.renderer.html.HtmlRenderer renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build();
+        String pageExtends =  Optional.ofNullable((String)data.get("extends")).orElse("en-us/Article.htm");
+        String htmTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else {
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("templateEditPageBareMetalResourceClass failed. "), ex);
+      ExceptionUtils.rethrow(ex);
+    }
   }
   public Future<ServiceResponse> response200EditPageBareMetalResourceClass(SearchList<BareMetalResourceClass> listBareMetalResourceClass) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       SiteRequest siteRequest = listBareMetalResourceClass.getSiteRequest_(SiteRequest.class);
-      String pageTemplateUri = templateEditPageBareMetalResourceClass(siteRequest.getServiceRequest());
-      if(listBareMetalResourceClass.size() == 0)
-        pageTemplateUri = templateSearchPageBareMetalResourceClass(siteRequest.getServiceRequest());
-      String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
-      Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
       BareMetalResourceClassPage page = new BareMetalResourceClassPage();
       MultiMap requestHeaders = MultiMap.caseInsensitiveMultiMap();
       siteRequest.setRequestHeaders(requestHeaders);
@@ -2201,22 +2326,32 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           Promise<Void> promise1 = Promise.promise();
           editpageBareMetalResourceClassPageInit(ctx, page, listBareMetalResourceClass, promise1);
           promise1.future().onSuccess(b -> {
-            String renderedTemplate = jinjava.render(template, ctx.getMap());
-            Buffer buffer = Buffer.buffer(renderedTemplate);
-            promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+            Promise<String> promise2 = Promise.promise();
+            templateEditPageBareMetalResourceClass(ctx, page, listBareMetalResourceClass, promise2);
+            promise2.future().onSuccess(renderedTemplate -> {
+              try {
+                Buffer buffer = Buffer.buffer(renderedTemplate);
+                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+              } catch(Throwable ex) {
+                LOG.error(String.format("response200EditPageBareMetalResourceClass failed. "), ex);
+                promise.fail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
           }).onFailure(ex -> {
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("response200EditPageBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("response200EditPageBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2393,7 +2528,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise1.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("listDELETEFilterBareMetalResourceClass failed. "), ex);
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
       }));
     });
@@ -2404,18 +2539,18 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("listDELETEFilterBareMetalResourceClass failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete();
         }
       }).onFailure(ex -> {
         LOG.error(String.format("listDELETEFilterBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("listDELETEFilterBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -2499,39 +2634,39 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
                 }
                 promise1.complete();
               }).onFailure(ex -> {
-                promise1.fail(ex);
+                promise1.tryFail(ex);
               });
             }).onFailure(ex -> {
-              promise1.fail(ex);
+              promise1.tryFail(ex);
             });
           }).onFailure(ex -> {
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }).onFailure(ex -> {
-          promise1.fail(ex);
+          promise1.tryFail(ex);
         });
         return promise1.future();
       }).onSuccess(a -> {
         siteRequest.setSqlConnection(null);
       }).onFailure(ex -> {
         siteRequest.setSqlConnection(null);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }).compose(bareMetalResourceClass -> {
         Promise<BareMetalResourceClass> promise2 = Promise.promise();
         refreshBareMetalResourceClass(o).onSuccess(a -> {
           promise2.complete(o);
         }).onFailure(ex -> {
-          promise2.fail(ex);
+          promise2.tryFail(ex);
         });
         return promise2.future();
       }).onSuccess(bareMetalResourceClass -> {
         promise.complete(bareMetalResourceClass);
       }).onFailure(ex -> {
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("deletefilterBareMetalResourceClassFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2580,15 +2715,15 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise.complete();
         }).onFailure(ex -> {
           LOG.error(String.format("sqlDELETEFilterBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("sqlDELETEFilterBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("sqlDELETEFilterBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2608,7 +2743,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2635,11 +2770,11 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error("createBareMetalResourceClass failed. ", ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("createBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2705,13 +2840,13 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           }
         } catch(Exception ex) {
           LOG.error(String.format("searchBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       });
       promise.complete();
     } catch(Exception ex) {
       LOG.error(String.format("searchBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2914,18 +3049,18 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             promise.complete(searchList);
           }).onFailure(ex -> {
             LOG.error(String.format("searchBareMetalResourceClass failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } else {
           promise.complete(searchList);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("searchBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("searchBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -2960,20 +3095,20 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format("persistBareMetalResourceClass failed. "), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         } catch(Exception ex) {
           LOG.error(String.format("persistBareMetalResourceClass failed. "), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         RuntimeException ex2 = new RuntimeException(ex);
         LOG.error(String.format("persistBareMetalResourceClass failed. "), ex2);
-        promise.fail(ex2);
+        promise.tryFail(ex2);
       });
     } catch(Exception ex) {
       LOG.error(String.format("persistBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3021,11 +3156,11 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
         promise.complete(o);
       }).onFailure(ex -> {
         LOG.error(String.format("indexBareMetalResourceClass failed. "), new RuntimeException(ex));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("indexBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3058,15 +3193,15 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           promise.complete(o);
         }).onFailure(ex -> {
           LOG.error(String.format("unindexBareMetalResourceClass failed. "), new RuntimeException(ex));
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("unindexBareMetalResourceClass failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("unindexBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -3094,7 +3229,7 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
           params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
           params.put("form", new JsonObject());
           params.put("path", new JsonObject());
-          params.put("scopes", new JsonArray().add("GET").add("PATCH"));
+          params.put("scopes", siteRequest.getScopes());
           JsonObject query = new JsonObject();
           Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
           Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
@@ -3114,63 +3249,63 @@ public class BareMetalResourceClassEnUSGenApiServiceImpl extends BaseApiServiceI
             if(statusCode.equals(200))
               promise.complete();
             else
-              promise.fail(new RuntimeException(responseMessage.getString("statusMessage")));
+              promise.tryFail(new RuntimeException(responseMessage.getString("statusMessage")));
           }).onFailure(ex -> {
             LOG.error("Refresh relations failed. ", ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           });
         }).onFailure(ex -> {
           LOG.error("Refresh relations failed. ", ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } else {
         promise.complete();
       }
     } catch(Exception ex) {
       LOG.error(String.format("refreshBareMetalResourceClass failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
 
   @Override
-  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName) {
+  public Future<JsonObject> generatePageBody(ComputateSiteRequest siteRequest, Map<String, Object> ctx, String templatePath, String classSimpleName, String pageTemplate) {
     Promise<JsonObject> promise = Promise.promise();
     try {
       Map<String, Object> result = (Map<String, Object>)ctx.get("result");
       SiteRequest siteRequest2 = (SiteRequest)siteRequest;
       String siteBaseUrl = config.getString(ComputateConfigKeys.SITE_BASE_URL);
-      BareMetalResourceClass page = new BareMetalResourceClass();
-      page.setSiteRequest_((SiteRequest)siteRequest);
+      BareMetalResourceClass o = new BareMetalResourceClass();
+      o.setSiteRequest_((SiteRequest)siteRequest);
 
-      page.persistForClass(BareMetalResourceClass.VAR_name, BareMetalResourceClass.staticSetName(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_name)));
-      page.persistForClass(BareMetalResourceClass.VAR_count, BareMetalResourceClass.staticSetCount(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_count)));
-      page.persistForClass(BareMetalResourceClass.VAR_created, BareMetalResourceClass.staticSetCreated(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      page.persistForClass(BareMetalResourceClass.VAR_archived, BareMetalResourceClass.staticSetArchived(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_archived)));
-      page.persistForClass(BareMetalResourceClass.VAR_sessionId, BareMetalResourceClass.staticSetSessionId(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_sessionId)));
-      page.persistForClass(BareMetalResourceClass.VAR_userKey, BareMetalResourceClass.staticSetUserKey(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_userKey)));
-      page.persistForClass(BareMetalResourceClass.VAR_objectTitle, BareMetalResourceClass.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_objectTitle)));
-      page.persistForClass(BareMetalResourceClass.VAR_displayPage, BareMetalResourceClass.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_displayPage)));
-      page.persistForClass(BareMetalResourceClass.VAR_editPage, BareMetalResourceClass.staticSetEditPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_editPage)));
-      page.persistForClass(BareMetalResourceClass.VAR_userPage, BareMetalResourceClass.staticSetUserPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_userPage)));
-      page.persistForClass(BareMetalResourceClass.VAR_download, BareMetalResourceClass.staticSetDownload(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_download)));
+      o.persistForClass(BareMetalResourceClass.VAR_name, BareMetalResourceClass.staticSetName(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_name)));
+      o.persistForClass(BareMetalResourceClass.VAR_count, BareMetalResourceClass.staticSetCount(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_count)));
+      o.persistForClass(BareMetalResourceClass.VAR_created, BareMetalResourceClass.staticSetCreated(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(BareMetalResourceClass.VAR_archived, BareMetalResourceClass.staticSetArchived(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_archived)));
+      o.persistForClass(BareMetalResourceClass.VAR_sessionId, BareMetalResourceClass.staticSetSessionId(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_sessionId)));
+      o.persistForClass(BareMetalResourceClass.VAR_userKey, BareMetalResourceClass.staticSetUserKey(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_userKey)));
+      o.persistForClass(BareMetalResourceClass.VAR_objectTitle, BareMetalResourceClass.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_objectTitle)));
+      o.persistForClass(BareMetalResourceClass.VAR_displayPage, BareMetalResourceClass.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_displayPage)));
+      o.persistForClass(BareMetalResourceClass.VAR_editPage, BareMetalResourceClass.staticSetEditPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_editPage)));
+      o.persistForClass(BareMetalResourceClass.VAR_userPage, BareMetalResourceClass.staticSetUserPage(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_userPage)));
+      o.persistForClass(BareMetalResourceClass.VAR_download, BareMetalResourceClass.staticSetDownload(siteRequest2, (String)result.get(BareMetalResourceClass.VAR_download)));
 
-      page.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o -> {
+      o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {
-          JsonObject data = JsonObject.mapFrom(o);
+          JsonObject data = JsonObject.mapFrom(o2);
           ctx.put("result", data.getMap());
           promise.complete(data);
         } catch(Exception ex) {
           LOG.error(String.format(importModelFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format("generatePageBody failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format("generatePageBody failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }

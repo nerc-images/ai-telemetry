@@ -1,28 +1,49 @@
 package org.mghpcc.aitelemetry.model.project;
 
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+import org.computate.i18n.I18n;
 import org.computate.search.tool.SearchTool;
 import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.request.ComputateSiteRequest;
 import org.computate.vertx.search.list.SearchList;
 import org.mghpcc.aitelemetry.config.ConfigKeys;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.tenant.Tenant;
 import org.mghpcc.aitelemetry.request.SiteRequest;
+import org.yaml.snakeyaml.Yaml;
 
+import com.hubspot.jinjava.Jinjava;
+
+import io.vertx.config.yaml.YamlProcessor;
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
@@ -33,6 +54,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
 import io.vertx.ext.web.client.WebClient;
+import jinjava.org.jsoup.Jsoup;
+import jinjava.org.jsoup.nodes.Document;
 
 /**
  * Translate: false
@@ -100,6 +123,180 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
   ////////////////////
   // Project import //
   ////////////////////
+
+  @Override
+  protected Future<Void> importModelFromFile(Vertx vertx, ComputateSiteRequest siteRequest, YamlProcessor yamlProcessor, String templatePath, String classCanonicalName, String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
+    Promise<Void> promise = Promise.promise();
+    vertx.fileSystem().readFile(templatePath).onSuccess(buffer -> {
+      try {
+        // Jinjava template rendering
+        Map<String, Object> ctx = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
+        String shortFileName = FilenameUtils.getBaseName(templatePath);
+        String template = buffer.toString(Charset.forName("UTF-8"));
+        if(shortFileName.startsWith(classSimpleName)) {
+          promise.complete();
+        } else {
+          result.put(i18n.getString(I18n.var_nomFichierCourt), shortFileName);
+          ctx.put(ComputateConfigKeys.STATIC_BASE_URL, config.getString(ComputateConfigKeys.STATIC_BASE_URL));
+          ctx.put(ComputateConfigKeys.SITE_BASE_URL, config.getString(ComputateConfigKeys.SITE_BASE_URL));
+          ctx.put(ComputateConfigKeys.GITHUB_ORG, config.getString(ComputateConfigKeys.GITHUB_ORG));
+          ctx.put(ComputateConfigKeys.SITE_NAME, config.getString(ComputateConfigKeys.SITE_NAME));
+          ctx.put(ComputateConfigKeys.SITE_SHORT_NAME, config.getString(ComputateConfigKeys.SITE_SHORT_NAME));
+          ctx.put(ComputateConfigKeys.SITE_DISPLAY_NAME, config.getString(ComputateConfigKeys.SITE_DISPLAY_NAME));
+          ctx.put(ComputateConfigKeys.SITE_DESCRIPTION, config.getString(ComputateConfigKeys.SITE_DESCRIPTION));
+          ctx.put(ComputateConfigKeys.SITE_POWERED_BY_URL, config.getString(ComputateConfigKeys.SITE_POWERED_BY_URL));
+          ctx.put(ComputateConfigKeys.SITE_POWERED_BY_NAME, config.getString(ComputateConfigKeys.SITE_POWERED_BY_NAME));
+          ctx.put(ComputateConfigKeys.SITE_POWERED_BY_IMAGE, config.getString(ComputateConfigKeys.SITE_POWERED_BY_IMAGE));
+          ctx.put(ComputateConfigKeys.FONTAWESOME_KIT, config.getString(ComputateConfigKeys.FONTAWESOME_KIT));
+          ctx.put(ComputateConfigKeys.FONTAWESOME_STYLE, config.getString(ComputateConfigKeys.FONTAWESOME_STYLE));
+          ctx.put(ComputateConfigKeys.WEB_COMPONENTS_CSS, config.getString(ComputateConfigKeys.WEB_COMPONENTS_CSS));
+          ctx.put(ComputateConfigKeys.WEB_COMPONENTS_PREFIX, config.getString(ComputateConfigKeys.WEB_COMPONENTS_PREFIX));
+          ctx.put(ComputateConfigKeys.WEB_COMPONENTS_JS, config.getString(ComputateConfigKeys.WEB_COMPONENTS_JS));
+          ctx.put(ComputateConfigKeys.WEB_COMPONENTS_THEME, config.getString(ComputateConfigKeys.WEB_COMPONENTS_THEME));
+          ctx.put(ComputateConfigKeys.WEB_COMPONENTS_KIT, config.getString(ComputateConfigKeys.WEB_COMPONENTS_KIT));
+          ctx.put(ComputateConfigKeys.WEB_COMPONENTS_PRO, config.getString(ComputateConfigKeys.WEB_COMPONENTS_PRO));
+          ctx.put(ComputateConfigKeys.PUBLIC_SEARCH_URI, config.getString(ComputateConfigKeys.PUBLIC_SEARCH_URI));
+          ctx.put(ComputateConfigKeys.USER_SEARCH_URI, config.getString(ComputateConfigKeys.USER_SEARCH_URI));
+          ctx.put(i18n.getString(I18n.var_resultat), result);
+
+          String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
+          String pageTemplate;
+          if(templatePath.endsWith("/status.md")) {
+            String body = "";
+            // Process markdown metadata
+            if(template.startsWith("---\n")) {
+              Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+              if(mMeta.find()) {
+                String meta = mMeta.group(1);
+                body = mMeta.group(2);
+                Yaml yaml = new Yaml();
+                Map<String, Object> map = yaml.load(meta);
+                map.forEach((resultKey, value) -> {
+                  if(resultKey.startsWith(metaPrefixResult)) {
+                    String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                    String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                    if(val instanceof String) {
+                      String rendered = jinjava.render(val, ctx);
+                      result.put(key, rendered);
+                    } else {
+                      result.put(key, val);
+                    }
+                  }
+                });
+                ctx.put(i18n.getString(I18n.var_resultat), result);
+                map.forEach((resultKey, value) -> {
+                  if(resultKey.startsWith(metaPrefixResult)) {
+                    String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                    String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                    if(val instanceof String) {
+                      String rendered = jinjava.render(val, ctx);
+                      result.put(key, rendered);
+                    } else {
+                      result.put(key, val);
+                    }
+                  }
+                });
+              }
+            }
+            Parser parser = Parser.builder().build();
+            Node document = parser.parse(body);
+            HtmlRenderer renderer = HtmlRenderer.builder().build();
+            String pageExtends =  Optional.ofNullable((String)result.get("extends")).orElse("en-us/Article.htm");
+            pageTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+          } else {
+            // Process HTM metadata
+            Matcher m = Pattern.compile("<meta name=\"([^\"]+)\"\\s+content=\"([^\"]*)\"\\s*/>", Pattern.MULTILINE).matcher(template);
+            boolean trouve = m.find();
+            while (trouve) {
+              String resultKey = m.group(1);
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = m.group(2);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx);
+                  result.put(key, rendered);
+                } else {
+                  result.put(key, val);
+                }
+              }
+              trouve = m.find();
+            }
+            ctx.put(i18n.getString(I18n.var_resultat), result);
+            m.reset();
+            trouve = m.find();
+            while (trouve) {
+              String resultKey = m.group(1);
+              if(resultKey.startsWith(metaPrefixResult)) {
+                String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                String val = m.group(2);
+                if(val instanceof String) {
+                  String rendered = jinjava.render(val, ctx);
+                  result.put(key, rendered);
+                } else {
+                  result.put(key, val);
+                }
+              }
+              trouve = m.find();
+            }
+            pageTemplate = template;
+          }
+
+          generatePageBody(siteRequest, ctx, templatePath, classSimpleName, pageTemplate).onSuccess(pageBody -> {
+            try {
+              String templateUri = StringUtils.substringAfter(templatePath, config.getString(ComputateConfigKeys.TEMPLATE_PATH));
+              String hubId = pageBody.getString(Project.VAR_hubId);
+              String clusterName = pageBody.getString(Project.VAR_clusterName);
+              String projectName = pageBody.getString(Project.VAR_projectName);
+              JsonObject patchBody = new JsonObject();
+              patchBody.put("setStatusPageTemplateUri", templateUri);
+
+              if(hubId != null && clusterName != null && projectName != null) {
+                JsonObject pageParams = new JsonObject();
+                pageParams.put("body", patchBody);
+                pageParams.put("path", new JsonObject());
+                pageParams.put("cookie", new JsonObject());
+                pageParams.put("scopes", new JsonArray().add("GET"));
+                pageParams.put("query", new JsonObject()
+                    .put("softCommit", true)
+                    .put("q", "*:*")
+                    .put("fq", String.format("%s:%s", Project.VAR_hubId, hubId))
+                    .put("fq", String.format("%s:%s", Project.VAR_clusterName, clusterName))
+                    .put("fq", String.format("%s:%s", Project.VAR_projectName, projectName))
+                    .put("var", new JsonArray()
+                    .add("refresh:false")));
+                JsonObject pageContext = new JsonObject().put("params", pageParams);
+                JsonObject pageRequest = new JsonObject().put("context", pageContext);
+
+                vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions().setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000).addHeader("action", String.format("patch%sFuture", classSimpleName))).onSuccess(message -> {
+                  LOG.info(String.format("Successfully updated project %s with page template %s", "GET", projectName, templatePath));
+                  promise.complete();
+                }).onFailure(ex -> {
+                  promise.fail(ex);
+                });
+              } else {
+                LOG.warn(String.format("Project page %s not imported because of null values: hubId: %s, clusterName: %s, projectName: %s", templatePath, hubId, clusterName, projectName));
+                promise.complete();
+              }
+            } catch(Exception ex) {
+              LOG.error(String.format("Failed to import model from file: %s", templatePath), ex);
+              promise.fail(ex);
+            }
+          }).onFailure(ex -> {
+            LOG.error(String.format("Failed to import model from file: %s", templatePath), ex);
+            promise.fail(ex);
+          });
+        }
+      } catch(Exception ex) {
+        LOG.error(String.format("Failed to import model from file: %s", templatePath), ex);
+        promise.fail(ex);
+      }
+    }).onFailure(ex -> {
+      LOG.error(String.format("Failed to import model from file: %s", templatePath), ex);
+      promise.fail(ex);
+    });
+    return promise.future();
+  }
 
   public static Future<Void> importProjectData(Vertx vertx, WebClient webClient, JsonObject config, JsonObject clusterJson) {
     Promise<Void> promise = Promise.promise();
@@ -189,39 +386,64 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                               String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
                               String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
                               String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+
+                              List<String> pageTemplatePaths = new ArrayList<>();
+                              Path pagePath = Paths.get(config.getString(ComputateConfigKeys.TEMPLATE_PATH), "/en-us/user/project");
+                              if(Files.exists(pagePath)) {
+                                try(Stream<Path> stream = Files.walk(pagePath, 1, FileVisitOption.FOLLOW_LINKS)) {
+                                  stream.filter(Files::isRegularFile).filter(p -> 
+                                      p.getFileName().toString().equals(projectResource + ".htm")
+                                      || p.getFileName().toString().equals(projectResource + ".html")
+                                      || p.getFileName().toString().equals(projectResource + ".md")
+                                      ).forEach(path -> {
+                                    pageTemplatePaths.add(path.toAbsolutePath().toString());
+                                  });
+                                }
+                              }
+                              String templatePath = pageTemplatePaths.stream().findFirst().orElse(null);
+                              SiteRequest siteRequest = new SiteRequest();
+                              siteRequest.setConfig(config);
+                              siteRequest.setWebClient(webClient);
+                              siteRequest.initDeepSiteRequest(siteRequest);
+                              Jinjava jinjava = new Jinjava();
                               JsonObject body = new JsonObject();
-                              body.put(Project.VAR_pk, projectResource);
-                              body.put(Project.VAR_hubId, hubId);
-                              body.put(Project.VAR_hubResource, hubResource);
-                              body.put(Project.VAR_clusterName, clusterName);
-                              body.put(Project.VAR_clusterResource, clusterResource);
-                              body.put(Project.VAR_projectResource, projectResource);
-                              body.put(Project.VAR_projectName, projectName);
-                              body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
-                              body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
-                              body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
-                              body.put(Project.VAR_podTerminatingCount, podTerminatingCount.toString());
-                              body.put(Project.VAR_podsTerminating, new ArrayList<>(podsTerminating));
-                              body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
-                              body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
-                              body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
+                              importPageFromFile(body, vertx, config, jinjava, siteRequest, templatePath, Project.CLASS_SIMPLE_NAME).onSuccess(a -> {
+                                body.put(Project.VAR_pk, projectResource);
+                                body.put(Project.VAR_hubId, hubId);
+                                body.put(Project.VAR_hubResource, hubResource);
+                                body.put(Project.VAR_clusterName, clusterName);
+                                body.put(Project.VAR_clusterResource, clusterResource);
+                                body.put(Project.VAR_projectResource, projectResource);
+                                body.put(Project.VAR_projectName, projectName);
+                                body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
+                                body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
+                                body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
+                                body.put(Project.VAR_podTerminatingCount, podTerminatingCount.toString());
+                                body.put(Project.VAR_podsTerminating, new ArrayList<>(podsTerminating));
+                                body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
+                                body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
+                                body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
 
-                              JsonObject pageParams = new JsonObject();
-                              pageParams.put("body", body);
-                              pageParams.put("path", new JsonObject());
-                              pageParams.put("cookie", new JsonObject());
-                              pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
-                              pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
-                              JsonObject pageContext = new JsonObject().put("params", pageParams);
-                              JsonObject pageRequest = new JsonObject().put("context", pageContext);
+                                JsonObject pageParams = new JsonObject();
+                                pageParams.put("body", body);
+                                pageParams.put("path", new JsonObject());
+                                pageParams.put("cookie", new JsonObject());
+                                pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
+                                pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
+                                JsonObject pageContext = new JsonObject().put("params", pageParams);
+                                JsonObject pageRequest = new JsonObject().put("context", pageContext);
 
-                              vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
-                                  .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
-                                  .addHeader("action", String.format("putimport%sFuture", classSimpleName))
-                                  ).onSuccess(message -> {
-                                ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
-                                  LOG.info(String.format("Imported %s project", projectResource));
-                                  promise1.complete();
+                                vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
+                                    .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
+                                    .addHeader("action", String.format("putimport%sFuture", classSimpleName))
+                                    ).onSuccess(message -> {
+                                  ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
+                                    LOG.info(String.format("Imported %s project", projectResource));
+                                    promise1.complete();
+                                  }).onFailure(ex -> {
+                                    LOG.error(String.format(importDataFail, classSimpleName), ex);
+                                    promise1.fail(ex);
+                                  });
                                 }).onFailure(ex -> {
                                   LOG.error(String.format(importDataFail, classSimpleName), ex);
                                   promise1.fail(ex);
@@ -277,6 +499,149 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       });
     } catch(Throwable ex) {
       LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  /**
+   * Description: Import page
+   */
+  protected static Future<Void> importPageFromFile(JsonObject body, Vertx vertx, JsonObject config, Jinjava jinjava, ComputateSiteRequest siteRequest, String templatePath, String classSimpleName) {
+    Promise<Void> promise = Promise.promise();
+    try {
+      if(templatePath == null) {
+        promise.complete();
+      } else {
+        vertx.fileSystem().readFile(templatePath).onSuccess(buffer -> {
+          try {
+            // Jinjava template rendering
+            Map<String, Object> ctx = new HashMap<>();
+            Map<String, Object> result = new HashMap<>();
+            String shortFileName = FilenameUtils.getBaseName(templatePath);
+            String template = Files.readString(Path.of(templatePath), Charset.forName("UTF-8"));
+            if(shortFileName.startsWith(classSimpleName)) {
+              promise.complete();
+            } else {
+              result.put("shortFileName", shortFileName);
+              ctx.put(ComputateConfigKeys.STATIC_BASE_URL, config.getString(ComputateConfigKeys.STATIC_BASE_URL));
+              ctx.put(ComputateConfigKeys.SITE_BASE_URL, config.getString(ComputateConfigKeys.SITE_BASE_URL));
+              ctx.put(ComputateConfigKeys.GITHUB_ORG, config.getString(ComputateConfigKeys.GITHUB_ORG));
+              ctx.put(ComputateConfigKeys.SITE_NAME, config.getString(ComputateConfigKeys.SITE_NAME));
+              ctx.put(ComputateConfigKeys.SITE_SHORT_NAME, config.getString(ComputateConfigKeys.SITE_SHORT_NAME));
+              ctx.put(ComputateConfigKeys.SITE_DISPLAY_NAME, config.getString(ComputateConfigKeys.SITE_DISPLAY_NAME));
+              ctx.put(ComputateConfigKeys.SITE_DESCRIPTION, config.getString(ComputateConfigKeys.SITE_DESCRIPTION));
+              ctx.put(ComputateConfigKeys.SITE_POWERED_BY_URL, config.getString(ComputateConfigKeys.SITE_POWERED_BY_URL));
+              ctx.put(ComputateConfigKeys.SITE_POWERED_BY_NAME, config.getString(ComputateConfigKeys.SITE_POWERED_BY_NAME));
+              ctx.put(ComputateConfigKeys.SITE_POWERED_BY_IMAGE, config.getString(ComputateConfigKeys.SITE_POWERED_BY_IMAGE));
+              ctx.put(ComputateConfigKeys.FONTAWESOME_KIT, config.getString(ComputateConfigKeys.FONTAWESOME_KIT));
+              ctx.put(ComputateConfigKeys.FONTAWESOME_STYLE, config.getString(ComputateConfigKeys.FONTAWESOME_STYLE));
+              ctx.put(ComputateConfigKeys.WEB_COMPONENTS_CSS, config.getString(ComputateConfigKeys.WEB_COMPONENTS_CSS));
+              ctx.put(ComputateConfigKeys.WEB_COMPONENTS_PREFIX, config.getString(ComputateConfigKeys.WEB_COMPONENTS_PREFIX));
+              ctx.put(ComputateConfigKeys.WEB_COMPONENTS_JS, config.getString(ComputateConfigKeys.WEB_COMPONENTS_JS));
+              ctx.put(ComputateConfigKeys.WEB_COMPONENTS_THEME, config.getString(ComputateConfigKeys.WEB_COMPONENTS_THEME));
+              ctx.put(ComputateConfigKeys.WEB_COMPONENTS_KIT, config.getString(ComputateConfigKeys.WEB_COMPONENTS_KIT));
+              ctx.put(ComputateConfigKeys.WEB_COMPONENTS_PRO, config.getString(ComputateConfigKeys.WEB_COMPONENTS_PRO));
+              ctx.put(ComputateConfigKeys.PUBLIC_SEARCH_URI, config.getString(ComputateConfigKeys.PUBLIC_SEARCH_URI));
+              ctx.put(ComputateConfigKeys.USER_SEARCH_URI, config.getString(ComputateConfigKeys.USER_SEARCH_URI));
+              ctx.put("result", result);
+
+              String metaPrefixResult = String.format("%s.", "result");
+              String pageTemplate;
+              if(templatePath.endsWith(".md")) {
+                String templateBody = "";
+                // Process markdown metadata
+                if(template.startsWith("---\n")) {
+                  Matcher mMeta = Pattern.compile("---\n([\\w\\W]+?)\n---\n([\\w\\W]+)", Pattern.MULTILINE).matcher(template);
+                  if(mMeta.find()) {
+                    String meta = mMeta.group(1);
+                    templateBody = mMeta.group(2);
+                    // Matcher m = Pattern.compile("^([^:]+?): (.*)", Pattern.MULTILINE).matcher(meta);
+                    Yaml yaml = new Yaml();
+                    Map<String, Object> map = yaml.load(meta);
+                    map.forEach((resultKey, value) -> {
+                      if(resultKey.startsWith(metaPrefixResult)) {
+                        String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                        String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                        if(val instanceof String) {
+                          String rendered = jinjava.render(val, ctx);
+                          result.put(key, rendered);
+                        } else {
+                          result.put(key, val);
+                        }
+                      }
+                    });
+                    ctx.put("result", result);
+                    map.forEach((resultKey, value) -> {
+                      if(resultKey.startsWith(metaPrefixResult)) {
+                        String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                        String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+                        if(val instanceof String) {
+                          String rendered = jinjava.render(val, ctx);
+                          result.put(key, rendered);
+                        } else {
+                          result.put(key, val);
+                        }
+                      }
+                    });
+                  }
+                }
+                result.put(Project.VAR_statusPageTemplateUri, StringUtils.substringAfter(templatePath, config.getString(ComputateConfigKeys.TEMPLATE_PATH)));
+                Parser parser = Parser.builder().build();
+                Node document = parser.parse(templateBody);
+                HtmlRenderer renderer = HtmlRenderer.builder().build();
+                String pageExtends =  Optional.ofNullable((String)result.get("extends")).orElse("en-us/Article.htm");
+                pageTemplate = "{% extends \"" + pageExtends + "\" %}\n{% block htmBodyMiddleArticle %}\n" + renderer.render(document) + "\n{% endblock htmBodyMiddleArticle %}\n";
+              } else {
+                // Process HTM metadata
+                Matcher m = Pattern.compile("<meta name=\"([^\"]+)\"\s+content=\"([^\"]*)\"\s*/>", Pattern.MULTILINE).matcher(template);
+                boolean trouve = m.find();
+                while (trouve) {
+                  String resultKey = m.group(1);
+                  if(resultKey.startsWith(metaPrefixResult)) {
+                    String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                    String val = m.group(2);
+                    if(val instanceof String) {
+                      String rendered = jinjava.render(val, ctx);
+                      result.put(key, rendered);
+                    } else {
+                      result.put(key, val);
+                    }
+                  }
+                  trouve = m.find();
+                }
+                ctx.put("result", result);
+                m.reset();
+                trouve = m.find();
+                while (trouve) {
+                  String resultKey = m.group(1);
+                  if(resultKey.startsWith(metaPrefixResult)) {
+                    String key = StringUtils.substringAfter(resultKey, metaPrefixResult);
+                    String val = m.group(2);
+                    if(val instanceof String) {
+                      String rendered = jinjava.render(val, ctx);
+                      result.put(key, rendered);
+                    } else {
+                      result.put(key, val);
+                    }
+                  }
+                  trouve = m.find();
+                }
+                pageTemplate = template;
+              }
+              promise.complete();
+            }
+          } catch(Exception ex) {
+            LOG.error(String.format("Failed to import model from file: %s", templatePath), ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error(String.format("Failed to import model from file: %s", templatePath), ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("Failed to import model from file: %s", templatePath), ex);
       promise.fail(ex);
     }
     return promise.future();

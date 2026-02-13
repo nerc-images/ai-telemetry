@@ -135,15 +135,21 @@ import io.vertx.core.json.JsonObject;
  * </p>
  * <p>
  * Delete the class SitePage in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.page.SitePage&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * <pre>
+ * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.page.SitePage&lt;/query&gt;&lt;/delete&gt;'
+ * </pre>
  * </p>
  * <p>
  * Delete  the package org.mghpcc.aitelemetry.page in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.mghpcc.aitelemetry.page&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * <pre>
+ * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.mghpcc.aitelemetry.page&lt;/query&gt;&lt;/delete&gt;'
+ * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
- * curl -k 'https://solr.apps-crc.testing/update?commitWithin=1000&overwrite=true&wt=json' -X POST -H 'Content-type: text/xml' --data-raw '&lt;add&gt;&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;&lt;/add&gt;'
+ * <pre>
+ * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * </pre>
  * </p>
  * Generated: true
  **/
@@ -1681,6 +1687,68 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     return pageImageAlt;
   }
 
+	//////////////////
+  // pageTemplate //
+	//////////////////
+
+
+  /**
+   *  The entity pageTemplate
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String pageTemplate;
+
+  /**
+   * <br> The entity pageTemplate
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.mghpcc.aitelemetry.page.SitePage&fq=entiteVar_enUS_indexed_string:pageTemplate">Find the entity pageTemplate in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pageTemplate(Wrap<String> w);
+
+  public String getPageTemplate() {
+    return pageTemplate;
+  }
+  public void setPageTemplate(String o) {
+    this.pageTemplate = SitePage.staticSetPageTemplate(siteRequest_, o);
+  }
+  public static String staticSetPageTemplate(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected SitePage pageTemplateInit() {
+    Wrap<String> pageTemplateWrap = new Wrap<String>().var("pageTemplate");
+    if(pageTemplate == null) {
+      _pageTemplate(pageTemplateWrap);
+      Optional.ofNullable(pageTemplateWrap.getO()).ifPresent(o -> {
+        setPageTemplate(o);
+      });
+    }
+    return (SitePage)this;
+  }
+
+  public static String staticSearchPageTemplate(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrPageTemplate(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqPageTemplate(SiteRequest siteRequest_, String o) {
+    return SitePage.staticSearchPageTemplate(siteRequest_, SitePage.staticSetPageTemplate(siteRequest_, o)).toString();
+  }
+
+  public String sqlPageTemplate() {
+    return pageTemplate;
+  }
+
+  public static String staticJsonPageTemplate(String pageTemplate) {
+    return pageTemplate;
+  }
+
 	////////////////////////////
   // prerequisiteArticleIds //
 	////////////////////////////
@@ -2418,6 +2486,7 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         pageImageHeightInit();
         pageImageTypeInit();
         pageImageAltInit();
+        pageTemplateInit();
         prerequisiteArticleIdsInit();
         promise2.complete();
       } catch(Exception ex) {
@@ -2583,6 +2652,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         return oSitePage.pageImageType;
       case "pageImageAlt":
         return oSitePage.pageImageAlt;
+      case "pageTemplate":
+        return oSitePage.pageTemplate;
       case "prerequisiteArticleIds":
         return oSitePage.prerequisiteArticleIds;
       case "prerequisiteArticleSearch":
@@ -2694,6 +2765,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSetPageImageType(siteRequest_, v);
     case "pageImageAlt":
       return SitePage.staticSetPageImageAlt(siteRequest_, v);
+    case "pageTemplate":
+      return SitePage.staticSetPageTemplate(siteRequest_, v);
     case "prerequisiteArticleIds":
       return SitePage.staticSetPrerequisiteArticleIds(siteRequest_, v);
     case "prerequisiteArticles":
@@ -2774,6 +2847,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSearchPageImageType(siteRequest_, (String)o);
     case "pageImageAlt":
       return SitePage.staticSearchPageImageAlt(siteRequest_, (String)o);
+    case "pageTemplate":
+      return SitePage.staticSearchPageTemplate(siteRequest_, (String)o);
     case "prerequisiteArticleIds":
       return SitePage.staticSearchPrerequisiteArticleIds(siteRequest_, (String)o);
     case "prerequisiteArticles":
@@ -2854,6 +2929,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSearchStrPageImageType(siteRequest_, (String)o);
     case "pageImageAlt":
       return SitePage.staticSearchStrPageImageAlt(siteRequest_, (String)o);
+    case "pageTemplate":
+      return SitePage.staticSearchStrPageTemplate(siteRequest_, (String)o);
     case "prerequisiteArticleIds":
       return SitePage.staticSearchStrPrerequisiteArticleIds(siteRequest_, (String)o);
     case "prerequisiteArticles":
@@ -2934,6 +3011,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSearchFqPageImageType(siteRequest_, o);
     case "pageImageAlt":
       return SitePage.staticSearchFqPageImageAlt(siteRequest_, o);
+    case "pageTemplate":
+      return SitePage.staticSearchFqPageTemplate(siteRequest_, o);
     case "prerequisiteArticleIds":
       return SitePage.staticSearchFqPrerequisiteArticleIds(siteRequest_, o);
     case "prerequisiteArticles":
@@ -3045,6 +3124,12 @@ public abstract class SitePageGen<DEV> extends BaseResult {
           setPageImageAlt((String)val);
         }
         saves.add("pageImageAlt");
+        return val;
+      } else if("pagetemplate".equals(varLower)) {
+        if(val instanceof String) {
+          setPageTemplate((String)val);
+        }
+        saves.add("pageTemplate");
         return val;
       } else if("prerequisitearticleids".equals(varLower)) {
         if(val instanceof String) {
@@ -3183,6 +3268,12 @@ public abstract class SitePageGen<DEV> extends BaseResult {
           oSitePage.setPageImageAlt(pageImageAlt);
       }
 
+      if(saves.contains("pageTemplate")) {
+        String pageTemplate = (String)doc.get("pageTemplate_stored_string");
+        if(pageTemplate != null)
+          oSitePage.setPageTemplate(pageTemplate);
+      }
+
       if(saves.contains("prerequisiteArticleIds")) {
         String prerequisiteArticleIds = (String)doc.get("prerequisiteArticleIds_docvalues_string");
         if(prerequisiteArticleIds != null)
@@ -3281,6 +3372,9 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     if(pageImageAlt != null) {
       doc.put("pageImageAlt_docvalues_string", pageImageAlt);
     }
+    if(pageTemplate != null) {
+      doc.put("pageTemplate_stored_string", pageTemplate);
+    }
     if(prerequisiteArticleIds != null) {
       doc.put("prerequisiteArticleIds_docvalues_string", prerequisiteArticleIds);
     }
@@ -3343,6 +3437,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         return "pageImageType_docvalues_string";
       case "pageImageAlt":
         return "pageImageAlt_docvalues_string";
+      case "pageTemplate":
+        return "pageTemplate_stored_string";
       case "prerequisiteArticleIds":
         return "prerequisiteArticleIds_docvalues_string";
       case "prerequisiteArticles":
@@ -3493,6 +3589,7 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     oSitePage.setPageImageHeight(Optional.ofNullable(doc.get("pageImageHeight_docvalues_int")).map(v -> v.toString()).orElse(null));
     oSitePage.setPageImageType(Optional.ofNullable(doc.get("pageImageType_docvalues_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setPageImageAlt(Optional.ofNullable(doc.get("pageImageAlt_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oSitePage.setPageTemplate(Optional.ofNullable(doc.get("pageTemplate_stored_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setPrerequisiteArticleIds(Optional.ofNullable(doc.get("prerequisiteArticleIds_docvalues_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setPrerequisiteArticles(Optional.ofNullable(doc.get("prerequisiteArticles_stored_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setNextArticleIds(Optional.ofNullable(doc.get("nextArticleIds_docvalues_string")).map(v -> v.toString()).orElse(null));
@@ -3544,6 +3641,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         apiRequest.addVars("pageImageType");
       if(!Objects.equals(pageImageAlt, original.getPageImageAlt()))
         apiRequest.addVars("pageImageAlt");
+      if(!Objects.equals(pageTemplate, original.getPageTemplate()))
+        apiRequest.addVars("pageTemplate");
       if(!Objects.equals(prerequisiteArticleIds, original.getPrerequisiteArticleIds()))
         apiRequest.addVars("prerequisiteArticleIds");
       if(!Objects.equals(prerequisiteArticles, original.getPrerequisiteArticles()))
@@ -3585,6 +3684,7 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     sb.append(Optional.ofNullable(pageImageHeight).map(v -> "pageImageHeight: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(pageImageType).map(v -> "pageImageType: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(pageImageAlt).map(v -> "pageImageAlt: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(pageTemplate).map(v -> "pageTemplate: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(prerequisiteArticleIds).map(v -> "prerequisiteArticleIds: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(prerequisiteArticles).map(v -> "prerequisiteArticles: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(nextArticleIds).map(v -> "nextArticleIds: \"" + v + "\"\n" ).orElse(""));
@@ -3628,6 +3728,7 @@ public abstract class SitePageGen<DEV> extends BaseResult {
   public static final String VAR_pageImageHeight = "pageImageHeight";
   public static final String VAR_pageImageType = "pageImageType";
   public static final String VAR_pageImageAlt = "pageImageAlt";
+  public static final String VAR_pageTemplate = "pageTemplate";
   public static final String VAR_prerequisiteArticleIds = "prerequisiteArticleIds";
   public static final String VAR_prerequisiteArticleSearch = "prerequisiteArticleSearch";
   public static final String VAR_prerequisiteArticles = "prerequisiteArticles";
@@ -3697,6 +3798,7 @@ public abstract class SitePageGen<DEV> extends BaseResult {
   public static final String DISPLAY_NAME_pageImageHeight = "";
   public static final String DISPLAY_NAME_pageImageType = "";
   public static final String DISPLAY_NAME_pageImageAlt = "";
+  public static final String DISPLAY_NAME_pageTemplate = "page template";
   public static final String DISPLAY_NAME_prerequisiteArticleIds = "prerequisite article IDs";
   public static final String DISPLAY_NAME_prerequisiteArticleSearch = "";
   public static final String DISPLAY_NAME_prerequisiteArticles = "prerequisite articles";
@@ -3809,6 +3911,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return DISPLAY_NAME_pageImageType;
     case VAR_pageImageAlt:
       return DISPLAY_NAME_pageImageAlt;
+    case VAR_pageTemplate:
+      return DISPLAY_NAME_pageTemplate;
     case VAR_prerequisiteArticleIds:
       return DISPLAY_NAME_prerequisiteArticleIds;
     case VAR_prerequisiteArticleSearch:
@@ -3868,6 +3972,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return "The image height";
     case VAR_pageImageAlt:
       return "The image accessibility text. ";
+    case VAR_pageTemplate:
+      return "The optional page template as a String of this page. ";
     case VAR_prerequisiteArticleIds:
       return "The prerequisite article IDs comma-separated. ";
     case VAR_prerequisiteArticles:
@@ -3940,6 +4046,8 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     case VAR_pageImageType:
       return "String";
     case VAR_pageImageAlt:
+      return "String";
+    case VAR_pageTemplate:
       return "String";
     case VAR_prerequisiteArticleIds:
       return "String";
