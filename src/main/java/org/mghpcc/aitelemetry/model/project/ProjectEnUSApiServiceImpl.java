@@ -256,7 +256,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                 pageParams.put("body", patchBody);
                 pageParams.put("path", new JsonObject());
                 pageParams.put("cookie", new JsonObject());
-                pageParams.put("scopes", new JsonArray().add("GET"));
+                pageParams.put("scopes", new JsonArray().add("GET").add("PATCH"));
                 pageParams.put("query", new JsonObject()
                     .put("softCommit", true)
                     .put("q", "*:*")
