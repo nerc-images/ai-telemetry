@@ -45,6 +45,7 @@ import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -1374,9 +1375,39 @@ public abstract class BareMetalOrderGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<BareMetalOrder> fqBareMetalOrder(SiteRequest siteRequest, String var, Object val) {
+    Promise<BareMetalOrder> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<BareMetalOrder> searchList = new SearchList<BareMetalOrder>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(BareMetalOrder.class);
+        searchList.fq(String.format("%s:", BareMetalOrder.varIndexedBareMetalOrder(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the bare metal order", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the bare metal order", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the bare metal order", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalOrder(entityVar,  siteRequest_, o);
@@ -1953,20 +1984,35 @@ public abstract class BareMetalOrderGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_BareMetalOrder;
   }
   public static final String VAR_description = "description";
+  public static final String SET_description = "setDescription";
   public static final String VAR_networkId = "networkId";
+  public static final String SET_networkId = "setNetworkId";
   public static final String VAR_networkSearch = "networkSearch";
+  public static final String SET_networkSearch = "setNetworkSearch";
   public static final String VAR_network = "network";
+  public static final String SET_network = "setNetwork";
   public static final String VAR_networkName = "networkName";
+  public static final String SET_networkName = "setNetworkName";
   public static final String VAR_numberOfFc430 = "numberOfFc430";
+  public static final String SET_numberOfFc430 = "setNumberOfFc430";
   public static final String VAR_numberOfFc830 = "numberOfFc830";
+  public static final String SET_numberOfFc830 = "setNumberOfFc830";
   public static final String VAR_numberOfR730xd = "numberOfR730xd";
+  public static final String SET_numberOfR730xd = "setNumberOfR730xd";
   public static final String VAR_numberOfWhiteboxFlax1 = "numberOfWhiteboxFlax1";
+  public static final String SET_numberOfWhiteboxFlax1 = "setNumberOfWhiteboxFlax1";
   public static final String VAR_numberOfLenovoSd650nv2A100 = "numberOfLenovoSd650nv2A100";
+  public static final String SET_numberOfLenovoSd650nv2A100 = "setNumberOfLenovoSd650nv2A100";
   public static final String VAR_numberOfLenovoSd665nv3H100 = "numberOfLenovoSd665nv3H100";
+  public static final String SET_numberOfLenovoSd665nv3H100 = "setNumberOfLenovoSd665nv3H100";
   public static final String VAR_image = "image";
+  public static final String SET_image = "setImage";
   public static final String VAR_sshPublicKey = "sshPublicKey";
+  public static final String SET_sshPublicKey = "setSshPublicKey";
   public static final String VAR_floatingIp = "floatingIp";
+  public static final String SET_floatingIp = "setFloatingIp";
   public static final String VAR_status = "status";
+  public static final String SET_status = "setStatus";
 
   public static List<String> varsQForClass() {
     return BareMetalOrder.varsQBareMetalOrder(new ArrayList<String>());
@@ -2058,18 +2104,48 @@ public abstract class BareMetalOrderGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlUserPageForClass() {
     return "%s/en-us/user/bare-metal-order/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return BareMetalOrder.varJsonBareMetalOrder(var, patch);
+  }
+  public static String varJsonBareMetalOrder(String var, Boolean patch) {
+    switch(var) {
+    case VAR_description:
+      return patch ? SET_description : VAR_description;
+    case VAR_networkId:
+      return patch ? SET_networkId : VAR_networkId;
+    case VAR_networkSearch:
+      return patch ? SET_networkSearch : VAR_networkSearch;
+    case VAR_network:
+      return patch ? SET_network : VAR_network;
+    case VAR_networkName:
+      return patch ? SET_networkName : VAR_networkName;
+    case VAR_numberOfFc430:
+      return patch ? SET_numberOfFc430 : VAR_numberOfFc430;
+    case VAR_numberOfFc830:
+      return patch ? SET_numberOfFc830 : VAR_numberOfFc830;
+    case VAR_numberOfR730xd:
+      return patch ? SET_numberOfR730xd : VAR_numberOfR730xd;
+    case VAR_numberOfWhiteboxFlax1:
+      return patch ? SET_numberOfWhiteboxFlax1 : VAR_numberOfWhiteboxFlax1;
+    case VAR_numberOfLenovoSd650nv2A100:
+      return patch ? SET_numberOfLenovoSd650nv2A100 : VAR_numberOfLenovoSd650nv2A100;
+    case VAR_numberOfLenovoSd665nv3H100:
+      return patch ? SET_numberOfLenovoSd665nv3H100 : VAR_numberOfLenovoSd665nv3H100;
+    case VAR_image:
+      return patch ? SET_image : VAR_image;
+    case VAR_sshPublicKey:
+      return patch ? SET_sshPublicKey : VAR_sshPublicKey;
+    case VAR_floatingIp:
+      return patch ? SET_floatingIp : VAR_floatingIp;
+    case VAR_status:
+      return patch ? SET_status : VAR_status;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

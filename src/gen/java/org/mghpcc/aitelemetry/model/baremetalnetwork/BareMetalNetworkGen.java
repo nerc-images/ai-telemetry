@@ -53,6 +53,8 @@ import java.lang.Boolean;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -2904,9 +2906,39 @@ public abstract class BareMetalNetworkGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<BareMetalNetwork> fqBareMetalNetwork(SiteRequest siteRequest, String var, Object val) {
+    Promise<BareMetalNetwork> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<BareMetalNetwork> searchList = new SearchList<BareMetalNetwork>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(BareMetalNetwork.class);
+        searchList.fq(String.format("%s:", BareMetalNetwork.varIndexedBareMetalNetwork(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the bare metal network", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the bare metal network", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the bare metal network", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalNetwork(entityVar,  siteRequest_, o);
@@ -4207,39 +4239,73 @@ public abstract class BareMetalNetworkGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_BareMetalNetwork;
   }
   public static final String VAR_id = "id";
+  public static final String SET_id = "setId";
   public static final String VAR_name = "name";
+  public static final String SET_name = "setName";
   public static final String VAR_description = "description";
+  public static final String SET_description = "setDescription";
   public static final String VAR_availabilityZoneHints = "availabilityZoneHints";
+  public static final String SET_availabilityZoneHints = "setAvailabilityZoneHints";
   public static final String VAR_availabilityZones = "availabilityZones";
+  public static final String SET_availabilityZones = "setAvailabilityZones";
   public static final String VAR_createdAt = "createdAt";
+  public static final String SET_createdAt = "setCreatedAt";
   public static final String VAR_dnsDomain = "dnsDomain";
+  public static final String SET_dnsDomain = "setDnsDomain";
   public static final String VAR_mtu = "mtu";
+  public static final String SET_mtu = "setMtu";
   public static final String VAR_projectId = "projectId";
+  public static final String SET_projectId = "setProjectId";
   public static final String VAR_providerNetworkType = "providerNetworkType";
+  public static final String SET_providerNetworkType = "setProviderNetworkType";
   public static final String VAR_providerPhysicalNetwork = "providerPhysicalNetwork";
+  public static final String SET_providerPhysicalNetwork = "setProviderPhysicalNetwork";
   public static final String VAR_providerSegmentationId = "providerSegmentationId";
+  public static final String SET_providerSegmentationId = "setProviderSegmentationId";
   public static final String VAR_qosPolicyId = "qosPolicyId";
+  public static final String SET_qosPolicyId = "setQosPolicyId";
   public static final String VAR_revisionNumber = "revisionNumber";
+  public static final String SET_revisionNumber = "setRevisionNumber";
   public static final String VAR_status = "status";
+  public static final String SET_status = "setStatus";
   public static final String VAR_subnetIds = "subnetIds";
+  public static final String SET_subnetIds = "setSubnetIds";
   public static final String VAR_tags = "tags";
+  public static final String SET_tags = "setTags";
   public static final String VAR_tenantId = "tenantId";
+  public static final String SET_tenantId = "setTenantId";
   public static final String VAR_updatedAt = "updatedAt";
+  public static final String SET_updatedAt = "setUpdatedAt";
   public static final String VAR_isAdminStateUp = "isAdminStateUp";
+  public static final String SET_isAdminStateUp = "setIsAdminStateUp";
   public static final String VAR_isDefault = "isDefault";
+  public static final String SET_isDefault = "setIsDefault";
   public static final String VAR_isPortSecurityEnabled = "isPortSecurityEnabled";
+  public static final String SET_isPortSecurityEnabled = "setIsPortSecurityEnabled";
   public static final String VAR_isRouterExternal = "isRouterExternal";
+  public static final String SET_isRouterExternal = "setIsRouterExternal";
   public static final String VAR_isShared = "isShared";
+  public static final String SET_isShared = "setIsShared";
   public static final String VAR_isVlanQueing = "isVlanQueing";
+  public static final String SET_isVlanQueing = "setIsVlanQueing";
   public static final String VAR_isVlanTransparent = "isVlanTransparent";
+  public static final String SET_isVlanTransparent = "setIsVlanTransparent";
   public static final String VAR_l2Adjacency = "l2Adjacency";
+  public static final String SET_l2Adjacency = "setL2Adjacency";
   public static final String VAR_locationCloud = "locationCloud";
+  public static final String SET_locationCloud = "setLocationCloud";
   public static final String VAR_locationProjectDomainId = "locationProjectDomainId";
+  public static final String SET_locationProjectDomainId = "setLocationProjectDomainId";
   public static final String VAR_locationProjectDomainName = "locationProjectDomainName";
+  public static final String SET_locationProjectDomainName = "setLocationProjectDomainName";
   public static final String VAR_locationProjectId = "locationProjectId";
+  public static final String SET_locationProjectId = "setLocationProjectId";
   public static final String VAR_locationProjectName = "locationProjectName";
+  public static final String SET_locationProjectName = "setLocationProjectName";
   public static final String VAR_locationRegionName = "locationRegionName";
+  public static final String SET_locationRegionName = "setLocationRegionName";
   public static final String VAR_locationZone = "locationZone";
+  public static final String SET_locationZone = "setLocationZone";
 
   public static List<String> varsQForClass() {
     return BareMetalNetwork.varsQBareMetalNetwork(new ArrayList<String>());
@@ -4369,19 +4435,82 @@ public abstract class BareMetalNetworkGen<DEV> extends BaseModel {
     return "%s/en-us/edit/bare-metal-network/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return BareMetalNetwork.varJsonBareMetalNetwork(var, patch);
   }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonBareMetalNetwork(String var, Boolean patch) {
+    switch(var) {
+    case VAR_id:
+      return patch ? SET_id : VAR_id;
+    case VAR_name:
+      return patch ? SET_name : VAR_name;
+    case VAR_description:
+      return patch ? SET_description : VAR_description;
+    case VAR_availabilityZoneHints:
+      return patch ? SET_availabilityZoneHints : VAR_availabilityZoneHints;
+    case VAR_availabilityZones:
+      return patch ? SET_availabilityZones : VAR_availabilityZones;
+    case VAR_createdAt:
+      return patch ? SET_createdAt : VAR_createdAt;
+    case VAR_dnsDomain:
+      return patch ? SET_dnsDomain : VAR_dnsDomain;
+    case VAR_mtu:
+      return patch ? SET_mtu : VAR_mtu;
+    case VAR_projectId:
+      return patch ? SET_projectId : VAR_projectId;
+    case VAR_providerNetworkType:
+      return patch ? SET_providerNetworkType : VAR_providerNetworkType;
+    case VAR_providerPhysicalNetwork:
+      return patch ? SET_providerPhysicalNetwork : VAR_providerPhysicalNetwork;
+    case VAR_providerSegmentationId:
+      return patch ? SET_providerSegmentationId : VAR_providerSegmentationId;
+    case VAR_qosPolicyId:
+      return patch ? SET_qosPolicyId : VAR_qosPolicyId;
+    case VAR_revisionNumber:
+      return patch ? SET_revisionNumber : VAR_revisionNumber;
+    case VAR_status:
+      return patch ? SET_status : VAR_status;
+    case VAR_subnetIds:
+      return patch ? SET_subnetIds : VAR_subnetIds;
+    case VAR_tags:
+      return patch ? SET_tags : VAR_tags;
+    case VAR_tenantId:
+      return patch ? SET_tenantId : VAR_tenantId;
+    case VAR_updatedAt:
+      return patch ? SET_updatedAt : VAR_updatedAt;
+    case VAR_isAdminStateUp:
+      return patch ? SET_isAdminStateUp : VAR_isAdminStateUp;
+    case VAR_isDefault:
+      return patch ? SET_isDefault : VAR_isDefault;
+    case VAR_isPortSecurityEnabled:
+      return patch ? SET_isPortSecurityEnabled : VAR_isPortSecurityEnabled;
+    case VAR_isRouterExternal:
+      return patch ? SET_isRouterExternal : VAR_isRouterExternal;
+    case VAR_isShared:
+      return patch ? SET_isShared : VAR_isShared;
+    case VAR_isVlanQueing:
+      return patch ? SET_isVlanQueing : VAR_isVlanQueing;
+    case VAR_isVlanTransparent:
+      return patch ? SET_isVlanTransparent : VAR_isVlanTransparent;
+    case VAR_l2Adjacency:
+      return patch ? SET_l2Adjacency : VAR_l2Adjacency;
+    case VAR_locationCloud:
+      return patch ? SET_locationCloud : VAR_locationCloud;
+    case VAR_locationProjectDomainId:
+      return patch ? SET_locationProjectDomainId : VAR_locationProjectDomainId;
+    case VAR_locationProjectDomainName:
+      return patch ? SET_locationProjectDomainName : VAR_locationProjectDomainName;
+    case VAR_locationProjectId:
+      return patch ? SET_locationProjectId : VAR_locationProjectId;
+    case VAR_locationProjectName:
+      return patch ? SET_locationProjectName : VAR_locationProjectName;
+    case VAR_locationRegionName:
+      return patch ? SET_locationRegionName : VAR_locationRegionName;
+    case VAR_locationZone:
+      return patch ? SET_locationZone : VAR_locationZone;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

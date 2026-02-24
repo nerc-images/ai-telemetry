@@ -44,6 +44,15 @@ data:
   ESI_API_SSL: "{{ ESI_API_SSL | string | lower }}"
   ESI_API_PORT: "{{ ESI_API_PORT }}"
 
+  TENANTS: >-
+    { 
+    "nairr": { 
+      "tenantName": "NAIRR"
+      , "description": "National Science Foundation’s National AI Research Resource (NAIRR) Deep Partnership Program "
+      , "hubId": "moc"
+      , "clusterName": "nerc-ocp-prod" 
+    } 
+    }
   HUBS: >-
     { 
     "moc": { 

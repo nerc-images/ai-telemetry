@@ -40,6 +40,8 @@ import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -800,9 +802,39 @@ public abstract class TenantGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<Tenant> fqTenant(SiteRequest siteRequest, String var, Object val) {
+    Promise<Tenant> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<Tenant> searchList = new SearchList<Tenant>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(Tenant.class);
+        searchList.fq(String.format("%s:", Tenant.varIndexedTenant(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the tenant", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the tenant", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the tenant", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchTenant(entityVar,  siteRequest_, o);
@@ -1187,12 +1219,19 @@ public abstract class TenantGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_Tenant;
   }
   public static final String VAR_tenantName = "tenantName";
+  public static final String SET_tenantName = "setTenantName";
   public static final String VAR_tenantId = "tenantId";
+  public static final String SET_tenantId = "setTenantId";
   public static final String VAR_tenantResource = "tenantResource";
+  public static final String SET_tenantResource = "setTenantResource";
   public static final String VAR_pageId = "pageId";
+  public static final String SET_pageId = "setPageId";
   public static final String VAR_description = "description";
+  public static final String SET_description = "setDescription";
   public static final String VAR_hubId = "hubId";
+  public static final String SET_hubId = "setHubId";
   public static final String VAR_clusterName = "clusterName";
+  public static final String SET_clusterName = "setClusterName";
 
   public static List<String> varsQForClass() {
     return Tenant.varsQTenant(new ArrayList<String>());
@@ -1263,19 +1302,28 @@ public abstract class TenantGen<DEV> extends BaseModel {
     return "%s/en-us/edit/tenant/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return Tenant.varJsonTenant(var, patch);
   }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonTenant(String var, Boolean patch) {
+    switch(var) {
+    case VAR_tenantName:
+      return patch ? SET_tenantName : VAR_tenantName;
+    case VAR_tenantId:
+      return patch ? SET_tenantId : VAR_tenantId;
+    case VAR_tenantResource:
+      return patch ? SET_tenantResource : VAR_tenantResource;
+    case VAR_pageId:
+      return patch ? SET_pageId : VAR_pageId;
+    case VAR_description:
+      return patch ? SET_description : VAR_description;
+    case VAR_hubId:
+      return patch ? SET_hubId : VAR_hubId;
+    case VAR_clusterName:
+      return patch ? SET_clusterName : VAR_clusterName;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

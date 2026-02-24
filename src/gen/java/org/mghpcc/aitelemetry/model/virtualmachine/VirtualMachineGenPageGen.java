@@ -674,9 +674,9 @@ public abstract class VirtualMachineGenPageGen<DEV> extends PageLayout {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchVirtualMachineGenPage(entityVar,  siteRequest_, o);
@@ -760,12 +760,19 @@ public abstract class VirtualMachineGenPageGen<DEV> extends PageLayout {
   public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineGenPage";
   public static final String CLASS_AUTH_RESOURCE = "";
   public static final String VAR_searchListVirtualMachine_ = "searchListVirtualMachine_";
+  public static final String SET_searchListVirtualMachine_ = "setSearchListVirtualMachine_";
   public static final String VAR_listVirtualMachine = "listVirtualMachine";
+  public static final String SET_listVirtualMachine = "setListVirtualMachine";
   public static final String VAR_resultCount = "resultCount";
+  public static final String SET_resultCount = "setResultCount";
   public static final String VAR_result = "result";
+  public static final String SET_result = "setResult";
   public static final String VAR_pk = "pk";
+  public static final String SET_pk = "setPk";
   public static final String VAR_solrId = "solrId";
+  public static final String SET_solrId = "setSolrId";
   public static final String VAR_pageUriVirtualMachine = "pageUriVirtualMachine";
+  public static final String SET_pageUriVirtualMachine = "setPageUriVirtualMachine";
 
   public static final String DISPLAY_NAME_searchListVirtualMachine_ = "";
   public static final String DISPLAY_NAME_listVirtualMachine = "";
@@ -774,51 +781,6 @@ public abstract class VirtualMachineGenPageGen<DEV> extends PageLayout {
   public static final String DISPLAY_NAME_pk = "";
   public static final String DISPLAY_NAME_solrId = "";
   public static final String DISPLAY_NAME_pageUriVirtualMachine = "";
-
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
 
   public static String displayNameForClass(String var) {
     return VirtualMachineGenPage.displayNameVirtualMachineGenPage(var);
@@ -841,85 +803,6 @@ public abstract class VirtualMachineGenPageGen<DEV> extends PageLayout {
       return DISPLAY_NAME_pageUriVirtualMachine;
     default:
       return PageLayout.displayNamePageLayout(var);
-    }
-  }
-
-  public static String descriptionVirtualMachineGenPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return PageLayout.descriptionPageLayout(var);
-    }
-  }
-
-  public static String classSimpleNameVirtualMachineGenPage(String var) {
-    switch(var) {
-    case VAR_searchListVirtualMachine_:
-      return "SearchList";
-    case VAR_listVirtualMachine:
-      return "JsonArray";
-    case VAR_resultCount:
-      return "Integer";
-    case VAR_result:
-      return "VirtualMachine";
-    case VAR_pk:
-      return "Long";
-    case VAR_solrId:
-      return "String";
-    case VAR_pageUriVirtualMachine:
-      return "String";
-      default:
-        return PageLayout.classSimpleNamePageLayout(var);
-    }
-  }
-
-  public static Integer htmColumnVirtualMachineGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmColumnPageLayout(var);
-    }
-  }
-
-  public static Integer htmRowVirtualMachineGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmRowPageLayout(var);
-    }
-  }
-
-  public static Integer htmCellVirtualMachineGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmCellPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMinVirtualMachineGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMinPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMaxVirtualMachineGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMaxPageLayout(var);
-    }
-  }
-
-  public static Integer maxVirtualMachineGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.maxPageLayout(var);
-    }
-  }
-
-  public static Integer minVirtualMachineGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.minPageLayout(var);
     }
   }
 }

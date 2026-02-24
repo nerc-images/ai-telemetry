@@ -529,6 +529,11 @@ public class ClusterRequestGenPage extends ClusterRequestGenPageGen<PageLayout> 
   }
 
   @Override
+  protected void _classAllName(Wrap<String> w) {
+    w.o("all OpenShift cluster requests");
+  }
+
+  @Override
   protected void _pageUri(Wrap<String> w) {
     if("enUS".equals(lang))
       w.o("/en-us/search/cluster-request");

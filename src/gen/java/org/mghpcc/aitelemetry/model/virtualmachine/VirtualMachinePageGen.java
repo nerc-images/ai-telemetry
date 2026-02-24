@@ -245,9 +245,9 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchVirtualMachinePage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return VirtualMachinePage.displayNameVirtualMachinePage(var);
   }
@@ -354,71 +309,6 @@ public abstract class VirtualMachinePageGen<DEV> extends VirtualMachineGenPage {
     switch(var) {
     default:
       return VirtualMachineGenPage.displayNameVirtualMachineGenPage(var);
-    }
-  }
-
-  public static String descriptionVirtualMachinePage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.descriptionVirtualMachineGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.classSimpleNameVirtualMachineGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.htmColumnVirtualMachineGenPage(var);
-    }
-  }
-
-  public static Integer htmRowVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.htmRowVirtualMachineGenPage(var);
-    }
-  }
-
-  public static Integer htmCellVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.htmCellVirtualMachineGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.lengthMinVirtualMachineGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.lengthMaxVirtualMachineGenPage(var);
-    }
-  }
-
-  public static Integer maxVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.maxVirtualMachineGenPage(var);
-    }
-  }
-
-  public static Integer minVirtualMachinePage(String var) {
-    switch(var) {
-      default:
-        return VirtualMachineGenPage.minVirtualMachineGenPage(var);
     }
   }
 }

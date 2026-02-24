@@ -128,17 +128,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -154,11 +154,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
                 response200SearchBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchBareMetalOrder succeeded. "));
@@ -213,6 +214,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       List<String> fls = listBareMetalOrder.getRequest().getFields();
       JsonObject json = new JsonObject();
       JsonArray l = new JsonArray();
+      List<String> scopes = siteRequest.getScopes();
       listBareMetalOrder.getList().stream().forEach(o -> {
         JsonObject json2 = JsonObject.mapFrom(o);
         if(fls.size() > 0) {
@@ -239,15 +241,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       });
       json.put("list", l);
       response200Search(listBareMetalOrder.getRequest(), listBareMetalOrder.getResponse(), json);
-      if(json == null) {
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String m = String.format("%s %s not found", "bare metal order", pk);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchBareMetalOrder failed. "), ex);
       promise.tryFail(ex);
@@ -299,17 +293,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -325,11 +319,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
                 response200GETBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("getBareMetalOrder succeeded. "));
@@ -382,15 +377,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = listBareMetalOrder.getSiteRequest_(SiteRequest.class);
       JsonObject json = JsonObject.mapFrom(listBareMetalOrder.getList().stream().findFirst().orElse(null));
-      if(json == null) {
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String m = String.format("%s %s not found", "bare metal order", pk);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200GETBareMetalOrder failed. "), ex);
       promise.tryFail(ex);
@@ -409,17 +396,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "PATCH"));
         siteRequest.setPublicRead(classPublicRead);
@@ -435,7 +422,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
@@ -453,7 +441,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, true, "PATCH").onSuccess(listBareMetalOrder -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
@@ -580,7 +568,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
+        searchBareMetalOrderList(siteRequest, false, true, true, "PATCH").onSuccess(listBareMetalOrder -> {
           try {
             BareMetalOrder o = listBareMetalOrder.first();
             ApiRequest apiRequest = new ApiRequest();
@@ -947,15 +935,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String m = String.format("%s %s not found", "bare metal order", pk);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHBareMetalOrder failed. "), ex);
       promise.tryFail(ex);
@@ -974,17 +954,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "POST"));
         siteRequest.setPublicRead(classPublicRead);
@@ -1000,7 +980,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
@@ -1506,15 +1487,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       JsonObject json = JsonObject.mapFrom(o);
-      if(json == null) {
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String m = String.format("%s %s not found", "bare metal order", pk);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTBareMetalOrder failed. "), ex);
       promise.tryFail(ex);
@@ -1533,17 +1506,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "DELETE"));
         siteRequest.setPublicRead(classPublicRead);
@@ -1559,7 +1532,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
@@ -1577,7 +1551,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
@@ -1703,7 +1677,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
+        searchBareMetalOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
           try {
             BareMetalOrder o = listBareMetalOrder.first();
             if(o != null && listBareMetalOrder.getResponse().getResponse().getNumFound() == 1) {
@@ -1887,15 +1861,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String m = String.format("%s %s not found", "bare metal order", pk);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEBareMetalOrder failed. "), ex);
       promise.tryFail(ex);
@@ -1913,17 +1879,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -1939,11 +1905,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
                 response200SearchPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchpageBareMetalOrder succeeded. "));
@@ -2015,8 +1982,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriSearchPageBareMetalOrder(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/bare-metal-order/BareMetalOrderSearchPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2061,6 +2032,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2165,18 +2137,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -2192,11 +2163,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
                 response200EditPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("editpageBareMetalOrder succeeded. "));
@@ -2268,8 +2240,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriEditPageBareMetalOrder(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/bare-metal-order/BareMetalOrderEditPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2314,6 +2290,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2418,18 +2395,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -2445,11 +2421,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
                 response200UserPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("userpageBareMetalOrder succeeded. "));
@@ -2521,8 +2498,12 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriUserPageBareMetalOrder(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "%s.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2567,6 +2548,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2672,17 +2654,17 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
         String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(pk != null)
           form.add("permission", String.format("%s#%s", pk, "DELETE"));
         siteRequest.setPublicRead(classPublicRead);
@@ -2698,7 +2680,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
@@ -2716,7 +2699,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
+              searchBareMetalOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
@@ -2842,7 +2825,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchBareMetalOrderList(siteRequest, false, true, true).onSuccess(listBareMetalOrder -> {
+        searchBareMetalOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
           try {
             BareMetalOrder o = listBareMetalOrder.first();
             if(o != null && listBareMetalOrder.getResponse().getResponse().getNumFound() == 1) {
@@ -3026,15 +3009,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String m = String.format("%s %s not found", "bare metal order", pk);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterBareMetalOrder failed. "), ex);
       promise.tryFail(ex);
@@ -3145,13 +3120,14 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     return promise.future();
   }
 
-  public Future<SearchList<BareMetalOrder>> searchBareMetalOrderList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify) {
+  public Future<SearchList<BareMetalOrder>> searchBareMetalOrderList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, String scope) {
     Promise<SearchList<BareMetalOrder>> promise = Promise.promise();
     try {
       ServiceRequest serviceRequest = siteRequest.getServiceRequest();
       String entityListStr = siteRequest.getServiceRequest().getParams().getJsonObject("query").getString("fl");
       String[] entityList = entityListStr == null ? null : entityListStr.split(",\\s*");
       SearchList<BareMetalOrder> searchList = new SearchList<BareMetalOrder>();
+      searchList.setScope(scope);
       String facetRange = null;
       Date facetRangeStart = null;
       Date facetRangeEnd = null;

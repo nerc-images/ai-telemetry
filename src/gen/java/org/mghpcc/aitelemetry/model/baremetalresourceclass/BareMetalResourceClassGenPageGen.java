@@ -674,9 +674,9 @@ public abstract class BareMetalResourceClassGenPageGen<DEV> extends PageLayout {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalResourceClassGenPage(entityVar,  siteRequest_, o);
@@ -760,12 +760,19 @@ public abstract class BareMetalResourceClassGenPageGen<DEV> extends PageLayout {
   public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassGenPage";
   public static final String CLASS_AUTH_RESOURCE = "";
   public static final String VAR_searchListBareMetalResourceClass_ = "searchListBareMetalResourceClass_";
+  public static final String SET_searchListBareMetalResourceClass_ = "setSearchListBareMetalResourceClass_";
   public static final String VAR_listBareMetalResourceClass = "listBareMetalResourceClass";
+  public static final String SET_listBareMetalResourceClass = "setListBareMetalResourceClass";
   public static final String VAR_resultCount = "resultCount";
+  public static final String SET_resultCount = "setResultCount";
   public static final String VAR_result = "result";
+  public static final String SET_result = "setResult";
   public static final String VAR_pk = "pk";
+  public static final String SET_pk = "setPk";
   public static final String VAR_solrId = "solrId";
+  public static final String SET_solrId = "setSolrId";
   public static final String VAR_pageUriBareMetalResourceClass = "pageUriBareMetalResourceClass";
+  public static final String SET_pageUriBareMetalResourceClass = "setPageUriBareMetalResourceClass";
 
   public static final String DISPLAY_NAME_searchListBareMetalResourceClass_ = "";
   public static final String DISPLAY_NAME_listBareMetalResourceClass = "";
@@ -774,51 +781,6 @@ public abstract class BareMetalResourceClassGenPageGen<DEV> extends PageLayout {
   public static final String DISPLAY_NAME_pk = "";
   public static final String DISPLAY_NAME_solrId = "";
   public static final String DISPLAY_NAME_pageUriBareMetalResourceClass = "";
-
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
 
   public static String displayNameForClass(String var) {
     return BareMetalResourceClassGenPage.displayNameBareMetalResourceClassGenPage(var);
@@ -841,85 +803,6 @@ public abstract class BareMetalResourceClassGenPageGen<DEV> extends PageLayout {
       return DISPLAY_NAME_pageUriBareMetalResourceClass;
     default:
       return PageLayout.displayNamePageLayout(var);
-    }
-  }
-
-  public static String descriptionBareMetalResourceClassGenPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return PageLayout.descriptionPageLayout(var);
-    }
-  }
-
-  public static String classSimpleNameBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-    case VAR_searchListBareMetalResourceClass_:
-      return "SearchList";
-    case VAR_listBareMetalResourceClass:
-      return "JsonArray";
-    case VAR_resultCount:
-      return "Integer";
-    case VAR_result:
-      return "BareMetalResourceClass";
-    case VAR_pk:
-      return "Long";
-    case VAR_solrId:
-      return "String";
-    case VAR_pageUriBareMetalResourceClass:
-      return "String";
-      default:
-        return PageLayout.classSimpleNamePageLayout(var);
-    }
-  }
-
-  public static Integer htmColumnBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmColumnPageLayout(var);
-    }
-  }
-
-  public static Integer htmRowBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmRowPageLayout(var);
-    }
-  }
-
-  public static Integer htmCellBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmCellPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMinBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMinPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMaxBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMaxPageLayout(var);
-    }
-  }
-
-  public static Integer maxBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.maxPageLayout(var);
-    }
-  }
-
-  public static Integer minBareMetalResourceClassGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.minPageLayout(var);
     }
   }
 }

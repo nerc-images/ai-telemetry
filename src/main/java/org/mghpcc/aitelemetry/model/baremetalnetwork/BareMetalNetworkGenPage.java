@@ -531,6 +531,11 @@ public class BareMetalNetworkGenPage extends BareMetalNetworkGenPageGen<PageLayo
   }
 
   @Override
+  protected void _classAllName(Wrap<String> w) {
+    w.o("all bare metal networks");
+  }
+
+  @Override
   protected void _pageUri(Wrap<String> w) {
     if("enUS".equals(lang))
       w.o("/en-us/search/bare-metal-network");

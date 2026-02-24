@@ -213,7 +213,7 @@ public class BareMetalNodeEnUSApiServiceImpl extends BareMetalNodeEnUSGenApiServ
 
 	@Override
 	public Future<SearchList<BareMetalNode>> searchBareMetalNodeList(SiteRequest siteRequest, Boolean populate,
-			Boolean store, Boolean modify) {
+			Boolean store, Boolean modify, String scope) {
 		Promise<SearchList<BareMetalNode>> promise = Promise.promise();
 		if(BooleanUtils.toBoolean(config.getString(ConfigKeys.ENABLE_THIN_UI))) {
 			queryBareMetalNodes().onSuccess(array -> {
@@ -264,7 +264,7 @@ public class BareMetalNodeEnUSApiServiceImpl extends BareMetalNodeEnUSGenApiServ
 				promise.fail(ex);
 			});
 		} else {
-			super.searchBareMetalNodeList(siteRequest, populate, store, modify).onSuccess(listBareMetalNode -> {
+			super.searchBareMetalNodeList(siteRequest, populate, store, modify, scope).onSuccess(listBareMetalNode -> {
 				promise.complete(listBareMetalNode);
 			}).onFailure(ex -> {
 				LOG.error(String.format("searchBareMetalNode failed. "), ex);

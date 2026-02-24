@@ -313,7 +313,7 @@ public class ClusterOrderEnUSApiServiceImpl extends ClusterOrderEnUSGenApiServic
 
 	@Override
 	public Future<SearchList<ClusterOrder>> searchClusterOrderList(SiteRequest siteRequest, Boolean populate,
-			Boolean store, Boolean modify) {
+			Boolean store, Boolean modify, String scope) {
 		Promise<SearchList<ClusterOrder>> promise = Promise.promise();
 		if(BooleanUtils.toBoolean(config.getString(ConfigKeys.ENABLE_THIN_UI))) {
 			try {
@@ -367,7 +367,7 @@ public class ClusterOrderEnUSApiServiceImpl extends ClusterOrderEnUSGenApiServic
 				promise.fail(ex);
 			}
 		} else {
-			super.searchClusterOrderList(siteRequest, populate, store, modify).onSuccess(listClusterOrder -> {
+			super.searchClusterOrderList(siteRequest, populate, store, modify, scope).onSuccess(listClusterOrder -> {
 				promise.complete(listClusterOrder);
 			}).onFailure(ex -> {
 				LOG.error(String.format("searchClusterOrder failed. "), ex);

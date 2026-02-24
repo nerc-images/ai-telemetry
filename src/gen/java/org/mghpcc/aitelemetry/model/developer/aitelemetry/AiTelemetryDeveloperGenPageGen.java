@@ -607,9 +607,9 @@ public abstract class AiTelemetryDeveloperGenPageGen<DEV> extends PageLayout {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchAiTelemetryDeveloperGenPage(entityVar,  siteRequest_, o);
@@ -687,11 +687,17 @@ public abstract class AiTelemetryDeveloperGenPageGen<DEV> extends PageLayout {
   public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperGenPage";
   public static final String CLASS_AUTH_RESOURCE = "";
   public static final String VAR_searchListAiTelemetryDeveloper_ = "searchListAiTelemetryDeveloper_";
+  public static final String SET_searchListAiTelemetryDeveloper_ = "setSearchListAiTelemetryDeveloper_";
   public static final String VAR_listAiTelemetryDeveloper = "listAiTelemetryDeveloper";
+  public static final String SET_listAiTelemetryDeveloper = "setListAiTelemetryDeveloper";
   public static final String VAR_resultCount = "resultCount";
+  public static final String SET_resultCount = "setResultCount";
   public static final String VAR_result = "result";
+  public static final String SET_result = "setResult";
   public static final String VAR_solrId = "solrId";
+  public static final String SET_solrId = "setSolrId";
   public static final String VAR_pageUriAiTelemetryDeveloper = "pageUriAiTelemetryDeveloper";
+  public static final String SET_pageUriAiTelemetryDeveloper = "setPageUriAiTelemetryDeveloper";
 
   public static final String DISPLAY_NAME_searchListAiTelemetryDeveloper_ = "";
   public static final String DISPLAY_NAME_listAiTelemetryDeveloper = "";
@@ -699,51 +705,6 @@ public abstract class AiTelemetryDeveloperGenPageGen<DEV> extends PageLayout {
   public static final String DISPLAY_NAME_result = "";
   public static final String DISPLAY_NAME_solrId = "";
   public static final String DISPLAY_NAME_pageUriAiTelemetryDeveloper = "";
-
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
 
   public static String displayNameForClass(String var) {
     return AiTelemetryDeveloperGenPage.displayNameAiTelemetryDeveloperGenPage(var);
@@ -764,83 +725,6 @@ public abstract class AiTelemetryDeveloperGenPageGen<DEV> extends PageLayout {
       return DISPLAY_NAME_pageUriAiTelemetryDeveloper;
     default:
       return PageLayout.displayNamePageLayout(var);
-    }
-  }
-
-  public static String descriptionAiTelemetryDeveloperGenPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return PageLayout.descriptionPageLayout(var);
-    }
-  }
-
-  public static String classSimpleNameAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-    case VAR_searchListAiTelemetryDeveloper_:
-      return "SearchList";
-    case VAR_listAiTelemetryDeveloper:
-      return "JsonArray";
-    case VAR_resultCount:
-      return "Integer";
-    case VAR_result:
-      return "AiTelemetryDeveloper";
-    case VAR_solrId:
-      return "String";
-    case VAR_pageUriAiTelemetryDeveloper:
-      return "String";
-      default:
-        return PageLayout.classSimpleNamePageLayout(var);
-    }
-  }
-
-  public static Integer htmColumnAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmColumnPageLayout(var);
-    }
-  }
-
-  public static Integer htmRowAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmRowPageLayout(var);
-    }
-  }
-
-  public static Integer htmCellAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmCellPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMinAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMinPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMaxAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMaxPageLayout(var);
-    }
-  }
-
-  public static Integer maxAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.maxPageLayout(var);
-    }
-  }
-
-  public static Integer minAiTelemetryDeveloperGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.minPageLayout(var);
     }
   }
 }

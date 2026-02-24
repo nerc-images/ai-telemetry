@@ -261,7 +261,7 @@ public class BareMetalNetworkEnUSApiServiceImpl extends BareMetalNetworkEnUSGenA
 
 	@Override
 	public Future<SearchList<BareMetalNetwork>> searchBareMetalNetworkList(SiteRequest siteRequest, Boolean populate,
-			Boolean store, Boolean modify) {
+			Boolean store, Boolean modify, String scope) {
 		Promise<SearchList<BareMetalNetwork>> promise = Promise.promise();
 		if(BooleanUtils.toBoolean(config.getString(ConfigKeys.ENABLE_THIN_UI))) {
 			queryBareMetalNetworks().onSuccess(array -> {
@@ -337,7 +337,7 @@ public class BareMetalNetworkEnUSApiServiceImpl extends BareMetalNetworkEnUSGenA
 				promise.fail(ex);
 			});
 		} else {
-			super.searchBareMetalNetworkList(siteRequest, populate, store, modify).onSuccess(listBareMetalNetwork -> {
+			super.searchBareMetalNetworkList(siteRequest, populate, store, modify, scope).onSuccess(listBareMetalNetwork -> {
 				promise.complete(listBareMetalNetwork);
 			}).onFailure(ex -> {
 				LOG.error(String.format("searchBareMetalNetwork failed. "), ex);

@@ -529,6 +529,11 @@ public class ManagedClusterGenPage extends ManagedClusterGenPageGen<PageLayout> 
   }
 
   @Override
+  protected void _classAllName(Wrap<String> w) {
+    w.o("all tenant clusters");
+  }
+
+  @Override
   protected void _pageUri(Wrap<String> w) {
     if("enUS".equals(lang))
       w.o("/en-us/search/managed-cluster");

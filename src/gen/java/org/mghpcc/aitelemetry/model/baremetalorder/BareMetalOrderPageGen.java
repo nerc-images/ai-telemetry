@@ -389,9 +389,9 @@ public abstract class BareMetalOrderPageGen<DEV> extends BareMetalOrderGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalOrderPage(entityVar,  siteRequest_, o);
@@ -451,55 +451,12 @@ public abstract class BareMetalOrderPageGen<DEV> extends BareMetalOrderGenPage {
   public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderPage";
   public static final String CLASS_AUTH_RESOURCE = "";
   public static final String VAR_resourceClassSearch = "resourceClassSearch";
+  public static final String SET_resourceClassSearch = "setResourceClassSearch";
   public static final String VAR_resourceClasses = "resourceClasses";
+  public static final String SET_resourceClasses = "setResourceClasses";
 
   public static final String DISPLAY_NAME_resourceClassSearch = "";
   public static final String DISPLAY_NAME_resourceClasses = "";
-
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
 
   public static String displayNameForClass(String var) {
     return BareMetalOrderPage.displayNameBareMetalOrderPage(var);
@@ -512,75 +469,6 @@ public abstract class BareMetalOrderPageGen<DEV> extends BareMetalOrderGenPage {
       return DISPLAY_NAME_resourceClasses;
     default:
       return BareMetalOrderGenPage.displayNameBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static String descriptionBareMetalOrderPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.descriptionBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameBareMetalOrderPage(String var) {
-    switch(var) {
-    case VAR_resourceClassSearch:
-      return "SearchList";
-    case VAR_resourceClasses:
-      return "JsonArray";
-      default:
-        return BareMetalOrderGenPage.classSimpleNameBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnBareMetalOrderPage(String var) {
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.htmColumnBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static Integer htmRowBareMetalOrderPage(String var) {
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.htmRowBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static Integer htmCellBareMetalOrderPage(String var) {
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.htmCellBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinBareMetalOrderPage(String var) {
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.lengthMinBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxBareMetalOrderPage(String var) {
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.lengthMaxBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static Integer maxBareMetalOrderPage(String var) {
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.maxBareMetalOrderGenPage(var);
-    }
-  }
-
-  public static Integer minBareMetalOrderPage(String var) {
-    switch(var) {
-      default:
-        return BareMetalOrderGenPage.minBareMetalOrderGenPage(var);
     }
   }
 }

@@ -245,9 +245,9 @@ public abstract class TenantPageGen<DEV> extends TenantGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchTenantPage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class TenantPageGen<DEV> extends TenantGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return TenantPage.displayNameTenantPage(var);
   }
@@ -354,71 +309,6 @@ public abstract class TenantPageGen<DEV> extends TenantGenPage {
     switch(var) {
     default:
       return TenantGenPage.displayNameTenantGenPage(var);
-    }
-  }
-
-  public static String descriptionTenantPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return TenantGenPage.descriptionTenantGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.classSimpleNameTenantGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.htmColumnTenantGenPage(var);
-    }
-  }
-
-  public static Integer htmRowTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.htmRowTenantGenPage(var);
-    }
-  }
-
-  public static Integer htmCellTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.htmCellTenantGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.lengthMinTenantGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.lengthMaxTenantGenPage(var);
-    }
-  }
-
-  public static Integer maxTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.maxTenantGenPage(var);
-    }
-  }
-
-  public static Integer minTenantPage(String var) {
-    switch(var) {
-      default:
-        return TenantGenPage.minTenantGenPage(var);
     }
   }
 }

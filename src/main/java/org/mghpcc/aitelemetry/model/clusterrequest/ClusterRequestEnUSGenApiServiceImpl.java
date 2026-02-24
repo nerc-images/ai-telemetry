@@ -130,17 +130,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -156,11 +156,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, false, "GET").onSuccess(listClusterRequest -> {
                 response200SearchClusterRequest(listClusterRequest).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchClusterRequest succeeded. "));
@@ -215,6 +216,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       List<String> fls = listClusterRequest.getRequest().getFields();
       JsonObject json = new JsonObject();
       JsonArray l = new JsonArray();
+      List<String> scopes = siteRequest.getScopes();
       listClusterRequest.getList().stream().forEach(o -> {
         JsonObject json2 = JsonObject.mapFrom(o);
         if(fls.size() > 0) {
@@ -241,15 +243,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       });
       json.put("list", l);
       response200Search(listClusterRequest.getRequest(), listClusterRequest.getResponse(), json);
-      if(json == null) {
-        String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
-        String m = String.format("%s %s not found", "OpenShift cluster request", name);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchClusterRequest failed. "), ex);
       promise.tryFail(ex);
@@ -301,17 +295,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -327,11 +321,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, false, "GET").onSuccess(listClusterRequest -> {
                 response200GETClusterRequest(listClusterRequest).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("getClusterRequest succeeded. "));
@@ -384,15 +379,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = listClusterRequest.getSiteRequest_(SiteRequest.class);
       JsonObject json = JsonObject.mapFrom(listClusterRequest.getList().stream().findFirst().orElse(null));
-      if(json == null) {
-        String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
-        String m = String.format("%s %s not found", "OpenShift cluster request", name);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200GETClusterRequest failed. "), ex);
       promise.tryFail(ex);
@@ -411,17 +398,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "PATCH"));
         siteRequest.setPublicRead(classPublicRead);
@@ -437,7 +424,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
@@ -455,7 +443,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, true, "PATCH").onSuccess(listClusterRequest -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listClusterRequest.getRequest().getRows());
@@ -582,7 +570,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
+        searchClusterRequestList(siteRequest, false, true, true, "PATCH").onSuccess(listClusterRequest -> {
           try {
             ClusterRequest o = listClusterRequest.first();
             ApiRequest apiRequest = new ApiRequest();
@@ -900,15 +888,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
-        String m = String.format("%s %s not found", "OpenShift cluster request", name);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHClusterRequest failed. "), ex);
       promise.tryFail(ex);
@@ -927,17 +907,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "POST"));
         siteRequest.setPublicRead(classPublicRead);
@@ -953,7 +933,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
@@ -1389,15 +1370,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       JsonObject json = JsonObject.mapFrom(o);
-      if(json == null) {
-        String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
-        String m = String.format("%s %s not found", "OpenShift cluster request", name);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTClusterRequest failed. "), ex);
       promise.tryFail(ex);
@@ -1416,17 +1389,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "DELETE"));
         siteRequest.setPublicRead(classPublicRead);
@@ -1442,7 +1415,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
@@ -1460,7 +1434,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterRequest -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listClusterRequest.getRequest().getRows());
@@ -1586,7 +1560,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
+        searchClusterRequestList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterRequest -> {
           try {
             ClusterRequest o = listClusterRequest.first();
             if(o != null && listClusterRequest.getResponse().getResponse().getNumFound() == 1) {
@@ -1790,15 +1764,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
-        String m = String.format("%s %s not found", "OpenShift cluster request", name);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEClusterRequest failed. "), ex);
       promise.tryFail(ex);
@@ -1817,17 +1783,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "PUT"));
         siteRequest.setPublicRead(classPublicRead);
@@ -1843,7 +1809,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
@@ -2125,15 +2092,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
-        String m = String.format("%s %s not found", "OpenShift cluster request", name);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportClusterRequest failed. "), ex);
       promise.tryFail(ex);
@@ -2151,17 +2110,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -2177,11 +2136,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, false, "GET").onSuccess(listClusterRequest -> {
                 response200SearchPageClusterRequest(listClusterRequest).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchpageClusterRequest succeeded. "));
@@ -2253,8 +2213,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriSearchPageClusterRequest(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/cluster-request/ClusterRequestSearchPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2299,6 +2263,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2403,18 +2368,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -2430,11 +2394,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, false, "GET").onSuccess(listClusterRequest -> {
                 response200EditPageClusterRequest(listClusterRequest).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("editpageClusterRequest succeeded. "));
@@ -2506,8 +2471,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriEditPageClusterRequest(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/cluster-request/ClusterRequestEditPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2552,6 +2521,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2656,18 +2626,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
@@ -2683,11 +2652,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, false).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, false, "GET").onSuccess(listClusterRequest -> {
                 response200UserPageClusterRequest(listClusterRequest).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("userpageClusterRequest succeeded. "));
@@ -2759,8 +2729,12 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriUserPageClusterRequest(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "%s.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2805,6 +2779,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2910,17 +2885,17 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
         String CLUSTERREQUEST = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERREQUEST");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
           form.add("permission", String.format("%s#%s", name, "DELETE"));
         siteRequest.setPublicRead(classPublicRead);
@@ -2936,7 +2911,8 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERREQUEST".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             scopes.add("GET");
             scopes.add("PATCH");
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
@@ -2954,7 +2930,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
+              searchClusterRequestList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterRequest -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listClusterRequest.getRequest().getRows());
@@ -3080,7 +3056,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchClusterRequestList(siteRequest, false, true, true).onSuccess(listClusterRequest -> {
+        searchClusterRequestList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterRequest -> {
           try {
             ClusterRequest o = listClusterRequest.first();
             if(o != null && listClusterRequest.getResponse().getResponse().getNumFound() == 1) {
@@ -3284,15 +3260,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String name = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("name");
-        String m = String.format("%s %s not found", "OpenShift cluster request", name);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterClusterRequest failed. "), ex);
       promise.tryFail(ex);
@@ -3403,13 +3371,14 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     return promise.future();
   }
 
-  public Future<SearchList<ClusterRequest>> searchClusterRequestList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify) {
+  public Future<SearchList<ClusterRequest>> searchClusterRequestList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, String scope) {
     Promise<SearchList<ClusterRequest>> promise = Promise.promise();
     try {
       ServiceRequest serviceRequest = siteRequest.getServiceRequest();
       String entityListStr = siteRequest.getServiceRequest().getParams().getJsonObject("query").getString("fl");
       String[] entityList = entityListStr == null ? null : entityListStr.split(",\\s*");
       SearchList<ClusterRequest> searchList = new SearchList<ClusterRequest>();
+      searchList.setScope(scope);
       String facetRange = null;
       Date facetRangeStart = null;
       Date facetRangeEnd = null;

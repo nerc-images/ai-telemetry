@@ -40,6 +40,8 @@ import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -602,9 +604,39 @@ public abstract class ManagedClusterGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<ManagedCluster> fqManagedCluster(SiteRequest siteRequest, String var, Object val) {
+    Promise<ManagedCluster> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<ManagedCluster> searchList = new SearchList<ManagedCluster>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(ManagedCluster.class);
+        searchList.fq(String.format("%s:", ManagedCluster.varIndexedManagedCluster(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the tenant cluster", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the tenant cluster", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the tenant cluster", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchManagedCluster(entityVar,  siteRequest_, o);
@@ -896,9 +928,13 @@ public abstract class ManagedClusterGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_ManagedCluster;
   }
   public static final String VAR_id = "id";
+  public static final String SET_id = "setId";
   public static final String VAR_state = "state";
+  public static final String SET_state = "setState";
   public static final String VAR_apiUrl = "apiUrl";
+  public static final String SET_apiUrl = "setApiUrl";
   public static final String VAR_consoleUrl = "consoleUrl";
+  public static final String SET_consoleUrl = "setConsoleUrl";
 
   public static List<String> varsQForClass() {
     return ManagedCluster.varsQManagedCluster(new ArrayList<String>());
@@ -954,28 +990,31 @@ public abstract class ManagedClusterGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/managed-cluster/%s";
   }
 
   @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlDownloadForClass() {
     return "%s/en-us/download/kubeconfig/%s";
+  }
+
+  public static String varJsonForClass(String var, Boolean patch) {
+    return ManagedCluster.varJsonManagedCluster(var, patch);
+  }
+  public static String varJsonManagedCluster(String var, Boolean patch) {
+    switch(var) {
+    case VAR_id:
+      return patch ? SET_id : VAR_id;
+    case VAR_state:
+      return patch ? SET_state : VAR_state;
+    case VAR_apiUrl:
+      return patch ? SET_apiUrl : VAR_apiUrl;
+    case VAR_consoleUrl:
+      return patch ? SET_consoleUrl : VAR_consoleUrl;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

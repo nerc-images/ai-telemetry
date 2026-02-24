@@ -220,7 +220,7 @@ public class ManagedClusterEnUSApiServiceImpl extends ManagedClusterEnUSGenApiSe
 
 	@Override
 	public Future<SearchList<ManagedCluster>> searchManagedClusterList(SiteRequest siteRequest, Boolean populate,
-			Boolean store, Boolean modify) {
+			Boolean store, Boolean modify, String scope) {
 		Promise<SearchList<ManagedCluster>> promise = Promise.promise();
 		if(BooleanUtils.toBoolean(config.getString(ConfigKeys.ENABLE_THIN_UI))) {
 			try {
@@ -272,7 +272,7 @@ public class ManagedClusterEnUSApiServiceImpl extends ManagedClusterEnUSGenApiSe
 				promise.fail(ex);
 			}
 		} else {
-			super.searchManagedClusterList(siteRequest, populate, store, modify).onSuccess(listManagedCluster -> {
+			super.searchManagedClusterList(siteRequest, populate, store, modify, scope).onSuccess(listManagedCluster -> {
 				promise.complete(listManagedCluster);
 			}).onFailure(ex -> {
 				LOG.error(String.format("searchManagedCluster failed. "), ex);

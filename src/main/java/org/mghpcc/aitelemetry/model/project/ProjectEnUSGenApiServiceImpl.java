@@ -307,7 +307,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       if(result == null || !Files.exists(resourceTemplatePath)) {
-        String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/project/ProjectSearchPage.htm"), Charset.forName("UTF-8"));
+        String template = Files.readString(Path.of(siteTemplatePath, "%s.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
@@ -619,6 +619,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       List<String> fls = listProject.getRequest().getFields();
       JsonObject json = new JsonObject();
       JsonArray l = new JsonArray();
+      List<String> scopes = siteRequest.getScopes();
       listProject.getList().stream().forEach(o -> {
         JsonObject json2 = JsonObject.mapFrom(o);
         if(fls.size() > 0) {
@@ -645,15 +646,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       });
       json.put("list", l);
       response200Search(listProject.getRequest(), listProject.getResponse(), json);
-      if(json == null) {
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String m = String.format("%s %s not found", "project", projectResource);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchProject failed. "), ex);
       promise.tryFail(ex);
@@ -861,15 +854,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     try {
       SiteRequest siteRequest = listProject.getSiteRequest_(SiteRequest.class);
       JsonObject json = JsonObject.mapFrom(listProject.getList().stream().findFirst().orElse(null));
-      if(json == null) {
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String m = String.format("%s %s not found", "project", projectResource);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200GETProject failed. "), ex);
       promise.tryFail(ex);
@@ -1591,15 +1576,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String m = String.format("%s %s not found", "project", projectResource);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHProject failed. "), ex);
       promise.tryFail(ex);
@@ -2297,15 +2274,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       JsonObject json = JsonObject.mapFrom(o);
-      if(json == null) {
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String m = String.format("%s %s not found", "project", projectResource);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTProject failed. "), ex);
       promise.tryFail(ex);
@@ -2789,15 +2758,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String m = String.format("%s %s not found", "project", projectResource);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEProject failed. "), ex);
       promise.tryFail(ex);
@@ -3195,15 +3156,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String m = String.format("%s %s not found", "project", projectResource);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportProject failed. "), ex);
       promise.tryFail(ex);
@@ -3752,7 +3705,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
       if(result == null || !Files.exists(resourceTemplatePath)) {
-        String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/project/ProjectSearchPage.htm"), Charset.forName("UTF-8"));
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/project/ProjectEditPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
@@ -4372,15 +4325,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String m = String.format("%s %s not found", "project", projectResource);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterProject failed. "), ex);
       promise.tryFail(ex);

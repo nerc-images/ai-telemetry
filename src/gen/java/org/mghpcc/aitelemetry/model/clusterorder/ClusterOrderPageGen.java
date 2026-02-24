@@ -245,9 +245,9 @@ public abstract class ClusterOrderPageGen<DEV> extends ClusterOrderGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchClusterOrderPage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class ClusterOrderPageGen<DEV> extends ClusterOrderGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return ClusterOrderPage.displayNameClusterOrderPage(var);
   }
@@ -354,71 +309,6 @@ public abstract class ClusterOrderPageGen<DEV> extends ClusterOrderGenPage {
     switch(var) {
     default:
       return ClusterOrderGenPage.displayNameClusterOrderGenPage(var);
-    }
-  }
-
-  public static String descriptionClusterOrderPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.descriptionClusterOrderGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.classSimpleNameClusterOrderGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.htmColumnClusterOrderGenPage(var);
-    }
-  }
-
-  public static Integer htmRowClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.htmRowClusterOrderGenPage(var);
-    }
-  }
-
-  public static Integer htmCellClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.htmCellClusterOrderGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.lengthMinClusterOrderGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.lengthMaxClusterOrderGenPage(var);
-    }
-  }
-
-  public static Integer maxClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.maxClusterOrderGenPage(var);
-    }
-  }
-
-  public static Integer minClusterOrderPage(String var) {
-    switch(var) {
-      default:
-        return ClusterOrderGenPage.minClusterOrderGenPage(var);
     }
   }
 }

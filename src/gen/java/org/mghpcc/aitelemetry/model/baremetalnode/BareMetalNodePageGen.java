@@ -245,9 +245,9 @@ public abstract class BareMetalNodePageGen<DEV> extends BareMetalNodeGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalNodePage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class BareMetalNodePageGen<DEV> extends BareMetalNodeGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return BareMetalNodePage.displayNameBareMetalNodePage(var);
   }
@@ -354,71 +309,6 @@ public abstract class BareMetalNodePageGen<DEV> extends BareMetalNodeGenPage {
     switch(var) {
     default:
       return BareMetalNodeGenPage.displayNameBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static String descriptionBareMetalNodePage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.descriptionBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.classSimpleNameBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.htmColumnBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static Integer htmRowBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.htmRowBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static Integer htmCellBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.htmCellBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.lengthMinBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.lengthMaxBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static Integer maxBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.maxBareMetalNodeGenPage(var);
-    }
-  }
-
-  public static Integer minBareMetalNodePage(String var) {
-    switch(var) {
-      default:
-        return BareMetalNodeGenPage.minBareMetalNodeGenPage(var);
     }
   }
 }

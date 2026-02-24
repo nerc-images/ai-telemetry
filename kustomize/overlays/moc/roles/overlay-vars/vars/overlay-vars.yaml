@@ -52,8 +52,8 @@ WORKBENCH_NAMES:
   - USER_NAME: computate
     WORKBENCH_ADMIN: true
 #  - USER_NAME: tzumainn
-#  - USER_NAME: isaiahstapleton
+  - USER_NAME: isaiahstapleton
 #  - USER_NAME: danniesh
-#  - USER_NAME: schwesig
+  - USER_NAME: schwesig
 #  - USER_NAME: tsisodia10
 #  - USER_NAME: ajamias

@@ -245,9 +245,9 @@ public abstract class ClusterTemplatePageGen<DEV> extends ClusterTemplateGenPage
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchClusterTemplatePage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class ClusterTemplatePageGen<DEV> extends ClusterTemplateGenPage
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return ClusterTemplatePage.displayNameClusterTemplatePage(var);
   }
@@ -354,71 +309,6 @@ public abstract class ClusterTemplatePageGen<DEV> extends ClusterTemplateGenPage
     switch(var) {
     default:
       return ClusterTemplateGenPage.displayNameClusterTemplateGenPage(var);
-    }
-  }
-
-  public static String descriptionClusterTemplatePage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.descriptionClusterTemplateGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.classSimpleNameClusterTemplateGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.htmColumnClusterTemplateGenPage(var);
-    }
-  }
-
-  public static Integer htmRowClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.htmRowClusterTemplateGenPage(var);
-    }
-  }
-
-  public static Integer htmCellClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.htmCellClusterTemplateGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.lengthMinClusterTemplateGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.lengthMaxClusterTemplateGenPage(var);
-    }
-  }
-
-  public static Integer maxClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.maxClusterTemplateGenPage(var);
-    }
-  }
-
-  public static Integer minClusterTemplatePage(String var) {
-    switch(var) {
-      default:
-        return ClusterTemplateGenPage.minClusterTemplateGenPage(var);
     }
   }
 }
