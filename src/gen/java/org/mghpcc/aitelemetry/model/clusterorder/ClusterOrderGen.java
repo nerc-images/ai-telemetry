@@ -41,6 +41,8 @@ import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -606,9 +608,39 @@ public abstract class ClusterOrderGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<ClusterOrder> fqClusterOrder(SiteRequest siteRequest, String var, Object val) {
+    Promise<ClusterOrder> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<ClusterOrder> searchList = new SearchList<ClusterOrder>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(ClusterOrder.class);
+        searchList.fq(String.format("%s:", ClusterOrder.varIndexedClusterOrder(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying theOpenShift cluster order", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying theOpenShift cluster order", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying theOpenShift cluster order", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchClusterOrder(entityVar,  siteRequest_, o);
@@ -898,9 +930,13 @@ public abstract class ClusterOrderGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_ClusterOrder;
   }
   public static final String VAR_id = "id";
+  public static final String SET_id = "setId";
   public static final String VAR_templateId = "templateId";
+  public static final String SET_templateId = "setTemplateId";
   public static final String VAR_state = "state";
+  public static final String SET_state = "setState";
   public static final String VAR_clusterId = "clusterId";
+  public static final String SET_clusterId = "setClusterId";
 
   public static List<String> varsQForClass() {
     return ClusterOrder.varsQClusterOrder(new ArrayList<String>());
@@ -956,28 +992,26 @@ public abstract class ClusterOrderGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/cluster-order/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return ClusterOrder.varJsonClusterOrder(var, patch);
   }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonClusterOrder(String var, Boolean patch) {
+    switch(var) {
+    case VAR_id:
+      return patch ? SET_id : VAR_id;
+    case VAR_templateId:
+      return patch ? SET_templateId : VAR_templateId;
+    case VAR_state:
+      return patch ? SET_state : VAR_state;
+    case VAR_clusterId:
+      return patch ? SET_clusterId : VAR_clusterId;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

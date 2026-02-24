@@ -245,9 +245,9 @@ public abstract class AiNodePageGen<DEV> extends AiNodeGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchAiNodePage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class AiNodePageGen<DEV> extends AiNodeGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return AiNodePage.displayNameAiNodePage(var);
   }
@@ -354,71 +309,6 @@ public abstract class AiNodePageGen<DEV> extends AiNodeGenPage {
     switch(var) {
     default:
       return AiNodeGenPage.displayNameAiNodeGenPage(var);
-    }
-  }
-
-  public static String descriptionAiNodePage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return AiNodeGenPage.descriptionAiNodeGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.classSimpleNameAiNodeGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.htmColumnAiNodeGenPage(var);
-    }
-  }
-
-  public static Integer htmRowAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.htmRowAiNodeGenPage(var);
-    }
-  }
-
-  public static Integer htmCellAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.htmCellAiNodeGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.lengthMinAiNodeGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.lengthMaxAiNodeGenPage(var);
-    }
-  }
-
-  public static Integer maxAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.maxAiNodeGenPage(var);
-    }
-  }
-
-  public static Integer minAiNodePage(String var) {
-    switch(var) {
-      default:
-        return AiNodeGenPage.minAiNodeGenPage(var);
     }
   }
 }

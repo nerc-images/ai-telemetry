@@ -57,6 +57,8 @@ import org.computate.vertx.serialize.vertx.JsonObjectDeserializer;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -1946,9 +1948,39 @@ public abstract class GpuDeviceGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<GpuDevice> fqGpuDevice(SiteRequest siteRequest, String var, Object val) {
+    Promise<GpuDevice> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<GpuDevice> searchList = new SearchList<GpuDevice>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(GpuDevice.class);
+        searchList.fq(String.format("%s:", GpuDevice.varIndexedGpuDevice(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the GPU device", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the GPU device", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the GPU device", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchGpuDevice(entityVar,  siteRequest_, o);
@@ -2803,27 +2835,49 @@ public abstract class GpuDeviceGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_GpuDevice;
   }
   public static final String VAR_hubId = "hubId";
+  public static final String SET_hubId = "setHubId";
   public static final String VAR_hubResource = "hubResource";
+  public static final String SET_hubResource = "setHubResource";
   public static final String VAR_clusterName = "clusterName";
+  public static final String SET_clusterName = "setClusterName";
   public static final String VAR_clusterResource = "clusterResource";
+  public static final String SET_clusterResource = "setClusterResource";
   public static final String VAR_nodeName = "nodeName";
+  public static final String SET_nodeName = "setNodeName";
   public static final String VAR_nodeResource = "nodeResource";
+  public static final String SET_nodeResource = "setNodeResource";
   public static final String VAR_gpuDeviceNumber = "gpuDeviceNumber";
+  public static final String SET_gpuDeviceNumber = "setGpuDeviceNumber";
   public static final String VAR_gpuDeviceResource = "gpuDeviceResource";
+  public static final String SET_gpuDeviceResource = "setGpuDeviceResource";
   public static final String VAR_gpuDeviceDisplayName = "gpuDeviceDisplayName";
+  public static final String SET_gpuDeviceDisplayName = "setGpuDeviceDisplayName";
   public static final String VAR_modelName = "modelName";
+  public static final String SET_modelName = "setModelName";
   public static final String VAR_gpuDeviceUtilization = "gpuDeviceUtilization";
+  public static final String SET_gpuDeviceUtilization = "setGpuDeviceUtilization";
   public static final String VAR_description = "description";
+  public static final String SET_description = "setDescription";
   public static final String VAR_locationColors = "locationColors";
+  public static final String SET_locationColors = "setLocationColors";
   public static final String VAR_locationTitles = "locationTitles";
+  public static final String SET_locationTitles = "setLocationTitles";
   public static final String VAR_locationLinks = "locationLinks";
+  public static final String SET_locationLinks = "setLocationLinks";
   public static final String VAR_location = "location";
+  public static final String SET_location = "setLocation";
   public static final String VAR_id = "id";
+  public static final String SET_id = "setId";
   public static final String VAR_entityShortId = "entityShortId";
+  public static final String SET_entityShortId = "setEntityShortId";
   public static final String VAR_ngsildTenant = "ngsildTenant";
+  public static final String SET_ngsildTenant = "setNgsildTenant";
   public static final String VAR_ngsildPath = "ngsildPath";
+  public static final String SET_ngsildPath = "setNgsildPath";
   public static final String VAR_ngsildContext = "ngsildContext";
+  public static final String SET_ngsildContext = "setNgsildContext";
   public static final String VAR_ngsildData = "ngsildData";
+  public static final String SET_ngsildData = "setNgsildData";
 
   public static List<String> varsQForClass() {
     return GpuDevice.varsQGpuDevice(new ArrayList<String>());
@@ -2926,18 +2980,62 @@ public abstract class GpuDeviceGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlUserPageForClass() {
     return "%s/en-us/user/gpu-device/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return GpuDevice.varJsonGpuDevice(var, patch);
+  }
+  public static String varJsonGpuDevice(String var, Boolean patch) {
+    switch(var) {
+    case VAR_hubId:
+      return patch ? SET_hubId : VAR_hubId;
+    case VAR_hubResource:
+      return patch ? SET_hubResource : VAR_hubResource;
+    case VAR_clusterName:
+      return patch ? SET_clusterName : VAR_clusterName;
+    case VAR_clusterResource:
+      return patch ? SET_clusterResource : VAR_clusterResource;
+    case VAR_nodeName:
+      return patch ? SET_nodeName : VAR_nodeName;
+    case VAR_nodeResource:
+      return patch ? SET_nodeResource : VAR_nodeResource;
+    case VAR_gpuDeviceNumber:
+      return patch ? SET_gpuDeviceNumber : VAR_gpuDeviceNumber;
+    case VAR_gpuDeviceResource:
+      return patch ? SET_gpuDeviceResource : VAR_gpuDeviceResource;
+    case VAR_gpuDeviceDisplayName:
+      return patch ? SET_gpuDeviceDisplayName : VAR_gpuDeviceDisplayName;
+    case VAR_modelName:
+      return patch ? SET_modelName : VAR_modelName;
+    case VAR_gpuDeviceUtilization:
+      return patch ? SET_gpuDeviceUtilization : VAR_gpuDeviceUtilization;
+    case VAR_description:
+      return patch ? SET_description : VAR_description;
+    case VAR_locationColors:
+      return patch ? SET_locationColors : VAR_locationColors;
+    case VAR_locationTitles:
+      return patch ? SET_locationTitles : VAR_locationTitles;
+    case VAR_locationLinks:
+      return patch ? SET_locationLinks : VAR_locationLinks;
+    case VAR_location:
+      return patch ? SET_location : VAR_location;
+    case VAR_id:
+      return patch ? SET_id : VAR_id;
+    case VAR_entityShortId:
+      return patch ? SET_entityShortId : VAR_entityShortId;
+    case VAR_ngsildTenant:
+      return patch ? SET_ngsildTenant : VAR_ngsildTenant;
+    case VAR_ngsildPath:
+      return patch ? SET_ngsildPath : VAR_ngsildPath;
+    case VAR_ngsildContext:
+      return patch ? SET_ngsildContext : VAR_ngsildContext;
+    case VAR_ngsildData:
+      return patch ? SET_ngsildData : VAR_ngsildData;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

@@ -126,17 +126,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -151,11 +150,12 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
+              searchBareMetalNetworkList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNetwork -> {
                 response200SearchBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchBareMetalNetwork succeeded. "));
@@ -210,6 +210,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       List<String> fls = listBareMetalNetwork.getRequest().getFields();
       JsonObject json = new JsonObject();
       JsonArray l = new JsonArray();
+      List<String> scopes = siteRequest.getScopes();
       listBareMetalNetwork.getList().stream().forEach(o -> {
         JsonObject json2 = JsonObject.mapFrom(o);
         if(fls.size() > 0) {
@@ -236,15 +237,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       });
       json.put("list", l);
       response200Search(listBareMetalNetwork.getRequest(), listBareMetalNetwork.getResponse(), json);
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "bare metal network", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchBareMetalNetwork failed. "), ex);
       promise.tryFail(ex);
@@ -296,17 +289,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -321,11 +313,12 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
+              searchBareMetalNetworkList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNetwork -> {
                 response200GETBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("getBareMetalNetwork succeeded. "));
@@ -378,15 +371,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     try {
       SiteRequest siteRequest = listBareMetalNetwork.getSiteRequest_(SiteRequest.class);
       JsonObject json = JsonObject.mapFrom(listBareMetalNetwork.getList().stream().findFirst().orElse(null));
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "bare metal network", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200GETBareMetalNetwork failed. "), ex);
       promise.tryFail(ex);
@@ -405,17 +390,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "PATCH"));
         webClient.post(
@@ -430,7 +414,8 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -446,7 +431,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
+              searchBareMetalNetworkList(siteRequest, false, true, true, "PATCH").onSuccess(listBareMetalNetwork -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listBareMetalNetwork.getRequest().getRows());
@@ -573,7 +558,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             siteRequest.addScopes(scope);
           });
         });
-        searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
+        searchBareMetalNetworkList(siteRequest, false, true, true, "PATCH").onSuccess(listBareMetalNetwork -> {
           try {
             BareMetalNetwork o = listBareMetalNetwork.first();
             ApiRequest apiRequest = new ApiRequest();
@@ -1093,15 +1078,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "bare metal network", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHBareMetalNetwork failed. "), ex);
       promise.tryFail(ex);
@@ -1120,17 +1097,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "POST"));
         webClient.post(
@@ -1145,7 +1121,8 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -1836,15 +1813,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       JsonObject json = JsonObject.mapFrom(o);
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "bare metal network", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTBareMetalNetwork failed. "), ex);
       promise.tryFail(ex);
@@ -1863,17 +1832,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "DELETE"));
         webClient.post(
@@ -1888,7 +1856,8 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -1904,7 +1873,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
+              searchBareMetalNetworkList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalNetwork -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listBareMetalNetwork.getRequest().getRows());
@@ -2030,7 +1999,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             siteRequest.addScopes(scope);
           });
         });
-        searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
+        searchBareMetalNetworkList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalNetwork -> {
           try {
             BareMetalNetwork o = listBareMetalNetwork.first();
             if(o != null && listBareMetalNetwork.getResponse().getResponse().getNumFound() == 1) {
@@ -2194,15 +2163,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "bare metal network", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEBareMetalNetwork failed. "), ex);
       promise.tryFail(ex);
@@ -2221,17 +2182,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "PUT"));
         webClient.post(
@@ -2246,7 +2206,8 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -2526,15 +2487,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "bare metal network", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportBareMetalNetwork failed. "), ex);
       promise.tryFail(ex);
@@ -2552,17 +2505,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -2577,11 +2529,12 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
+              searchBareMetalNetworkList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNetwork -> {
                 response200SearchPageBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchpageBareMetalNetwork succeeded. "));
@@ -2653,8 +2606,12 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       String pageTemplateUri = templateUriSearchPageBareMetalNetwork(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/bare-metal-network/BareMetalNetworkSearchPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2699,6 +2656,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2803,18 +2761,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, id, "GET"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -2829,11 +2785,12 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNetworkList(siteRequest, false, true, false).onSuccess(listBareMetalNetwork -> {
+              searchBareMetalNetworkList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNetwork -> {
                 response200EditPageBareMetalNetwork(listBareMetalNetwork).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("editpageBareMetalNetwork succeeded. "));
@@ -2905,8 +2862,12 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
       String pageTemplateUri = templateUriEditPageBareMetalNetwork(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/bare-metal-network/BareMetalNetworkEditPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2951,6 +2912,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -3056,17 +3018,16 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String BAREMETALNETWORK = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNETWORK");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "DELETE"));
         webClient.post(
@@ -3081,7 +3042,8 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNETWORK".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -3097,7 +3059,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
+              searchBareMetalNetworkList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalNetwork -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listBareMetalNetwork.getRequest().getRows());
@@ -3223,7 +3185,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
             siteRequest.addScopes(scope);
           });
         });
-        searchBareMetalNetworkList(siteRequest, false, true, true).onSuccess(listBareMetalNetwork -> {
+        searchBareMetalNetworkList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalNetwork -> {
           try {
             BareMetalNetwork o = listBareMetalNetwork.first();
             if(o != null && listBareMetalNetwork.getResponse().getResponse().getNumFound() == 1) {
@@ -3387,15 +3349,7 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "bare metal network", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterBareMetalNetwork failed. "), ex);
       promise.tryFail(ex);
@@ -3506,13 +3460,14 @@ public class BareMetalNetworkEnUSGenApiServiceImpl extends BaseApiServiceImpl im
     return promise.future();
   }
 
-  public Future<SearchList<BareMetalNetwork>> searchBareMetalNetworkList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify) {
+  public Future<SearchList<BareMetalNetwork>> searchBareMetalNetworkList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, String scope) {
     Promise<SearchList<BareMetalNetwork>> promise = Promise.promise();
     try {
       ServiceRequest serviceRequest = siteRequest.getServiceRequest();
       String entityListStr = siteRequest.getServiceRequest().getParams().getJsonObject("query").getString("fl");
       String[] entityList = entityListStr == null ? null : entityListStr.split(",\\s*");
       SearchList<BareMetalNetwork> searchList = new SearchList<BareMetalNetwork>();
+      searchList.setScope(scope);
       String facetRange = null;
       Date facetRangeStart = null;
       Date facetRangeEnd = null;

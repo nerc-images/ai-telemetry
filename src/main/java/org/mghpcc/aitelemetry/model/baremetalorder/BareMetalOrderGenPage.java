@@ -533,6 +533,11 @@ public class BareMetalOrderGenPage extends BareMetalOrderGenPageGen<PageLayout> 
   }
 
   @Override
+  protected void _classAllName(Wrap<String> w) {
+    w.o("all bare metal orders");
+  }
+
+  @Override
   protected void _pageUri(Wrap<String> w) {
     if("enUS".equals(lang))
       w.o("/en-us/search/bare-metal-order");

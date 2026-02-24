@@ -42,6 +42,8 @@ import java.lang.Integer;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -991,9 +993,39 @@ public abstract class BareMetalNodeGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<BareMetalNode> fqBareMetalNode(SiteRequest siteRequest, String var, Object val) {
+    Promise<BareMetalNode> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<BareMetalNode> searchList = new SearchList<BareMetalNode>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(BareMetalNode.class);
+        searchList.fq(String.format("%s:", BareMetalNode.varIndexedBareMetalNode(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the bare metal node", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the bare metal node", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the bare metal node", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalNode(entityVar,  siteRequest_, o);
@@ -1456,14 +1488,23 @@ public abstract class BareMetalNodeGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_BareMetalNode;
   }
   public static final String VAR_leaseInfo = "leaseInfo";
+  public static final String SET_leaseInfo = "setLeaseInfo";
   public static final String VAR_networkInfo = "networkInfo";
+  public static final String SET_networkInfo = "setNetworkInfo";
   public static final String VAR_nodeId = "nodeId";
+  public static final String SET_nodeId = "setNodeId";
   public static final String VAR_nodeIsMaintenance = "nodeIsMaintenance";
+  public static final String SET_nodeIsMaintenance = "setNodeIsMaintenance";
   public static final String VAR_nodeLinks = "nodeLinks";
+  public static final String SET_nodeLinks = "setNodeLinks";
   public static final String VAR_nodeName = "nodeName";
+  public static final String SET_nodeName = "setNodeName";
   public static final String VAR_nodePowerState = "nodePowerState";
+  public static final String SET_nodePowerState = "setNodePowerState";
   public static final String VAR_nodeProvisionState = "nodeProvisionState";
+  public static final String SET_nodeProvisionState = "setNodeProvisionState";
   public static final String VAR_nodeResourceClass = "nodeResourceClass";
+  public static final String SET_nodeResourceClass = "setNodeResourceClass";
 
   public static List<String> varsQForClass() {
     return BareMetalNode.varsQBareMetalNode(new ArrayList<String>());
@@ -1533,28 +1574,36 @@ public abstract class BareMetalNodeGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/bare-metal-node/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return BareMetalNode.varJsonBareMetalNode(var, patch);
   }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonBareMetalNode(String var, Boolean patch) {
+    switch(var) {
+    case VAR_leaseInfo:
+      return patch ? SET_leaseInfo : VAR_leaseInfo;
+    case VAR_networkInfo:
+      return patch ? SET_networkInfo : VAR_networkInfo;
+    case VAR_nodeId:
+      return patch ? SET_nodeId : VAR_nodeId;
+    case VAR_nodeIsMaintenance:
+      return patch ? SET_nodeIsMaintenance : VAR_nodeIsMaintenance;
+    case VAR_nodeLinks:
+      return patch ? SET_nodeLinks : VAR_nodeLinks;
+    case VAR_nodeName:
+      return patch ? SET_nodeName : VAR_nodeName;
+    case VAR_nodePowerState:
+      return patch ? SET_nodePowerState : VAR_nodePowerState;
+    case VAR_nodeProvisionState:
+      return patch ? SET_nodeProvisionState : VAR_nodeProvisionState;
+    case VAR_nodeResourceClass:
+      return patch ? SET_nodeResourceClass : VAR_nodeResourceClass;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

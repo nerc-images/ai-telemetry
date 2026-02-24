@@ -67,6 +67,8 @@ import java.time.OffsetDateTime;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -2091,9 +2093,39 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<Cluster> fqCluster(SiteRequest siteRequest, String var, Object val) {
+    Promise<Cluster> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<Cluster> searchList = new SearchList<Cluster>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(Cluster.class);
+        searchList.fq(String.format("%s:", Cluster.varIndexedCluster(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying theOpenShift cluster", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying theOpenShift cluster", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying theOpenShift cluster", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchCluster(entityVar,  siteRequest_, o);
@@ -3010,29 +3042,53 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_Cluster;
   }
   public static final String VAR_hubId = "hubId";
+  public static final String SET_hubId = "setHubId";
   public static final String VAR_hubResource = "hubResource";
+  public static final String SET_hubResource = "setHubResource";
   public static final String VAR_clusterName = "clusterName";
+  public static final String SET_clusterName = "setClusterName";
   public static final String VAR_hubCluster = "hubCluster";
+  public static final String SET_hubCluster = "setHubCluster";
   public static final String VAR_clusterNameMetrics = "clusterNameMetrics";
+  public static final String SET_clusterNameMetrics = "setClusterNameMetrics";
   public static final String VAR_clusterResource = "clusterResource";
+  public static final String SET_clusterResource = "setClusterResource";
   public static final String VAR_uniqueName = "uniqueName";
+  public static final String SET_uniqueName = "setUniqueName";
   public static final String VAR_description = "description";
+  public static final String SET_description = "setDescription";
   public static final String VAR_locationColors = "locationColors";
+  public static final String SET_locationColors = "setLocationColors";
   public static final String VAR_locationTitles = "locationTitles";
+  public static final String SET_locationTitles = "setLocationTitles";
   public static final String VAR_locationLinks = "locationLinks";
+  public static final String SET_locationLinks = "setLocationLinks";
   public static final String VAR_location = "location";
+  public static final String SET_location = "setLocation";
   public static final String VAR_id = "id";
+  public static final String SET_id = "setId";
   public static final String VAR_entityShortId = "entityShortId";
+  public static final String SET_entityShortId = "setEntityShortId";
   public static final String VAR_ngsildTenant = "ngsildTenant";
+  public static final String SET_ngsildTenant = "setNgsildTenant";
   public static final String VAR_ngsildPath = "ngsildPath";
+  public static final String SET_ngsildPath = "setNgsildPath";
   public static final String VAR_ngsildContext = "ngsildContext";
+  public static final String SET_ngsildContext = "setNgsildContext";
   public static final String VAR_ngsildData = "ngsildData";
+  public static final String SET_ngsildData = "setNgsildData";
   public static final String VAR_aiNodesTotal = "aiNodesTotal";
+  public static final String SET_aiNodesTotal = "setAiNodesTotal";
   public static final String VAR_gpuDevicesTotal = "gpuDevicesTotal";
+  public static final String SET_gpuDevicesTotal = "setGpuDevicesTotal";
   public static final String VAR_vmsTotal = "vmsTotal";
+  public static final String SET_vmsTotal = "setVmsTotal";
   public static final String VAR_cpuCoresTotal = "cpuCoresTotal";
+  public static final String SET_cpuCoresTotal = "setCpuCoresTotal";
   public static final String VAR_memoryBytesTotal = "memoryBytesTotal";
+  public static final String SET_memoryBytesTotal = "setMemoryBytesTotal";
   public static final String VAR_grafanaUrl = "grafanaUrl";
+  public static final String SET_grafanaUrl = "setGrafanaUrl";
 
   public static List<String> varsQForClass() {
     return Cluster.varsQCluster(new ArrayList<String>());
@@ -3141,18 +3197,66 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlUserPageForClass() {
     return "%s/en-us/user/cluster/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return Cluster.varJsonCluster(var, patch);
+  }
+  public static String varJsonCluster(String var, Boolean patch) {
+    switch(var) {
+    case VAR_hubId:
+      return patch ? SET_hubId : VAR_hubId;
+    case VAR_hubResource:
+      return patch ? SET_hubResource : VAR_hubResource;
+    case VAR_clusterName:
+      return patch ? SET_clusterName : VAR_clusterName;
+    case VAR_hubCluster:
+      return patch ? SET_hubCluster : VAR_hubCluster;
+    case VAR_clusterNameMetrics:
+      return patch ? SET_clusterNameMetrics : VAR_clusterNameMetrics;
+    case VAR_clusterResource:
+      return patch ? SET_clusterResource : VAR_clusterResource;
+    case VAR_uniqueName:
+      return patch ? SET_uniqueName : VAR_uniqueName;
+    case VAR_description:
+      return patch ? SET_description : VAR_description;
+    case VAR_locationColors:
+      return patch ? SET_locationColors : VAR_locationColors;
+    case VAR_locationTitles:
+      return patch ? SET_locationTitles : VAR_locationTitles;
+    case VAR_locationLinks:
+      return patch ? SET_locationLinks : VAR_locationLinks;
+    case VAR_location:
+      return patch ? SET_location : VAR_location;
+    case VAR_id:
+      return patch ? SET_id : VAR_id;
+    case VAR_entityShortId:
+      return patch ? SET_entityShortId : VAR_entityShortId;
+    case VAR_ngsildTenant:
+      return patch ? SET_ngsildTenant : VAR_ngsildTenant;
+    case VAR_ngsildPath:
+      return patch ? SET_ngsildPath : VAR_ngsildPath;
+    case VAR_ngsildContext:
+      return patch ? SET_ngsildContext : VAR_ngsildContext;
+    case VAR_ngsildData:
+      return patch ? SET_ngsildData : VAR_ngsildData;
+    case VAR_aiNodesTotal:
+      return patch ? SET_aiNodesTotal : VAR_aiNodesTotal;
+    case VAR_gpuDevicesTotal:
+      return patch ? SET_gpuDevicesTotal : VAR_gpuDevicesTotal;
+    case VAR_vmsTotal:
+      return patch ? SET_vmsTotal : VAR_vmsTotal;
+    case VAR_cpuCoresTotal:
+      return patch ? SET_cpuCoresTotal : VAR_cpuCoresTotal;
+    case VAR_memoryBytesTotal:
+      return patch ? SET_memoryBytesTotal : VAR_memoryBytesTotal;
+    case VAR_grafanaUrl:
+      return patch ? SET_grafanaUrl : VAR_grafanaUrl;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

@@ -245,9 +245,9 @@ public abstract class GpuDevicePageGen<DEV> extends GpuDeviceGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchGpuDevicePage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class GpuDevicePageGen<DEV> extends GpuDeviceGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return GpuDevicePage.displayNameGpuDevicePage(var);
   }
@@ -354,71 +309,6 @@ public abstract class GpuDevicePageGen<DEV> extends GpuDeviceGenPage {
     switch(var) {
     default:
       return GpuDeviceGenPage.displayNameGpuDeviceGenPage(var);
-    }
-  }
-
-  public static String descriptionGpuDevicePage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.descriptionGpuDeviceGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.classSimpleNameGpuDeviceGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.htmColumnGpuDeviceGenPage(var);
-    }
-  }
-
-  public static Integer htmRowGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.htmRowGpuDeviceGenPage(var);
-    }
-  }
-
-  public static Integer htmCellGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.htmCellGpuDeviceGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.lengthMinGpuDeviceGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.lengthMaxGpuDeviceGenPage(var);
-    }
-  }
-
-  public static Integer maxGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.maxGpuDeviceGenPage(var);
-    }
-  }
-
-  public static Integer minGpuDevicePage(String var) {
-    switch(var) {
-      default:
-        return GpuDeviceGenPage.minGpuDeviceGenPage(var);
     }
   }
 }

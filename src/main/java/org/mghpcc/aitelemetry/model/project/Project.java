@@ -305,6 +305,7 @@ public class Project extends ProjectGen<BaseModel> {
   }
 
   /**
+   * {@inheritDoc}
    * DocValues: true
    * Persist: true
    * DisplayName: status page template URI
@@ -314,10 +315,8 @@ public class Project extends ProjectGen<BaseModel> {
   }
 
   /**
-   * 
+   * {@inheritDoc}
    * HtmRowTitleOpen: current status
-   * HtmRow: 4
-   * HtmCell: 0
    * DisplayName: status report
    * Description: View the current status report for this project. 
    */

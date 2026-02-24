@@ -529,6 +529,11 @@ public class ClusterTemplateGenPage extends ClusterTemplateGenPageGen<PageLayout
   }
 
   @Override
+  protected void _classAllName(Wrap<String> w) {
+    w.o("all OpenShift cluster templates");
+  }
+
+  @Override
   protected void _pageUri(Wrap<String> w) {
     if("enUS".equals(lang))
       w.o("/en-us/search/cluster-template");

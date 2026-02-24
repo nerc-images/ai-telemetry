@@ -529,6 +529,11 @@ public class BareMetalResourceClassGenPage extends BareMetalResourceClassGenPage
   }
 
   @Override
+  protected void _classAllName(Wrap<String> w) {
+    w.o("all bare metal resource classes");
+  }
+
+  @Override
   protected void _pageUri(Wrap<String> w) {
     if("enUS".equals(lang))
       w.o("/en-us/search/bare-metal-resource-class");

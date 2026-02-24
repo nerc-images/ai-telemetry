@@ -41,6 +41,8 @@ import org.computate.vertx.serialize.vertx.JsonArrayDeserializer;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -609,9 +611,39 @@ public abstract class ClusterTemplateGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<ClusterTemplate> fqClusterTemplate(SiteRequest siteRequest, String var, Object val) {
+    Promise<ClusterTemplate> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<ClusterTemplate> searchList = new SearchList<ClusterTemplate>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(ClusterTemplate.class);
+        searchList.fq(String.format("%s:", ClusterTemplate.varIndexedClusterTemplate(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying theOpenShift cluster template", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying theOpenShift cluster template", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying theOpenShift cluster template", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchClusterTemplate(entityVar,  siteRequest_, o);
@@ -907,9 +939,13 @@ public abstract class ClusterTemplateGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_ClusterTemplate;
   }
   public static final String VAR_id = "id";
+  public static final String SET_id = "setId";
   public static final String VAR_title = "title";
+  public static final String SET_title = "setTitle";
   public static final String VAR_description = "description";
+  public static final String SET_description = "setDescription";
   public static final String VAR_parameters = "parameters";
+  public static final String SET_parameters = "setParameters";
 
   public static List<String> varsQForClass() {
     return ClusterTemplate.varsQClusterTemplate(new ArrayList<String>());
@@ -966,28 +1002,26 @@ public abstract class ClusterTemplateGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/cluster-template/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return ClusterTemplate.varJsonClusterTemplate(var, patch);
   }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonClusterTemplate(String var, Boolean patch) {
+    switch(var) {
+    case VAR_id:
+      return patch ? SET_id : VAR_id;
+    case VAR_title:
+      return patch ? SET_title : VAR_title;
+    case VAR_description:
+      return patch ? SET_description : VAR_description;
+    case VAR_parameters:
+      return patch ? SET_parameters : VAR_parameters;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

@@ -40,6 +40,8 @@ import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -465,9 +467,39 @@ public abstract class BareMetalResourceClassGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<BareMetalResourceClass> fqBareMetalResourceClass(SiteRequest siteRequest, String var, Object val) {
+    Promise<BareMetalResourceClass> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<BareMetalResourceClass> searchList = new SearchList<BareMetalResourceClass>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(BareMetalResourceClass.class);
+        searchList.fq(String.format("%s:", BareMetalResourceClass.varIndexedBareMetalResourceClass(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the bare metal resource class", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the bare metal resource class", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the bare metal resource class", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalResourceClass(entityVar,  siteRequest_, o);
@@ -697,7 +729,9 @@ public abstract class BareMetalResourceClassGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_BareMetalResourceClass;
   }
   public static final String VAR_name = "name";
+  public static final String SET_name = "setName";
   public static final String VAR_count = "count";
+  public static final String SET_count = "setCount";
 
   public static List<String> varsQForClass() {
     return BareMetalResourceClass.varsQBareMetalResourceClass(new ArrayList<String>());
@@ -749,28 +783,22 @@ public abstract class BareMetalResourceClassGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/bare-metal-resource-class/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return BareMetalResourceClass.varJsonBareMetalResourceClass(var, patch);
   }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonBareMetalResourceClass(String var, Boolean patch) {
+    switch(var) {
+    case VAR_name:
+      return patch ? SET_name : VAR_name;
+    case VAR_count:
+      return patch ? SET_count : VAR_count;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

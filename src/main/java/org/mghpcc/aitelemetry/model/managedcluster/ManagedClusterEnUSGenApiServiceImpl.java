@@ -126,17 +126,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -151,11 +151,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
                 response200SearchManagedCluster(listManagedCluster).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchManagedCluster succeeded. "));
@@ -210,6 +211,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       List<String> fls = listManagedCluster.getRequest().getFields();
       JsonObject json = new JsonObject();
       JsonArray l = new JsonArray();
+      List<String> scopes = siteRequest.getScopes();
       listManagedCluster.getList().stream().forEach(o -> {
         JsonObject json2 = JsonObject.mapFrom(o);
         if(fls.size() > 0) {
@@ -236,15 +238,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       });
       json.put("list", l);
       response200Search(listManagedCluster.getRequest(), listManagedCluster.getResponse(), json);
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "tenant cluster", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchManagedCluster failed. "), ex);
       promise.tryFail(ex);
@@ -296,17 +290,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -321,11 +315,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
                 response200GETManagedCluster(listManagedCluster).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("getManagedCluster succeeded. "));
@@ -378,15 +373,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = listManagedCluster.getSiteRequest_(SiteRequest.class);
       JsonObject json = JsonObject.mapFrom(listManagedCluster.getList().stream().findFirst().orElse(null));
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "tenant cluster", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200GETManagedCluster failed. "), ex);
       promise.tryFail(ex);
@@ -405,17 +392,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "PATCH"));
         webClient.post(
@@ -430,7 +417,8 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -446,7 +434,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, true, "PATCH").onSuccess(listManagedCluster -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listManagedCluster.getRequest().getRows());
@@ -573,7 +561,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
+        searchManagedClusterList(siteRequest, false, true, true, "PATCH").onSuccess(listManagedCluster -> {
           try {
             ManagedCluster o = listManagedCluster.first();
             ApiRequest apiRequest = new ApiRequest();
@@ -853,15 +841,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "tenant cluster", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHManagedCluster failed. "), ex);
       promise.tryFail(ex);
@@ -880,17 +860,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "POST"));
         webClient.post(
@@ -905,7 +885,8 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -1326,15 +1307,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       JsonObject json = JsonObject.mapFrom(o);
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "tenant cluster", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTManagedCluster failed. "), ex);
       promise.tryFail(ex);
@@ -1353,17 +1326,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "DELETE"));
         webClient.post(
@@ -1378,7 +1351,8 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -1394,7 +1368,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listManagedCluster.getRequest().getRows());
@@ -1520,7 +1494,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
+        searchManagedClusterList(siteRequest, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
           try {
             ManagedCluster o = listManagedCluster.first();
             if(o != null && listManagedCluster.getResponse().getResponse().getNumFound() == 1) {
@@ -1684,15 +1658,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "tenant cluster", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEManagedCluster failed. "), ex);
       promise.tryFail(ex);
@@ -1711,17 +1677,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "PUT"));
         webClient.post(
@@ -1736,7 +1702,8 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -2016,15 +1983,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "tenant cluster", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportManagedCluster failed. "), ex);
       promise.tryFail(ex);
@@ -2042,18 +2001,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "GET"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -2068,11 +2026,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
                 response200DownloadManagedCluster(listManagedCluster).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("downloadManagedCluster succeeded. "));
@@ -2143,8 +2102,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriDownloadManagedCluster(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, ""), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2189,6 +2152,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2234,17 +2198,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -2259,11 +2223,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
                 response200SearchPageManagedCluster(listManagedCluster).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchpageManagedCluster succeeded. "));
@@ -2335,8 +2300,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriSearchPageManagedCluster(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/managed-cluster/ManagedClusterSearchPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2381,6 +2350,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2485,18 +2455,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "GET"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -2511,11 +2480,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
                 response200EditPageManagedCluster(listManagedCluster).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("editpageManagedCluster succeeded. "));
@@ -2587,8 +2557,12 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       String pageTemplateUri = templateUriEditPageManagedCluster(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/managed-cluster/ManagedClusterEditPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2633,6 +2607,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2738,17 +2713,17 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
+        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "DELETE"));
         webClient.post(
@@ -2763,7 +2738,8 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -2779,7 +2755,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
+              searchManagedClusterList(siteRequest, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listManagedCluster.getRequest().getRows());
@@ -2905,7 +2881,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             siteRequest.addScopes(scope);
           });
         });
-        searchManagedClusterList(siteRequest, false, true, true).onSuccess(listManagedCluster -> {
+        searchManagedClusterList(siteRequest, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
           try {
             ManagedCluster o = listManagedCluster.first();
             if(o != null && listManagedCluster.getResponse().getResponse().getNumFound() == 1) {
@@ -3069,15 +3045,7 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "tenant cluster", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterManagedCluster failed. "), ex);
       promise.tryFail(ex);
@@ -3188,13 +3156,14 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     return promise.future();
   }
 
-  public Future<SearchList<ManagedCluster>> searchManagedClusterList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify) {
+  public Future<SearchList<ManagedCluster>> searchManagedClusterList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, String scope) {
     Promise<SearchList<ManagedCluster>> promise = Promise.promise();
     try {
       ServiceRequest serviceRequest = siteRequest.getServiceRequest();
       String entityListStr = siteRequest.getServiceRequest().getParams().getJsonObject("query").getString("fl");
       String[] entityList = entityListStr == null ? null : entityListStr.split(",\\s*");
       SearchList<ManagedCluster> searchList = new SearchList<ManagedCluster>();
+      searchList.setScope(scope);
       String facetRange = null;
       Date facetRangeStart = null;
       Date facetRangeEnd = null;

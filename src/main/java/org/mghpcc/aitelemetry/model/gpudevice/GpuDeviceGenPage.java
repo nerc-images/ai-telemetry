@@ -532,6 +532,11 @@ public class GpuDeviceGenPage extends GpuDeviceGenPageGen<PageLayout> {
   }
 
   @Override
+  protected void _classAllName(Wrap<String> w) {
+    w.o("all GPU devices");
+  }
+
+  @Override
   protected void _pageUri(Wrap<String> w) {
     if("enUS".equals(lang))
       w.o("/en-us/search/gpu-device");

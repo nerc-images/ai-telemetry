@@ -45,6 +45,8 @@ import io.vertx.core.json.JsonArray;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
@@ -1732,9 +1734,39 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
+
+  public static Future<Project> fqProject(SiteRequest siteRequest, String var, Object val) {
+    Promise<Project> promise = Promise.promise();
+    try {
+      if(val == null) {
+        promise.complete();
+      } else {
+        SearchList<Project> searchList = new SearchList<Project>();
+        searchList.setStore(true);
+        searchList.q("*:*");
+        searchList.setC(Project.class);
+        searchList.fq(String.format("%s:", Project.varIndexedProject(var)) + SearchTool.escapeQueryChars(val.toString()));
+        searchList.promiseDeepForClass(siteRequest).onSuccess(a -> {
+          try {
+            promise.complete(searchList.getList().stream().findFirst().orElse(null));
+          } catch(Throwable ex) {
+            LOG.error("Error while querying the project", ex);
+            promise.fail(ex);
+          }
+        }).onFailure(ex -> {
+          LOG.error("Error while querying the project", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the project", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchProject(entityVar,  siteRequest_, o);
@@ -2534,24 +2566,43 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return CLASS_API_ADDRESS_Project;
   }
   public static final String VAR_tenantResource = "tenantResource";
+  public static final String SET_tenantResource = "setTenantResource";
   public static final String VAR_localClusterName = "localClusterName";
+  public static final String SET_localClusterName = "setLocalClusterName";
   public static final String VAR_hubId = "hubId";
+  public static final String SET_hubId = "setHubId";
   public static final String VAR_hubResource = "hubResource";
+  public static final String SET_hubResource = "setHubResource";
   public static final String VAR_clusterName = "clusterName";
+  public static final String SET_clusterName = "setClusterName";
   public static final String VAR_clusterResource = "clusterResource";
+  public static final String SET_clusterResource = "setClusterResource";
   public static final String VAR_projectName = "projectName";
+  public static final String SET_projectName = "setProjectName";
   public static final String VAR_projectResource = "projectResource";
+  public static final String SET_projectResource = "setProjectResource";
   public static final String VAR_projectDisplayName = "projectDisplayName";
+  public static final String SET_projectDisplayName = "setProjectDisplayName";
   public static final String VAR_description = "description";
+  public static final String SET_description = "setDescription";
   public static final String VAR_gpuEnabled = "gpuEnabled";
+  public static final String SET_gpuEnabled = "setGpuEnabled";
   public static final String VAR_podRestartCount = "podRestartCount";
+  public static final String SET_podRestartCount = "setPodRestartCount";
   public static final String VAR_podsRestarting = "podsRestarting";
+  public static final String SET_podsRestarting = "setPodsRestarting";
   public static final String VAR_podTerminatingCount = "podTerminatingCount";
+  public static final String SET_podTerminatingCount = "setPodTerminatingCount";
   public static final String VAR_podsTerminating = "podsTerminating";
+  public static final String SET_podsTerminating = "setPodsTerminating";
   public static final String VAR_fullPvcsCount = "fullPvcsCount";
+  public static final String SET_fullPvcsCount = "setFullPvcsCount";
   public static final String VAR_fullPvcs = "fullPvcs";
+  public static final String SET_fullPvcs = "setFullPvcs";
   public static final String VAR_namespaceTerminating = "namespaceTerminating";
+  public static final String SET_namespaceTerminating = "setNamespaceTerminating";
   public static final String VAR_statusPageTemplateUri = "statusPageTemplateUri";
+  public static final String SET_statusPageTemplateUri = "setStatusPageTemplateUri";
 
   public static List<String> varsQForClass() {
     return Project.varsQProject(new ArrayList<String>());
@@ -2648,18 +2699,56 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   }
 
   @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
   public String enUSStringFormatUrlUserPageForClass() {
     return "%s/en-us/user/project/%s";
   }
 
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
+  public static String varJsonForClass(String var, Boolean patch) {
+    return Project.varJsonProject(var, patch);
+  }
+  public static String varJsonProject(String var, Boolean patch) {
+    switch(var) {
+    case VAR_tenantResource:
+      return patch ? SET_tenantResource : VAR_tenantResource;
+    case VAR_localClusterName:
+      return patch ? SET_localClusterName : VAR_localClusterName;
+    case VAR_hubId:
+      return patch ? SET_hubId : VAR_hubId;
+    case VAR_hubResource:
+      return patch ? SET_hubResource : VAR_hubResource;
+    case VAR_clusterName:
+      return patch ? SET_clusterName : VAR_clusterName;
+    case VAR_clusterResource:
+      return patch ? SET_clusterResource : VAR_clusterResource;
+    case VAR_projectName:
+      return patch ? SET_projectName : VAR_projectName;
+    case VAR_projectResource:
+      return patch ? SET_projectResource : VAR_projectResource;
+    case VAR_projectDisplayName:
+      return patch ? SET_projectDisplayName : VAR_projectDisplayName;
+    case VAR_description:
+      return patch ? SET_description : VAR_description;
+    case VAR_gpuEnabled:
+      return patch ? SET_gpuEnabled : VAR_gpuEnabled;
+    case VAR_podRestartCount:
+      return patch ? SET_podRestartCount : VAR_podRestartCount;
+    case VAR_podsRestarting:
+      return patch ? SET_podsRestarting : VAR_podsRestarting;
+    case VAR_podTerminatingCount:
+      return patch ? SET_podTerminatingCount : VAR_podTerminatingCount;
+    case VAR_podsTerminating:
+      return patch ? SET_podsTerminating : VAR_podsTerminating;
+    case VAR_fullPvcsCount:
+      return patch ? SET_fullPvcsCount : VAR_fullPvcsCount;
+    case VAR_fullPvcs:
+      return patch ? SET_fullPvcs : VAR_fullPvcs;
+    case VAR_namespaceTerminating:
+      return patch ? SET_namespaceTerminating : VAR_namespaceTerminating;
+    case VAR_statusPageTemplateUri:
+      return patch ? SET_statusPageTemplateUri : VAR_statusPageTemplateUri;
+    default:
+      return BaseModel.varJsonBaseModel(var, patch);
+    }
   }
 
   public static String displayNameForClass(String var) {

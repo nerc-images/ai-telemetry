@@ -245,9 +245,9 @@ public abstract class ManagedClusterPageGen<DEV> extends ManagedClusterGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchManagedClusterPage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class ManagedClusterPageGen<DEV> extends ManagedClusterGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return ManagedClusterPage.displayNameManagedClusterPage(var);
   }
@@ -354,71 +309,6 @@ public abstract class ManagedClusterPageGen<DEV> extends ManagedClusterGenPage {
     switch(var) {
     default:
       return ManagedClusterGenPage.displayNameManagedClusterGenPage(var);
-    }
-  }
-
-  public static String descriptionManagedClusterPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.descriptionManagedClusterGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.classSimpleNameManagedClusterGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.htmColumnManagedClusterGenPage(var);
-    }
-  }
-
-  public static Integer htmRowManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.htmRowManagedClusterGenPage(var);
-    }
-  }
-
-  public static Integer htmCellManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.htmCellManagedClusterGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.lengthMinManagedClusterGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.lengthMaxManagedClusterGenPage(var);
-    }
-  }
-
-  public static Integer maxManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.maxManagedClusterGenPage(var);
-    }
-  }
-
-  public static Integer minManagedClusterPage(String var) {
-    switch(var) {
-      default:
-        return ManagedClusterGenPage.minManagedClusterGenPage(var);
     }
   }
 }

@@ -245,9 +245,9 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchProjectPage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return ProjectPage.displayNameProjectPage(var);
   }
@@ -354,71 +309,6 @@ public abstract class ProjectPageGen<DEV> extends ProjectGenPage {
     switch(var) {
     default:
       return ProjectGenPage.displayNameProjectGenPage(var);
-    }
-  }
-
-  public static String descriptionProjectPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return ProjectGenPage.descriptionProjectGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.classSimpleNameProjectGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.htmColumnProjectGenPage(var);
-    }
-  }
-
-  public static Integer htmRowProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.htmRowProjectGenPage(var);
-    }
-  }
-
-  public static Integer htmCellProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.htmCellProjectGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.lengthMinProjectGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.lengthMaxProjectGenPage(var);
-    }
-  }
-
-  public static Integer maxProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.maxProjectGenPage(var);
-    }
-  }
-
-  public static Integer minProjectPage(String var) {
-    switch(var) {
-      default:
-        return ProjectGenPage.minProjectGenPage(var);
     }
   }
 }

@@ -124,7 +124,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-              searchClusterTemplateList(siteRequest, false, true, false).onSuccess(listClusterTemplate -> {
+              searchClusterTemplateList(siteRequest, false, true, false, "GET").onSuccess(listClusterTemplate -> {
                 response200SearchClusterTemplate(listClusterTemplate).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchClusterTemplate succeeded. "));
@@ -173,6 +173,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
       List<String> fls = listClusterTemplate.getRequest().getFields();
       JsonObject json = new JsonObject();
       JsonArray l = new JsonArray();
+      List<String> scopes = siteRequest.getScopes();
       listClusterTemplate.getList().stream().forEach(o -> {
         JsonObject json2 = JsonObject.mapFrom(o);
         if(fls.size() > 0) {
@@ -199,15 +200,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
       });
       json.put("list", l);
       response200Search(listClusterTemplate.getRequest(), listClusterTemplate.getResponse(), json);
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "OpenShift cluster template", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200SearchClusterTemplate failed. "), ex);
       promise.tryFail(ex);
@@ -257,7 +250,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-              searchClusterTemplateList(siteRequest, false, true, false).onSuccess(listClusterTemplate -> {
+              searchClusterTemplateList(siteRequest, false, true, false, "GET").onSuccess(listClusterTemplate -> {
                 response200GETClusterTemplate(listClusterTemplate).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("getClusterTemplate succeeded. "));
@@ -304,15 +297,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     try {
       SiteRequest siteRequest = listClusterTemplate.getSiteRequest_(SiteRequest.class);
       JsonObject json = JsonObject.mapFrom(listClusterTemplate.getList().stream().findFirst().orElse(null));
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "OpenShift cluster template", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200GETClusterTemplate failed. "), ex);
       promise.tryFail(ex);
@@ -331,17 +316,16 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String CLUSTERTEMPLATE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERTEMPLATE");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "PATCH"));
         webClient.post(
@@ -356,7 +340,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERTEMPLATE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -372,7 +357,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
+              searchClusterTemplateList(siteRequest, false, true, true, "PATCH").onSuccess(listClusterTemplate -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listClusterTemplate.getRequest().getRows());
@@ -499,7 +484,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
             siteRequest.addScopes(scope);
           });
         });
-        searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
+        searchClusterTemplateList(siteRequest, false, true, true, "PATCH").onSuccess(listClusterTemplate -> {
           try {
             ClusterTemplate o = listClusterTemplate.first();
             ApiRequest apiRequest = new ApiRequest();
@@ -779,15 +764,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "OpenShift cluster template", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PATCHClusterTemplate failed. "), ex);
       promise.tryFail(ex);
@@ -806,17 +783,16 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String CLUSTERTEMPLATE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERTEMPLATE");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "POST"));
         webClient.post(
@@ -831,7 +807,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERTEMPLATE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -1252,15 +1229,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       JsonObject json = JsonObject.mapFrom(o);
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "OpenShift cluster template", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTClusterTemplate failed. "), ex);
       promise.tryFail(ex);
@@ -1279,17 +1248,16 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String CLUSTERTEMPLATE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERTEMPLATE");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "DELETE"));
         webClient.post(
@@ -1304,7 +1272,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERTEMPLATE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -1320,7 +1289,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
+              searchClusterTemplateList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterTemplate -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listClusterTemplate.getRequest().getRows());
@@ -1446,7 +1415,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
             siteRequest.addScopes(scope);
           });
         });
-        searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
+        searchClusterTemplateList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterTemplate -> {
           try {
             ClusterTemplate o = listClusterTemplate.first();
             if(o != null && listClusterTemplate.getResponse().getResponse().getNumFound() == 1) {
@@ -1610,15 +1579,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "OpenShift cluster template", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEClusterTemplate failed. "), ex);
       promise.tryFail(ex);
@@ -1637,17 +1598,16 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String CLUSTERTEMPLATE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERTEMPLATE");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "PUT"));
         webClient.post(
@@ -1662,7 +1622,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERTEMPLATE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -1942,15 +1903,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "OpenShift cluster template", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200PUTImportClusterTemplate failed. "), ex);
       promise.tryFail(ex);
@@ -1966,7 +1919,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-              searchClusterTemplateList(siteRequest, false, true, false).onSuccess(listClusterTemplate -> {
+              searchClusterTemplateList(siteRequest, false, true, false, "GET").onSuccess(listClusterTemplate -> {
                 response200SearchPageClusterTemplate(listClusterTemplate).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("searchpageClusterTemplate succeeded. "));
@@ -2032,8 +1985,12 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
       String pageTemplateUri = templateUriSearchPageClusterTemplate(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/cluster-template/ClusterTemplateSearchPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2078,6 +2035,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2182,18 +2140,16 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String CLUSTERTEMPLATE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERTEMPLATE");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PUT"));
-        form.add("permission", String.format("%s-%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, id, "GET"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "GET"));
         webClient.post(
@@ -2208,11 +2164,12 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERTEMPLATE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterTemplateList(siteRequest, false, true, false).onSuccess(listClusterTemplate -> {
+              searchClusterTemplateList(siteRequest, false, true, false, "GET").onSuccess(listClusterTemplate -> {
                 response200EditPageClusterTemplate(listClusterTemplate).onSuccess(response -> {
                   eventHandler.handle(Future.succeededFuture(response));
                   LOG.debug(String.format("editpageClusterTemplate succeeded. "));
@@ -2284,8 +2241,12 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
       String pageTemplateUri = templateUriEditPageClusterTemplate(serviceRequest, result);
       String siteTemplatePath = config.getString(ComputateConfigKeys.TEMPLATE_PATH);
       Path resourceTemplatePath = Path.of(siteTemplatePath, pageTemplateUri);
-      String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
-      if(pageTemplateUri.endsWith(".md")) {
+      if(result == null || !Files.exists(resourceTemplatePath)) {
+        String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/cluster-template/ClusterTemplateEditPage.htm"), Charset.forName("UTF-8"));
+        String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".md")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
         Map<String, Object> data = new HashMap<>();
         String body = "";
@@ -2330,6 +2291,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
       }
@@ -2435,17 +2397,16 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         siteRequest.setLang("enUS");
         String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
         String CLUSTERTEMPLATE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERTEMPLATE");
+        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
         form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
         form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
         form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_ADMIN)));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, config.getString(ComputateConfigKeys.AUTH_SCOPE_SUPER_ADMIN)));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "GET"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "PUT"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "DELETE"));
+        form.add("permission", String.format("%s#%s", ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(id != null)
           form.add("permission", String.format("%s#%s", id, "DELETE"));
         webClient.post(
@@ -2460,7 +2421,8 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
         .onComplete(authorizationDecisionResponse -> {
           try {
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray scopes = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray().stream().findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERTEMPLATE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
             if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
               String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
               eventHandler.handle(Future.succeededFuture(
@@ -2476,7 +2438,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
             } else {
               siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
               List<String> scopes2 = siteRequest.getScopes();
-              searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
+              searchClusterTemplateList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterTemplate -> {
                 try {
                   ApiRequest apiRequest = new ApiRequest();
                   apiRequest.setRows(listClusterTemplate.getRequest().getRows());
@@ -2602,7 +2564,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
             siteRequest.addScopes(scope);
           });
         });
-        searchClusterTemplateList(siteRequest, false, true, true).onSuccess(listClusterTemplate -> {
+        searchClusterTemplateList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterTemplate -> {
           try {
             ClusterTemplate o = listClusterTemplate.first();
             if(o != null && listClusterTemplate.getResponse().getResponse().getNumFound() == 1) {
@@ -2766,15 +2728,7 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     Promise<ServiceResponse> promise = Promise.promise();
     try {
       JsonObject json = new JsonObject();
-      if(json == null) {
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String m = String.format("%s %s not found", "OpenShift cluster template", id);
-        promise.complete(new ServiceResponse(404
-            , m
-            , Buffer.buffer(new JsonObject().put("message", m).encodePrettily()), null));
-      } else {
-        promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
-      }
+      promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200DELETEFilterClusterTemplate failed. "), ex);
       promise.tryFail(ex);
@@ -2885,13 +2839,14 @@ public class ClusterTemplateEnUSGenApiServiceImpl extends BaseApiServiceImpl imp
     return promise.future();
   }
 
-  public Future<SearchList<ClusterTemplate>> searchClusterTemplateList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify) {
+  public Future<SearchList<ClusterTemplate>> searchClusterTemplateList(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, String scope) {
     Promise<SearchList<ClusterTemplate>> promise = Promise.promise();
     try {
       ServiceRequest serviceRequest = siteRequest.getServiceRequest();
       String entityListStr = siteRequest.getServiceRequest().getParams().getJsonObject("query").getString("fl");
       String[] entityList = entityListStr == null ? null : entityListStr.split(",\\s*");
       SearchList<ClusterTemplate> searchList = new SearchList<ClusterTemplate>();
+      searchList.setScope(scope);
       String facetRange = null;
       Date facetRangeStart = null;
       Date facetRangeEnd = null;

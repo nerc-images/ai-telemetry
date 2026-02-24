@@ -674,9 +674,9 @@ public abstract class BareMetalOrderGenPageGen<DEV> extends PageLayout {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchBareMetalOrderGenPage(entityVar,  siteRequest_, o);
@@ -760,12 +760,19 @@ public abstract class BareMetalOrderGenPageGen<DEV> extends PageLayout {
   public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderGenPage";
   public static final String CLASS_AUTH_RESOURCE = "";
   public static final String VAR_searchListBareMetalOrder_ = "searchListBareMetalOrder_";
+  public static final String SET_searchListBareMetalOrder_ = "setSearchListBareMetalOrder_";
   public static final String VAR_listBareMetalOrder = "listBareMetalOrder";
+  public static final String SET_listBareMetalOrder = "setListBareMetalOrder";
   public static final String VAR_resultCount = "resultCount";
+  public static final String SET_resultCount = "setResultCount";
   public static final String VAR_result = "result";
+  public static final String SET_result = "setResult";
   public static final String VAR_pk = "pk";
+  public static final String SET_pk = "setPk";
   public static final String VAR_solrId = "solrId";
+  public static final String SET_solrId = "setSolrId";
   public static final String VAR_pageUriBareMetalOrder = "pageUriBareMetalOrder";
+  public static final String SET_pageUriBareMetalOrder = "setPageUriBareMetalOrder";
 
   public static final String DISPLAY_NAME_searchListBareMetalOrder_ = "";
   public static final String DISPLAY_NAME_listBareMetalOrder = "";
@@ -774,51 +781,6 @@ public abstract class BareMetalOrderGenPageGen<DEV> extends PageLayout {
   public static final String DISPLAY_NAME_pk = "";
   public static final String DISPLAY_NAME_solrId = "";
   public static final String DISPLAY_NAME_pageUriBareMetalOrder = "";
-
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
 
   public static String displayNameForClass(String var) {
     return BareMetalOrderGenPage.displayNameBareMetalOrderGenPage(var);
@@ -841,85 +803,6 @@ public abstract class BareMetalOrderGenPageGen<DEV> extends PageLayout {
       return DISPLAY_NAME_pageUriBareMetalOrder;
     default:
       return PageLayout.displayNamePageLayout(var);
-    }
-  }
-
-  public static String descriptionBareMetalOrderGenPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return PageLayout.descriptionPageLayout(var);
-    }
-  }
-
-  public static String classSimpleNameBareMetalOrderGenPage(String var) {
-    switch(var) {
-    case VAR_searchListBareMetalOrder_:
-      return "SearchList";
-    case VAR_listBareMetalOrder:
-      return "JsonArray";
-    case VAR_resultCount:
-      return "Integer";
-    case VAR_result:
-      return "BareMetalOrder";
-    case VAR_pk:
-      return "Long";
-    case VAR_solrId:
-      return "String";
-    case VAR_pageUriBareMetalOrder:
-      return "String";
-      default:
-        return PageLayout.classSimpleNamePageLayout(var);
-    }
-  }
-
-  public static Integer htmColumnBareMetalOrderGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmColumnPageLayout(var);
-    }
-  }
-
-  public static Integer htmRowBareMetalOrderGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmRowPageLayout(var);
-    }
-  }
-
-  public static Integer htmCellBareMetalOrderGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.htmCellPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMinBareMetalOrderGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMinPageLayout(var);
-    }
-  }
-
-  public static Integer lengthMaxBareMetalOrderGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.lengthMaxPageLayout(var);
-    }
-  }
-
-  public static Integer maxBareMetalOrderGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.maxPageLayout(var);
-    }
-  }
-
-  public static Integer minBareMetalOrderGenPage(String var) {
-    switch(var) {
-      default:
-        return PageLayout.minPageLayout(var);
     }
   }
 }

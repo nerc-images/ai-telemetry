@@ -245,9 +245,9 @@ public abstract class HubPageGen<DEV> extends HubGenPage {
     }
   }
 
-  ////////////////
+  //////////////////
   // staticSearch //
-  ////////////////
+  //////////////////
 
   public static Object staticSearchForClass(String entityVar, SiteRequest siteRequest_, Object o) {
     return staticSearchHubPage(entityVar,  siteRequest_, o);
@@ -302,51 +302,6 @@ public abstract class HubPageGen<DEV> extends HubGenPage {
   public static final String CLASS_AUTH_RESOURCE = "";
 
 
-  @Override
-  public String idForClass() {
-    return null;
-  }
-
-  @Override
-  public String titleForClass() {
-    return null;
-  }
-
-  @Override
-  public String nameForClass() {
-    return null;
-  }
-
-  @Override
-  public String classNameAdjectiveSingularForClass() {
-    return null;
-  }
-
-  @Override
-  public String descriptionForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlEditPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDisplayPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlUserPageForClass() {
-    return null;
-  }
-
-  @Override
-  public String enUSStringFormatUrlDownloadForClass() {
-    return null;
-  }
-
   public static String displayNameForClass(String var) {
     return HubPage.displayNameHubPage(var);
   }
@@ -354,71 +309,6 @@ public abstract class HubPageGen<DEV> extends HubGenPage {
     switch(var) {
     default:
       return HubGenPage.displayNameHubGenPage(var);
-    }
-  }
-
-  public static String descriptionHubPage(String var) {
-    if(var == null)
-      return null;
-    switch(var) {
-      default:
-        return HubGenPage.descriptionHubGenPage(var);
-    }
-  }
-
-  public static String classSimpleNameHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.classSimpleNameHubGenPage(var);
-    }
-  }
-
-  public static Integer htmColumnHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.htmColumnHubGenPage(var);
-    }
-  }
-
-  public static Integer htmRowHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.htmRowHubGenPage(var);
-    }
-  }
-
-  public static Integer htmCellHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.htmCellHubGenPage(var);
-    }
-  }
-
-  public static Integer lengthMinHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.lengthMinHubGenPage(var);
-    }
-  }
-
-  public static Integer lengthMaxHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.lengthMaxHubGenPage(var);
-    }
-  }
-
-  public static Integer maxHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.maxHubGenPage(var);
-    }
-  }
-
-  public static Integer minHubPage(String var) {
-    switch(var) {
-      default:
-        return HubGenPage.minHubGenPage(var);
     }
   }
 }
