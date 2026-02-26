@@ -42,12 +42,15 @@ import io.vertx.pgclient.data.Polygon;
  * AuthGroup:
  *   TenantAdmin:
  *     GET:
+ *     GETManager:
  *   Admin:
  *     GET:
+ *     GETManager:
  *   SuperAdmin:
  *     POST:
  *     PATCH:
  *     GET:
+ *     GETManager:
  *     DELETE:
  *     Admin:
  *     SuperAdmin:

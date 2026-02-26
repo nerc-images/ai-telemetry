@@ -9,7 +9,7 @@ metadata:
     openshift.io/description: ''
     openshift.io/display-name: {{ WORKBENCH_NAME }}
     notebooks.opendatahub.io/last-image-selection: 'ai-telemetry-workbench:1.1.0'
-    notebooks.opendatahub.io/last-size-selection: Small
+    notebooks.opendatahub.io/last-size-selection: Medium
     opendatahub.io/username: {{ WORKBENCH_NAME }}
   name: {{ WORKBENCH_NAME }}
   namespace: {{ WORKBENCH_NAMESPACE }}
