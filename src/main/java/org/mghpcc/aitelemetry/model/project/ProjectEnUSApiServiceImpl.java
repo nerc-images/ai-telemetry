@@ -272,7 +272,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                   LOG.info(String.format("Successfully updated project %s with page template %s", "GET", projectName, templatePath));
                   promise.complete();
                 }).onFailure(ex -> {
-                  promise.fail(ex);
+                  promise.complete();
                 });
               } else {
                 LOG.warn(String.format("Project page %s not imported because of null values: hubId: %s, clusterName: %s, projectName: %s", templatePath, hubId, clusterName, projectName));

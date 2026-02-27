@@ -310,6 +310,8 @@ public class Project extends ProjectGen<BaseModel> {
    * Persist: true
    * DisplayName: status page template URI
    * Description: The relative path in the static content to the page template for this project. 
+   * Scope: GETManager
+   * ImportNull: false
    */
   protected void _statusPageTemplateUri(Wrap<String> w) {
   }
@@ -317,11 +319,17 @@ public class Project extends ProjectGen<BaseModel> {
   /**
    * {@inheritDoc}
    * HtmRowTitleOpen: current status
+   * HtmRow: 4
+   * HtmCell: 0
+   * HtmColumn: 4
    * DisplayName: status report
    * Description: View the current status report for this project. 
+   * Scope: GETManager
    */
   @Override
   protected void _userPage(Wrap<String> w) {
-    super._userPage(w);
+    String f = enUSStringFormatUrlUserPageForClass();
+    if(f != null && statusPageTemplateUri != null)
+      w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
   }
 }
