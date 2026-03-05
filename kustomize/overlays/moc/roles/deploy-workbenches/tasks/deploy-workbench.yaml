@@ -159,7 +159,8 @@
       bash -c 'git clone https://github.com/nerc-images/ai-telemetry.git /opt/app-root/src/ai-telemetry;
       git clone https://github.com/nerc-images/ai-telemetry-static.git /opt/app-root/src/ai-telemetry-static;
       (cd /opt/app-root/src/ai-telemetry; git remote add upstream https://github.com/nerc-images/ai-telemetry-static.git /opt/app-root/src/ai-telemetry-static);
-      (cd /opt/app-root/src/ai-telemetry; git pull; mvn clean install);'
+      (cd /opt/app-root/src/ai-telemetry; git pull; mvn clean install);
+      (cd /opt/app-root/src/ai-telemetry-static; git pull);'
 - name: "Install python virtualenv"
   kubernetes.core.k8s_exec:
     namespace: "{{ WORKBENCH_NAMESPACE }}"
