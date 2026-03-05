@@ -142,13 +142,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -176,6 +176,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -183,6 +187,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -197,7 +205,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -352,13 +361,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -386,6 +395,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -393,6 +406,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -407,7 +424,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -500,13 +518,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "PATCH"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -534,6 +552,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -541,6 +563,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -555,7 +581,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("PATCH");
+                if(!scopes.contains("PATCH"))
+                  scopes.add("PATCH");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -1141,13 +1168,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "POST"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(POST)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(POST)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -1175,6 +1202,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -1182,6 +1213,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -1196,7 +1231,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("POST");
+                if(!scopes.contains("POST"))
+                  scopes.add("POST");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -1781,13 +1817,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "DELETE"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -1815,6 +1851,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -1822,6 +1862,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -1836,7 +1880,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("DELETE");
+                if(!scopes.contains("DELETE"))
+                  scopes.add("DELETE");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -2198,13 +2243,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "PUT"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -2232,6 +2277,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -2239,6 +2288,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -2253,7 +2306,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("PUT");
+                if(!scopes.contains("PUT"))
+                  scopes.add("PUT");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -2570,13 +2624,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -2604,6 +2658,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -2611,6 +2669,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -2625,7 +2687,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -2897,13 +2960,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -2930,6 +2993,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -2937,6 +3004,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -2951,7 +3022,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -3199,13 +3271,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -3232,6 +3304,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -3239,6 +3315,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -3253,7 +3333,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -3502,13 +3583,13 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         if(clusterResource != null)
           form.add("permission", String.format("%s#%s", clusterResource, "DELETE"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
             });
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -3536,6 +3617,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -3543,6 +3628,10 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -3557,7 +3646,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("DELETE");
+                if(!scopes.contains("DELETE"))
+                  scopes.add("DELETE");
                 siteRequest.setFilteredScope(true);
               }
             }
