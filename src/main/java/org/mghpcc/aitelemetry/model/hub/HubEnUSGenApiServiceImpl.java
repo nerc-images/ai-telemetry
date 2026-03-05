@@ -140,7 +140,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -168,6 +168,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -182,7 +186,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -337,7 +342,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -365,6 +370,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -379,7 +388,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -472,7 +482,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "PATCH"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PATCH)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -500,6 +510,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -514,7 +528,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("PATCH");
+                if(!scopes.contains("PATCH"))
+                  scopes.add("PATCH");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -989,7 +1004,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "POST"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(POST)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -1017,6 +1032,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -1031,7 +1050,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("POST");
+                if(!scopes.contains("POST"))
+                  scopes.add("POST");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -1506,7 +1526,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "DELETE"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -1534,6 +1554,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -1548,7 +1572,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("DELETE");
+                if(!scopes.contains("DELETE"))
+                  scopes.add("DELETE");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -1890,7 +1915,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "PUT"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(PUT)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -1918,6 +1943,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -1932,7 +1961,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("PUT");
+                if(!scopes.contains("PUT"))
+                  scopes.add("PUT");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -2249,7 +2279,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -2277,6 +2307,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -2291,7 +2325,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -2563,7 +2598,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "GET"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(GET)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -2590,6 +2625,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -2604,7 +2643,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("GET");
+                if(!scopes.contains("GET"))
+                  scopes.add("GET");
                 siteRequest.setFilteredScope(true);
               }
             }
@@ -2853,7 +2893,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         if(hubId != null)
           form.add("permission", String.format("%s#%s", hubId, "DELETE"));
         groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(DELETE)$").matcher(group);
+              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
             }).filter(v -> v != null).forEach(mPermission -> {
               form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
@@ -2881,6 +2921,10 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
                         && mPermission.find();
                   }).forEach(permission -> {
                     fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                      if(!scopes.contains(scope))
+                        scopes.add(scope);
+                    });
                   });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
@@ -2895,7 +2939,8 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
               }
               if(fqs.size() > 0) {
                 fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                scopes.add("DELETE");
+                if(!scopes.contains("DELETE"))
+                  scopes.add("DELETE");
                 siteRequest.setFilteredScope(true);
               }
             }
