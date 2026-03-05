@@ -4,8 +4,10 @@ metadata:
   name: workbench-{{ WORKBENCH_NAME }}-{{ SITE_NAME }}
   namespace: {{ WORKBENCH_NAMESPACE }}
 data:
-  SITE_SRC: "{{ SITE_SRC }}"
+  SITE_HOST_NAME_{{ SITE_SHORT_NAME }}: '{{ SITE_SHORT_NAME }}-{{ USER_NAME }}.{{ OPENSHIFT_APPS_DOMAIN }}'
+  SOLR_NAMESPACE_{{ SITE_SHORT_NAME }}: {{ WORKBENCH_NAMESPACE }}
   SOLR_COLLECTION_{{ SITE_SHORT_NAME }}: '{{ SITE_SHORT_NAME }}-{{ USER_NAME }}'
+  DATABASE_NAMESPACE_{{ SITE_SHORT_NAME }}: {{ WORKBENCH_NAMESPACE }}
   DATABASE_SECRET_KEY_{{ SITE_SHORT_NAME }}: "password"
   DATABASE_SECRET_{{ SITE_SHORT_NAME }}: "postgres-pguser-{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
   DATABASE_USERNAME_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
