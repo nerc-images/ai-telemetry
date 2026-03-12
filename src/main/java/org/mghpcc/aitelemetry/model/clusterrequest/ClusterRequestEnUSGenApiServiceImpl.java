@@ -16,7 +16,6 @@ import java.util.Objects;
 import io.vertx.core.WorkerExecutor;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.pgclient.PgPool;
 import org.computate.vertx.openapi.ComputateOAuth2AuthHandlerImpl;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.mqtt.MqttClient;
@@ -37,6 +36,7 @@ import org.computate.search.response.solr.SolrResponse.StatsField;
 import java.util.stream.Collectors;
 import io.vertx.core.json.Json;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import java.security.Principal;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.io.PrintWriter;
@@ -92,7 +92,6 @@ import io.vertx.ext.auth.authorization.RoleBasedAuthorization;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
 import io.vertx.ext.web.client.HttpResponse;
-import io.vertx.ext.web.client.predicate.ResponsePredicate;
 import java.util.HashMap;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
@@ -142,7 +141,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "GET"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -307,7 +306,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "GET"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -410,7 +409,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "PATCH"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "PATCH"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -919,7 +918,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "POST"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "POST"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -1401,7 +1400,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "DELETE"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "DELETE"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -1795,7 +1794,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "PUT"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "PUT"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -2122,7 +2121,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "GET"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -2380,7 +2379,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "GET"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -2638,7 +2637,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "GET"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "GET"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -2897,7 +2896,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "Admin"));
         form.add("permission", String.format("%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(name != null)
-          form.add("permission", String.format("%s#%s", name, "DELETE"));
+          form.add("permission", String.format("%s-%s#%s", ClusterRequest.CLASS_AUTH_RESOURCE, name, "DELETE"));
         siteRequest.setPublicRead(classPublicRead);
         webClient.post(
             config.getInteger(ComputateConfigKeys.AUTH_PORT)
@@ -3644,7 +3643,7 @@ public class ClusterRequestEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
-      sqlConnection.preparedQuery("SELECT title as pk2, 'clusterTemplateTitle' from ClusterTemplate where title=$1 UNION SELECT userId as pk2, 'userId' from SiteUser where userId=$2")
+      sqlConnection.preparedQuery("SELECT title as pk2, 'clusterTemplateTitle' FROM ClusterTemplate WHERE title=$1 UNION SELECT userId as pk2, 'userId' FROM SiteUser WHERE userId=$2")
           .collecting(Collectors.toList())
           .execute(Tuple.of(o.getClusterTemplateTitle(), o.getUserId())
           ).onSuccess(result -> {

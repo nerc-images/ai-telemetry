@@ -18,7 +18,6 @@ import java.util.Objects;
 import io.vertx.core.WorkerExecutor;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.pgclient.PgPool;
 import org.computate.vertx.openapi.ComputateOAuth2AuthHandlerImpl;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.mqtt.MqttClient;
@@ -39,6 +38,7 @@ import org.computate.search.response.solr.SolrResponse.StatsField;
 import java.util.stream.Collectors;
 import io.vertx.core.json.Json;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import java.security.Principal;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.io.PrintWriter;
@@ -94,7 +94,6 @@ import io.vertx.ext.auth.authorization.RoleBasedAuthorization;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
 import io.vertx.ext.web.client.HttpResponse;
-import io.vertx.ext.web.client.predicate.ResponsePredicate;
 import java.util.HashMap;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
@@ -144,7 +143,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "GET"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "GET"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -171,8 +170,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET") && !classPublicRead) {
-              //
+            if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -196,22 +194,24 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
                         scopes.add(scope);
                     });
                   });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("GET"))
-                  scopes.add("GET");
-                siteRequest.setFilteredScope(true);
+              if(!classPublicRead) {
+                JsonObject authParams = siteRequest.getServiceRequest().getParams();
+                JsonObject authQuery = authParams.getJsonObject("query");
+                if(authQuery == null) {
+                  authQuery = new JsonObject();
+                  authParams.put("query", authQuery);
+                }
+                JsonArray fq = authQuery.getJsonArray("fq");
+                if(fq == null) {
+                  fq = new JsonArray();
+                  authQuery.put("fq", fq);
+                }
+                if(fqs.size() > 0) {
+                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                  if(!scopes.contains("GET"))
+                    scopes.add("GET");
+                  siteRequest.setFilteredScope(true);
+                }
               }
             }
             {
@@ -363,7 +363,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "GET"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "GET"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -390,8 +390,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET") && !classPublicRead) {
-              //
+            if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -415,22 +414,24 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
                         scopes.add(scope);
                     });
                   });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("GET"))
-                  scopes.add("GET");
-                siteRequest.setFilteredScope(true);
+              if(!classPublicRead) {
+                JsonObject authParams = siteRequest.getServiceRequest().getParams();
+                JsonObject authQuery = authParams.getJsonObject("query");
+                if(authQuery == null) {
+                  authQuery = new JsonObject();
+                  authParams.put("query", authQuery);
+                }
+                JsonArray fq = authQuery.getJsonArray("fq");
+                if(fq == null) {
+                  fq = new JsonArray();
+                  authQuery.put("fq", fq);
+                }
+                if(fqs.size() > 0) {
+                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                  if(!scopes.contains("GET"))
+                    scopes.add("GET");
+                  siteRequest.setFilteredScope(true);
+                }
               }
             }
             {
@@ -520,7 +521,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "PATCH"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "PATCH"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -547,31 +548,30 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("PATCH") && !classPublicRead) {
-              //
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("PATCH")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+            if(!scopes.contains("PATCH")) {
+            List<String> fqs = new ArrayList<>();
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("PATCH")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("PATCH")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+                });
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("PATCH")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
+                });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
               if(authQuery == null) {
@@ -1216,7 +1216,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "POST"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "POST"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -1243,31 +1243,30 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("POST") && !classPublicRead) {
-              //
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("POST")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+            if(!scopes.contains("POST")) {
+            List<String> fqs = new ArrayList<>();
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("POST")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("POST")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+                });
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("POST")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
+                });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
               if(authQuery == null) {
@@ -1887,7 +1886,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "DELETE"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "DELETE"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -1914,31 +1913,30 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("DELETE") && !classPublicRead) {
-              //
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("DELETE")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+            if(!scopes.contains("DELETE")) {
+            List<String> fqs = new ArrayList<>();
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("DELETE")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("DELETE")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+                });
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("DELETE")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
+                });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
               if(authQuery == null) {
@@ -2353,7 +2351,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "PUT"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "PUT"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -2380,31 +2378,30 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("PUT") && !classPublicRead) {
-              //
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("PUT")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+            if(!scopes.contains("PUT")) {
+            List<String> fqs = new ArrayList<>();
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("PUT")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("PUT")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+                });
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("PUT")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
+                });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
               if(authQuery == null) {
@@ -2734,7 +2731,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "GET"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "GET"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -2761,8 +2758,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET") && !classPublicRead) {
-              //
+            if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -2786,22 +2782,24 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
                         scopes.add(scope);
                     });
                   });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("GET"))
-                  scopes.add("GET");
-                siteRequest.setFilteredScope(true);
+              if(!classPublicRead) {
+                JsonObject authParams = siteRequest.getServiceRequest().getParams();
+                JsonObject authQuery = authParams.getJsonObject("query");
+                if(authQuery == null) {
+                  authQuery = new JsonObject();
+                  authParams.put("query", authQuery);
+                }
+                JsonArray fq = authQuery.getJsonArray("fq");
+                if(fq == null) {
+                  fq = new JsonArray();
+                  authQuery.put("fq", fq);
+                }
+                if(fqs.size() > 0) {
+                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                  if(!scopes.contains("GET"))
+                    scopes.add("GET");
+                  siteRequest.setFilteredScope(true);
+                }
               }
             }
             {
@@ -3070,7 +3068,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "GET"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "GET"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -3097,7 +3095,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET") && !classPublicRead) {
+            if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -3121,22 +3119,24 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
                         scopes.add(scope);
                     });
                   });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("GET"))
-                  scopes.add("GET");
-                siteRequest.setFilteredScope(true);
+              if(!classPublicRead) {
+                JsonObject authParams = siteRequest.getServiceRequest().getParams();
+                JsonObject authQuery = authParams.getJsonObject("query");
+                if(authQuery == null) {
+                  authQuery = new JsonObject();
+                  authParams.put("query", authQuery);
+                }
+                JsonArray fq = authQuery.getJsonArray("fq");
+                if(fq == null) {
+                  fq = new JsonArray();
+                  authQuery.put("fq", fq);
+                }
+                if(fqs.size() > 0) {
+                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                  if(!scopes.contains("GET"))
+                    scopes.add("GET");
+                  siteRequest.setFilteredScope(true);
+                }
               }
             }
             {
@@ -3381,7 +3381,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "GET"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "GET"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -3408,7 +3408,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET") && !classPublicRead) {
+            if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
                     Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
@@ -3432,22 +3432,24 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
                         scopes.add(scope);
                     });
                   });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("GET"))
-                  scopes.add("GET");
-                siteRequest.setFilteredScope(true);
+              if(!classPublicRead) {
+                JsonObject authParams = siteRequest.getServiceRequest().getParams();
+                JsonObject authQuery = authParams.getJsonObject("query");
+                if(authQuery == null) {
+                  authQuery = new JsonObject();
+                  authParams.put("query", authQuery);
+                }
+                JsonArray fq = authQuery.getJsonArray("fq");
+                if(fq == null) {
+                  fq = new JsonArray();
+                  authQuery.put("fq", fq);
+                }
+                if(fqs.size() > 0) {
+                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+                  if(!scopes.contains("GET"))
+                    scopes.add("GET");
+                  siteRequest.setFilteredScope(true);
+                }
               }
             }
             {
@@ -3693,7 +3695,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "DELETE"));
         form.add("permission", String.format("%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin"));
         if(gpuDeviceResource != null)
-          form.add("permission", String.format("%s#%s", gpuDeviceResource, "DELETE"));
+          form.add("permission", String.format("%s-%s#%s", GpuDevice.CLASS_AUTH_RESOURCE, gpuDeviceResource, "DELETE"));
         groups.stream().map(group -> {
               Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
               return mPermission.find() ? mPermission : null;
@@ -3720,31 +3722,30 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
             HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
             JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
             JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "GPUDEVICE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("DELETE") && !classPublicRead) {
-              //
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("DELETE")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+            if(!scopes.contains("DELETE")) {
+            List<String> fqs = new ArrayList<>();
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("DELETE")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("DELETE")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
+                });
+            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+                  Matcher mPermission = Pattern.compile("^(CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  return permission.getJsonArray("scopes").contains("DELETE")
+                      && mPermission.find();
+                }).forEach(permission -> {
+                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
+                    if(!scopes.contains(scope))
+                      scopes.add(scope);
                   });
+                });
               JsonObject authParams = siteRequest.getServiceRequest().getParams();
               JsonObject authQuery = authParams.getJsonObject("query");
               if(authQuery == null) {
@@ -4511,7 +4512,7 @@ public class GpuDeviceEnUSGenApiServiceImpl extends BaseApiServiceImpl implement
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
-      sqlConnection.preparedQuery("SELECT hubResource as pk2, 'hubResource' from Hub where hubResource=$1 UNION SELECT clusterResource as pk2, 'clusterResource' from Cluster where clusterResource=$2 UNION SELECT nodeResource as pk2, 'nodeResource' from AiNode where nodeResource=$3")
+      sqlConnection.preparedQuery("SELECT hubResource as pk2, 'hubResource' FROM Hub WHERE hubResource=$1 UNION SELECT clusterResource as pk2, 'clusterResource' FROM Cluster WHERE clusterResource=$2 UNION SELECT nodeResource as pk2, 'nodeResource' FROM AiNode WHERE nodeResource=$3")
           .collecting(Collectors.toList())
           .execute(Tuple.of(o.getHubResource(), o.getClusterResource(), o.getNodeResource())
           ).onSuccess(result -> {
