@@ -161,7 +161,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                     return permission.getJsonArray("scopes").contains("GET")
                         && mPermission.find();
                   }).forEach(permission -> {
@@ -364,7 +364,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                     return permission.getJsonArray("scopes").contains("GET")
                         && mPermission.find();
                   }).forEach(permission -> {
@@ -505,7 +505,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("PATCH")) {
             List<String> fqs = new ArrayList<>();
             authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                   return permission.getJsonArray("scopes").contains("PATCH")
                       && mPermission.find();
                 }).forEach(permission -> {
@@ -1026,7 +1026,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("POST")) {
             List<String> fqs = new ArrayList<>();
             authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                   return permission.getJsonArray("scopes").contains("POST")
                       && mPermission.find();
                 }).forEach(permission -> {
@@ -1547,7 +1547,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("DELETE")) {
             List<String> fqs = new ArrayList<>();
             authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                   return permission.getJsonArray("scopes").contains("DELETE")
                       && mPermission.find();
                 }).forEach(permission -> {
@@ -1935,7 +1935,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("PUT")) {
             List<String> fqs = new ArrayList<>();
             authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                   return permission.getJsonArray("scopes").contains("PUT")
                       && mPermission.find();
                 }).forEach(permission -> {
@@ -2298,7 +2298,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                     return permission.getJsonArray("scopes").contains("GET")
                         && mPermission.find();
                   }).forEach(permission -> {
@@ -2618,7 +2618,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("GET")) {
               List<String> fqs = new ArrayList<>();
               authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                     return permission.getJsonArray("scopes").contains("GET")
                         && mPermission.find();
                   }).forEach(permission -> {
@@ -2915,7 +2915,7 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
             if(!scopes.contains("DELETE")) {
             List<String> fqs = new ArrayList<>();
             authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
                   return permission.getJsonArray("scopes").contains("DELETE")
                       && mPermission.find();
                 }).forEach(permission -> {
