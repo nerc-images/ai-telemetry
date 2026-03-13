@@ -59,4 +59,4 @@ spec:
         command: ["/bin/bash", "-c", "--"]
         args:
           - >-
-              java -cp "$(cat /home/default/ai-telemetry/cp.txt):/home/default/ai-telemetry/target/classes" org.mghpcc.aitelemetry.verticle.DbToSolrSync
+              java -cp "$(cat /home/default/ai-telemetry/cp.txt):/home/default/ai-telemetry/target/classes" org.computate.aitelemetry.verticle.DbToSolrSync

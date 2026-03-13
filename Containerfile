@@ -24,4 +24,4 @@ RUN mvn clean install -DskipTests
 WORKDIR /home/default/ai-telemetry
 RUN mvn clean install -DskipTests
 RUN mvn dependency:build-classpath -Dmdep.outputFile=/home/default/ai-telemetry/cp.txt -q
-CMD java -cp "$(cat /home/default/ai-telemetry/cp.txt):/home/default/ai-telemetry/target/classes" org.mghpcc.aitelemetry.verticle.MainVerticle
+CMD java -cp "$(cat /home/default/ai-telemetry/cp.txt):/home/default/ai-telemetry/target/classes" org.computate.aitelemetry.verticle.MainVerticle

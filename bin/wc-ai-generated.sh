@@ -5,68 +5,68 @@ find \
   ~/.local/src/ai-telemetry/pom.xml \
   ~/.local/src/ai-telemetry/.gitignore \
   ~/.local/src/ai-telemetry/bin/ \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/config/ \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/BaseModel.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/timezone/TimeZoneGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/timezone/TimeZoneEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/timezone/TimeZoneEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/cluster/ClusterEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/node/AiNodeGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/node/AiNodeEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/node/AiNodeEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/gpudevice/GpuDeviceGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/gpudevice/GpuDeviceEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/gpudevice/GpuDeviceEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/ \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/request/ \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/result/ \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/user/ \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/verticle/MainVerticle.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/verticle/WorkerVerticle.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/config/ \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/BaseModel.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZoneGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZoneEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZoneEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePageGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePageEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePageEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/hub/HubGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/hub/HubEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/hub/HubEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/cluster/ClusterGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/cluster/ClusterEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/cluster/ClusterEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/node/AiNodeGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/node/AiNodeEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/node/AiNodeEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/gpudevice/GpuDeviceGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/gpudevice/GpuDeviceEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/gpudevice/GpuDeviceEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/project/ProjectGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/project/ProjectEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/project/ProjectEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/virtualmachine/VirtualMachineGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clusterrequest/ClusterRequestGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clusterorder/ClusterOrderGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clustertemplate/ClusterTemplateGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/managedcluster/ManagedClusterGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalorder/BareMetalOrderGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalnetwork/BareMetalNetworkGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalnode/BareMetalNodeGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/ \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/request/ \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/result/ \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/user/ \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/verticle/MainVerticle.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/verticle/WorkerVerticle.java \
   ~/.local/src/ai-telemetry/src/main/resources/ \
   ~/.local/src/ai-telemetry/src/gen/ \
   ~/.local/src/ai-telemetry-static/webawesome/css/ \
@@ -79,13 +79,6 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/article/SitePageGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePagePaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSidebar.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/ai-telemetry-developer/AiTelemetryDeveloperGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperLocation.htm \
@@ -93,6 +86,13 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/article/SitePageGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePagePaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSidebar.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/tenant/TenantGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantLocation.htm \
