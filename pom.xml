@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.mghpcc</groupId>
+  <groupId>org.computate</groupId>
   <artifactId>aitelemetry</artifactId>
   <version>1.0.0</version>
   <name>AI Telemetry</name>
@@ -77,7 +77,7 @@
     <vertx-maven-plugin.version>2.0.2</vertx-maven-plugin.version>
     <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
     <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
-    <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
+    <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
     <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
     <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
     <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
@@ -544,7 +544,7 @@
           <executable>maven</executable>
           <includePluginDependencies>false</includePluginDependencies>
           <includeProjectDependencies>true</includeProjectDependencies>
-          <mainClass>org.mghpcc.aitelemetry.verticle.MainVerticle</mainClass>
+          <mainClass>org.computate.aitelemetry.verticle.MainVerticle</mainClass>
         </configuration>
       </plugin>
 
@@ -651,26 +651,16 @@
         </executions>
       </plugin>
 
-      <!-- Nexus Staging Plugin -->
+      <!-- Sonatype Central Publishing Plugin -->
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>${nexus-staging-maven-plugin.version}</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>${central-publishing-maven-plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+          <publishingServerId>central</publishingServerId>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
-  <distributionManagement>
-    <!-- Central Repository -->
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 </project>
