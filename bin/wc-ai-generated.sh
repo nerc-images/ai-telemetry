@@ -13,6 +13,12 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSGenApiService.java \
@@ -28,36 +34,33 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/request/ \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/result/ \
@@ -83,6 +86,20 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/ai-telemetry-developer/AiTelemetryDeveloperGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/tenant/TenantGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantSidebar.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/hub/HubGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/hub/HubLocation.htm \
@@ -118,62 +135,6 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/project/ProjectSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/project/ProjectSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/project/ProjectSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/cluster-template/ClusterTemplateGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplatePaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/cluster-order/ClusterOrderGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/managed-cluster/ManagedClusterGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/cluster-request/ClusterRequestGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-network/BareMetalNetworkGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-resource-class/BareMetalResourceClassGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-node/BareMetalNodeGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodePaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-order/BareMetalOrderGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSidebar.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/vm/VirtualMachineGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineLocation.htm \
@@ -181,12 +142,61 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/vm/VirtualMachineSidebar.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/ai-telemetry-developer/AiTelemetryDeveloperGenEditPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/cluster-request/ClusterRequestGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-request/ClusterRequestSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/cluster-order/ClusterOrderGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-order/ClusterOrderSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/cluster-template/ClusterTemplateGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplatePaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/cluster-template/ClusterTemplateSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/managed-cluster/ManagedClusterGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/managed-cluster/ManagedClusterSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-order/BareMetalOrderGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-order/BareMetalOrderSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-resource-class/BareMetalResourceClassGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-resource-class/BareMetalResourceClassSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-network/BareMetalNetworkGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-network/BareMetalNetworkSidebar.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/bare-metal-node/BareMetalNodeGenEditPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodePaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/bare-metal-node/BareMetalNodeSidebar.htm \
     -type f -exec wc -l {} +
 echo AI generated

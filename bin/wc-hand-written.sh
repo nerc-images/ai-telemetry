@@ -9,6 +9,12 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePagePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/page/SitePageEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloper.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/Tenant.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/tenant/TenantEnUSApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/Hub.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/hub/HubEnUSApiServiceImpl.java \
@@ -24,35 +30,32 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/Project.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/project/ProjectEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplate.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplatePage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrder.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedCluster.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequest.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetwork.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClass.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNode.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodePage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrder.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachine.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachinePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/virtualmachine/VirtualMachineEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloper.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequest.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterrequest/ClusterRequestEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrder.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clusterorder/ClusterOrderEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplate.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplatePage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/clustertemplate/ClusterTemplateEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedCluster.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/managedcluster/ManagedClusterEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrder.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalorder/BareMetalOrderEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClass.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalresourceclass/BareMetalResourceClassEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetwork.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnetwork/BareMetalNetworkEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNode.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodePage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/mghpcc/aitelemetry/model/baremetalnode/BareMetalNodeEnUSApiServiceImpl.java \
       -type f -exec wc -l {} +
 echo hand written
