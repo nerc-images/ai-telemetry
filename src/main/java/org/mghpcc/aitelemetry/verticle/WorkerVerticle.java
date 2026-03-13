@@ -36,9 +36,15 @@ import org.computate.vertx.api.ApiCounter;
 import org.computate.vertx.api.ApiRequest;
 import org.mghpcc.aitelemetry.config.ConfigKeys;
 import org.mghpcc.aitelemetry.request.SiteRequest;
+import org.mghpcc.aitelemetry.timezone.TimeZone;
+import org.mghpcc.aitelemetry.timezone.TimeZoneEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.timezone.TimeZoneEnUSGenApiService;
 import org.mghpcc.aitelemetry.page.SitePage;
 import org.mghpcc.aitelemetry.page.SitePageEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.page.SitePageEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper;
+import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.tenant.Tenant;
 import org.mghpcc.aitelemetry.model.tenant.TenantEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.tenant.TenantEnUSGenApiService;
@@ -57,36 +63,33 @@ import org.mghpcc.aitelemetry.model.gpudevice.GpuDeviceEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.project.Project;
 import org.mghpcc.aitelemetry.model.project.ProjectEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.project.ProjectEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate;
-import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplateEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplateEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrder;
-import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrderEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrderEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster;
-import org.mghpcc.aitelemetry.model.managedcluster.ManagedClusterEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.managedcluster.ManagedClusterEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.clusterrequest.ClusterRequest;
-import org.mghpcc.aitelemetry.model.clusterrequest.ClusterRequestEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.clusterrequest.ClusterRequestEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetwork;
-import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetworkEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetworkEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClass;
-import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNode;
-import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNodeEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNodeEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrder;
-import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSGenApiService;
 import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
 import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSApiServiceImpl;
 import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachineEnUSGenApiService;
-import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper;
-import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSApiServiceImpl;
-import org.mghpcc.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.clusterrequest.ClusterRequest;
+import org.mghpcc.aitelemetry.model.clusterrequest.ClusterRequestEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.clusterrequest.ClusterRequestEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrder;
+import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrderEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrderEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate;
+import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplateEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplateEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster;
+import org.mghpcc.aitelemetry.model.managedcluster.ManagedClusterEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.managedcluster.ManagedClusterEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrder;
+import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrderEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClass;
+import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetwork;
+import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetworkEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetworkEnUSGenApiService;
+import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNode;
+import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNodeEnUSApiServiceImpl;
+import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNodeEnUSGenApiService;
 import org.computate.vertx.api.ApiCounter;
 import org.computate.vertx.api.ApiRequest;
 import org.computate.vertx.config.ComputateConfigKeys;
@@ -102,36 +105,25 @@ import com.google.common.io.PatternFilenameFilter;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.loader.FileLocator;
 
-import io.vertx.config.ConfigRetriever;
-import io.vertx.config.ConfigRetrieverOptions;
-import io.vertx.config.ConfigStoreOptions;
 import io.vertx.config.yaml.YamlProcessor;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxBuilder;
-import io.vertx.core.VertxOptions;
 import io.vertx.core.WorkerExecutor;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.eventbus.EventBusOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.spi.cluster.ClusterManager;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.api.trace.Tracer;
 import io.vertx.ext.auth.authentication.TokenCredentials;
 import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
-import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.mail.MailClient;
 import io.vertx.ext.mail.MailConfig;
 import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.predicate.ResponsePredicate;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.netty.handler.codec.mqtt.MqttQoS;
@@ -141,7 +133,6 @@ import io.vertx.amqp.AmqpClientOptions;
 import io.vertx.amqp.AmqpSender;
 import io.vertx.rabbitmq.RabbitMQClient;
 import io.vertx.rabbitmq.RabbitMQOptions;
-import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import io.vertx.amqp.AmqpMessage;
@@ -191,7 +182,7 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
   private JsonObject i18n;
 
   /**
-   * A io.vertx.ext.jdbc.JDBCClient for connecting to the relational database PostgreSQL. 
+   * A JDBC client for connecting to the relational database PostgreSQL. 
    **/
   private Pool pgPool;
 
@@ -207,6 +198,8 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
 
   WorkerExecutor workerExecutor;
 
+  Integer commitWithin;
+
   Jinjava jinjava;
 
   SdkTracerProvider sdkTracerProvider;
@@ -220,188 +213,35 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
   }
 
   /**
-   * The main method for the Vert.x application that runs the Vert.x Runner class
-   **/
-  public static void  main(String[] args) {
-    Vertx vertx = Vertx.vertx();
-    String configVarsPath = System.getenv(ConfigKeys.VARS_PATH);
-    configureConfig(vertx).onSuccess(config -> {
-      runDataImport(config).onSuccess(k -> {
-        vertx.close();
-        System.exit(0);
-      }).onFailure(ex -> {
-        LOG.error("Error running data import", ex);
-        vertx.close();
-        System.exit(0);
-      });
-    }).onFailure(ex -> {
-      LOG.error(String.format("Error loading config: %s", configVarsPath), ex);
-      vertx.close();
-      System.exit(0);
-    });
-  }
-
-  /**
-   * Description: Static method to sync Solr search engine records with database. 
-   * Val.Complete.enUS: database to solr sync completed. 
-   **/
-  public static Future<Void> runDataImport(JsonObject config) {
-    Promise<Void> promise = Promise.promise();
-    try {
-      Boolean enableZookeeperCluster = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_ZOOKEEPER_CLUSTER));
-      VertxOptions vertxOptions = new VertxOptions();
-      EventBusOptions eventBusOptions = new EventBusOptions();
-  
-      ClusterManager clusterManager = null;
-      if(enableZookeeperCluster) {
-        JsonObject zkConfig = new JsonObject();
-        String zookeeperHostName = config.getString(ConfigKeys.ZOOKEEPER_HOST_NAME);
-        Integer zookeeperPort = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_PORT));
-        String zookeeperHosts = Optional.ofNullable(config.getString(ConfigKeys.ZOOKEEPER_HOSTS)).orElse(zookeeperHostName + ":" + zookeeperPort);
-        String clusterHostName = config.getString(ConfigKeys.CLUSTER_HOST_NAME);
-        Integer clusterPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PORT));
-        String clusterPublicHostName = config.getString(ConfigKeys.CLUSTER_PUBLIC_HOST_NAME);
-        Integer clusterPublicPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PUBLIC_PORT));
-        String zookeeperRetryPolicy = config.getString(ConfigKeys.ZOOKEEPER_RETRY_POLICY);
-        Integer zookeeperBaseSleepTimeMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_BASE_SLEEP_TIME_MILLIS));
-        Integer zookeeperMaxSleepMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_SLEEP_MILLIS));
-        Integer zookeeperMaxRetries = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_RETRIES));
-        Integer zookeeperConnectionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_CONNECTION_TIMEOUT_MILLIS));
-        Integer zookeeperSessionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_SESSION_TIMEOUT_MILLIS));
-        zkConfig.put("zookeeperHosts", zookeeperHosts);
-        zkConfig.put("sessionTimeout", zookeeperSessionTimeoutMillis);
-        zkConfig.put("connectTimeout", zookeeperConnectionTimeoutMillis);
-        zkConfig.put("rootPath", config.getString(ConfigKeys.ZOOKEEPER_ROOT_PATH));
-        zkConfig.put("retry", new JsonObject()
-            .put("policy", zookeeperRetryPolicy)
-            .put("initialSleepTime", zookeeperBaseSleepTimeMillis)
-            .put("intervalTimes", zookeeperMaxSleepMillis)
-            .put("maxTimes", zookeeperMaxRetries)
-        );
-        clusterManager = new ZookeeperClusterManager(zkConfig);
-  
-        if(clusterHostName != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_HOST_NAME, clusterHostName));
-          eventBusOptions.setHost(clusterHostName);
-        }
-        if(clusterPort != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PORT, clusterPort));
-          eventBusOptions.setPort(clusterPort);
-        }
-        if(clusterPublicHostName != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_HOST_NAME, clusterPublicHostName));
-          eventBusOptions.setClusterPublicHost(clusterPublicHostName);
-        }
-        if(clusterPublicPort != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_PORT, clusterPublicPort));
-          eventBusOptions.setClusterPublicPort(clusterPublicPort);
-        }
-      }
-      Long vertxWarningExceptionSeconds = config.getLong(ConfigKeys.VERTX_WARNING_EXCEPTION_SECONDS);
-      Long vertxMaxEventLoopExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME);
-      Long vertxMaxWorkerExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_WORKER_EXECUTE_TIME);
-      vertxOptions.setEventBusOptions(eventBusOptions);
-      vertxOptions.setWarningExceptionTime(vertxWarningExceptionSeconds);
-      vertxOptions.setWarningExceptionTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setMaxEventLoopExecuteTime(vertxMaxEventLoopExecuteTime);
-      vertxOptions.setMaxEventLoopExecuteTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setMaxWorkerExecuteTime(vertxMaxWorkerExecuteTime);
-      vertxOptions.setMaxWorkerExecuteTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setWorkerPoolSize(Integer.parseInt(config.getString(ConfigKeys.WORKER_POOL_SIZE)));
-      VertxBuilder vertxBuilder = Vertx.builder();
-      vertxBuilder.with(vertxOptions);
-      vertxBuilder.withClusterManager(clusterManager);
-
-      DeploymentOptions workerVerticleDeploymentOptions = new DeploymentOptions();
-      workerVerticleDeploymentOptions.setConfig(config);
-      workerVerticleDeploymentOptions.setInstances(1);
-      workerVerticleDeploymentOptions.setMaxWorkerExecuteTime(vertxMaxWorkerExecuteTime);
-      workerVerticleDeploymentOptions.setMaxWorkerExecuteTimeUnit(TimeUnit.SECONDS);
-
-      vertxBuilder.buildClustered().onSuccess(vertx -> {
-        WorkerVerticle workerVerticle = new WorkerVerticle();
-        vertx.deployVerticle(workerVerticle, workerVerticleDeploymentOptions).onSuccess(a -> {
-          promise.complete();
-        }).onFailure(ex -> {
-          LOG.error("Starting the WorkerVerticle failed. ", ex);
-          promise.fail(ex);
-        });
-      }).onFailure(ex -> {
-        LOG.error("Starting the clustered vertx failed. ", ex);
-        promise.fail(ex);
-      });
-    } catch (Exception ex) {
-      LOG.error("Could not run the data import.", ex);
-      promise.fail(ex);
-    }
-    return promise.future();
-  }
-
-  /**
-   **/
-  public static Future<JsonObject> configureConfig(Vertx vertx) {
-    Promise<JsonObject> promise = Promise.promise();
-
-    try {
-      ConfigRetrieverOptions retrieverOptions = new ConfigRetrieverOptions();
-
-      String configVarsPath = System.getenv(ComputateConfigKeys.VARS_PATH);
-      if(StringUtils.isNotBlank(configVarsPath)) {
-        Jinjava jinjava = ComputateConfigKeys.getJinjava();
-        JsonObject config = ComputateConfigKeys.getConfig(jinjava);
-        ConfigStoreOptions configOptions = new ConfigStoreOptions().setType("json").setConfig(config);
-        retrieverOptions.addStore(configOptions);
-      }
-
-      ConfigStoreOptions storeEnv = new ConfigStoreOptions().setType("env");
-      retrieverOptions.addStore(storeEnv);
-
-      ConfigRetriever configRetriever = ConfigRetriever.create(vertx, retrieverOptions);
-      configRetriever.getConfig().onSuccess(config -> {
-        LOG.info("The config was configured successfully. ");
-        promise.complete(config);
-      }).onFailure(ex -> {
-        LOG.error("Unable to configure site context. ", ex);
-        promise.fail(ex);
-      });
-    } catch(Exception ex) {
-      LOG.error("Unable to configure site context. ", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
-  /**
    * This is called by Vert.x when the verticle instance is deployed. 
    * Initialize a new site context object for storing information about the entire site in English. 
    * Setup the startPromise to handle the configuration steps and starting the server. 
    **/
   @Override()
   public void start(Promise<Void> startPromise) throws Exception, Exception {
-    configureI18n().onSuccess(a -> 
-      configureData().onSuccess(b -> 
-        configureJinjava().onSuccess(c -> 
-          configureWebClient().onSuccess(d -> 
-            configureSharedWorkerExecutor().onSuccess(e -> 
-              configureKafka().onSuccess(f -> 
-                configureMqtt().onSuccess(g -> 
-                  configureAmqp().onSuccess(h -> 
-                    configureRabbitmq().onSuccess(i -> 
-                      MainVerticle.authorizeData(vertx, config(), webClient).onComplete(j -> 
-                        importData().onSuccess(k -> 
-                          startPromise.complete()
+    commitWithin = Integer.parseInt(config().getString(ConfigKeys.SOLR_WORKER_COMMIT_WITHIN_MILLIS));
+
+    try {
+      configureI18n().onSuccess(a -> 
+        configureData().onSuccess(b -> 
+          configureJinjava().onSuccess(c -> 
+            configureWebClient().onSuccess(d -> 
+              configureSharedWorkerExecutor().onSuccess(e -> 
+                configureKafka().onSuccess(f -> 
+                  MainVerticle.authorizeData(vertx, config(), webClient).onComplete(j -> 
+                          importData().onSuccess(k -> 
+                            startPromise.complete()
+                          ).onFailure(ex -> startPromise.fail(ex))
                         ).onFailure(ex -> startPromise.fail(ex))
                       ).onFailure(ex -> startPromise.fail(ex))
-                    ).onFailure(ex -> startPromise.fail(ex))
-                  ).onFailure(ex -> startPromise.fail(ex))
-                ).onFailure(ex -> startPromise.fail(ex))
               ).onFailure(ex -> startPromise.fail(ex))
             ).onFailure(ex -> startPromise.fail(ex))
           ).onFailure(ex -> startPromise.fail(ex))
         ).onFailure(ex -> startPromise.fail(ex))
-      ).onFailure(ex -> startPromise.fail(ex))
-    ).onFailure(ex -> startPromise.fail(ex));
+      ).onFailure(ex -> startPromise.fail(ex));
+    } catch (Exception ex) {
+      LOG.error("Couldn't start verticle. ", ex);
+    }
   }
 
   /**
@@ -494,7 +334,7 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
    * 
    * Configure shared database connections across the cluster for massive scaling of the application. 
    * Return a promise that configures a shared database client connection. 
-   * Load the database configuration into a shared io.vertx.ext.jdbc.JDBCClient for a scalable, clustered datasource connection pool. 
+   * Load the database configuration into a shared JDBC client for a scalable, clustered datasource connection pool. 
    * Initialize the database tables if not already created for the first time. 
    **/
   private Future<Void> configureData() {
@@ -508,9 +348,9 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       pgOptions.setDatabase(config().getString(ConfigKeys.DATABASE_DATABASE));
       pgOptions.setUser(config().getString(ConfigKeys.DATABASE_USERNAME));
       pgOptions.setPassword(config().getString(ConfigKeys.DATABASE_PASSWORD));
-      pgOptions.setIdleTimeout(Integer.parseInt(config().getString(ConfigKeys.DATABASE_MAX_IDLE_TIME)));
-      pgOptions.setIdleTimeoutUnit(TimeUnit.HOURS);
-      pgOptions.setConnectTimeout(Integer.parseInt(config().getString(ConfigKeys.DATABASE_CONNECT_TIMEOUT)));
+      // pgOptions.setIdleTimeout(Integer.parseInt(config().getString(ConfigKeys.DATABASE_MAX_IDLE_TIME)));
+      // pgOptions.setIdleTimeoutUnit(TimeUnit.HOURS);
+      // pgOptions.setConnectTimeout(Integer.parseInt(config().getString(ConfigKeys.DATABASE_CONNECT_TIMEOUT)));
 
       PoolOptions poolOptions = new PoolOptions();
       poolOptions.setMaxSize(jdbcMaxPoolSize);
@@ -592,136 +432,6 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
     return promise.future();
   }
 
-  /**
-   **/
-  public Future<MqttClient> configureMqtt() {
-    Promise<MqttClient> promise = Promise.promise();
-
-    try {
-      if(BooleanUtils.isTrue(Boolean.valueOf(config().getString(ConfigKeys.ENABLE_MQTT)))) {
-        try {
-          mqttClient = MqttClient.create(vertx);
-          mqttClient.connect(Integer.parseInt(config().getString(ConfigKeys.MQTT_PORT)), config().getString(ConfigKeys.MQTT_HOST_NAME)).onSuccess(mqttConnection -> {
-            try {
-              mqttClient.publishHandler(message -> {
-                LOG.info(String.format("MQTT: %s", message.payload().toString(Charset.defaultCharset())));
-              }).subscribe("workbench-user1", MqttQoS.EXACTLY_ONCE.value());
-              LOG.info("The MQTT client was initialized successfully.");
-              promise.complete(mqttClient);
-            } catch(Exception ex) {
-              LOG.error("The MQTT client failed to initialize.", ex);
-              promise.fail(ex);
-            }
-          }).onFailure(ex -> {
-            LOG.error("The MQTT client failed to initialize.", ex);
-            promise.fail(ex);
-          });
-        } catch(Exception ex) {
-          LOG.error("The MQTT client failed to initialize.", ex);
-          promise.fail(ex);
-        }
-      } else {
-        promise.complete();
-      }
-    } catch(Exception ex) {
-      LOG.error("The MQTT client failed to initialize.", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
-  /**
-   **/
-  public Future<AmqpClient> configureAmqp() {
-    Promise<AmqpClient> promise = Promise.promise();
-
-    try {
-      if(BooleanUtils.isTrue(Boolean.valueOf(config().getString(ConfigKeys.ENABLE_AMQP)))) {
-        try {
-          AmqpClientOptions options = new AmqpClientOptions()
-              .setHost(config().getString(ConfigKeys.AMQP_HOST_NAME))
-              .setPort(Integer.parseInt(config().getString(ConfigKeys.AMQP_PORT)))
-              .setUsername(config().getString(ConfigKeys.AMQP_USERNAME))
-              .setPassword(config().getString(ConfigKeys.AMQP_PASSWORD))
-              .setVirtualHost(config().getString(ConfigKeys.AMQP_VIRTUAL_HOST))
-              ;
-          amqpClient = AmqpClient.create(vertx, options);
-          amqpClient.connect().onSuccess(amqpConnection -> {
-            try {
-              AmqpSenderOptions senderOptions = new AmqpSenderOptions();
-              amqpConnection
-                  .createSender("my-queue", senderOptions)
-                  .onSuccess(sender -> {
-                this.amqpSender = sender;
-                LOG.info("The AMQP client was initialized successfully.");
-                promise.complete(amqpClient);
-              }).onFailure(ex -> {
-                LOG.error("The AMQP client failed to initialize.", ex);
-                promise.fail(ex);
-              });
-            } catch(Exception ex) {
-              LOG.error("The AMQP client failed to initialize.", ex);
-              promise.fail(ex);
-            }
-          }).onFailure(ex -> {
-            LOG.error("The AMQP client failed to initialize.", ex);
-            promise.fail(ex);
-          });
-        } catch(Exception ex) {
-          LOG.error("The AMQP client failed to initialize.", ex);
-          promise.fail(ex);
-        }
-      } else {
-        promise.complete();
-      }
-    } catch(Exception ex) {
-      LOG.error("The AMQP client failed to initialize.", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
-  /**
-   **/
-  public Future<RabbitMQClient> configureRabbitmq() {
-    Promise<RabbitMQClient> promise = Promise.promise();
-
-    try {
-      if(BooleanUtils.isTrue(Boolean.valueOf(config().getString(ConfigKeys.ENABLE_RABBITMQ)))) {
-        try {
-          RabbitMQOptions options = new RabbitMQOptions()
-              .setHost(config().getString(ConfigKeys.RABBITMQ_HOST_NAME))
-              .setPort(Integer.parseInt(config().getString(ConfigKeys.RABBITMQ_PORT)))
-              .setUser(config().getString(ConfigKeys.RABBITMQ_USERNAME))
-              .setPassword(config().getString(ConfigKeys.RABBITMQ_PASSWORD))
-              .setVirtualHost(config().getString(ConfigKeys.RABBITMQ_VIRTUAL_HOST))
-              .setAutomaticRecoveryEnabled(true)
-              ;
-          this.rabbitmqClient = RabbitMQClient.create(vertx, options);
-          rabbitmqClient.start().onSuccess(a -> {
-            LOG.info("The AMQP client was initialized successfully.");
-            promise.complete(rabbitmqClient);
-          }).onFailure(ex -> {
-            LOG.error("The AMQP client failed to initialize.", ex);
-            promise.fail(ex);
-          });
-        } catch(Exception ex) {
-          LOG.error("The AMQP client failed to initialize.", ex);
-          promise.fail(ex);
-        }
-      } else {
-        promise.complete();
-      }
-    } catch(Exception ex) {
-      LOG.error("The AMQP client failed to initialize.", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
   public <API_IMPL extends BaseApiServiceInterface> void initializeApiService(API_IMPL service) {
     service.setVertx(vertx);
     service.setEventBus(vertx.eventBus());
@@ -752,8 +462,12 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       siteRequest.addScopes("GET");
       String templatePath = config().getString(ComputateConfigKeys.TEMPLATE_PATH);
 
+      TimeZoneEnUSApiServiceImpl apiTimeZone = new TimeZoneEnUSApiServiceImpl();
+      initializeApiService(apiTimeZone);
       SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
       initializeApiService(apiSitePage);
+      AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
+      initializeApiService(apiAiTelemetryDeveloper);
       TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
       initializeApiService(apiTenant);
       HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
@@ -766,43 +480,43 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       initializeApiService(apiGpuDevice);
       ProjectEnUSApiServiceImpl apiProject = new ProjectEnUSApiServiceImpl();
       initializeApiService(apiProject);
-      ClusterTemplateEnUSApiServiceImpl apiClusterTemplate = new ClusterTemplateEnUSApiServiceImpl();
-      initializeApiService(apiClusterTemplate);
-      ClusterOrderEnUSApiServiceImpl apiClusterOrder = new ClusterOrderEnUSApiServiceImpl();
-      initializeApiService(apiClusterOrder);
-      ManagedClusterEnUSApiServiceImpl apiManagedCluster = new ManagedClusterEnUSApiServiceImpl();
-      initializeApiService(apiManagedCluster);
-      ClusterRequestEnUSApiServiceImpl apiClusterRequest = new ClusterRequestEnUSApiServiceImpl();
-      initializeApiService(apiClusterRequest);
-      BareMetalNetworkEnUSApiServiceImpl apiBareMetalNetwork = new BareMetalNetworkEnUSApiServiceImpl();
-      initializeApiService(apiBareMetalNetwork);
-      BareMetalResourceClassEnUSApiServiceImpl apiBareMetalResourceClass = new BareMetalResourceClassEnUSApiServiceImpl();
-      initializeApiService(apiBareMetalResourceClass);
-      BareMetalNodeEnUSApiServiceImpl apiBareMetalNode = new BareMetalNodeEnUSApiServiceImpl();
-      initializeApiService(apiBareMetalNode);
       VirtualMachineEnUSApiServiceImpl apiVirtualMachine = new VirtualMachineEnUSApiServiceImpl();
       initializeApiService(apiVirtualMachine);
-      AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
-      initializeApiService(apiAiTelemetryDeveloper);
+      ClusterRequestEnUSApiServiceImpl apiClusterRequest = new ClusterRequestEnUSApiServiceImpl();
+      initializeApiService(apiClusterRequest);
+      ClusterOrderEnUSApiServiceImpl apiClusterOrder = new ClusterOrderEnUSApiServiceImpl();
+      initializeApiService(apiClusterOrder);
+      ClusterTemplateEnUSApiServiceImpl apiClusterTemplate = new ClusterTemplateEnUSApiServiceImpl();
+      initializeApiService(apiClusterTemplate);
+      ManagedClusterEnUSApiServiceImpl apiManagedCluster = new ManagedClusterEnUSApiServiceImpl();
+      initializeApiService(apiManagedCluster);
+      BareMetalResourceClassEnUSApiServiceImpl apiBareMetalResourceClass = new BareMetalResourceClassEnUSApiServiceImpl();
+      initializeApiService(apiBareMetalResourceClass);
+      BareMetalNetworkEnUSApiServiceImpl apiBareMetalNetwork = new BareMetalNetworkEnUSApiServiceImpl();
+      initializeApiService(apiBareMetalNetwork);
+      BareMetalNodeEnUSApiServiceImpl apiBareMetalNode = new BareMetalNodeEnUSApiServiceImpl();
+      initializeApiService(apiBareMetalNode);
 
-      apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q1 -> {
-        apiTenant.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Tenant.CLASS_CANONICAL_NAME, Tenant.CLASS_SIMPLE_NAME, Tenant.CLASS_API_ADDRESS_Tenant, Tenant.CLASS_AUTH_RESOURCE, "tenantId", "userPage", "download").onSuccess(q2 -> {
-          apiHub.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubId", "userPage", "download").onSuccess(q3 -> {
-            apiCluster.importTimer(Paths.get(templatePath, "/en-us/user/cluster"), vertx, siteRequest, Cluster.CLASS_CANONICAL_NAME, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, Cluster.CLASS_AUTH_RESOURCE, "clusterResource", "userPage", "download").onSuccess(q4 -> {
-              apiAiNode.importTimer(Paths.get(templatePath, "/en-us/user/ai-node"), vertx, siteRequest, AiNode.CLASS_CANONICAL_NAME, AiNode.CLASS_SIMPLE_NAME, AiNode.CLASS_API_ADDRESS_AiNode, AiNode.CLASS_AUTH_RESOURCE, "nodeResource", "userPage", "download").onSuccess(q5 -> {
-                apiGpuDevice.importTimer(Paths.get(templatePath, "/en-us/user/gpu-device"), vertx, siteRequest, GpuDevice.CLASS_CANONICAL_NAME, GpuDevice.CLASS_SIMPLE_NAME, GpuDevice.CLASS_API_ADDRESS_GpuDevice, GpuDevice.CLASS_AUTH_RESOURCE, "gpuDeviceResource", "userPage", "download").onSuccess(q6 -> {
-                  apiProject.importTimer(Paths.get(templatePath, "/en-us/user/project"), vertx, siteRequest, Project.CLASS_CANONICAL_NAME, Project.CLASS_SIMPLE_NAME, Project.CLASS_API_ADDRESS_Project, Project.CLASS_AUTH_RESOURCE, "projectResource", "userPage", "download").onSuccess(q7 -> {
-                    apiClusterTemplate.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterTemplate.CLASS_CANONICAL_NAME, ClusterTemplate.CLASS_SIMPLE_NAME, ClusterTemplate.CLASS_API_ADDRESS_ClusterTemplate, ClusterTemplate.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q8 -> {
-                      apiClusterOrder.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterOrder.CLASS_CANONICAL_NAME, ClusterOrder.CLASS_SIMPLE_NAME, ClusterOrder.CLASS_API_ADDRESS_ClusterOrder, ClusterOrder.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q9 -> {
-                        apiManagedCluster.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ManagedCluster.CLASS_CANONICAL_NAME, ManagedCluster.CLASS_SIMPLE_NAME, ManagedCluster.CLASS_API_ADDRESS_ManagedCluster, ManagedCluster.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q10 -> {
+      apiTimeZone.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, TimeZone.CLASS_CANONICAL_NAME, TimeZone.CLASS_SIMPLE_NAME, TimeZone.CLASS_API_ADDRESS_TimeZone, TimeZone.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q1 -> {
+        apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q2 -> {
+          apiAiTelemetryDeveloper.importTimer(Paths.get(templatePath, "/en-us/ai-telemetry-developer/learn"), vertx, siteRequest, AiTelemetryDeveloper.CLASS_CANONICAL_NAME, AiTelemetryDeveloper.CLASS_SIMPLE_NAME, AiTelemetryDeveloper.CLASS_API_ADDRESS_AiTelemetryDeveloper, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q3 -> {
+            apiTenant.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Tenant.CLASS_CANONICAL_NAME, Tenant.CLASS_SIMPLE_NAME, Tenant.CLASS_API_ADDRESS_Tenant, Tenant.CLASS_AUTH_RESOURCE, "tenantId", "userPage", "download").onSuccess(q4 -> {
+              apiHub.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubId", "userPage", "download").onSuccess(q5 -> {
+                apiCluster.importTimer(Paths.get(templatePath, "/en-us/user/cluster"), vertx, siteRequest, Cluster.CLASS_CANONICAL_NAME, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, Cluster.CLASS_AUTH_RESOURCE, "clusterResource", "userPage", "download").onSuccess(q6 -> {
+                  apiAiNode.importTimer(Paths.get(templatePath, "/en-us/user/ai-node"), vertx, siteRequest, AiNode.CLASS_CANONICAL_NAME, AiNode.CLASS_SIMPLE_NAME, AiNode.CLASS_API_ADDRESS_AiNode, AiNode.CLASS_AUTH_RESOURCE, "nodeResource", "userPage", "download").onSuccess(q7 -> {
+                    apiGpuDevice.importTimer(Paths.get(templatePath, "/en-us/user/gpu-device"), vertx, siteRequest, GpuDevice.CLASS_CANONICAL_NAME, GpuDevice.CLASS_SIMPLE_NAME, GpuDevice.CLASS_API_ADDRESS_GpuDevice, GpuDevice.CLASS_AUTH_RESOURCE, "gpuDeviceResource", "userPage", "download").onSuccess(q8 -> {
+                      apiProject.importTimer(Paths.get(templatePath, "/en-us/user/project"), vertx, siteRequest, Project.CLASS_CANONICAL_NAME, Project.CLASS_SIMPLE_NAME, Project.CLASS_API_ADDRESS_Project, Project.CLASS_AUTH_RESOURCE, "projectResource", "userPage", "download").onSuccess(q9 -> {
+                        apiVirtualMachine.importTimer(Paths.get(templatePath, "/en-us/user/vm"), vertx, siteRequest, VirtualMachine.CLASS_CANONICAL_NAME, VirtualMachine.CLASS_SIMPLE_NAME, VirtualMachine.CLASS_API_ADDRESS_VirtualMachine, VirtualMachine.CLASS_AUTH_RESOURCE, "vmResource", "userPage", "download").onSuccess(q10 -> {
                           apiClusterRequest.importTimer(Paths.get(templatePath, "/en-us/user/cluster-request"), vertx, siteRequest, ClusterRequest.CLASS_CANONICAL_NAME, ClusterRequest.CLASS_SIMPLE_NAME, ClusterRequest.CLASS_API_ADDRESS_ClusterRequest, ClusterRequest.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q11 -> {
-                            apiBareMetalNetwork.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNetwork.CLASS_CANONICAL_NAME, BareMetalNetwork.CLASS_SIMPLE_NAME, BareMetalNetwork.CLASS_API_ADDRESS_BareMetalNetwork, BareMetalNetwork.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q12 -> {
-                              apiBareMetalResourceClass.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalResourceClass.CLASS_CANONICAL_NAME, BareMetalResourceClass.CLASS_SIMPLE_NAME, BareMetalResourceClass.CLASS_API_ADDRESS_BareMetalResourceClass, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q13 -> {
-                                apiBareMetalNode.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNode.CLASS_CANONICAL_NAME, BareMetalNode.CLASS_SIMPLE_NAME, BareMetalNode.CLASS_API_ADDRESS_BareMetalNode, BareMetalNode.CLASS_AUTH_RESOURCE, "nodeId", "userPage", "download").onSuccess(q14 -> {
-                                  apiVirtualMachine.importTimer(Paths.get(templatePath, "/en-us/user/vm"), vertx, siteRequest, VirtualMachine.CLASS_CANONICAL_NAME, VirtualMachine.CLASS_SIMPLE_NAME, VirtualMachine.CLASS_API_ADDRESS_VirtualMachine, VirtualMachine.CLASS_AUTH_RESOURCE, "vmResource", "userPage", "download").onSuccess(q15 -> {
-                                    apiAiTelemetryDeveloper.importTimer(Paths.get(templatePath, "/en-us/ai-telemetry-developer/learn"), vertx, siteRequest, AiTelemetryDeveloper.CLASS_CANONICAL_NAME, AiTelemetryDeveloper.CLASS_SIMPLE_NAME, AiTelemetryDeveloper.CLASS_API_ADDRESS_AiTelemetryDeveloper, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q16 -> {
-                                      LOG.info("data import complete");
-                                      promise.complete();
+                            apiClusterOrder.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterOrder.CLASS_CANONICAL_NAME, ClusterOrder.CLASS_SIMPLE_NAME, ClusterOrder.CLASS_API_ADDRESS_ClusterOrder, ClusterOrder.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q12 -> {
+                              apiClusterTemplate.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterTemplate.CLASS_CANONICAL_NAME, ClusterTemplate.CLASS_SIMPLE_NAME, ClusterTemplate.CLASS_API_ADDRESS_ClusterTemplate, ClusterTemplate.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q13 -> {
+                                apiManagedCluster.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ManagedCluster.CLASS_CANONICAL_NAME, ManagedCluster.CLASS_SIMPLE_NAME, ManagedCluster.CLASS_API_ADDRESS_ManagedCluster, ManagedCluster.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q14 -> {
+                                  apiBareMetalResourceClass.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalResourceClass.CLASS_CANONICAL_NAME, BareMetalResourceClass.CLASS_SIMPLE_NAME, BareMetalResourceClass.CLASS_API_ADDRESS_BareMetalResourceClass, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q15 -> {
+                                    apiBareMetalNetwork.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNetwork.CLASS_CANONICAL_NAME, BareMetalNetwork.CLASS_SIMPLE_NAME, BareMetalNetwork.CLASS_API_ADDRESS_BareMetalNetwork, BareMetalNetwork.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q16 -> {
+                                      apiBareMetalNode.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNode.CLASS_CANONICAL_NAME, BareMetalNode.CLASS_SIMPLE_NAME, BareMetalNode.CLASS_API_ADDRESS_BareMetalNode, BareMetalNode.CLASS_AUTH_RESOURCE, "nodeId", "userPage", "download").onSuccess(q17 -> {
+                                        LOG.info("data import complete");
+                                        promise.complete();
+                                      }).onFailure(ex -> promise.fail(ex));
                                     }).onFailure(ex -> promise.fail(ex));
                                   }).onFailure(ex -> promise.fail(ex));
                                 }).onFailure(ex -> promise.fail(ex));

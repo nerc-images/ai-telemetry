@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.computate.search.serialize.ComputateLocalDateSerializer;
 import org.computate.search.serialize.ComputateLocalDateDeserializer;
@@ -96,9 +97,6 @@ import io.vertx.core.json.JsonArray;
  **/
 public abstract class WorkerVerticleGen<DEV> extends AbstractVerticle {
   protected static final Logger LOG = LoggerFactory.getLogger(WorkerVerticle.class);
-  public static final String runDataImportComplete1 = "database to solr sync completed. ";
-  public static final String runDataImportComplete = runDataImportComplete1;
-
   public static final String configureI18nFileError1 = "Failed to load internationalization data from file: %s";
   public static final String configureI18nFileError = configureI18nFileError1;
   public static final String configureI18nError1 = "Failed to load internationalization data. ";
@@ -268,7 +266,7 @@ public abstract class WorkerVerticleGen<DEV> extends AbstractVerticle {
     return sb.toString();
   }
 
-  public static final String[] WorkerVerticleVals = new String[] { runDataImportComplete1, configureI18nFileError1, configureI18nError1, configureI18nComplete1, configureI18nLoaded1, configureDataConnectionError1, configureDataConnectionSuccess1, configureDataInitError1, configureDataInitSuccess1, configureSharedWorkerExecutorFail1, configureSharedWorkerExecutorComplete1, configureKafkaSuccess1, importDataSkip1 };
+  public static final String[] WorkerVerticleVals = new String[] { configureI18nFileError1, configureI18nError1, configureI18nComplete1, configureI18nLoaded1, configureDataConnectionError1, configureDataConnectionSuccess1, configureDataInitError1, configureDataInitSuccess1, configureSharedWorkerExecutorFail1, configureSharedWorkerExecutorComplete1, configureKafkaSuccess1, importDataSkip1 };
 
   public static final String CLASS_SIMPLE_NAME = "WorkerVerticle";
   public static final String CLASS_CANONICAL_NAME = "org.mghpcc.aitelemetry.verticle.WorkerVerticle";

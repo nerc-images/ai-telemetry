@@ -35,14 +35,13 @@ import io.vertx.core.json.JsonObject;
 
 
 /**
- * Order: 3
+ * Order: 4
  * Description: Read the latest articles to learn more
  * AName: an article
- * Icon: <i class="fa-duotone fa-solid fa-newspaper"></i>
+ * Icon: <i class="fa-duotone fa-regular fa-newspaper"></i>
  * Sort.desc: courseNum
  * Sort.desc: lessonNum
  * Rows: 100
- * MenuTitleOpen: info
  * 
  * PublicRead: true
  * SearchPageUri: /en-us/search/article

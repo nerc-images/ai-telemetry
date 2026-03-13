@@ -201,7 +201,7 @@ data:
     WEB_COMPONENTS_THEME: "active"
     FONTAWESOME_KIT: ""
     # A default FontAwesome style. 
-    FONTAWESOME_STYLE: "fa-duotone fa-solid"
+    FONTAWESOME_STYLE: "fa-duotone fa-regular "
     # Site default theme, light or dark. 
     SITE_THEME: "dark"
     # The site logo relative URI

@@ -35,19 +35,21 @@ import io.vertx.sqlclient.RowStream;
 
 import org.mghpcc.aitelemetry.config.ConfigKeys;
 import org.mghpcc.aitelemetry.request.SiteRequest;
+import org.mghpcc.aitelemetry.model.tenant.Tenant;
 import org.mghpcc.aitelemetry.model.hub.Hub;
 import org.mghpcc.aitelemetry.model.cluster.Cluster;
 import org.mghpcc.aitelemetry.model.node.AiNode;
 import org.mghpcc.aitelemetry.model.gpudevice.GpuDevice;
 import org.mghpcc.aitelemetry.model.project.Project;
-import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate;
-import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrder;
-import org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster;
+import org.mghpcc.aitelemetry.model.virtualmachine.VirtualMachine;
 import org.mghpcc.aitelemetry.model.clusterrequest.ClusterRequest;
-import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetwork;
-import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClass;
-import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNode;
+import org.mghpcc.aitelemetry.model.clusterorder.ClusterOrder;
+import org.mghpcc.aitelemetry.model.clustertemplate.ClusterTemplate;
+import org.mghpcc.aitelemetry.model.managedcluster.ManagedCluster;
 import org.mghpcc.aitelemetry.model.baremetalorder.BareMetalOrder;
+import org.mghpcc.aitelemetry.model.baremetalresourceclass.BareMetalResourceClass;
+import org.mghpcc.aitelemetry.model.baremetalnetwork.BareMetalNetwork;
+import org.mghpcc.aitelemetry.model.baremetalnode.BareMetalNode;
 
 
 /**
@@ -214,30 +216,34 @@ public class DbToSolrSync extends DbToSolrSyncGen<AbstractVerticle> {
       pgOptions.setDatabase(config.getString(ConfigKeys.DATABASE_DATABASE));
       pgOptions.setUser(config.getString(ConfigKeys.DATABASE_USERNAME));
       pgOptions.setPassword(config.getString(ConfigKeys.DATABASE_PASSWORD));
-      pgOptions.setIdleTimeout(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_IDLE_TIME)));
-      pgOptions.setIdleTimeoutUnit(TimeUnit.SECONDS);
-      pgOptions.setConnectTimeout(Integer.parseInt(config.getString(ConfigKeys.DATABASE_CONNECT_TIMEOUT)));
+      // pgOptions.setIdleTimeout(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_IDLE_TIME)));
+      // pgOptions.setIdleTimeoutUnit(TimeUnit.SECONDS);
+      // pgOptions.setConnectTimeout(Integer.parseInt(config.getString(ConfigKeys.DATABASE_CONNECT_TIMEOUT)));
 
       PoolOptions poolOptions = new PoolOptions();
       poolOptions.setMaxSize(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_POOL_SIZE)));
       poolOptions.setMaxWaitQueueSize(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_WAIT_QUEUE_SIZE)));
 
       Pool pgPool = PgBuilder.pool().connectingTo(pgOptions).with(poolOptions).using(vertx).build();
-      dbToSolrSyncRecord(vertx, config, pgPool, Hub.CLASS_SIMPLE_NAME).onSuccess(q1 -> {
-        dbToSolrSyncRecord(vertx, config, pgPool, Cluster.CLASS_SIMPLE_NAME).onSuccess(q2 -> {
-          dbToSolrSyncRecord(vertx, config, pgPool, AiNode.CLASS_SIMPLE_NAME).onSuccess(q3 -> {
-            dbToSolrSyncRecord(vertx, config, pgPool, GpuDevice.CLASS_SIMPLE_NAME).onSuccess(q4 -> {
-              dbToSolrSyncRecord(vertx, config, pgPool, Project.CLASS_SIMPLE_NAME).onSuccess(q5 -> {
-                dbToSolrSyncRecord(vertx, config, pgPool, ClusterTemplate.CLASS_SIMPLE_NAME).onSuccess(q6 -> {
-                  dbToSolrSyncRecord(vertx, config, pgPool, ClusterOrder.CLASS_SIMPLE_NAME).onSuccess(q7 -> {
-                    dbToSolrSyncRecord(vertx, config, pgPool, ManagedCluster.CLASS_SIMPLE_NAME).onSuccess(q8 -> {
-                      dbToSolrSyncRecord(vertx, config, pgPool, ClusterRequest.CLASS_SIMPLE_NAME).onSuccess(q9 -> {
-                        dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNetwork.CLASS_SIMPLE_NAME).onSuccess(q10 -> {
-                          dbToSolrSyncRecord(vertx, config, pgPool, BareMetalResourceClass.CLASS_SIMPLE_NAME).onSuccess(q11 -> {
-                            dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNode.CLASS_SIMPLE_NAME).onSuccess(q12 -> {
-                              dbToSolrSyncRecord(vertx, config, pgPool, BareMetalOrder.CLASS_SIMPLE_NAME).onSuccess(q13 -> {
-                                LOG.info(dbToSolrSyncComplete);
-                                promise.complete();
+      dbToSolrSyncRecord(vertx, config, pgPool, Tenant.CLASS_SIMPLE_NAME).onSuccess(q1 -> {
+        dbToSolrSyncRecord(vertx, config, pgPool, Hub.CLASS_SIMPLE_NAME).onSuccess(q2 -> {
+          dbToSolrSyncRecord(vertx, config, pgPool, Cluster.CLASS_SIMPLE_NAME).onSuccess(q3 -> {
+            dbToSolrSyncRecord(vertx, config, pgPool, AiNode.CLASS_SIMPLE_NAME).onSuccess(q4 -> {
+              dbToSolrSyncRecord(vertx, config, pgPool, GpuDevice.CLASS_SIMPLE_NAME).onSuccess(q5 -> {
+                dbToSolrSyncRecord(vertx, config, pgPool, Project.CLASS_SIMPLE_NAME).onSuccess(q6 -> {
+                  dbToSolrSyncRecord(vertx, config, pgPool, VirtualMachine.CLASS_SIMPLE_NAME).onSuccess(q7 -> {
+                    dbToSolrSyncRecord(vertx, config, pgPool, ClusterRequest.CLASS_SIMPLE_NAME).onSuccess(q8 -> {
+                      dbToSolrSyncRecord(vertx, config, pgPool, ClusterOrder.CLASS_SIMPLE_NAME).onSuccess(q9 -> {
+                        dbToSolrSyncRecord(vertx, config, pgPool, ClusterTemplate.CLASS_SIMPLE_NAME).onSuccess(q10 -> {
+                          dbToSolrSyncRecord(vertx, config, pgPool, ManagedCluster.CLASS_SIMPLE_NAME).onSuccess(q11 -> {
+                            dbToSolrSyncRecord(vertx, config, pgPool, BareMetalOrder.CLASS_SIMPLE_NAME).onSuccess(q12 -> {
+                              dbToSolrSyncRecord(vertx, config, pgPool, BareMetalResourceClass.CLASS_SIMPLE_NAME).onSuccess(q13 -> {
+                                dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNetwork.CLASS_SIMPLE_NAME).onSuccess(q14 -> {
+                                  dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNode.CLASS_SIMPLE_NAME).onSuccess(q15 -> {
+                                    LOG.info(dbToSolrSyncComplete);
+                                    promise.complete();
+                                  }).onFailure(ex -> promise.fail(ex));
+                                }).onFailure(ex -> promise.fail(ex));
                               }).onFailure(ex -> promise.fail(ex));
                             }).onFailure(ex -> promise.fail(ex));
                           }).onFailure(ex -> promise.fail(ex));

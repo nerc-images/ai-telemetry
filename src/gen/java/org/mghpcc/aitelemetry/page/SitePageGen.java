@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.computate.search.serialize.ComputateLocalDateSerializer;
 import org.computate.search.serialize.ComputateLocalDateDeserializer;
@@ -92,11 +93,11 @@ import io.vertx.core.json.JsonObject;
  * <p>This class contains a comment <b>"Rows: 100"</b>, which means the SitePage API will return a default of 100 records instead of 10 by default. 
  * Each API has built in pagination of the search records to ensure a user can query all the data a page at a time without running the application out of memory. 
  * </p>
- * <h2>Order: 3</h2>
- * <p>This class contains a comment <b>"Order: 3"</b>, which means this class will be sorted by the given number 3 ascending when code that relates to multiple classes at the same time is generated. 
+ * <h2>Order: 4</h2>
+ * <p>This class contains a comment <b>"Order: 4"</b>, which means this class will be sorted by the given number 4 ascending when code that relates to multiple classes at the same time is generated. 
  * </p>
- * <h2>SqlOrder: 3</h2>
- * <p>This class contains a comment <b>"SqlOrder: 3"</b>, which means this class will be sorted by the given number 3 ascending when SQL code to create and drop the tables is generated. 
+ * <h2>SqlOrder: 4</h2>
+ * <p>This class contains a comment <b>"SqlOrder: 4"</b>, which means this class will be sorted by the given number 4 ascending when SQL code to create and drop the tables is generated. 
  * </p>
  * <h2>Model: true</h2>
  * <h2>Page: true</h2>
@@ -210,7 +211,7 @@ public abstract class SitePageGen<DEV> extends BaseResult {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/article";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/article";
 
-  public static final String Icon = "<i class=\"fa-duotone fa-solid fa-newspaper\"></i>";
+  public static final String Icon = "<i class=\"fa-duotone fa-regular fa-newspaper\"></i>";
   public static final Integer Rows = 100;
 
 	/////////////

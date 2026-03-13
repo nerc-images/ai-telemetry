@@ -558,7 +558,7 @@ public class SitePageGenPage extends SitePageGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-duotone fa-solid fa-newspaper\"></i>");
+      c.o("<i class=\"fa-duotone fa-regular fa-newspaper\"></i>");
   }
 
   protected void _pageUriSitePage(Wrap<String> c) {

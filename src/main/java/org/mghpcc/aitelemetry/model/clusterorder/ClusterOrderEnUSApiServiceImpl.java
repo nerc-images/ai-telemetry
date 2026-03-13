@@ -295,6 +295,7 @@ public class ClusterOrderEnUSApiServiceImpl extends ClusterOrderEnUSGenApiServic
 					});
 				}).onFailure(ex -> {
 					LOG.error(String.format("POST to fulfillment service cluster order endpoint failed. "), ex);
+					promise.fail(ex);
 				});
 			} else {
 				super.sqlPOSTClusterOrder(o, inheritPrimaryKey).onSuccess(o2 -> {
