@@ -298,6 +298,7 @@ data:
     stringData:
       STATIC_REPOS: '{{ STATIC_REPOS | replace("'", "\\'") }}'
       HUBS: '{{ HUBS | replace("'", "\\'") }}'
+      TENANTS: '{{ TENANTS | replace("'", "\\'") }}'
       YOUTUBE_URL: '{{ YOUTUBE_URL | replace("'", "\\'") }}'
       LINKEDIN_URL: '{{ LINKEDIN_URL | replace("'", "\\'") }}'
       PROM_KEYCLOAK_PROXY_SSL_OPENSHIFTLOCAL: '{{ PROM_KEYCLOAK_PROXY_SSL_OPENSHIFTLOCAL | replace("'", "\\'") }}'
@@ -332,6 +333,7 @@ data:
       IMPORT_DATA_PERIOD_BareMetalNode: '{{ IMPORT_DATA_PERIOD_BareMetalNode | replace("'", "\\'") }}'
       IMPORT_DATA_START_TIME_BareMetalResourceClass: '{{ IMPORT_DATA_START_TIME_BareMetalResourceClass | replace("'", "\\'") }}'
       IMPORT_DATA_PERIOD_BareMetalResourceClass: '{{ IMPORT_DATA_PERIOD_BareMetalResourceClass | replace("'", "\\'") }}'
+      ENABLE_IMPORT_DATA_Tenant: '{{ ENABLE_IMPORT_DATA_Tenant | replace("'", "\\'") }}'
       ENABLE_IMPORT_DATA_Cluster: '{{ ENABLE_IMPORT_DATA_Cluster | replace("'", "\\'") }}'
       ENABLE_IMPORT_DATA_AiNode: '{{ ENABLE_IMPORT_DATA_AiNode | replace("'", "\\'") }}'
       ENABLE_IMPORT_DATA_Project: '{{ ENABLE_IMPORT_DATA_Project | replace("'", "\\'") }}'

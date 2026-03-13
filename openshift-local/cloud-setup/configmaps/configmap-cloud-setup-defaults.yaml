@@ -46,7 +46,7 @@ data:
     # The timezone of the site. 
     SITE_ZONE: "{{ lookup('env', 'SITE_ZONE') | default('America/New_York', true) }}"
     # The domain name of the site. 
-    DOMAIN_NAME: "mghpcc.org"
+    DOMAIN_NAME: "computate.org"
     # The GitHub organization for this project. 
     GITHUB_ORG: "nerc-images"
     # The main git repository for the project. 
@@ -60,7 +60,7 @@ data:
     # The base URL of the site. 
     SITE_BASE_URL: "{{ lookup('env', 'SITE_BASE_URL') | default('https://' + SITE_HOST_NAME, true) }}"
     # The public facing URL for the site. 
-    SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.mghpcc.org"
+    SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.computate.org"
     # The port of the Zookeeper cluster manager. 
     CLUSTER_PORT: "{{ (SITE_PORT | int) + 1 }}"
     # The public port of the Zookeeper cluster manager. 
@@ -105,23 +105,23 @@ data:
     # The current Maven version of the project. 
     SITE_POM_VERSION: "1.0.0"
     # The base Java Package for the project based on Maven group ID and artifact ID. 
-    SITE_JAVA_PACKAGE: "org.mghpcc.aitelemetry"
+    SITE_JAVA_PACKAGE: "org.computate.aitelemetry"
     # The Java Package containing the project main verticle class. 
-    SITE_MAIN_VERTICLE_PACKAGE: "org.mghpcc.aitelemetry.verticle"
+    SITE_MAIN_VERTICLE_PACKAGE: "org.computate.aitelemetry.verticle"
     # The Java Package containing the project configuration keys class. 
-    SITE_CONFIG_KEYS_PACKAGE: "org.mghpcc.aitelemetry.config"
+    SITE_CONFIG_KEYS_PACKAGE: "org.computate.aitelemetry.config"
     # The Java Package containing the project site request class. 
-    SITE_REQUEST_PACKAGE: "org.mghpcc.aitelemetry.request"
+    SITE_REQUEST_PACKAGE: "org.computate.aitelemetry.request"
     # The Java Package containing the project base model class. 
-    SITE_BASE_MODEL_PACKAGE: "org.mghpcc.aitelemetry.model"
+    SITE_BASE_MODEL_PACKAGE: "org.computate.aitelemetry.model"
     # The Java Package containing the project base result class. 
-    SITE_BASE_RESULT_PACKAGE: "org.mghpcc.aitelemetry.result"
+    SITE_BASE_RESULT_PACKAGE: "org.computate.aitelemetry.result"
     # The Java Package containing the project page layout class. 
-    SITE_PAGE_LAYOUT_PACKAGE: "org.mghpcc.aitelemetry.page"
+    SITE_PAGE_LAYOUT_PACKAGE: "org.computate.aitelemetry.page"
     # The Java Package containing the project site page reader class. 
-    SITE_PAGE_READER_PACKAGE: "org.mghpcc.aitelemetry.page.reader"
+    SITE_PAGE_READER_PACKAGE: "org.computate.aitelemetry.page.reader"
     # The Java Package containing the project site user class. 
-    SITE_USER_PACKAGE: "org.mghpcc.aitelemetry.user"
+    SITE_USER_PACKAGE: "org.computate.aitelemetry.user"
     # The /src/main/java folder for the main Java source code. 
     SUFFIX_SRC_MAIN_JAVA: "/src/main/java"
     # The /src/gen/java folder for the generated Java source code. 
@@ -137,7 +137,7 @@ data:
     # The paths to the internationalization for this project. 
     I18N_PATHS: ["{{ COMPUTATE_VERTX_SRC }}/src/main/resources/org/computate/i18n/i18n_enUS.yaml"]
     # The Java main class of the site. 
-    JAVA_MAIN_CLASS: "org.mghpcc.aitelemetry.verticle.MainVerticle"
+    JAVA_MAIN_CLASS: "org.computate.aitelemetry.verticle.MainVerticle"
     # Enables Vert.x reactive APIs. 
     ENABLE_VERTX: true
     # Enables a Quarkus application to also be created in addition to the Vert.x main verticle. 
@@ -557,6 +557,7 @@ data:
 
     STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
     HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
+    TENANTS: "{{ lookup('env', 'TENANTS') | default('{}', true) }}"
 
     # Social media
     YOUTUBE_URL: https://www.youtube.com/watch?v=5_y5PFtsTYk&list=PLcVjtgfCeLvQu8KDUjmwHzbFqbg5K70zN
@@ -636,6 +637,7 @@ data:
     IMPORT_DATA_START_TIME_BareMetalResourceClass: 12:00 America/New_York
     IMPORT_DATA_PERIOD_BareMetalResourceClass: 1 minute
 
+    ENABLE_IMPORT_DATA_Tenant: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Tenant') | default('true', true) | bool }}"
     ENABLE_IMPORT_DATA_Cluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Cluster') | default('true', true) | bool }}"
     ENABLE_IMPORT_DATA_AiNode: "{{ lookup('env', 'ENABLE_IMPORT_DATA_AiNode') | default('true', true) | bool }}"
     ENABLE_IMPORT_DATA_Project: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Project') | default('true', true) | bool }}"
