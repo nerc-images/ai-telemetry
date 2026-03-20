@@ -267,6 +267,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Suggested: true
    * Description: The indexed field in the search engine for this record while using autosuggest
    * DisplayName: autosuggest
+   * Ignore: true
    */
   protected void _objectSuggest(Wrap<String> w) { 
     StringBuilder b = new StringBuilder();
@@ -286,6 +287,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Text: true
    * Description: The full text search field in the search engine for this record while using autosuggest
    * DisplayName: text
+   * Ignore: true
    */
   protected void _objectText(List<String> l) { 
     String objectId = idForClass();

@@ -341,7 +341,7 @@ DATABASE_SECRET: "{{ lookup('env', 'DATABASE_SECRET_' + SITE_SHORT_NAME) | defau
 # The database secret containing the user password to connect to the database. 
 DATABASE_SECRET_KEY: "{{ lookup('env', 'DATABASE_SECRET_KEY_' + SITE_SHORT_NAME) | default('DATABASE_PASSWORD', true) }}"
 # The PostgreSQL database password of the site. 
-DATABASE_PASSWORD: "{{ lookup('env', 'DATABASE_PASSWORD_' + SITE_SHORT_NAME) | default(query('kubernetes.core.k8s', kind='Secret', resource_name=DATABASE_SECRET, namespace=SITE_NAMESPACE)[0].data[DATABASE_SECRET_KEY] | b64decode, true) }}"
+DATABASE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(DATABASE_SECRET), namespace=SITE_NAMESPACE) | first | default({})).data[DATABASE_SECRET_KEY] | default('') | b64decode }}"
 # The PostgreSQL database name of the site. 
 DATABASE_DATABASE: "{{ lookup('env', 'DATABASE_DATABASE_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME + 'local', true) }}"
 # The PostgreSQL database max pool size. 
@@ -717,6 +717,35 @@ IMPORT_DATA_PERIOD_BareMetalNode: 30 seconds
 # Ensure BareMetalResourceClass is updated frequently
 IMPORT_DATA_START_TIME_BareMetalResourceClass: 12:00 America/New_York
 IMPORT_DATA_PERIOD_BareMetalResourceClass: 1 minute
+
+#############
+# Coldfront #
+#############
+
+# Whether to use SSL when connecting to Coldfront Keycloak. 
+COLDFRONT_AUTH_SSL: "{{ (lookup('env', 'COLDFRONT_AUTH_SSL') | lower) != 'false' }}"
+# The host name to connect to Coldfront Keycloak. 
+COLDFRONT_AUTH_HOST_NAME: "{{ lookup('env', 'COLDFRONT_AUTH_HOST_NAME') | default('', true) }}"
+# The default port of Coldfront Keycloak. 
+COLDFRONT_AUTH_PORT: "{{ lookup('env', 'COLDFRONT_AUTH_PORT') | default('443', true) }}"
+# Whether to use SSL when connecting to Coldfront. 
+COLDFRONT_API_SSL: "{{ (lookup('env', 'COLDFRONT_API_SSL') | lower) != 'false' }}"
+# The host name to connect to Coldfront. 
+COLDFRONT_API_HOST_NAME: "{{ lookup('env', 'COLDFRONT_API_HOST_NAME') | default('', true) }}"
+# The default port of Coldfront. 
+COLDFRONT_API_PORT: "{{ lookup('env', 'COLDFRONT_API_PORT') | default('443', true) }}"
+# The Coldfront realm. 
+COLDFRONT_API_REALM: "{{ lookup('env', 'COLDFRONT_API_REALM') | default('', true) }}"
+# The Coldfront secret containing the client credentials to connect to Coldfront. 
+COLDFRONT_API_SECRET: "{{ lookup('env', 'COLDFRONT_API_SECRET_' + SITE_SHORT_NAME) | default('nerc-keycloak-service-account', true) }}"
+# The Coldfront secret key containing the client ID to connect to Coldfront. 
+COLDFRONT_API_CLIENT_ID_KEY: "{{ lookup('env', 'COLDFRONT_API_CLIENT_ID_KEY_' + SITE_SHORT_NAME) | default('client_id', true) }}"
+# The Coldfront secret key containing the client credentials to connect to Coldfront. 
+COLDFRONT_API_CLIENT_SECRET_KEY: "{{ lookup('env', 'COLDFRONT_API_CLIENT_SECRET_KEY_' + SITE_SHORT_NAME) | default('client_secret', true) }}"
+# The Coldfront client ID. 
+COLDFRONT_API_CLIENT_ID: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({})).data[COLDFRONT_API_CLIENT_ID_KEY] | default('') | b64decode }}"
+# The Coldfront client secret. 
+COLDFRONT_API_CLIENT_SECRET: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({})).data[COLDFRONT_API_CLIENT_SECRET_KEY] | default('') | b64decode }}"
 
 ENABLE_IMPORT_DATA_Tenant: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Tenant') | default('true', true) | bool }}"
 ENABLE_IMPORT_DATA_Cluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Cluster') | default('true', true) | bool }}"
