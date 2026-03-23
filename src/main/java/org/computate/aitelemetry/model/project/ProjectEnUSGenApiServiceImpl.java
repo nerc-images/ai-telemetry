@@ -1485,6 +1485,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlUserKey());
             break;
+          case "setProjectTitle":
+              o2.setProjectTitle(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_projectTitle + "=$" + num);
+              num++;
+              bParams.add(o2.sqlProjectTitle());
+            break;
           case "setDescription":
               o2.setDescription(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1493,21 +1501,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlDescription());
             break;
-          case "setGpuEnabled":
-              o2.setGpuEnabled(jsonObject.getString(entityVar));
+          case "setProjectFieldOfScience":
+              o2.setProjectFieldOfScience(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_gpuEnabled + "=$" + num);
+              bSql.append(Project.VAR_projectFieldOfScience + "=$" + num);
               num++;
-              bParams.add(o2.sqlGpuEnabled());
-            break;
-          case "setPodRestartCount":
-              o2.setPodRestartCount(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_podRestartCount + "=$" + num);
-              num++;
-              bParams.add(o2.sqlPodRestartCount());
+              bParams.add(o2.sqlProjectFieldOfScience());
             break;
           case "setObjectTitle":
               o2.setObjectTitle(jsonObject.getString(entityVar));
@@ -1517,13 +1517,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlObjectTitle());
             break;
-          case "setPodsRestarting":
-              o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+          case "setProjectActive":
+              o2.setProjectActive(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_podsRestarting + "=$" + num);
+              bSql.append(Project.VAR_projectActive + "=$" + num);
               num++;
-              bParams.add(o2.sqlPodsRestarting());
+              bParams.add(o2.sqlProjectActive());
             break;
           case "setDisplayPage":
               o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -1533,13 +1533,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlDisplayPage());
             break;
-          case "setPodTerminatingCount":
-              o2.setPodTerminatingCount(jsonObject.getString(entityVar));
+          case "setGpuEnabled":
+              o2.setGpuEnabled(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
+              bSql.append(Project.VAR_gpuEnabled + "=$" + num);
               num++;
-              bParams.add(o2.sqlPodTerminatingCount());
+              bParams.add(o2.sqlGpuEnabled());
             break;
           case "setEditPage":
               o2.setEditPage(jsonObject.getString(entityVar));
@@ -1549,13 +1549,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlEditPage());
             break;
-          case "setPodsTerminating":
-              o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
+          case "setPodRestartCount":
+              o2.setPodRestartCount(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_podsTerminating + "=$" + num);
+              bSql.append(Project.VAR_podRestartCount + "=$" + num);
               num++;
-              bParams.add(o2.sqlPodsTerminating());
+              bParams.add(o2.sqlPodRestartCount());
             break;
           case "setUserPage":
               o2.setUserPage(jsonObject.getString(entityVar));
@@ -1565,13 +1565,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlUserPage());
             break;
-          case "setFullPvcsCount":
-              o2.setFullPvcsCount(jsonObject.getString(entityVar));
+          case "setPodsRestarting":
+              o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+              bSql.append(Project.VAR_podsRestarting + "=$" + num);
               num++;
-              bParams.add(o2.sqlFullPvcsCount());
+              bParams.add(o2.sqlPodsRestarting());
             break;
           case "setDownload":
               o2.setDownload(jsonObject.getString(entityVar));
@@ -1580,6 +1580,30 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_download + "=$" + num);
               num++;
               bParams.add(o2.sqlDownload());
+            break;
+          case "setPodTerminatingCount":
+              o2.setPodTerminatingCount(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
+              num++;
+              bParams.add(o2.sqlPodTerminatingCount());
+            break;
+          case "setPodsTerminating":
+              o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_podsTerminating + "=$" + num);
+              num++;
+              bParams.add(o2.sqlPodsTerminating());
+            break;
+          case "setFullPvcsCount":
+              o2.setFullPvcsCount(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+              num++;
+              bParams.add(o2.sqlFullPvcsCount());
             break;
           case "setFullPvcs":
               o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
@@ -2185,6 +2209,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlUserKey());
             break;
+          case Project.VAR_projectTitle:
+            o2.setProjectTitle(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_projectTitle + "=$" + num);
+            num++;
+            bParams.add(o2.sqlProjectTitle());
+            break;
           case Project.VAR_description:
             o2.setDescription(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -2194,23 +2227,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlDescription());
             break;
-          case Project.VAR_gpuEnabled:
-            o2.setGpuEnabled(jsonObject.getString(entityVar));
+          case Project.VAR_projectFieldOfScience:
+            o2.setProjectFieldOfScience(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_gpuEnabled + "=$" + num);
+            bSql.append(Project.VAR_projectFieldOfScience + "=$" + num);
             num++;
-            bParams.add(o2.sqlGpuEnabled());
-            break;
-          case Project.VAR_podRestartCount:
-            o2.setPodRestartCount(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_podRestartCount + "=$" + num);
-            num++;
-            bParams.add(o2.sqlPodRestartCount());
+            bParams.add(o2.sqlProjectFieldOfScience());
             break;
           case Project.VAR_objectTitle:
             o2.setObjectTitle(jsonObject.getString(entityVar));
@@ -2221,14 +2245,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlObjectTitle());
             break;
-          case Project.VAR_podsRestarting:
-            o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+          case Project.VAR_projectActive:
+            o2.setProjectActive(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_podsRestarting + "=$" + num);
+            bSql.append(Project.VAR_projectActive + "=$" + num);
             num++;
-            bParams.add(o2.sqlPodsRestarting());
+            bParams.add(o2.sqlProjectActive());
             break;
           case Project.VAR_displayPage:
             o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -2239,14 +2263,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlDisplayPage());
             break;
-          case Project.VAR_podTerminatingCount:
-            o2.setPodTerminatingCount(jsonObject.getString(entityVar));
+          case Project.VAR_gpuEnabled:
+            o2.setGpuEnabled(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
+            bSql.append(Project.VAR_gpuEnabled + "=$" + num);
             num++;
-            bParams.add(o2.sqlPodTerminatingCount());
+            bParams.add(o2.sqlGpuEnabled());
             break;
           case Project.VAR_editPage:
             o2.setEditPage(jsonObject.getString(entityVar));
@@ -2257,14 +2281,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlEditPage());
             break;
-          case Project.VAR_podsTerminating:
-            o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
+          case Project.VAR_podRestartCount:
+            o2.setPodRestartCount(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_podsTerminating + "=$" + num);
+            bSql.append(Project.VAR_podRestartCount + "=$" + num);
             num++;
-            bParams.add(o2.sqlPodsTerminating());
+            bParams.add(o2.sqlPodRestartCount());
             break;
           case Project.VAR_userPage:
             o2.setUserPage(jsonObject.getString(entityVar));
@@ -2275,14 +2299,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlUserPage());
             break;
-          case Project.VAR_fullPvcsCount:
-            o2.setFullPvcsCount(jsonObject.getString(entityVar));
+          case Project.VAR_podsRestarting:
+            o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+            bSql.append(Project.VAR_podsRestarting + "=$" + num);
             num++;
-            bParams.add(o2.sqlFullPvcsCount());
+            bParams.add(o2.sqlPodsRestarting());
             break;
           case Project.VAR_download:
             o2.setDownload(jsonObject.getString(entityVar));
@@ -2292,6 +2316,33 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_download + "=$" + num);
             num++;
             bParams.add(o2.sqlDownload());
+            break;
+          case Project.VAR_podTerminatingCount:
+            o2.setPodTerminatingCount(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_podTerminatingCount + "=$" + num);
+            num++;
+            bParams.add(o2.sqlPodTerminatingCount());
+            break;
+          case Project.VAR_podsTerminating:
+            o2.setPodsTerminating(jsonObject.getJsonArray(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_podsTerminating + "=$" + num);
+            num++;
+            bParams.add(o2.sqlPodsTerminating());
+            break;
+          case Project.VAR_fullPvcsCount:
+            o2.setFullPvcsCount(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_fullPvcsCount + "=$" + num);
+            num++;
+            bParams.add(o2.sqlFullPvcsCount());
             break;
           case Project.VAR_fullPvcs:
             o2.setFullPvcs(jsonObject.getJsonArray(entityVar));
@@ -4835,7 +4886,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, description, gpuEnabled, podRestartCount, objectTitle, podsRestarting, displayPage, podTerminatingCount, editPage, podsTerminating, userPage, fullPvcsCount, download, fullPvcs, namespaceTerminating, statusPageTemplateUri FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, projectTitle, description, projectFieldOfScience, objectTitle, projectActive, displayPage, gpuEnabled, editPage, podRestartCount, userPage, podsRestarting, download, podTerminatingCount, podsTerminating, fullPvcsCount, fullPvcs, namespaceTerminating, statusPageTemplateUri FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -5186,18 +5237,21 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       o.persistForClass(Project.VAR_projectResource, Project.staticSetProjectResource(siteRequest2, (String)result.get(Project.VAR_projectResource)));
       o.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
       o.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
+      o.persistForClass(Project.VAR_projectTitle, Project.staticSetProjectTitle(siteRequest2, (String)result.get(Project.VAR_projectTitle)));
       o.persistForClass(Project.VAR_description, Project.staticSetDescription(siteRequest2, (String)result.get(Project.VAR_description)));
-      o.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
-      o.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
+      o.persistForClass(Project.VAR_projectFieldOfScience, Project.staticSetProjectFieldOfScience(siteRequest2, (String)result.get(Project.VAR_projectFieldOfScience)));
       o.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
-      o.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
+      o.persistForClass(Project.VAR_projectActive, Project.staticSetProjectActive(siteRequest2, (String)result.get(Project.VAR_projectActive)));
       o.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
-      o.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
+      o.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
       o.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
-      o.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
+      o.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
       o.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
-      o.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
+      o.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
       o.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
+      o.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
+      o.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
+      o.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
       o.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
       o.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
       o.persistForClass(Project.VAR_statusPageTemplateUri, Project.staticSetStatusPageTemplateUri(siteRequest2, (String)result.get(Project.VAR_statusPageTemplateUri)));

@@ -767,6 +767,68 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return Project.staticSearchProjectDisplayName(siteRequest_, Project.staticSetProjectDisplayName(siteRequest_, o)).toString();
   }
 
+	//////////////////
+  // projectTitle //
+	//////////////////
+
+
+  /**
+   *  The entity projectTitle
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String projectTitle;
+
+  /**
+   * <br> The entity projectTitle
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectTitle">Find the entity projectTitle in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _projectTitle(Wrap<String> w);
+
+  public String getProjectTitle() {
+    return projectTitle;
+  }
+  public void setProjectTitle(String o) {
+    this.projectTitle = Project.staticSetProjectTitle(siteRequest_, o);
+  }
+  public static String staticSetProjectTitle(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project projectTitleInit() {
+    Wrap<String> projectTitleWrap = new Wrap<String>().var("projectTitle");
+    if(projectTitle == null) {
+      _projectTitle(projectTitleWrap);
+      Optional.ofNullable(projectTitleWrap.getO()).ifPresent(o -> {
+        setProjectTitle(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchProjectTitle(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrProjectTitle(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqProjectTitle(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchProjectTitle(siteRequest_, Project.staticSetProjectTitle(siteRequest_, o)).toString();
+  }
+
+  public String sqlProjectTitle() {
+    return projectTitle;
+  }
+
+  public static String staticJsonProjectTitle(String projectTitle) {
+    return projectTitle;
+  }
+
 	/////////////////
   // description //
 	/////////////////
@@ -827,6 +889,135 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static String staticJsonDescription(String description) {
     return description;
+  }
+
+	///////////////////////////
+  // projectFieldOfScience //
+	///////////////////////////
+
+
+  /**
+   *  The entity projectFieldOfScience
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String projectFieldOfScience;
+
+  /**
+   * <br> The entity projectFieldOfScience
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectFieldOfScience">Find the entity projectFieldOfScience in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _projectFieldOfScience(Wrap<String> w);
+
+  public String getProjectFieldOfScience() {
+    return projectFieldOfScience;
+  }
+  public void setProjectFieldOfScience(String o) {
+    this.projectFieldOfScience = Project.staticSetProjectFieldOfScience(siteRequest_, o);
+  }
+  public static String staticSetProjectFieldOfScience(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Project projectFieldOfScienceInit() {
+    Wrap<String> projectFieldOfScienceWrap = new Wrap<String>().var("projectFieldOfScience");
+    if(projectFieldOfScience == null) {
+      _projectFieldOfScience(projectFieldOfScienceWrap);
+      Optional.ofNullable(projectFieldOfScienceWrap.getO()).ifPresent(o -> {
+        setProjectFieldOfScience(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static String staticSearchProjectFieldOfScience(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrProjectFieldOfScience(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqProjectFieldOfScience(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchProjectFieldOfScience(siteRequest_, Project.staticSetProjectFieldOfScience(siteRequest_, o)).toString();
+  }
+
+  public String sqlProjectFieldOfScience() {
+    return projectFieldOfScience;
+  }
+
+  public static String staticJsonProjectFieldOfScience(String projectFieldOfScience) {
+    return projectFieldOfScience;
+  }
+
+	///////////////////
+  // projectActive //
+	///////////////////
+
+
+  /**
+   *  The entity projectActive
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Boolean projectActive;
+
+  /**
+   * <br> The entity projectActive
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:projectActive">Find the entity projectActive in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _projectActive(Wrap<Boolean> w);
+
+  public Boolean getProjectActive() {
+    return projectActive;
+  }
+
+  public void setProjectActive(Boolean projectActive) {
+    this.projectActive = projectActive;
+  }
+  @JsonIgnore
+  public void setProjectActive(String o) {
+    this.projectActive = Project.staticSetProjectActive(siteRequest_, o);
+  }
+  public static Boolean staticSetProjectActive(SiteRequest siteRequest_, String o) {
+    return Boolean.parseBoolean(o);
+  }
+  protected Project projectActiveInit() {
+    Wrap<Boolean> projectActiveWrap = new Wrap<Boolean>().var("projectActive");
+    if(projectActive == null) {
+      _projectActive(projectActiveWrap);
+      Optional.ofNullable(projectActiveWrap.getO()).ifPresent(o -> {
+        setProjectActive(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static Boolean staticSearchProjectActive(SiteRequest siteRequest_, Boolean o) {
+    return o;
+  }
+
+  public static String staticSearchStrProjectActive(SiteRequest siteRequest_, Boolean o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqProjectActive(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchProjectActive(siteRequest_, Project.staticSetProjectActive(siteRequest_, o)).toString();
+  }
+
+  public Boolean sqlProjectActive() {
+    return projectActive;
+  }
+
+  public static Boolean staticJsonProjectActive(Boolean projectActive) {
+    return projectActive;
   }
 
 	////////////////
@@ -1534,7 +1725,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         projectNameInit();
         projectResourceInit();
         projectDisplayNameInit();
+        projectTitleInit();
         descriptionInit();
+        projectFieldOfScienceInit();
+        projectActiveInit();
         gpuEnabledInit();
         podRestartCountInit();
         podsRestartingInit();
@@ -1615,8 +1809,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return oProject.projectResource;
       case "projectDisplayName":
         return oProject.projectDisplayName;
+      case "projectTitle":
+        return oProject.projectTitle;
       case "description":
         return oProject.description;
+      case "projectFieldOfScience":
+        return oProject.projectFieldOfScience;
+      case "projectActive":
+        return oProject.projectActive;
       case "gpuEnabled":
         return oProject.gpuEnabled;
       case "podRestartCount":
@@ -1710,8 +1910,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSetProjectResource(siteRequest_, v);
     case "projectDisplayName":
       return Project.staticSetProjectDisplayName(siteRequest_, v);
+    case "projectTitle":
+      return Project.staticSetProjectTitle(siteRequest_, v);
     case "description":
       return Project.staticSetDescription(siteRequest_, v);
+    case "projectFieldOfScience":
+      return Project.staticSetProjectFieldOfScience(siteRequest_, v);
+    case "projectActive":
+      return Project.staticSetProjectActive(siteRequest_, v);
     case "gpuEnabled":
       return Project.staticSetGpuEnabled(siteRequest_, v);
     case "podRestartCount":
@@ -1792,8 +1998,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchProjectResource(siteRequest_, (String)o);
     case "projectDisplayName":
       return Project.staticSearchProjectDisplayName(siteRequest_, (String)o);
+    case "projectTitle":
+      return Project.staticSearchProjectTitle(siteRequest_, (String)o);
     case "description":
       return Project.staticSearchDescription(siteRequest_, (String)o);
+    case "projectFieldOfScience":
+      return Project.staticSearchProjectFieldOfScience(siteRequest_, (String)o);
+    case "projectActive":
+      return Project.staticSearchProjectActive(siteRequest_, (Boolean)o);
     case "gpuEnabled":
       return Project.staticSearchGpuEnabled(siteRequest_, (Boolean)o);
     case "podRestartCount":
@@ -1844,8 +2056,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchStrProjectResource(siteRequest_, (String)o);
     case "projectDisplayName":
       return Project.staticSearchStrProjectDisplayName(siteRequest_, (String)o);
+    case "projectTitle":
+      return Project.staticSearchStrProjectTitle(siteRequest_, (String)o);
     case "description":
       return Project.staticSearchStrDescription(siteRequest_, (String)o);
+    case "projectFieldOfScience":
+      return Project.staticSearchStrProjectFieldOfScience(siteRequest_, (String)o);
+    case "projectActive":
+      return Project.staticSearchStrProjectActive(siteRequest_, (Boolean)o);
     case "gpuEnabled":
       return Project.staticSearchStrGpuEnabled(siteRequest_, (Boolean)o);
     case "podRestartCount":
@@ -1896,8 +2114,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFqProjectResource(siteRequest_, o);
     case "projectDisplayName":
       return Project.staticSearchFqProjectDisplayName(siteRequest_, o);
+    case "projectTitle":
+      return Project.staticSearchFqProjectTitle(siteRequest_, o);
     case "description":
       return Project.staticSearchFqDescription(siteRequest_, o);
+    case "projectFieldOfScience":
+      return Project.staticSearchFqProjectFieldOfScience(siteRequest_, o);
+    case "projectActive":
+      return Project.staticSearchFqProjectActive(siteRequest_, o);
     case "gpuEnabled":
       return Project.staticSearchFqGpuEnabled(siteRequest_, o);
     case "podRestartCount":
@@ -1990,11 +2214,31 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         }
         saves.add("projectResource");
         return val;
+      } else if("projecttitle".equals(varLower)) {
+        if(val instanceof String) {
+          setProjectTitle((String)val);
+        }
+        saves.add("projectTitle");
+        return val;
       } else if("description".equals(varLower)) {
         if(val instanceof String) {
           setDescription((String)val);
         }
         saves.add("description");
+        return val;
+      } else if("projectfieldofscience".equals(varLower)) {
+        if(val instanceof String) {
+          setProjectFieldOfScience((String)val);
+        }
+        saves.add("projectFieldOfScience");
+        return val;
+      } else if("projectactive".equals(varLower)) {
+        if(val instanceof Boolean) {
+          setProjectActive((Boolean)val);
+        } else {
+          setProjectActive(val == null ? null : val.toString());
+        }
+        saves.add("projectActive");
         return val;
       } else if("gpuenabled".equals(varLower)) {
         if(val instanceof Boolean) {
@@ -2143,10 +2387,28 @@ public abstract class ProjectGen<DEV> extends BaseModel {
           oProject.setProjectDisplayName(projectDisplayName);
       }
 
+      if(saves.contains("projectTitle")) {
+        String projectTitle = (String)doc.get("projectTitle_docvalues_string");
+        if(projectTitle != null)
+          oProject.setProjectTitle(projectTitle);
+      }
+
       if(saves.contains("description")) {
         String description = (String)doc.get("description_docvalues_string");
         if(description != null)
           oProject.setDescription(description);
+      }
+
+      if(saves.contains("projectFieldOfScience")) {
+        String projectFieldOfScience = (String)doc.get("projectFieldOfScience_docvalues_string");
+        if(projectFieldOfScience != null)
+          oProject.setProjectFieldOfScience(projectFieldOfScience);
+      }
+
+      if(saves.contains("projectActive")) {
+        Boolean projectActive = (Boolean)doc.get("projectActive_docvalues_boolean");
+        if(projectActive != null)
+          oProject.setProjectActive(projectActive);
       }
 
       if(saves.contains("gpuEnabled")) {
@@ -2244,8 +2506,17 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     if(projectDisplayName != null) {
       doc.put("projectDisplayName_docvalues_string", projectDisplayName);
     }
+    if(projectTitle != null) {
+      doc.put("projectTitle_docvalues_string", projectTitle);
+    }
     if(description != null) {
       doc.put("description_docvalues_string", description);
+    }
+    if(projectFieldOfScience != null) {
+      doc.put("projectFieldOfScience_docvalues_string", projectFieldOfScience);
+    }
+    if(projectActive != null) {
+      doc.put("projectActive_docvalues_boolean", projectActive);
     }
     if(gpuEnabled != null) {
       doc.put("gpuEnabled_docvalues_boolean", gpuEnabled);
@@ -2310,8 +2581,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "projectResource_docvalues_string";
       case "projectDisplayName":
         return "projectDisplayName_docvalues_string";
+      case "projectTitle":
+        return "projectTitle_docvalues_string";
       case "description":
         return "description_docvalues_string";
+      case "projectFieldOfScience":
+        return "projectFieldOfScience_docvalues_string";
+      case "projectActive":
+        return "projectActive_docvalues_boolean";
       case "gpuEnabled":
         return "gpuEnabled_docvalues_boolean";
       case "podRestartCount":
@@ -2355,8 +2632,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "projectResource_docvalues_string";
       case "projectDisplayName":
         return "projectDisplayName_docvalues_string";
+      case "projectTitle":
+        return "projectTitle_docvalues_string";
       case "description":
         return "description_docvalues_string";
+      case "projectFieldOfScience":
+        return "projectFieldOfScience_docvalues_string";
+      case "projectActive":
+        return "projectActive_docvalues_boolean";
       case "gpuEnabled":
         return "gpuEnabled_docvalues_boolean";
       case "podRestartCount":
@@ -2400,8 +2683,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "projectResource";
       case "projectDisplayName_docvalues_string":
         return "projectDisplayName";
+      case "projectTitle_docvalues_string":
+        return "projectTitle";
       case "description_docvalues_string":
         return "description";
+      case "projectFieldOfScience_docvalues_string":
+        return "projectFieldOfScience";
+      case "projectActive_docvalues_boolean":
+        return "projectActive";
       case "gpuEnabled_docvalues_boolean":
         return "gpuEnabled";
       case "podRestartCount_docvalues_int":
@@ -2459,7 +2748,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     oProject.setProjectName(Optional.ofNullable(doc.get("projectName_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setProjectResource(Optional.ofNullable(doc.get("projectResource_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setProjectDisplayName(Optional.ofNullable(doc.get("projectDisplayName_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setProjectTitle(Optional.ofNullable(doc.get("projectTitle_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setProjectFieldOfScience(Optional.ofNullable(doc.get("projectFieldOfScience_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setProjectActive(Optional.ofNullable(doc.get("projectActive_docvalues_boolean")).map(v -> v.toString()).orElse(null));
     oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
     oProject.setPodRestartCount(Optional.ofNullable(doc.get("podRestartCount_docvalues_int")).map(v -> v.toString()).orElse(null));
     Optional.ofNullable((List<?>)doc.get("podsRestarting_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
@@ -2506,8 +2798,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         apiRequest.addVars("projectResource");
       if(!Objects.equals(projectDisplayName, original.getProjectDisplayName()))
         apiRequest.addVars("projectDisplayName");
+      if(!Objects.equals(projectTitle, original.getProjectTitle()))
+        apiRequest.addVars("projectTitle");
       if(!Objects.equals(description, original.getDescription()))
         apiRequest.addVars("description");
+      if(!Objects.equals(projectFieldOfScience, original.getProjectFieldOfScience()))
+        apiRequest.addVars("projectFieldOfScience");
+      if(!Objects.equals(projectActive, original.getProjectActive()))
+        apiRequest.addVars("projectActive");
       if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
         apiRequest.addVars("gpuEnabled");
       if(!Objects.equals(podRestartCount, original.getPodRestartCount()))
@@ -2546,7 +2844,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(projectName).map(v -> "projectName: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(projectResource).map(v -> "projectResource: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(projectDisplayName).map(v -> "projectDisplayName: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(projectTitle).map(v -> "projectTitle: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(projectFieldOfScience).map(v -> "projectFieldOfScience: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(projectActive).map(v -> "projectActive: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(podRestartCount).map(v -> "podRestartCount: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
@@ -2584,8 +2885,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String SET_projectResource = "setProjectResource";
   public static final String VAR_projectDisplayName = "projectDisplayName";
   public static final String SET_projectDisplayName = "setProjectDisplayName";
+  public static final String VAR_projectTitle = "projectTitle";
+  public static final String SET_projectTitle = "setProjectTitle";
   public static final String VAR_description = "description";
   public static final String SET_description = "setDescription";
+  public static final String VAR_projectFieldOfScience = "projectFieldOfScience";
+  public static final String SET_projectFieldOfScience = "setProjectFieldOfScience";
+  public static final String VAR_projectActive = "projectActive";
+  public static final String SET_projectActive = "setProjectActive";
   public static final String VAR_gpuEnabled = "gpuEnabled";
   public static final String SET_gpuEnabled = "setGpuEnabled";
   public static final String VAR_podRestartCount = "podRestartCount";
@@ -2625,7 +2932,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     vars.add(VAR_projectName);
     vars.add(VAR_projectResource);
     vars.add(VAR_projectDisplayName);
+    vars.add(VAR_projectTitle);
     vars.add(VAR_description);
+    vars.add(VAR_projectFieldOfScience);
+    vars.add(VAR_projectActive);
     vars.add(VAR_gpuEnabled);
     vars.add(VAR_podRestartCount);
     vars.add(VAR_podsRestarting);
@@ -2658,7 +2968,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_projectName = "project name";
   public static final String DISPLAY_NAME_projectResource = "project auth resource";
   public static final String DISPLAY_NAME_projectDisplayName = "project display name";
+  public static final String DISPLAY_NAME_projectTitle = "project title";
   public static final String DISPLAY_NAME_description = "description";
+  public static final String DISPLAY_NAME_projectFieldOfScience = "field of science";
+  public static final String DISPLAY_NAME_projectActive = "project active";
   public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
   public static final String DISPLAY_NAME_podRestartCount = "pod restarts";
   public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
@@ -2727,8 +3040,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return patch ? SET_projectResource : VAR_projectResource;
     case VAR_projectDisplayName:
       return patch ? SET_projectDisplayName : VAR_projectDisplayName;
+    case VAR_projectTitle:
+      return patch ? SET_projectTitle : VAR_projectTitle;
     case VAR_description:
       return patch ? SET_description : VAR_description;
+    case VAR_projectFieldOfScience:
+      return patch ? SET_projectFieldOfScience : VAR_projectFieldOfScience;
+    case VAR_projectActive:
+      return patch ? SET_projectActive : VAR_projectActive;
     case VAR_gpuEnabled:
       return patch ? SET_gpuEnabled : VAR_gpuEnabled;
     case VAR_podRestartCount:
@@ -2775,8 +3094,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return DISPLAY_NAME_projectResource;
     case VAR_projectDisplayName:
       return DISPLAY_NAME_projectDisplayName;
+    case VAR_projectTitle:
+      return DISPLAY_NAME_projectTitle;
     case VAR_description:
       return DISPLAY_NAME_description;
+    case VAR_projectFieldOfScience:
+      return DISPLAY_NAME_projectFieldOfScience;
+    case VAR_projectActive:
+      return DISPLAY_NAME_projectActive;
     case VAR_gpuEnabled:
       return DISPLAY_NAME_gpuEnabled;
     case VAR_podRestartCount:
@@ -2822,8 +3147,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "The unique authorization resource for the project for multi-tenancy";
     case VAR_projectDisplayName:
       return "The display name of this project";
+    case VAR_projectTitle:
+      return "The title of this project";
     case VAR_description:
       return "A description of this project";
+    case VAR_projectFieldOfScience:
+      return "The field of science of this project.";
+    case VAR_projectActive:
+      return "Whether the project is active or terminated. ";
     case VAR_gpuEnabled:
       return "Whether GPUs are enabled for this project. ";
     case VAR_podRestartCount:
@@ -2867,8 +3198,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "String";
     case VAR_projectDisplayName:
       return "String";
+    case VAR_projectTitle:
+      return "String";
     case VAR_description:
       return "String";
+    case VAR_projectFieldOfScience:
+      return "String";
+    case VAR_projectActive:
+      return "Boolean";
     case VAR_gpuEnabled:
       return "Boolean";
     case VAR_podRestartCount:
@@ -2915,7 +3252,15 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 3;
     case VAR_projectName:
       return 3;
+    case VAR_projectDisplayName:
+      return 3;
+    case VAR_projectTitle:
+      return 3;
     case VAR_description:
+      return 3;
+    case VAR_projectFieldOfScience:
+      return 3;
+    case VAR_projectActive:
       return 3;
     case VAR_gpuEnabled:
       return 3;
@@ -2948,10 +3293,18 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 3;
     case VAR_projectName:
       return 5;
-    case VAR_description:
+    case VAR_projectDisplayName:
+      return 6;
+    case VAR_projectTitle:
       return 7;
-    case VAR_gpuEnabled:
+    case VAR_description:
       return 8;
+    case VAR_projectFieldOfScience:
+      return 9;
+    case VAR_projectActive:
+      return 10;
+    case VAR_gpuEnabled:
+      return 11;
     case VAR_podRestartCount:
       return 0;
     case VAR_podsRestarting:

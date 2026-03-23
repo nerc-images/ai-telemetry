@@ -178,9 +178,24 @@ public class Project extends ProjectGen<BaseModel> {
    * Description: The display name of this project
    * Facet: true
    * VarName: true
+   * HtmRow: 3
+   * HtmCell: 6
    **/
   protected void _projectDisplayName(Wrap<String> w) {
-    w.o(String.format("%s project in the %s cluster of %s hub", projectName, clusterName, hubId));
+    w.o(String.format("%s project in the %s cluster of %s hub", projectTitle == null ? projectName : projectTitle, clusterName, hubId));
+  }
+
+  /**
+   * {@inheritDoc}
+   * Persist: true
+   * DocValues: true
+   * DisplayName: project title
+   * Description: The title of this project
+   * Facet: true
+   * HtmRow: 3
+   * HtmCell: 7
+   **/
+  protected void _projectTitle(Wrap<String> w) {
   }
 
   /**
@@ -190,7 +205,7 @@ public class Project extends ProjectGen<BaseModel> {
    * DisplayName: description
    * Description: A description of this project
    * HtmRow: 3
-   * HtmCell: 7
+   * HtmCell: 8
    * Facet: true
    * VarDescription: true
    * Multiline: true
@@ -201,11 +216,37 @@ public class Project extends ProjectGen<BaseModel> {
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
+   * DisplayName: field of science
+   * Description: The field of science of this project.
+   * HtmRow: 3
+   * HtmCell: 9
+   * Facet: true
+   **/
+  protected void _projectFieldOfScience(Wrap<String> w) {}
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: project active
+   * Description: Whether the project is active or terminated. 
+   * HtmRow: 3
+   * HtmCell: 10
+   **/
+  protected void _projectActive(Wrap<Boolean> w) {
+    w.o(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
    * Facet: true
    * DisplayName: GPU enabled
    * Description: Whether GPUs are enabled for this project. 
    * HtmRow: 3
-   * HtmCell: 8
+   * HtmCell: 11
    **/
   protected void _gpuEnabled(Wrap<Boolean> w) {
     w.o(false);
@@ -331,5 +372,25 @@ public class Project extends ProjectGen<BaseModel> {
     String f = enUSStringFormatUrlUserPageForClass();
     if(f != null && statusPageTemplateUri != null)
       w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
+  }
+
+  @Override
+  protected void _objectText(List<String> l) {
+    super._objectText(l);
+    if(description != null)
+      l.add(description);
+    if(projectFieldOfScience != null)
+      l.add(projectFieldOfScience);
+  }
+
+  @Override
+  protected void _objectSuggest(Wrap<String> w) {
+    super._objectSuggest(w);
+    StringBuilder b = new StringBuilder();
+    if(description != null)
+      b.append(" ").append(description);
+    if(description != null)
+      b.append(" ").append(projectFieldOfScience);
+    w.o(w.getO() + b.toString());
   }
 }

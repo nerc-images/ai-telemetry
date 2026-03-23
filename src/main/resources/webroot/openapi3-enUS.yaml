@@ -25501,8 +25501,14 @@ components:
                     type: string
                   projectDisplayName:
                     type: string
+                  projectTitle:
+                    type: string
                   description:
                     type: string
+                  projectFieldOfScience:
+                    type: string
+                  projectActive:
+                    type: boolean
                   gpuEnabled:
                     type: boolean
                   podRestartCount:
@@ -25528,6 +25534,12 @@ components:
                   statusPageTemplateUri:
                     type: string
                   userPage:
+                    type: string
+                  objectText:
+                    type: array
+                    items:
+                      type: string
+                  objectSuggest:
                     type: string
     PATCHProjectRequest:
       allOf:
@@ -25596,6 +25608,13 @@ components:
               type: string
             removeAllProjectDisplayName:
               type: string
+            setProjectTitle:
+              type: string
+              nullable: true
+            removeProjectTitle:
+              type: string
+            removeAllProjectTitle:
+              type: string
             setDescription:
               type: string
               nullable: true
@@ -25603,6 +25622,20 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setProjectFieldOfScience:
+              type: string
+              nullable: true
+            removeProjectFieldOfScience:
+              type: string
+            removeAllProjectFieldOfScience:
+              type: string
+            setProjectActive:
+              type: boolean
+              nullable: true
+            removeProjectActive:
+              type: boolean
+            removeAllProjectActive:
+              type: boolean
             setGpuEnabled:
               type: boolean
               nullable: true
@@ -25702,6 +25735,30 @@ components:
             removeUserPage:
               type: string
             removeAllUserPage:
+              type: string
+            setObjectText:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeObjectText:
+              type: string
+            removeAllObjectText:
+              type: array
+              items:
+                type: string
+            addObjectText:
+              type: string
+            addAllObjectText:
+              type: array
+              items:
+                type: string
+            setObjectSuggest:
+              type: string
+              nullable: true
+            removeObjectSuggest:
+              type: string
+            removeAllObjectSuggest:
               type: string
     PATCHProjectResponse:
       allOf:
@@ -25770,6 +25827,13 @@ components:
               type: string
             removeAllProjectDisplayName:
               type: string
+            setProjectTitle:
+              type: string
+              nullable: true
+            removeProjectTitle:
+              type: string
+            removeAllProjectTitle:
+              type: string
             setDescription:
               type: string
               nullable: true
@@ -25777,6 +25841,20 @@ components:
               type: string
             removeAllDescription:
               type: string
+            setProjectFieldOfScience:
+              type: string
+              nullable: true
+            removeProjectFieldOfScience:
+              type: string
+            removeAllProjectFieldOfScience:
+              type: string
+            setProjectActive:
+              type: boolean
+              nullable: true
+            removeProjectActive:
+              type: boolean
+            removeAllProjectActive:
+              type: boolean
             setGpuEnabled:
               type: boolean
               nullable: true
@@ -25877,6 +25955,30 @@ components:
               type: string
             removeAllUserPage:
               type: string
+            setObjectText:
+              type: array
+              nullable: true
+              items:
+                type: string
+            removeObjectText:
+              type: string
+            removeAllObjectText:
+              type: array
+              items:
+                type: string
+            addObjectText:
+              type: string
+            addAllObjectText:
+              type: array
+              items:
+                type: string
+            setObjectSuggest:
+              type: string
+              nullable: true
+            removeObjectSuggest:
+              type: string
+            removeAllObjectSuggest:
+              type: string
     POSTProjectRequest:
       allOf:
         - type: object
@@ -25899,8 +26001,14 @@ components:
               type: string
             projectDisplayName:
               type: string
+            projectTitle:
+              type: string
             description:
               type: string
+            projectFieldOfScience:
+              type: string
+            projectActive:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -25926,6 +26034,12 @@ components:
             statusPageTemplateUri:
               type: string
             userPage:
+              type: string
+            objectText:
+              type: array
+              items:
+                type: string
+            objectSuggest:
               type: string
     POSTProjectResponse:
       allOf:
@@ -25949,8 +26063,14 @@ components:
               type: string
             projectDisplayName:
               type: string
+            projectTitle:
+              type: string
             description:
               type: string
+            projectFieldOfScience:
+              type: string
+            projectActive:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -25976,6 +26096,12 @@ components:
             statusPageTemplateUri:
               type: string
             userPage:
+              type: string
+            objectText:
+              type: array
+              items:
+                type: string
+            objectSuggest:
               type: string
     DELETEFilterProjectResponse:
       allOf:
@@ -25999,8 +26125,14 @@ components:
               type: string
             projectDisplayName:
               type: string
+            projectTitle:
+              type: string
             description:
               type: string
+            projectFieldOfScience:
+              type: string
+            projectActive:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -26026,6 +26158,12 @@ components:
             statusPageTemplateUri:
               type: string
             userPage:
+              type: string
+            objectText:
+              type: array
+              items:
+                type: string
+            objectSuggest:
               type: string
     PUTImportProjectRequest:
       allOf:
@@ -26054,8 +26192,14 @@ components:
                     type: string
                   projectDisplayName:
                     type: string
+                  projectTitle:
+                    type: string
                   description:
                     type: string
+                  projectFieldOfScience:
+                    type: string
+                  projectActive:
+                    type: boolean
                   gpuEnabled:
                     type: boolean
                   podRestartCount:
@@ -26081,6 +26225,12 @@ components:
                   statusPageTemplateUri:
                     type: string
                   userPage:
+                    type: string
+                  objectText:
+                    type: array
+                    items:
+                      type: string
+                  objectSuggest:
                     type: string
     PUTImportProjectResponse:
       allOf:
@@ -26104,8 +26254,14 @@ components:
                     type: string
                   projectDisplayName:
                     type: string
+                  projectTitle:
+                    type: string
                   description:
                     type: string
+                  projectFieldOfScience:
+                    type: string
+                  projectActive:
+                    type: boolean
                   gpuEnabled:
                     type: boolean
                   podRestartCount:
@@ -26132,6 +26288,12 @@ components:
                     type: string
                   userPage:
                     type: string
+                  objectText:
+                    type: array
+                    items:
+                      type: string
+                  objectSuggest:
+                    type: string
     GETProjectResponse:
       allOf:
         - type: object
@@ -26154,8 +26316,14 @@ components:
               type: string
             projectDisplayName:
               type: string
+            projectTitle:
+              type: string
             description:
               type: string
+            projectFieldOfScience:
+              type: string
+            projectActive:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -26181,6 +26349,12 @@ components:
             statusPageTemplateUri:
               type: string
             userPage:
+              type: string
+            objectText:
+              type: array
+              items:
+                type: string
+            objectSuggest:
               type: string
     DELETEProjectResponse:
       allOf:
@@ -26204,8 +26378,14 @@ components:
               type: string
             projectDisplayName:
               type: string
+            projectTitle:
+              type: string
             description:
               type: string
+            projectFieldOfScience:
+              type: string
+            projectActive:
+              type: boolean
             gpuEnabled:
               type: boolean
             podRestartCount:
@@ -26231,6 +26411,12 @@ components:
             statusPageTemplateUri:
               type: string
             userPage:
+              type: string
+            objectText:
+              type: array
+              items:
+                type: string
+            objectSuggest:
               type: string
     EditPageProjectResponse:
       allOf:

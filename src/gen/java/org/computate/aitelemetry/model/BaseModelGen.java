@@ -1205,7 +1205,7 @@ public abstract class BaseModelGen<DEV> extends Object {
    *  The entity objectSuggest
    *	 is defined as null before being initialized. 
    */
-  @JsonProperty
+  @JsonIgnore
   @JsonInclude(Include.NON_NULL)
   protected String objectSuggest;
 
@@ -1259,8 +1259,7 @@ public abstract class BaseModelGen<DEV> extends Object {
    *  The entity objectText
    *	 It is constructed before being initialized with the constructor by default. 
    */
-  @JsonProperty
-  @JsonFormat(shape = JsonFormat.Shape.ARRAY)
+  @JsonIgnore
   @JsonInclude(Include.NON_NULL)
   protected List<String> objectText = new ArrayList<String>();
 

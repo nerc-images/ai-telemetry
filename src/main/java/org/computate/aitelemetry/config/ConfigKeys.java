@@ -51,4 +51,15 @@ public class ConfigKeys extends ComputateConfigKeys {
     public static final String ENABLE_THIN_UI = "ENABLE_THIN_UI";
     public static final String HUBS = "HUBS";
     public static final String TENANTS = "TENANTS";
+    public static final String ENABLE_COLDFRONT = "ENABLE_COLDFRONT";
+    public static final String COLDFRONT_AUTH_HOST_NAME = "COLDFRONT_AUTH_HOST_NAME";
+    public static final String COLDFRONT_AUTH_SSL = "COLDFRONT_AUTH_SSL";
+    public static final String COLDFRONT_AUTH_PORT = "COLDFRONT_AUTH_PORT";
+    public static final String COLDFRONT_API_HOST_NAME = "COLDFRONT_API_HOST_NAME";
+    public static final String COLDFRONT_API_SSL = "COLDFRONT_API_SSL";
+    public static final String COLDFRONT_API_PORT = "COLDFRONT_API_PORT";
+    public static final String COLDFRONT_API_AUTH_URI_PREFIX = "COLDFRONT_API_AUTH_URI_PREFIX";
+    public static final String COLDFRONT_API_REALM = "COLDFRONT_API_REALM";
+    public static final String COLDFRONT_API_CLIENT_ID = "COLDFRONT_API_CLIENT_ID";
+    public static final String COLDFRONT_API_CLIENT_SECRET = "COLDFRONT_API_CLIENT_SECRET";
 }
