@@ -241,26 +241,6 @@ public class SitePage extends SitePageGen<BaseResult> {
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
-   * DisplayName: header 1
-   * Description: The 1st header of this page. 
-   */
-  protected void _h1(Wrap<String> w) {
-  }
-
-  /**
-   * {@inheritDoc}
-   * DocValues: true
-   * Persist: true
-   * DisplayName: header 2
-   * Description: The 2nd header of this page. 
-   */
-  protected void _h2(Wrap<String> w) {
-  }
-
-  /**
-   * {@inheritDoc}
-   * DocValues: true
-   * Persist: true
    * HtmRow: 4
    * HtmCell: 1
    * Facet: true

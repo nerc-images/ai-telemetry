@@ -63,7 +63,7 @@ SITE_HOST_NAME: "{{ lookup('env', 'SITE_HOST_NAME_' + SITE_SHORT_NAME) | default
 # The base URL of the site. 
 SITE_BASE_URL: "{{ lookup('env', 'SITE_BASE_URL') | default('http://' + SITE_HOST_NAME + ':' + (SITE_PORT | string), true) }}"
 # The public facing URL for the site. 
-SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.{{ DOMAIN_NAME }}"
+SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.mghpcc.org"
 # The port of the Zookeeper cluster manager. 
 CLUSTER_PORT: "{{ lookup('env', 'CLUSTER_PORT') | default(((SITE_PORT | int) + 1), true) }}"
 # The public port of the Zookeeper cluster manager. 
@@ -636,9 +636,11 @@ IMPORT_DATA_PERIOD_TimeZone: ""
 # extra vars #
 ##############
 
-STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
-HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
-TENANTS: "{{ lookup('env', 'TENANTS') | default('{}', true) }}"
+STATIC_REPOS: "{{ lookup('env', 'STATIC_REPOS') | default('[ { \"name\": \"ai-telemetry-developer\", \"src\": \"https://github.com/computate-org/ai-telemetry-developer.git\", \"dest\": \"/home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer\" } ]', true) | string }}"
+HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) | string }}"
+TENANTS: "{{ lookup('env', 'TENANTS') | default('{}', true) | string }}"
+# In Developer Settings in your user, Create a personal access token, with the GitHub org as the resource owner and Read-only access to the Contents and Metadata. 
+GITHUB_DEVELOPERS_TOKEN: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name='local-extra', namespace=SITE_NAMESPACE) | first | default({\"data\": {\"GITHUB_DEVELOPERS_TOKEN\": \"\" } } )).data.GITHUB_DEVELOPERS_TOKEN | default('') | b64decode | default('', true) }}"
 
 # Social media
 YOUTUBE_URL: https://www.youtube.com/watch?v=5_y5PFtsTYk&list=PLcVjtgfCeLvQu8KDUjmwHzbFqbg5K70zN
@@ -660,7 +662,7 @@ AUTH_OPENSHIFT_SECRET_KEY_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_KEY_SA') 
 # The Auth openshift secret with the client secret credentials. 
 AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-auth', true) }}"
 # The Auth secret. 
-AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data[AUTH_OPENSHIFT_SECRET_KEY_SA] | b64decode }}"
+AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({\"data\": {AUTH_OPENSHIFT_SECRET_KEY_SA: \"\" } } )).data[AUTH_OPENSHIFT_SECRET_KEY_SA] | b64decode | default(AUTH_SECRET, true) }}"
 
 ###########
 # grafana #
@@ -743,9 +745,9 @@ COLDFRONT_API_CLIENT_ID_KEY: "{{ lookup('env', 'COLDFRONT_API_CLIENT_ID_KEY_' + 
 # The Coldfront secret key containing the client credentials to connect to Coldfront. 
 COLDFRONT_API_CLIENT_SECRET_KEY: "{{ lookup('env', 'COLDFRONT_API_CLIENT_SECRET_KEY_' + SITE_SHORT_NAME) | default('client_secret', true) }}"
 # The Coldfront client ID. 
-COLDFRONT_API_CLIENT_ID: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({})).data[COLDFRONT_API_CLIENT_ID_KEY] | default('') | b64decode }}"
+COLDFRONT_API_CLIENT_ID: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({\"data\": {\"COLDFRONT_API_CLIENT_ID_KEY\": \"\" } })).data[COLDFRONT_API_CLIENT_ID_KEY] | default('') | b64decode }}"
 # The Coldfront client secret. 
-COLDFRONT_API_CLIENT_SECRET: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({})).data[COLDFRONT_API_CLIENT_SECRET_KEY] | default('') | b64decode }}"
+COLDFRONT_API_CLIENT_SECRET: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({\"data\": {\"COLDFRONT_API_CLIENT_SECRET_KEY\": \"\" } })).data[COLDFRONT_API_CLIENT_SECRET_KEY] | default('') | b64decode }}"
 
 ENABLE_IMPORT_DATA_Tenant: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Tenant') | default('true', true) | bool }}"
 ENABLE_IMPORT_DATA_Cluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Cluster') | default('true', true) | bool }}"

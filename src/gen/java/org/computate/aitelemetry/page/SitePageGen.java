@@ -1263,130 +1263,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     return pageId;
   }
 
-	////////
-  // h1 //
-	////////
-
-
-  /**
-   *  The entity h1
-   *	 is defined as null before being initialized. 
-   */
-  @JsonProperty
-  @JsonInclude(Include.NON_NULL)
-  protected String h1;
-
-  /**
-   * <br> The entity h1
-   *  is defined as null before being initialized. 
-   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.SitePage&fq=entiteVar_enUS_indexed_string:h1">Find the entity h1 in Solr</a>
-   * <br>
-   * @param w is for wrapping a value to assign to this entity during initialization. 
-   **/
-  protected abstract void _h1(Wrap<String> w);
-
-  public String getH1() {
-    return h1;
-  }
-  public void setH1(String o) {
-    this.h1 = SitePage.staticSetH1(siteRequest_, o);
-  }
-  public static String staticSetH1(SiteRequest siteRequest_, String o) {
-    return o;
-  }
-  protected SitePage h1Init() {
-    Wrap<String> h1Wrap = new Wrap<String>().var("h1");
-    if(h1 == null) {
-      _h1(h1Wrap);
-      Optional.ofNullable(h1Wrap.getO()).ifPresent(o -> {
-        setH1(o);
-      });
-    }
-    return (SitePage)this;
-  }
-
-  public static String staticSearchH1(SiteRequest siteRequest_, String o) {
-    return o;
-  }
-
-  public static String staticSearchStrH1(SiteRequest siteRequest_, String o) {
-    return o == null ? null : o.toString();
-  }
-
-  public static String staticSearchFqH1(SiteRequest siteRequest_, String o) {
-    return SitePage.staticSearchH1(siteRequest_, SitePage.staticSetH1(siteRequest_, o)).toString();
-  }
-
-  public String sqlH1() {
-    return h1;
-  }
-
-  public static String staticJsonH1(String h1) {
-    return h1;
-  }
-
-	////////
-  // h2 //
-	////////
-
-
-  /**
-   *  The entity h2
-   *	 is defined as null before being initialized. 
-   */
-  @JsonProperty
-  @JsonInclude(Include.NON_NULL)
-  protected String h2;
-
-  /**
-   * <br> The entity h2
-   *  is defined as null before being initialized. 
-   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.SitePage&fq=entiteVar_enUS_indexed_string:h2">Find the entity h2 in Solr</a>
-   * <br>
-   * @param w is for wrapping a value to assign to this entity during initialization. 
-   **/
-  protected abstract void _h2(Wrap<String> w);
-
-  public String getH2() {
-    return h2;
-  }
-  public void setH2(String o) {
-    this.h2 = SitePage.staticSetH2(siteRequest_, o);
-  }
-  public static String staticSetH2(SiteRequest siteRequest_, String o) {
-    return o;
-  }
-  protected SitePage h2Init() {
-    Wrap<String> h2Wrap = new Wrap<String>().var("h2");
-    if(h2 == null) {
-      _h2(h2Wrap);
-      Optional.ofNullable(h2Wrap.getO()).ifPresent(o -> {
-        setH2(o);
-      });
-    }
-    return (SitePage)this;
-  }
-
-  public static String staticSearchH2(SiteRequest siteRequest_, String o) {
-    return o;
-  }
-
-  public static String staticSearchStrH2(SiteRequest siteRequest_, String o) {
-    return o == null ? null : o.toString();
-  }
-
-  public static String staticSearchFqH2(SiteRequest siteRequest_, String o) {
-    return SitePage.staticSearchH2(siteRequest_, SitePage.staticSetH2(siteRequest_, o)).toString();
-  }
-
-  public String sqlH2() {
-    return h2;
-  }
-
-  public static String staticJsonH2(String h2) {
-    return h2;
-  }
-
 	//////////////////
   // pageImageUri //
 	//////////////////
@@ -2481,8 +2357,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         authorNameInit();
         authorUrlInit();
         pageIdInit();
-        h1Init();
-        h2Init();
         pageImageUriInit();
         pageImageWidthInit();
         pageImageHeightInit();
@@ -2640,10 +2514,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         return oSitePage.authorUrl;
       case "pageId":
         return oSitePage.pageId;
-      case "h1":
-        return oSitePage.h1;
-      case "h2":
-        return oSitePage.h2;
       case "pageImageUri":
         return oSitePage.pageImageUri;
       case "pageImageWidth":
@@ -2753,10 +2623,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSetAuthorUrl(siteRequest_, v);
     case "pageId":
       return SitePage.staticSetPageId(siteRequest_, v);
-    case "h1":
-      return SitePage.staticSetH1(siteRequest_, v);
-    case "h2":
-      return SitePage.staticSetH2(siteRequest_, v);
     case "pageImageUri":
       return SitePage.staticSetPageImageUri(siteRequest_, v);
     case "pageImageWidth":
@@ -2865,10 +2731,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSearchAuthorUrl(siteRequest_, (String)o);
     case "pageId":
       return SitePage.staticSearchPageId(siteRequest_, (String)o);
-    case "h1":
-      return SitePage.staticSearchH1(siteRequest_, (String)o);
-    case "h2":
-      return SitePage.staticSearchH2(siteRequest_, (String)o);
     case "pageImageUri":
       return SitePage.staticSearchPageImageUri(siteRequest_, (String)o);
     case "pageImageWidth":
@@ -2947,10 +2809,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSearchStrAuthorUrl(siteRequest_, (String)o);
     case "pageId":
       return SitePage.staticSearchStrPageId(siteRequest_, (String)o);
-    case "h1":
-      return SitePage.staticSearchStrH1(siteRequest_, (String)o);
-    case "h2":
-      return SitePage.staticSearchStrH2(siteRequest_, (String)o);
     case "pageImageUri":
       return SitePage.staticSearchStrPageImageUri(siteRequest_, (String)o);
     case "pageImageWidth":
@@ -3029,10 +2887,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return SitePage.staticSearchFqAuthorUrl(siteRequest_, o);
     case "pageId":
       return SitePage.staticSearchFqPageId(siteRequest_, o);
-    case "h1":
-      return SitePage.staticSearchFqH1(siteRequest_, o);
-    case "h2":
-      return SitePage.staticSearchFqH2(siteRequest_, o);
     case "pageImageUri":
       return SitePage.staticSearchFqPageImageUri(siteRequest_, o);
     case "pageImageWidth":
@@ -3132,18 +2986,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
           setPageId((String)val);
         }
         saves.add("pageId");
-        return val;
-      } else if("h1".equals(varLower)) {
-        if(val instanceof String) {
-          setH1((String)val);
-        }
-        saves.add("h1");
-        return val;
-      } else if("h2".equals(varLower)) {
-        if(val instanceof String) {
-          setH2((String)val);
-        }
-        saves.add("h2");
         return val;
       } else if("pageimageuri".equals(varLower)) {
         if(val instanceof String) {
@@ -3256,18 +3098,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         String pageId = (String)doc.get("pageId_docvalues_string");
         if(pageId != null)
           oSitePage.setPageId(pageId);
-      }
-
-      if(saves.contains("h1")) {
-        String h1 = (String)doc.get("h1_docvalues_string");
-        if(h1 != null)
-          oSitePage.setH1(h1);
-      }
-
-      if(saves.contains("h2")) {
-        String h2 = (String)doc.get("h2_docvalues_string");
-        if(h2 != null)
-          oSitePage.setH2(h2);
       }
 
       if(saves.contains("pageImageUri")) {
@@ -3383,12 +3213,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     if(pageId != null) {
       doc.put("pageId_docvalues_string", pageId);
     }
-    if(h1 != null) {
-      doc.put("h1_docvalues_string", h1);
-    }
-    if(h2 != null) {
-      doc.put("h2_docvalues_string", h2);
-    }
     if(pageImageUri != null) {
       doc.put("pageImageUri_docvalues_string", pageImageUri);
     }
@@ -3455,10 +3279,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         return "authorUrl_docvalues_string";
       case "pageId":
         return "pageId_docvalues_string";
-      case "h1":
-        return "h1_docvalues_string";
-      case "h2":
-        return "h2_docvalues_string";
       case "pageImageUri":
         return "pageImageUri_docvalues_string";
       case "pageImageWidth":
@@ -3508,10 +3328,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         return "authorUrl_docvalues_string";
       case "pageId":
         return "pageId_docvalues_string";
-      case "h1":
-        return "h1_docvalues_string";
-      case "h2":
-        return "h2_docvalues_string";
       case "pageImageUri":
         return "pageImageUri_docvalues_string";
       case "pageImageWidth":
@@ -3553,10 +3369,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         return "authorUrl";
       case "pageId_docvalues_string":
         return "pageId";
-      case "h1_docvalues_string":
-        return "h1";
-      case "h2_docvalues_string":
-        return "h2";
       case "pageImageUri_docvalues_string":
         return "pageImageUri";
       case "pageImageWidth_docvalues_int":
@@ -3614,8 +3426,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     oSitePage.setAuthorName(Optional.ofNullable(doc.get("authorName_docvalues_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setAuthorUrl(Optional.ofNullable(doc.get("authorUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setPageId(Optional.ofNullable(doc.get("pageId_docvalues_string")).map(v -> v.toString()).orElse(null));
-    oSitePage.setH1(Optional.ofNullable(doc.get("h1_docvalues_string")).map(v -> v.toString()).orElse(null));
-    oSitePage.setH2(Optional.ofNullable(doc.get("h2_docvalues_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setPageImageUri(Optional.ofNullable(doc.get("pageImageUri_docvalues_string")).map(v -> v.toString()).orElse(null));
     oSitePage.setPageImageWidth(Optional.ofNullable(doc.get("pageImageWidth_docvalues_int")).map(v -> v.toString()).orElse(null));
     oSitePage.setPageImageHeight(Optional.ofNullable(doc.get("pageImageHeight_docvalues_int")).map(v -> v.toString()).orElse(null));
@@ -3659,10 +3469,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
         apiRequest.addVars("authorUrl");
       if(!Objects.equals(pageId, original.getPageId()))
         apiRequest.addVars("pageId");
-      if(!Objects.equals(h1, original.getH1()))
-        apiRequest.addVars("h1");
-      if(!Objects.equals(h2, original.getH2()))
-        apiRequest.addVars("h2");
       if(!Objects.equals(pageImageUri, original.getPageImageUri()))
         apiRequest.addVars("pageImageUri");
       if(!Objects.equals(pageImageWidth, original.getPageImageWidth()))
@@ -3709,8 +3515,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     sb.append(Optional.ofNullable(authorName).map(v -> "authorName: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(authorUrl).map(v -> "authorUrl: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(pageId).map(v -> "pageId: \"" + v + "\"\n" ).orElse(""));
-    sb.append(Optional.ofNullable(h1).map(v -> "h1: \"" + v + "\"\n" ).orElse(""));
-    sb.append(Optional.ofNullable(h2).map(v -> "h2: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(pageImageUri).map(v -> "pageImageUri: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(pageImageWidth).map(v -> "pageImageWidth: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(pageImageHeight).map(v -> "pageImageHeight: " + v + "\n").orElse(""));
@@ -3771,10 +3575,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
   public static final String SET_authorUrl = "setAuthorUrl";
   public static final String VAR_pageId = "pageId";
   public static final String SET_pageId = "setPageId";
-  public static final String VAR_h1 = "h1";
-  public static final String SET_h1 = "setH1";
-  public static final String VAR_h2 = "h2";
-  public static final String SET_h2 = "setH2";
   public static final String VAR_pageImageUri = "pageImageUri";
   public static final String SET_pageImageUri = "setPageImageUri";
   public static final String VAR_pageImageWidth = "pageImageWidth";
@@ -3860,8 +3660,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
   public static final String DISPLAY_NAME_authorName = "author name";
   public static final String DISPLAY_NAME_authorUrl = "author URL";
   public static final String DISPLAY_NAME_pageId = "Page ID";
-  public static final String DISPLAY_NAME_h1 = "header 1";
-  public static final String DISPLAY_NAME_h2 = "header 2";
   public static final String DISPLAY_NAME_pageImageUri = "imageUri";
   public static final String DISPLAY_NAME_pageImageWidth = "";
   public static final String DISPLAY_NAME_pageImageHeight = "";
@@ -3956,10 +3754,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return patch ? SET_authorUrl : VAR_authorUrl;
     case VAR_pageId:
       return patch ? SET_pageId : VAR_pageId;
-    case VAR_h1:
-      return patch ? SET_h1 : VAR_h1;
-    case VAR_h2:
-      return patch ? SET_h2 : VAR_h2;
     case VAR_pageImageUri:
       return patch ? SET_pageImageUri : VAR_pageImageUri;
     case VAR_pageImageWidth:
@@ -4040,10 +3834,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return DISPLAY_NAME_authorUrl;
     case VAR_pageId:
       return DISPLAY_NAME_pageId;
-    case VAR_h1:
-      return DISPLAY_NAME_h1;
-    case VAR_h2:
-      return DISPLAY_NAME_h2;
     case VAR_pageImageUri:
       return DISPLAY_NAME_pageImageUri;
     case VAR_pageImageWidth:
@@ -4101,10 +3891,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
       return "The author URL";
     case VAR_pageId:
       return "The ID for this page. ";
-    case VAR_h1:
-      return "The 1st header of this page. ";
-    case VAR_h2:
-      return "The 2nd header of this page. ";
     case VAR_pageImageUri:
       return "The page image URI";
     case VAR_pageImageWidth:
@@ -4175,10 +3961,6 @@ public abstract class SitePageGen<DEV> extends BaseResult {
     case VAR_authorUrl:
       return "String";
     case VAR_pageId:
-      return "String";
-    case VAR_h1:
-      return "String";
-    case VAR_h2:
       return "String";
     case VAR_pageImageUri:
       return "String";

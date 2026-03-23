@@ -87,6 +87,8 @@ data:
         rememberMe: true
         verifyEmail: false
         loginWithEmailAllowed: false
+        accessTokenLifespan: 30
+        ssoSessionIdleTimeout: 30
 
     #- name: Configure authentication browser executions
     #  community.general.keycloak_authentication:
