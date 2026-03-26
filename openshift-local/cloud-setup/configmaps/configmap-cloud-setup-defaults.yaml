@@ -60,7 +60,7 @@ data:
     # The base URL of the site. 
     SITE_BASE_URL: "{{ lookup('env', 'SITE_BASE_URL') | default('https://' + SITE_HOST_NAME, true) }}"
     # The public facing URL for the site. 
-    SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.computate.org"
+    SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.mghpcc.org"
     # The port of the Zookeeper cluster manager. 
     CLUSTER_PORT: "{{ (SITE_PORT | int) + 1 }}"
     # The public port of the Zookeeper cluster manager. 
@@ -321,8 +321,10 @@ data:
     DATABASE_USERNAME: "{{ lookup('env', 'DATABASE_USERNAME_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME, true) }}"
     # The database secret containing the user password to connect to the database. 
     DATABASE_SECRET: "postgres-pguser-aitelemetry"
+    # The database secret containing the user password to connect to the database. 
+    DATABASE_SECRET_KEY: "{{ lookup('env', 'DATABASE_SECRET_KEY_' + SITE_SHORT_NAME) | default('DATABASE_PASSWORD', true) }}"
     # The PostgreSQL database password of the site. 
-    DATABASE_PASSWORD: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=(DATABASE_SECRET), namespace=SITE_NAMESPACE)[0].data.password | b64decode }}"
+    DATABASE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(DATABASE_SECRET), namespace=SITE_NAMESPACE) | first | default({})).data[DATABASE_SECRET_KEY] | default('') | b64decode }}"
     # The PostgreSQL database name of the site. 
     DATABASE_DATABASE: "{{ lookup('env', 'DATABASE_DATABASE_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME + 'cloud', true) }}"
     # The PostgreSQL database max pool size. 
@@ -501,7 +503,6 @@ data:
     RABBITMQ_PASSWORD: "{{ lookup('env', 'RABBITMQ_PASSWORD') | default('password', true) }}"
     # The RabbitMQ virtual host. 
     RABBITMQ_VIRTUAL_HOST: "/"
-
     ################################
     # OpenShift Deployment Details #
     ################################
@@ -555,9 +556,11 @@ data:
     # extra vars #
     ##############
 
-    STATIC_REPOS: '[ { "name": "ai-telemetry-developer", "src": "https://github.com/computate-org/ai-telemetry-developer.git", "dest": "/home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer" } ]'
-    HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) }}"
-    TENANTS: "{{ lookup('env', 'TENANTS') | default('{}', true) }}"
+    STATIC_REPOS: "{{ lookup('env', 'STATIC_REPOS') | default('[ { \"name\": \"ai-telemetry-developer\", \"src\": \"https://github.com/computate-org/ai-telemetry-developer.git\", \"dest\": \"/home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer\" } ]', true) | string }}"
+    HUBS: "{{ lookup('env', 'HUBS') | default('{ \"openshift-local\": { \"hubName\": \"OpenShift Local\", \"localClusterName\": \"openshift-local\", \"description\": \"OpenShift Local on your own computer. \" } }', true) | string }}"
+    TENANTS: "{{ lookup('env', 'TENANTS') | default('{}', true) | string }}"
+    # In Developer Settings in your user, Create a personal access token, with the GitHub org as the resource owner and Read-only access to the Contents and Metadata. 
+    GITHUB_DEVELOPERS_TOKEN: ""
 
     # Social media
     YOUTUBE_URL: https://www.youtube.com/watch?v=5_y5PFtsTYk&list=PLcVjtgfCeLvQu8KDUjmwHzbFqbg5K70zN
@@ -579,7 +582,7 @@ data:
     # The Auth openshift secret with the client secret credentials. 
     AUTH_OPENSHIFT_SECRET_SA: "{{ lookup('env', 'AUTH_OPENSHIFT_SECRET_SA') | default('local-auth', true) }}"
     # The Auth secret. 
-    AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({})).data[AUTH_OPENSHIFT_SECRET_KEY_SA] | b64decode }}"
+    AUTH_SECRET_SA: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=AUTH_OPENSHIFT_SECRET_SA, namespace=SITE_NAMESPACE) | first | default({\"data\": {AUTH_OPENSHIFT_SECRET_KEY_SA: \"\" } } )).data[AUTH_OPENSHIFT_SECRET_KEY_SA] | b64decode | default(AUTH_SECRET, true) }}"
 
     ###########
     # grafana #
@@ -636,6 +639,35 @@ data:
     # Ensure BareMetalResourceClass is updated frequently
     IMPORT_DATA_START_TIME_BareMetalResourceClass: 12:00 America/New_York
     IMPORT_DATA_PERIOD_BareMetalResourceClass: 1 minute
+
+    #############
+    # Coldfront #
+    #############
+
+    # Whether to use SSL when connecting to Coldfront Keycloak. 
+    COLDFRONT_AUTH_SSL: "{{ (lookup('env', 'COLDFRONT_AUTH_SSL') | lower) != 'false' }}"
+    # The host name to connect to Coldfront Keycloak. 
+    COLDFRONT_AUTH_HOST_NAME: "{{ lookup('env', 'COLDFRONT_AUTH_HOST_NAME') | default('', true) }}"
+    # The default port of Coldfront Keycloak. 
+    COLDFRONT_AUTH_PORT: "{{ lookup('env', 'COLDFRONT_AUTH_PORT') | default('443', true) }}"
+    # Whether to use SSL when connecting to Coldfront. 
+    COLDFRONT_API_SSL: "{{ (lookup('env', 'COLDFRONT_API_SSL') | lower) != 'false' }}"
+    # The host name to connect to Coldfront. 
+    COLDFRONT_API_HOST_NAME: "{{ lookup('env', 'COLDFRONT_API_HOST_NAME') | default('', true) }}"
+    # The default port of Coldfront. 
+    COLDFRONT_API_PORT: "{{ lookup('env', 'COLDFRONT_API_PORT') | default('443', true) }}"
+    # The Coldfront realm. 
+    COLDFRONT_API_REALM: "{{ lookup('env', 'COLDFRONT_API_REALM') | default('', true) }}"
+    # The Coldfront secret containing the client credentials to connect to Coldfront. 
+    COLDFRONT_API_SECRET: "{{ lookup('env', 'COLDFRONT_API_SECRET_' + SITE_SHORT_NAME) | default('nerc-keycloak-service-account', true) }}"
+    # The Coldfront secret key containing the client ID to connect to Coldfront. 
+    COLDFRONT_API_CLIENT_ID_KEY: "{{ lookup('env', 'COLDFRONT_API_CLIENT_ID_KEY_' + SITE_SHORT_NAME) | default('client_id', true) }}"
+    # The Coldfront secret key containing the client credentials to connect to Coldfront. 
+    COLDFRONT_API_CLIENT_SECRET_KEY: "{{ lookup('env', 'COLDFRONT_API_CLIENT_SECRET_KEY_' + SITE_SHORT_NAME) | default('client_secret', true) }}"
+    # The Coldfront client ID. 
+    COLDFRONT_API_CLIENT_ID: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({\"data\": {\"COLDFRONT_API_CLIENT_ID_KEY\": \"\" } })).data[COLDFRONT_API_CLIENT_ID_KEY] | default('') | b64decode }}"
+    # The Coldfront client secret. 
+    COLDFRONT_API_CLIENT_SECRET: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(COLDFRONT_API_SECRET), namespace=SITE_NAMESPACE) | first | default({\"data\": {\"COLDFRONT_API_CLIENT_SECRET_KEY\": \"\" } })).data[COLDFRONT_API_CLIENT_SECRET_KEY] | default('') | b64decode }}"
 
     ENABLE_IMPORT_DATA_Tenant: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Tenant') | default('true', true) | bool }}"
     ENABLE_IMPORT_DATA_Cluster: "{{ lookup('env', 'ENABLE_IMPORT_DATA_Cluster') | default('true', true) | bool }}"

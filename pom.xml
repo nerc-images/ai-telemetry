@@ -109,7 +109,7 @@
     <opentelemetry.version>1.18.0</opentelemetry.version>
     <geotools.version>34.0</geotools.version>
 
-    <computate.version>4.5.8.0</computate.version>
+    <computate.version>4.5.24.1</computate.version>
   </properties>
 
   <dependencyManagement>
