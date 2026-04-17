@@ -257,6 +257,20 @@ public class Project extends ProjectGen<BaseModel> {
    * DocValues: true
    * Persist: true
    * Facet: true
+   * DisplayName: VLLM enabled
+   * Description: Whether there is VLLM activity for this project. 
+   * HtmRow: 3
+   * HtmCell: 12
+   **/
+  protected void _vllmEnabled(Wrap<Boolean> w) {
+    w.o(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
    * DisplayName: pod restarts
    * Description: The number of pod restarts in this project. 
    * HtmRowTitleOpen: health checks
