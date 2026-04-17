@@ -405,19 +405,24 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           Promise<Void> promise1 = Promise.promise();
           userpageProjectPageInit(ctx, page, listProject, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateUserPageProject(ctx, page, listProject, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200UserPageProject failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateUserPageProject(ctx, page, listProject, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200UserPageProject failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200UserPageProject failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -1549,13 +1554,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlEditPage());
             break;
-          case "setPodRestartCount":
-              o2.setPodRestartCount(jsonObject.getString(entityVar));
+          case "setVllmEnabled":
+              o2.setVllmEnabled(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_podRestartCount + "=$" + num);
+              bSql.append(Project.VAR_vllmEnabled + "=$" + num);
               num++;
-              bParams.add(o2.sqlPodRestartCount());
+              bParams.add(o2.sqlVllmEnabled());
             break;
           case "setUserPage":
               o2.setUserPage(jsonObject.getString(entityVar));
@@ -1565,13 +1570,13 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlUserPage());
             break;
-          case "setPodsRestarting":
-              o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+          case "setPodRestartCount":
+              o2.setPodRestartCount(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
                 bSql.append(", ");
-              bSql.append(Project.VAR_podsRestarting + "=$" + num);
+              bSql.append(Project.VAR_podRestartCount + "=$" + num);
               num++;
-              bParams.add(o2.sqlPodsRestarting());
+              bParams.add(o2.sqlPodRestartCount());
             break;
           case "setDownload":
               o2.setDownload(jsonObject.getString(entityVar));
@@ -1580,6 +1585,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_download + "=$" + num);
               num++;
               bParams.add(o2.sqlDownload());
+            break;
+          case "setPodsRestarting":
+              o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_podsRestarting + "=$" + num);
+              num++;
+              bParams.add(o2.sqlPodsRestarting());
             break;
           case "setPodTerminatingCount":
               o2.setPodTerminatingCount(jsonObject.getString(entityVar));
@@ -2281,14 +2294,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlEditPage());
             break;
-          case Project.VAR_podRestartCount:
-            o2.setPodRestartCount(jsonObject.getString(entityVar));
+          case Project.VAR_vllmEnabled:
+            o2.setVllmEnabled(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_podRestartCount + "=$" + num);
+            bSql.append(Project.VAR_vllmEnabled + "=$" + num);
             num++;
-            bParams.add(o2.sqlPodRestartCount());
+            bParams.add(o2.sqlVllmEnabled());
             break;
           case Project.VAR_userPage:
             o2.setUserPage(jsonObject.getString(entityVar));
@@ -2299,14 +2312,14 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlUserPage());
             break;
-          case Project.VAR_podsRestarting:
-            o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+          case Project.VAR_podRestartCount:
+            o2.setPodRestartCount(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
               bSql.append(", ");
             }
-            bSql.append(Project.VAR_podsRestarting + "=$" + num);
+            bSql.append(Project.VAR_podRestartCount + "=$" + num);
             num++;
-            bParams.add(o2.sqlPodsRestarting());
+            bParams.add(o2.sqlPodRestartCount());
             break;
           case Project.VAR_download:
             o2.setDownload(jsonObject.getString(entityVar));
@@ -2316,6 +2329,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_download + "=$" + num);
             num++;
             bParams.add(o2.sqlDownload());
+            break;
+          case Project.VAR_podsRestarting:
+            o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_podsRestarting + "=$" + num);
+            num++;
+            bParams.add(o2.sqlPodsRestarting());
             break;
           case Project.VAR_podTerminatingCount:
             o2.setPodTerminatingCount(jsonObject.getString(entityVar));
@@ -3645,19 +3667,24 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           Promise<Void> promise1 = Promise.promise();
           searchpageProjectPageInit(ctx, page, listProject, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateSearchPageProject(ctx, page, listProject, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200SearchPageProject failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateSearchPageProject(ctx, page, listProject, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200SearchPageProject failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200SearchPageProject failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -3993,19 +4020,24 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
           Promise<Void> promise1 = Promise.promise();
           editpageProjectPageInit(ctx, page, listProject, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateEditPageProject(ctx, page, listProject, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200EditPageProject failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateEditPageProject(ctx, page, listProject, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200EditPageProject failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200EditPageProject failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -4886,7 +4918,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, projectTitle, description, projectFieldOfScience, objectTitle, projectActive, displayPage, gpuEnabled, editPage, podRestartCount, userPage, podsRestarting, download, podTerminatingCount, podsTerminating, fullPvcsCount, fullPvcs, namespaceTerminating, statusPageTemplateUri FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, projectTitle, description, projectFieldOfScience, objectTitle, projectActive, displayPage, gpuEnabled, editPage, vllmEnabled, userPage, podRestartCount, download, podsRestarting, podTerminatingCount, podsTerminating, fullPvcsCount, fullPvcs, namespaceTerminating, statusPageTemplateUri FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -5245,10 +5277,11 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       o.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
       o.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
       o.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
-      o.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
+      o.persistForClass(Project.VAR_vllmEnabled, Project.staticSetVllmEnabled(siteRequest2, (String)result.get(Project.VAR_vllmEnabled)));
       o.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
-      o.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
+      o.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
       o.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
+      o.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
       o.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
       o.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
       o.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));

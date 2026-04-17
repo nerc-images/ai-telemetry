@@ -25511,6 +25511,8 @@ components:
                     type: boolean
                   gpuEnabled:
                     type: boolean
+                  vllmEnabled:
+                    type: boolean
                   podRestartCount:
                     type: string
                   podsRestarting:
@@ -25642,6 +25644,13 @@ components:
             removeGpuEnabled:
               type: boolean
             removeAllGpuEnabled:
+              type: boolean
+            setVllmEnabled:
+              type: boolean
+              nullable: true
+            removeVllmEnabled:
+              type: boolean
+            removeAllVllmEnabled:
               type: boolean
             setPodRestartCount:
               type: string
@@ -25862,6 +25871,13 @@ components:
               type: boolean
             removeAllGpuEnabled:
               type: boolean
+            setVllmEnabled:
+              type: boolean
+              nullable: true
+            removeVllmEnabled:
+              type: boolean
+            removeAllVllmEnabled:
+              type: boolean
             setPodRestartCount:
               type: string
               nullable: true
@@ -26011,6 +26027,8 @@ components:
               type: boolean
             gpuEnabled:
               type: boolean
+            vllmEnabled:
+              type: boolean
             podRestartCount:
               type: string
             podsRestarting:
@@ -26073,6 +26091,8 @@ components:
               type: boolean
             gpuEnabled:
               type: boolean
+            vllmEnabled:
+              type: boolean
             podRestartCount:
               type: string
             podsRestarting:
@@ -26134,6 +26154,8 @@ components:
             projectActive:
               type: boolean
             gpuEnabled:
+              type: boolean
+            vllmEnabled:
               type: boolean
             podRestartCount:
               type: string
@@ -26202,6 +26224,8 @@ components:
                     type: boolean
                   gpuEnabled:
                     type: boolean
+                  vllmEnabled:
+                    type: boolean
                   podRestartCount:
                     type: string
                   podsRestarting:
@@ -26263,6 +26287,8 @@ components:
                   projectActive:
                     type: boolean
                   gpuEnabled:
+                    type: boolean
+                  vllmEnabled:
                     type: boolean
                   podRestartCount:
                     type: string
@@ -26326,6 +26352,8 @@ components:
               type: boolean
             gpuEnabled:
               type: boolean
+            vllmEnabled:
+              type: boolean
             podRestartCount:
               type: string
             podsRestarting:
@@ -26387,6 +26415,8 @@ components:
             projectActive:
               type: boolean
             gpuEnabled:
+              type: boolean
+            vllmEnabled:
               type: boolean
             podRestartCount:
               type: string
@@ -27532,10 +27562,6 @@ components:
                     type: string
                   pageId:
                     type: string
-                  h1:
-                    type: string
-                  h2:
-                    type: string
                   pageImageUri:
                     type: string
                   pageImageWidth:
@@ -27713,20 +27739,6 @@ components:
             removePageId:
               type: string
             removeAllPageId:
-              type: string
-            setH1:
-              type: string
-              nullable: true
-            removeH1:
-              type: string
-            removeAllH1:
-              type: string
-            setH2:
-              type: string
-              nullable: true
-            removeH2:
-              type: string
-            removeAllH2:
               type: string
             setPageImageUri:
               type: string
@@ -28020,20 +28032,6 @@ components:
               type: string
             removeAllPageId:
               type: string
-            setH1:
-              type: string
-              nullable: true
-            removeH1:
-              type: string
-            removeAllH1:
-              type: string
-            setH2:
-              type: string
-              nullable: true
-            removeH2:
-              type: string
-            removeAllH2:
-              type: string
             setPageImageUri:
               type: string
               nullable: true
@@ -28236,10 +28234,6 @@ components:
               type: string
             pageId:
               type: string
-            h1:
-              type: string
-            h2:
-              type: string
             pageImageUri:
               type: string
             pageImageWidth:
@@ -28328,10 +28322,6 @@ components:
               type: string
             pageId:
               type: string
-            h1:
-              type: string
-            h2:
-              type: string
             pageImageUri:
               type: string
             pageImageWidth:
@@ -28419,10 +28409,6 @@ components:
             authorUrl:
               type: string
             pageId:
-              type: string
-            h1:
-              type: string
-            h2:
               type: string
             pageImageUri:
               type: string
@@ -28517,10 +28503,6 @@ components:
                     type: string
                   pageId:
                     type: string
-                  h1:
-                    type: string
-                  h2:
-                    type: string
                   pageImageUri:
                     type: string
                   pageImageWidth:
@@ -28608,10 +28590,6 @@ components:
                   authorUrl:
                     type: string
                   pageId:
-                    type: string
-                  h1:
-                    type: string
-                  h2:
                     type: string
                   pageImageUri:
                     type: string
@@ -28701,10 +28679,6 @@ components:
               type: string
             pageId:
               type: string
-            h1:
-              type: string
-            h2:
-              type: string
             pageImageUri:
               type: string
             pageImageWidth:
@@ -28792,10 +28766,6 @@ components:
             authorUrl:
               type: string
             pageId:
-              type: string
-            h1:
-              type: string
-            h2:
               type: string
             pageImageUri:
               type: string

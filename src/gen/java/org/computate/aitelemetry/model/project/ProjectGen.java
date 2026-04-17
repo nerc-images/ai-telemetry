@@ -1087,6 +1087,73 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return gpuEnabled;
   }
 
+	/////////////////
+  // vllmEnabled //
+	/////////////////
+
+
+  /**
+   *  The entity vllmEnabled
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Boolean vllmEnabled;
+
+  /**
+   * <br> The entity vllmEnabled
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:vllmEnabled">Find the entity vllmEnabled in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _vllmEnabled(Wrap<Boolean> w);
+
+  public Boolean getVllmEnabled() {
+    return vllmEnabled;
+  }
+
+  public void setVllmEnabled(Boolean vllmEnabled) {
+    this.vllmEnabled = vllmEnabled;
+  }
+  @JsonIgnore
+  public void setVllmEnabled(String o) {
+    this.vllmEnabled = Project.staticSetVllmEnabled(siteRequest_, o);
+  }
+  public static Boolean staticSetVllmEnabled(SiteRequest siteRequest_, String o) {
+    return Boolean.parseBoolean(o);
+  }
+  protected Project vllmEnabledInit() {
+    Wrap<Boolean> vllmEnabledWrap = new Wrap<Boolean>().var("vllmEnabled");
+    if(vllmEnabled == null) {
+      _vllmEnabled(vllmEnabledWrap);
+      Optional.ofNullable(vllmEnabledWrap.getO()).ifPresent(o -> {
+        setVllmEnabled(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static Boolean staticSearchVllmEnabled(SiteRequest siteRequest_, Boolean o) {
+    return o;
+  }
+
+  public static String staticSearchStrVllmEnabled(SiteRequest siteRequest_, Boolean o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqVllmEnabled(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchVllmEnabled(siteRequest_, Project.staticSetVllmEnabled(siteRequest_, o)).toString();
+  }
+
+  public Boolean sqlVllmEnabled() {
+    return vllmEnabled;
+  }
+
+  public static Boolean staticJsonVllmEnabled(Boolean vllmEnabled) {
+    return vllmEnabled;
+  }
+
 	/////////////////////
   // podRestartCount //
 	/////////////////////
@@ -1730,6 +1797,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         projectFieldOfScienceInit();
         projectActiveInit();
         gpuEnabledInit();
+        vllmEnabledInit();
         podRestartCountInit();
         podsRestartingInit();
         podTerminatingCountInit();
@@ -1819,6 +1887,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return oProject.projectActive;
       case "gpuEnabled":
         return oProject.gpuEnabled;
+      case "vllmEnabled":
+        return oProject.vllmEnabled;
       case "podRestartCount":
         return oProject.podRestartCount;
       case "podsRestarting":
@@ -1920,6 +1990,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSetProjectActive(siteRequest_, v);
     case "gpuEnabled":
       return Project.staticSetGpuEnabled(siteRequest_, v);
+    case "vllmEnabled":
+      return Project.staticSetVllmEnabled(siteRequest_, v);
     case "podRestartCount":
       return Project.staticSetPodRestartCount(siteRequest_, v);
     case "podsRestarting":
@@ -2008,6 +2080,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchProjectActive(siteRequest_, (Boolean)o);
     case "gpuEnabled":
       return Project.staticSearchGpuEnabled(siteRequest_, (Boolean)o);
+    case "vllmEnabled":
+      return Project.staticSearchVllmEnabled(siteRequest_, (Boolean)o);
     case "podRestartCount":
       return Project.staticSearchPodRestartCount(siteRequest_, (Integer)o);
     case "podsRestarting":
@@ -2066,6 +2140,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchStrProjectActive(siteRequest_, (Boolean)o);
     case "gpuEnabled":
       return Project.staticSearchStrGpuEnabled(siteRequest_, (Boolean)o);
+    case "vllmEnabled":
+      return Project.staticSearchStrVllmEnabled(siteRequest_, (Boolean)o);
     case "podRestartCount":
       return Project.staticSearchStrPodRestartCount(siteRequest_, (Integer)o);
     case "podsRestarting":
@@ -2124,6 +2200,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFqProjectActive(siteRequest_, o);
     case "gpuEnabled":
       return Project.staticSearchFqGpuEnabled(siteRequest_, o);
+    case "vllmEnabled":
+      return Project.staticSearchFqVllmEnabled(siteRequest_, o);
     case "podRestartCount":
       return Project.staticSearchFqPodRestartCount(siteRequest_, o);
     case "podsRestarting":
@@ -2247,6 +2325,14 @@ public abstract class ProjectGen<DEV> extends BaseModel {
           setGpuEnabled(val == null ? null : val.toString());
         }
         saves.add("gpuEnabled");
+        return val;
+      } else if("vllmenabled".equals(varLower)) {
+        if(val instanceof Boolean) {
+          setVllmEnabled((Boolean)val);
+        } else {
+          setVllmEnabled(val == null ? null : val.toString());
+        }
+        saves.add("vllmEnabled");
         return val;
       } else if("podrestartcount".equals(varLower)) {
         if(val instanceof Integer) {
@@ -2417,6 +2503,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
           oProject.setGpuEnabled(gpuEnabled);
       }
 
+      if(saves.contains("vllmEnabled")) {
+        Boolean vllmEnabled = (Boolean)doc.get("vllmEnabled_docvalues_boolean");
+        if(vllmEnabled != null)
+          oProject.setVllmEnabled(vllmEnabled);
+      }
+
       if(saves.contains("podRestartCount")) {
         Integer podRestartCount = (Integer)doc.get("podRestartCount_docvalues_int");
         if(podRestartCount != null)
@@ -2521,6 +2613,9 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     if(gpuEnabled != null) {
       doc.put("gpuEnabled_docvalues_boolean", gpuEnabled);
     }
+    if(vllmEnabled != null) {
+      doc.put("vllmEnabled_docvalues_boolean", vllmEnabled);
+    }
     if(podRestartCount != null) {
       doc.put("podRestartCount_docvalues_int", podRestartCount);
     }
@@ -2591,6 +2686,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "projectActive_docvalues_boolean";
       case "gpuEnabled":
         return "gpuEnabled_docvalues_boolean";
+      case "vllmEnabled":
+        return "vllmEnabled_docvalues_boolean";
       case "podRestartCount":
         return "podRestartCount_docvalues_int";
       case "podsRestarting":
@@ -2642,6 +2739,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "projectActive_docvalues_boolean";
       case "gpuEnabled":
         return "gpuEnabled_docvalues_boolean";
+      case "vllmEnabled":
+        return "vllmEnabled_docvalues_boolean";
       case "podRestartCount":
         return "podRestartCount_docvalues_int";
       case "podsRestarting":
@@ -2693,6 +2792,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "projectActive";
       case "gpuEnabled_docvalues_boolean":
         return "gpuEnabled";
+      case "vllmEnabled_docvalues_boolean":
+        return "vllmEnabled";
       case "podRestartCount_docvalues_int":
         return "podRestartCount";
       case "podsRestarting_docvalues_strings":
@@ -2753,6 +2854,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     oProject.setProjectFieldOfScience(Optional.ofNullable(doc.get("projectFieldOfScience_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setProjectActive(Optional.ofNullable(doc.get("projectActive_docvalues_boolean")).map(v -> v.toString()).orElse(null));
     oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
+    oProject.setVllmEnabled(Optional.ofNullable(doc.get("vllmEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
     oProject.setPodRestartCount(Optional.ofNullable(doc.get("podRestartCount_docvalues_int")).map(v -> v.toString()).orElse(null));
     Optional.ofNullable((List<?>)doc.get("podsRestarting_docvalues_strings")).orElse(Arrays.asList()).stream().filter(v -> v != null).forEach(v -> {
       oProject.addPodsRestarting(Project.staticSetPodsRestarting(siteRequest, v.toString()));
@@ -2808,6 +2910,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         apiRequest.addVars("projectActive");
       if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
         apiRequest.addVars("gpuEnabled");
+      if(!Objects.equals(vllmEnabled, original.getVllmEnabled()))
+        apiRequest.addVars("vllmEnabled");
       if(!Objects.equals(podRestartCount, original.getPodRestartCount()))
         apiRequest.addVars("podRestartCount");
       if(!Objects.equals(podsRestarting, original.getPodsRestarting()))
@@ -2849,6 +2953,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(projectFieldOfScience).map(v -> "projectFieldOfScience: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(projectActive).map(v -> "projectActive: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(vllmEnabled).map(v -> "vllmEnabled: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(podRestartCount).map(v -> "podRestartCount: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(podsRestarting).map(v -> "podsRestarting: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(podTerminatingCount).map(v -> "podTerminatingCount: " + v + "\n").orElse(""));
@@ -2895,6 +3000,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String SET_projectActive = "setProjectActive";
   public static final String VAR_gpuEnabled = "gpuEnabled";
   public static final String SET_gpuEnabled = "setGpuEnabled";
+  public static final String VAR_vllmEnabled = "vllmEnabled";
+  public static final String SET_vllmEnabled = "setVllmEnabled";
   public static final String VAR_podRestartCount = "podRestartCount";
   public static final String SET_podRestartCount = "setPodRestartCount";
   public static final String VAR_podsRestarting = "podsRestarting";
@@ -2937,6 +3044,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     vars.add(VAR_projectFieldOfScience);
     vars.add(VAR_projectActive);
     vars.add(VAR_gpuEnabled);
+    vars.add(VAR_vllmEnabled);
     vars.add(VAR_podRestartCount);
     vars.add(VAR_podsRestarting);
     vars.add(VAR_podTerminatingCount);
@@ -2973,6 +3081,7 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_projectFieldOfScience = "field of science";
   public static final String DISPLAY_NAME_projectActive = "project active";
   public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
+  public static final String DISPLAY_NAME_vllmEnabled = "VLLM enabled";
   public static final String DISPLAY_NAME_podRestartCount = "pod restarts";
   public static final String DISPLAY_NAME_podsRestarting = "pods restarting";
   public static final String DISPLAY_NAME_podTerminatingCount = "pods terminating";
@@ -3050,6 +3159,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return patch ? SET_projectActive : VAR_projectActive;
     case VAR_gpuEnabled:
       return patch ? SET_gpuEnabled : VAR_gpuEnabled;
+    case VAR_vllmEnabled:
+      return patch ? SET_vllmEnabled : VAR_vllmEnabled;
     case VAR_podRestartCount:
       return patch ? SET_podRestartCount : VAR_podRestartCount;
     case VAR_podsRestarting:
@@ -3104,6 +3215,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return DISPLAY_NAME_projectActive;
     case VAR_gpuEnabled:
       return DISPLAY_NAME_gpuEnabled;
+    case VAR_vllmEnabled:
+      return DISPLAY_NAME_vllmEnabled;
     case VAR_podRestartCount:
       return DISPLAY_NAME_podRestartCount;
     case VAR_podsRestarting:
@@ -3157,6 +3270,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "Whether the project is active or terminated. ";
     case VAR_gpuEnabled:
       return "Whether GPUs are enabled for this project. ";
+    case VAR_vllmEnabled:
+      return "Whether there is VLLM activity for this project. ";
     case VAR_podRestartCount:
       return "The number of pod restarts in this project. ";
     case VAR_podsRestarting:
@@ -3207,6 +3322,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     case VAR_projectActive:
       return "Boolean";
     case VAR_gpuEnabled:
+      return "Boolean";
+    case VAR_vllmEnabled:
       return "Boolean";
     case VAR_podRestartCount:
       return "Integer";
@@ -3264,6 +3381,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 3;
     case VAR_gpuEnabled:
       return 3;
+    case VAR_vllmEnabled:
+      return 3;
     case VAR_podRestartCount:
       return 4;
     case VAR_podsRestarting:
@@ -3305,6 +3424,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 10;
     case VAR_gpuEnabled:
       return 11;
+    case VAR_vllmEnabled:
+      return 12;
     case VAR_podRestartCount:
       return 0;
     case VAR_podsRestarting:
