@@ -105,8 +105,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           gapBackInTime = "31d";
           gap = "1d";
       }
-      ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap).onSuccess(gpuDevicesTotal -> {
-        ProjectEnUSApiServiceImpl.queryVllmProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap).onSuccess(vllmTotal -> {
+      ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap, listProject).onSuccess(gpuDevicesTotal -> {
+        ProjectEnUSApiServiceImpl.queryVllmProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap, listProject).onSuccess(vllmTotal -> {
           JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
               Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
               && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
@@ -119,7 +119,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           Boolean vllmEnabled = vllmResult != null;
           ctx.put(Project.VAR_gpuEnabled, gpuEnabled);
           ctx.put(Project.VAR_vllmEnabled, vllmEnabled);
-          promise.complete();
+          super.editpageProjectPageInit(ctx, page, listProject, promise);
         }).onFailure(ex -> {
           promise.fail(ex);
         });
@@ -334,8 +334,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           String accessToken = requestAuthResponse.bodyAsJsonObject().getString("access_token");
           ProjectEnUSApiServiceImpl.queryColdfrontProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(coldfrontProjects -> {
             ProjectEnUSApiServiceImpl.queryNonOpenShiftProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(nonOpenShiftNamespacesTotal -> {
-              ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken, "31d", "1d").onSuccess(gpuDevicesTotal -> {
-                ProjectEnUSApiServiceImpl.queryVllmProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken, "31d", "1d").onSuccess(vllmTotal -> {
+              ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken, "31d", "1d", null).onSuccess(gpuDevicesTotal -> {
+                ProjectEnUSApiServiceImpl.queryVllmProjects(vertx, webClient, config, clusterJson, classSimpleName, accessToken, "31d", "1d", null).onSuccess(vllmTotal -> {
                   ProjectEnUSApiServiceImpl.queryPodRestarts(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(podRestartsResponse -> {
                     ProjectEnUSApiServiceImpl.queryPodTerminating(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(podTerminatingResponse -> {
                       ProjectEnUSApiServiceImpl.queryInitPodRestarts(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(initPodRestartsResponse -> {
@@ -967,7 +967,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
     return promise.future();
   }
 
-  public static Future<JsonArray> queryVllmProjects(Vertx vertx, WebClient webClient, JsonObject config, JsonObject clusterJson, String classSimpleName, String accessToken, String gapBackInTime, String gap) {
+  public static Future<JsonArray> queryVllmProjects(Vertx vertx, WebClient webClient, JsonObject config, JsonObject clusterJson, String classSimpleName, String accessToken, String gapBackInTime, String gap, SearchList<Project> listProject) {
     Promise<JsonArray> promise = Promise.promise();
     try {
       String hubId = clusterJson.getString(Cluster.VAR_hubId);
@@ -976,7 +976,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, namespace) (sum_over_time((max_over_time(vllm:e2e_request_latency_seconds_sum{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + String.format("namespace!=''}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap)));
+      String query = "sum by (cluster, namespace) (sum_over_time((max_over_time(vllm:e2e_request_latency_seconds_sum{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + String.format("namespace!=''}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap);
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(query));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
@@ -996,7 +997,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
     return promise.future();
   }
 
-  public static Future<JsonArray> queryGpuProjects(Vertx vertx, WebClient webClient, JsonObject config, JsonObject clusterJson, String classSimpleName, String accessToken, String gapBackInTime, String gap) {
+  public static Future<JsonArray> queryGpuProjects(Vertx vertx, WebClient webClient, JsonObject config, JsonObject clusterJson, String classSimpleName, String accessToken, String gapBackInTime, String gap, SearchList<Project> listProject) {
     Promise<JsonArray> promise = Promise.promise();
     try {
       String hubId = clusterJson.getString(Cluster.VAR_hubId);
@@ -1005,7 +1006,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + String.format("exported_namespace!=''}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap)));
+      String query = "sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + (listProject != null && listProject.size() == 1 ? "exported_namespace='" + listProject.first().getProjectName() + "'" : "exported_namespace!=''") + String.format("}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap);
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(query));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
