@@ -9,7 +9,7 @@ spec:
   providers:
     - name: github
       github:
-        organization: "{{ GITHUB_ORG }}"
+        organization: "{{ GIT_ORG }}"
         prune: true
         credentialsSecret:
           name: github-group-sync

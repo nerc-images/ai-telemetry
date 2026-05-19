@@ -48,7 +48,7 @@ data:
     # The domain name of the site. 
     DOMAIN_NAME: "computate.org"
     # The GitHub organization for this project. 
-    GITHUB_ORG: "nerc-images"
+    GIT_ORG: "nerc-images"
     # The main git repository for the project. 
     SITE_REPO: "git@github.com:nerc-images/ai-telemetry.git"
     # The main git repository for the project via ssh. 

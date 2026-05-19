@@ -187,7 +187,7 @@ data:
       SITE_LANG: "{{ SITE_LANG }}"
       SITE_ZONE: "{{ SITE_ZONE }}"
       DOMAIN_NAME: "{{ DOMAIN_NAME }}"
-      GITHUB_ORG: "{{ GITHUB_ORG }}"
+      GIT_ORG: "{{ GIT_ORG }}"
       SITE_REPO: "{{ SITE_REPO }}"
       SITE_REPO_HTTPS: "{{ SITE_REPO_HTTPS }}"
       SITE_PORT: "{{ SITE_PORT }}"

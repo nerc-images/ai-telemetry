@@ -13,7 +13,7 @@ SITE_LOCALE: en-US
 # A computate specific identifier for the locale and language of the code. 
 SITE_LANG: "{{ SITE_LOCALE | replace('-', '') }}"
 # The GitHub organization for this project. 
-GITHUB_ORG: computate-org
+GIT_ORG: computate-org
 # The default source code prefix directory for the project. 
 SITE_PREFIX: "{{ lookup('env', 'HOME') }}/.local"
 # The source code directory for the project. 
@@ -25,7 +25,7 @@ SITE_DESCRIPTION: "Cloud native web development on your own computer"
 # The domain name of the site. 
 DOMAIN_NAME: "example.com"
 # The main git repository for the project. 
-SITE_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_NAME }}.git"
+SITE_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_NAME }}.git"
 # The main git repository for the project via ssh. 
 SITE_REPO_HTTPS: "{{ SITE_REPO | replace('git@github.com:', 'https://github.com/') }}"
 # The port of the site. 
@@ -167,7 +167,7 @@ QUAYIO_ORG: computateorg
 # The name of the repository containing the web static content. 
 SITE_STATIC_NAME: "{{ SITE_NAME }}-static"
 # The static files git repository for the project. 
-SITE_STATIC_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_STATIC_NAME }}.git"
+SITE_STATIC_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_STATIC_NAME }}.git"
 
 ######################
 # Developer defaults #
