@@ -83,7 +83,7 @@ public class SitePage extends SitePageGen<BaseResult> {
    * {@inheritDoc}
    */
   protected void _githubOrg(Wrap<String> w) {
-    w.o(siteRequest_.getConfig().getString(ConfigKeys.GITHUB_ORG));
+    w.o(siteRequest_.getConfig().getString(ConfigKeys.GIT_ORG));
   }
 
   /**

@@ -35,9 +35,9 @@ SITE_ZONE: "America/New_York"
 # The domain name of the site. 
 DOMAIN_NAME: mghpcc.org
 # The GitHub organization for this project. 
-GITHUB_ORG: nerc-images
+GIT_ORG: nerc-images
 # The main git repository for the project. 
-SITE_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_NAME }}.git"
+SITE_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_NAME }}.git"
 # The main git repository for the project via ssh. 
 SITE_REPO_HTTPS: "{{ SITE_REPO | replace('git@github.com:', 'https://github.com/') }}"
 # The port of the site. 
@@ -172,7 +172,7 @@ CONTAINER_URI: "{{ CONTAINER_REGISTRY }}/{{ CONTAINER_ORG }}/{{ CONTAINER_NAME }
 # The name of the repository containing the web static content. 
 SITE_STATIC_NAME: "{{ SITE_NAME }}-static"
 # The static files git repository for the project. 
-SITE_STATIC_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_STATIC_NAME }}.git"
+SITE_STATIC_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_STATIC_NAME }}.git"
 # The path to the static files. 
 STATIC_PATH: "{{ (PARENT_SRC + '/' + SITE_STATIC_NAME) | realpath }}"
 # The base URL to the static files. 
@@ -344,7 +344,7 @@ OPERATOR_NAME: "{{ SITE_NAME }}-operator"
 # The name of the operator used to deploy data as YAML. 
 OPERATOR_SRC: "{{ (PARENT_SRC + '/' + OPERATOR_NAME) | realpath }}"
 OPERATOR_DOMAIN_NAME: "{{ DOMAIN_NAME }}"
-OPERATOR_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ OPERATOR_NAME }}.git"
+OPERATOR_REPO: "git@github.com:{{ GIT_ORG }}/{{ OPERATOR_NAME }}.git"
 OPERATOR_PYTHON_DEPENDENCY_LIST:
   - openshift
   - jmespath

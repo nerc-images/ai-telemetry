@@ -51,9 +51,9 @@ SITE_ZONE: "{{ lookup('env', 'SITE_ZONE') | default('America/New_York', true) }}
 # The domain name of the site. 
 DOMAIN_NAME: computate.org
 # The GitHub organization for this project. 
-GITHUB_ORG: nerc-images
+GIT_ORG: nerc-images
 # The main git repository for the project. 
-SITE_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_NAME }}.git"
+SITE_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_NAME }}.git"
 # The main git repository for the project via ssh. 
 SITE_REPO_HTTPS: "{{ SITE_REPO | replace('git@github.com:', 'https://github.com/') }}"
 # The port of the site. 
@@ -222,7 +222,7 @@ SITE_LOGO_URI: "/svg/logo-{{ SITE_THEME }}.svg"
 # The name of the repository containing the web static content. 
 SITE_STATIC_NAME: "{{ SITE_NAME }}-static"
 # The static files git repository for the project. 
-SITE_STATIC_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ SITE_STATIC_NAME }}.git"
+SITE_STATIC_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_STATIC_NAME }}.git"
 # The base URL to the static files. 
 STATIC_BASE_URL: "{{ SITE_BASE_URL }}/static"
 # The path to the static files. 
@@ -236,7 +236,7 @@ TEMPLATE_PATH: "{{ STATIC_PATH }}/templates"
 ######################
 
 # The developer tools repo for this site. 
-DEVELOPER_REPO: "git@github.com:{{ GITHUB_ORG }}/{{ DEVELOPER_PROJECT_NAME }}.git"
+DEVELOPER_REPO: "git@github.com:{{ GIT_ORG }}/{{ DEVELOPER_PROJECT_NAME }}.git"
 # The software developer name. 
 DEVELOPER_NAME: Christopher Tate
 # The software organization name. 
