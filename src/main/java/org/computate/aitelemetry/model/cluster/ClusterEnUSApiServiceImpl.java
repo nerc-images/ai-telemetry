@@ -282,7 +282,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -310,7 +310,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
