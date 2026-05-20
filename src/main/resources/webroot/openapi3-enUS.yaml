@@ -3729,7 +3729,7 @@ paths:
             type: array
             items:
               type: string
-            default: ["hubId"]
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -4293,7 +4293,7 @@ paths:
             type: array
             items:
               type: string
-            default: ["hubId"]
+            default: ["hubId", "clusterName"]
       responses:
         '200':
           description: >+
@@ -4442,7 +4442,7 @@ paths:
             type: array
             items:
               type: string
-            default: ["hubId"]
+            default: ["hubId", "clusterName"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '

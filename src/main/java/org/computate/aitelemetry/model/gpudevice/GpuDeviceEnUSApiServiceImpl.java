@@ -69,7 +69,7 @@ public class GpuDeviceEnUSApiServiceImpl extends GpuDeviceEnUSGenApiServiceImpl 
               .expecting(HttpResponseExpectation.SC_OK)
               .onSuccess(metricsResponse -> {
             JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-            JsonArray dataResult = Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray());
+            JsonArray dataResult = Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray());
             List<Future<?>> futures = new ArrayList<>();
             dataResult.stream().map(o -> (JsonObject)o).forEach(clusterResult -> {
               futures.add(Future.future(promise1 -> {
@@ -168,7 +168,7 @@ public class GpuDeviceEnUSApiServiceImpl extends GpuDeviceEnUSGenApiServiceImpl 
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -195,7 +195,7 @@ public class GpuDeviceEnUSApiServiceImpl extends GpuDeviceEnUSGenApiServiceImpl 
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);

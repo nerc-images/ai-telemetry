@@ -97,6 +97,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * HtmCell: 3
    * HtmColumn: 2
    * Facet: true
+   * DefaultFacet: true
    **/
   protected void _clusterName(Wrap<String> w) {}
 

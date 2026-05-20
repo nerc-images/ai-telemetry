@@ -950,7 +950,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
         JsonArray results = new JsonArray();
-        Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()).stream()
+        Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()).stream()
             .map(o -> (JsonObject)o).filter(metrics -> 
             !metrics.getJsonObject("metric").getString("namespace").startsWith("openshift-")
             && !metrics.getJsonObject("metric").getString("namespace").startsWith("open-cluster-management")
@@ -985,7 +985,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format("Querying VLLM projects failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
@@ -1015,7 +1015,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format("Querying GPU projects failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
@@ -1044,7 +1044,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format("Querying pod restarts failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
@@ -1073,7 +1073,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format("Querying pods terminating failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
@@ -1102,7 +1102,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format("Querying pod restarts failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
@@ -1131,7 +1131,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
           .expecting(HttpResponseExpectation.SC_OK)
           .onSuccess(metricsResponse -> {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
         LOG.error(String.format("Querying full PVCs failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
         promise.fail(ex);
