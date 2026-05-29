@@ -135,3 +135,18 @@ We will deploy the AI Telemetry Worker, OpenAPI, and front-end dashboard to the 
 backed by Keycloak Fine-Grained Authorization. 
 - The NERC `prod` cluster where most of the research projects for GPU workloads are in development. 
 - The NERC `test` clusters where Other AI/ML GPU research projects and Red Hat projects are taking place, like RHEL AI and InstructLab. 
+
+## Check for CVEs
+
+To check for Java Maven CVEs in this project, run this command to install `trivy`. 
+
+```bash
+sudo dnf install -y trivy
+```
+
+Run this command in this directory to scan for vulnerabilities. 
+
+```bash
+trivy fs --scanners vuln .
+```
+
