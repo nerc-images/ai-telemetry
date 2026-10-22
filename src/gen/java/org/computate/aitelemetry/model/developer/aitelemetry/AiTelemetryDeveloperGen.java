@@ -1,5 +1,33 @@
 package org.computate.aitelemetry.model.developer.aitelemetry;
 
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.result.BaseResult;
+import org.computate.vertx.config.ComputateConfigKeys;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.tool.SearchTool;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.model.BaseModel;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.search.list.SearchList;
+import io.vertx.core.Promise;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.result.BaseResult;
 import org.computate.aitelemetry.model.BaseModel;
@@ -24,6 +52,7 @@ import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
 import java.math.MathContext;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.text.NumberFormat;
@@ -42,6 +71,14 @@ import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDevelope
 import io.vertx.core.json.JsonArray;
 import org.computate.vertx.serialize.vertx.JsonArrayDeserializer;
 import org.computate.search.wrap.Wrap;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.core.MultiMap;
+import io.vertx.core.http.HttpResponseExpectation;
+import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.buffer.Buffer;
+import org.computate.vertx.config.ComputateConfigKeys;
+import java.util.stream.Collectors;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import org.computate.search.tool.SearchTool;
@@ -53,9 +90,11 @@ import io.vertx.core.json.JsonObject;
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
  * <li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class AiTelemetryDeveloperGen into the class AiTelemetryDeveloper. 
- * </li><li>You can add a class comment "Rows: 100" if you wish the AiTelemetryDeveloper API to return more or less than 10 records by default. 
- * In this case, the API will return 100 records from the API instead of 10 by default. 
- * Each API has built in pagination of the search records to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </li><li><p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the AI Telemetry developer API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
  * </li><li>You can add a class comment "Model: true" if you wish to persist these AiTelemetryDeveloper objects in a relational PostgreSQL database transactionally in the RESTful API. 
  * The code to persist and query the AiTelemetryDeveloperGen data in the database will then be automatically generated. 
  * </li>
@@ -75,43 +114,61 @@ import io.vertx.core.json.JsonObject;
  * The generated <code>class AiTelemetryDeveloperGen extends BaseResult</code> which means that AiTelemetryDeveloper extends AiTelemetryDeveloperGen which extends BaseResult. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
- * <h2>Api: true</h2>
- * <p>This class contains a comment <b>"Api: true"</b>, which means this class will have Java Vert.x API backend code generated for these objects. 
+ * <h2>
+ *   Api: true
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Api: true</b></kbd>, which means this class will have Java Vert.x API backend code generated for these objects. 
  * </p>
  * <h2>ApiTag.enUS: true</h2>
- * <p>This class contains a comment <b>"ApiTag: AI Telemetry developers"</b>, which groups all of the OpenAPIs for AiTelemetryDeveloper objects under the tag "AI Telemetry developers". 
+ * <p>This class contains a comment <kbd><b>ApiTag: AI Telemetry developers</b></kbd>, which groups all of the OpenAPIs for AiTelemetryDeveloper objects under the tag "AI Telemetry developers". 
  * </p>
  * <h2>ApiUri.enUS: /en-us/api/ai-telemetry-developer</h2>
- * <p>This class contains a comment <b>"ApiUri: /en-us/api/ai-telemetry-developer"</b>, which defines the base API URI for AiTelemetryDeveloper objects as "/en-us/api/ai-telemetry-developer" in the OpenAPI spec. 
+ * <p>This class contains a comment <kbd><b>ApiUri: /en-us/api/ai-telemetry-developer</b></kbd>, which defines the base API URI for AiTelemetryDeveloper objects as "/en-us/api/ai-telemetry-developer" in the OpenAPI spec. 
  * </p>
  * <h2>Color: null</h2>
  * <h2>Indexed: true</h2>
- * <p>This class contains a comment <b>"Indexed: true"</b>, which means this class will be indexed in the search engine. 
+ * <p>This class contains a comment <kbd><b>Indexed: true</b></kbd>, which means this class will be indexed in the search engine. 
  * Every protected void method that begins with "_" that is marked to be searched with a comment like "Indexed: true", "Stored: true", or "DocValues: true" will be indexed in the search engine. 
  * </p>
  * <h2>{@inheritDoc}</h2>
  * <p>By adding a class comment "{@inheritDoc}", the AiTelemetryDeveloper class will inherit the helpful inherited class comments from the super class AiTelemetryDeveloperGen. 
  * </p>
- * <h2>Rows: null</h2>
- * <h2>Order: 4</h2>
- * <p>This class contains a comment <b>"Order: 4"</b>, which means this class will be sorted by the given number 4 ascending when code that relates to multiple classes at the same time is generated. 
+ * <h2>
+ *   Rows: 10
+ * </h2>
+ * <p>This class contains a comment <kbd><b>Rows: 10</b></kbd>, which means the AI Telemetry developer API will return a default of 10 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the AI Telemetry developer API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <h2>
+ *   Order: 4
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Order: 4</b></kbd>, 
+ *   which means this class will be sorted by the given number 4 
+ *   ascending when code that relates to multiple classes at the same time is generated. 
  * </p>
  * <h2>SqlOrder: 4</h2>
- * <p>This class contains a comment <b>"SqlOrder: 4"</b>, which means this class will be sorted by the given number 4 ascending when SQL code to create and drop the tables is generated. 
+ * <p>This class contains a comment <kbd><b>SqlOrder: 4</b></kbd>, which means this class will be sorted by the given number 4 ascending when SQL code to create and drop the tables is generated. 
  * </p>
  * <h2>Model: true</h2>
  * <h2>Page: true</h2>
- * <p>This class contains a comment <b>"Page: true"</b>, which means this class will have webpage code generated for these objects. 
+ * <p>This class contains a comment <kbd><b>Page: true</b></kbd>, which means this class will have webpage code generated for these objects. 
  * Java Vert.x backend API code, Handlebars HTML template frontend code, and JavaScript code will all generated and can be extended. 
  * This creates a new Java class org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperPage. 
  * </p>
  * <h2>SuperPage.enUS: PageLayout</h2>
- * <p>This class contains a comment <b>"SuperPage.enUS: PageLayout"</b>, which identifies the Java super class of the page code by it's class simple name "PageLayout". 
+ * <p>This class contains a comment <kbd><b>SuperPage.enUS: PageLayout</b></kbd>, which identifies the Java super class of the page code by it's class simple name "PageLayout". 
  * This means that the newly created class org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperPage extends org.computate.aitelemetry.page.PageLayout. 
  * </p>
  * <h2>Promise: true</h2>
  * <p>
- *   This class contains a comment <b>"Promise: true"</b>
+ *   This class contains a comment <kbd><b>Promise: true</b></kbd>
  *   Sometimes a Java class must be initialized asynchronously when it involves calling a blocking API. 
  *   This means that the AiTelemetryDeveloper Java class has promiseDeep methods which must be initialized asynchronously as a Vert.x Promise  instead of initDeep methods which are a simple non-asynchronous method. 
  * </p>
@@ -133,24 +190,24 @@ import io.vertx.core.json.JsonObject;
  *   If a super class of this Java class with `Model: true`, then the child class will also inherit `Promise: true`. 
  * </p>
  * <h2>AName.enUS: an AI Telemetry developer</h2>
- * <p>This class contains a comment <b>"AName.enUS: an AI Telemetry developer"</b>, which identifies the language context to describe a AiTelemetryDeveloper as "an AI Telemetry developer". 
+ * <p>This class contains a comment <kbd><b>AName.enUS: an AI Telemetry developer</b></kbd>, which identifies the language context to describe a AiTelemetryDeveloper as "an AI Telemetry developer". 
  * </p>
  * <p>
  * Delete the class AiTelemetryDeveloper in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the package org.computate.aitelemetry.model.developer.aitelemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.model.developer.aitelemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.model.developer.aitelemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * Generated: true
@@ -1712,7 +1769,8 @@ public abstract class AiTelemetryDeveloperGen<DEV> extends BaseResult {
   //////////////
 
   public Future<AiTelemetryDeveloperGen<DEV>> promiseDeepAiTelemetryDeveloper(SiteRequest siteRequest_) {
-    setSiteRequest_(siteRequest_);
+    if(this.siteRequest_ == null)
+      setSiteRequest_(siteRequest_);
     return promiseDeepAiTelemetryDeveloper();
   }
 
@@ -1996,6 +2054,73 @@ public abstract class AiTelemetryDeveloperGen<DEV> extends BaseResult {
       default:
         return BaseResult.staticSetBaseResult(entityVar,  siteRequest_, v, o);
     }
+  }
+
+  //////////////////
+  // authorization //
+  //////////////////
+
+  public static Future<AsyncResult<HttpResponse<Buffer>>> authorizationAiTelemetryDeveloper(SiteRequest siteRequest, WebClient webClient, Boolean classPublicRead, String classApiMethod, String classApiMethodMethod, String scope) {
+    Promise<AsyncResult<HttpResponse<Buffer>>> promise = Promise.promise();
+    try {
+      JsonObject config = siteRequest.getConfig();
+      SiteRequest siteRequest2 = siteRequest.copy();
+      String pageId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pageId");
+      String AITELEMETRYDEVELOPER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AITELEMETRYDEVELOPER");
+      List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+      MultiMap form = MultiMap.caseInsensitiveMultiMap();
+      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+      form.add("response_mode", "permissions");
+      form.add("permission", String.format("%s#%s", AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "GET"));
+      form.add("permission", String.format("%s#%s", AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "POST"));
+      form.add("permission", String.format("%s#%s", AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "PATCH"));
+      form.add("permission", String.format("%s#%s", AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "DELETE"));
+      form.add("permission", String.format("%s#%s", AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "Admin"));
+      form.add("permission", String.format("%s#%s", AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "SuperAdmin"));
+      if(pageId != null)
+        form.add("permission", String.format("%s-%s#%s", AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, pageId, scope));
+      webClient.post(
+          config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+      .onComplete(authorizationDecisionResponse -> {
+        promise.complete(authorizationDecisionResponse);
+      });
+    } catch(Throwable ex) {
+      LOG.error("Error while querying theAI Telemetry developer", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<SiteRequest> authorizationScopesAiTelemetryDeveloper(AsyncResult<HttpResponse<Buffer>> authorizationDecisionResponse, SiteRequest siteRequest2, WebClient webClient, Boolean classPublicRead, String classApiMethod, String classApiMethodMethod, String scope) {
+    Promise<SiteRequest> promise = Promise.promise();
+    try {
+      siteRequest2.initDeepSiteRequest();
+      HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+      JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+      JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AITELEMETRYDEVELOPER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+      if("GET".equals(classApiMethod) && !"GET".equals(classApiMethod)) {
+        siteRequest2.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+        promise.complete(siteRequest2);
+      } else if("GET".equals(classApiMethod) && authorizationDecisionResponse.failed() && !scopes.contains(classApiMethodMethod)
+           || authorizationDecisionResponse.failed() || !scopes.contains(classApiMethodMethod)) {
+        promise.complete(siteRequest2);
+      } else {
+        siteRequest2.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+        promise.complete(siteRequest2);
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying theAI Telemetry developer", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
   }
 
   //////////////////
@@ -2928,6 +3053,11 @@ public abstract class AiTelemetryDeveloperGen<DEV> extends BaseResult {
   }
 
   @Override
+  public String enUSStringFormatUrlApiForClass() {
+    return "%s/en-us/api/ai-telemetry-developer/%s";
+  }
+
+  @Override
   public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/ai-telemetry-developer/%s";
   }
@@ -2937,7 +3067,7 @@ public abstract class AiTelemetryDeveloperGen<DEV> extends BaseResult {
     return "%s/en-us/ai-telemetry-developer/learn/%s";
   }
 
-  public static String varJsonForClass(String var, Boolean patch) {
+  public static String varJson(String var, Boolean patch) {
     return AiTelemetryDeveloper.varJsonAiTelemetryDeveloper(var, patch);
   }
   public static String varJsonAiTelemetryDeveloper(String var, Boolean patch) {

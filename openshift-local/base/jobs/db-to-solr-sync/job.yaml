@@ -34,8 +34,6 @@ spec:
         - secretRef:
             name: cloud-auth
         - secretRef:
-            name: cloud-context-broker
-        - secretRef:
             name: cloud-site
         - secretRef:
             name: cloud-font-awesome

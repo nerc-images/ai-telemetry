@@ -1,5 +1,22 @@
 package org.computate.aitelemetry.model.node;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
+import org.computate.search.tool.SearchTool;
+import org.computate.search.wrap.Wrap;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.aitelemetry.model.BaseModel;
+import org.computate.aitelemetry.model.cluster.Cluster;
+import org.computate.aitelemetry.model.hub.Hub;
+import io.vertx.core.Promise;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.pgclient.data.Path;
+import io.vertx.pgclient.data.Point;
+import io.vertx.pgclient.data.Polygon;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.model.BaseModel;
 import io.vertx.core.json.JsonObject;
@@ -26,6 +43,7 @@ import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
 import java.math.MathContext;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.text.NumberFormat;
@@ -55,6 +73,13 @@ import io.vertx.core.json.Json;
 import java.lang.Integer;
 import org.computate.vertx.serialize.vertx.JsonObjectDeserializer;
 import org.computate.search.wrap.Wrap;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.core.MultiMap;
+import io.vertx.core.http.HttpResponseExpectation;
+import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.buffer.Buffer;
+import org.computate.vertx.config.ComputateConfigKeys;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import org.computate.vertx.search.list.SearchList;
@@ -83,49 +108,62 @@ import org.computate.search.response.solr.SolrResponse;
  * The generated <code>class AiNodeGen extends BaseModel</code> which means that AiNode extends AiNodeGen which extends BaseModel. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
- * <h2>Api: true</h2>
- * <p>This class contains a comment <b>"Api: true"</b>, which means this class will have Java Vert.x API backend code generated for these objects. 
+ * <h2>
+ *   Api: true
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Api: true</b></kbd>, which means this class will have Java Vert.x API backend code generated for these objects. 
  * </p>
  * <h2>ApiTag.enUS: true</h2>
- * <p>This class contains a comment <b>"ApiTag: AI nodes"</b>, which groups all of the OpenAPIs for AiNode objects under the tag "AI nodes". 
+ * <p>This class contains a comment <kbd><b>ApiTag: AI nodes</b></kbd>, which groups all of the OpenAPIs for AiNode objects under the tag "AI nodes". 
  * </p>
  * <h2>ApiUri.enUS: /en-us/api/ai-node</h2>
- * <p>This class contains a comment <b>"ApiUri: /en-us/api/ai-node"</b>, which defines the base API URI for AiNode objects as "/en-us/api/ai-node" in the OpenAPI spec. 
+ * <p>This class contains a comment <kbd><b>ApiUri: /en-us/api/ai-node</b></kbd>, which defines the base API URI for AiNode objects as "/en-us/api/ai-node" in the OpenAPI spec. 
  * </p>
  * <h2>Color: null</h2>
  * <h2>Indexed: true</h2>
- * <p>This class contains a comment <b>"Indexed: true"</b>, which means this class will be indexed in the search engine. 
+ * <p>This class contains a comment <kbd><b>Indexed: true</b></kbd>, which means this class will be indexed in the search engine. 
  * Every protected void method that begins with "_" that is marked to be searched with a comment like "Indexed: true", "Stored: true", or "DocValues: true" will be indexed in the search engine. 
  * </p>
  * <h2>{@inheritDoc}</h2>
  * <p>By adding a class comment "{@inheritDoc}", the AiNode class will inherit the helpful inherited class comments from the super class AiNodeGen. 
  * </p>
- * <h2>Rows: 100</h2>
- * <p>This class contains a comment <b>"Rows: 100"</b>, which means the AiNode API will return a default of 100 records instead of 10 by default. 
- * Each API has built in pagination of the search records to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * <h2>
+ *   Rows: 100
+ * </h2>
+ * <p>This class contains a comment <kbd><b>Rows: 100</b></kbd>, which means the AI node API will return a default of 100 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
  * </p>
- * <h2>Order: 8</h2>
- * <p>This class contains a comment <b>"Order: 8"</b>, which means this class will be sorted by the given number 8 ascending when code that relates to multiple classes at the same time is generated. 
+ * <p>This class contains a comment <kbd><b>Rows: 100</b></kbd>, which means the AI node API will return a default of 100 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <h2>
+ *   Order: 8
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Order: 8</b></kbd>, 
+ *   which means this class will be sorted by the given number 8 
+ *   ascending when code that relates to multiple classes at the same time is generated. 
  * </p>
  * <h2>SqlOrder: 8</h2>
- * <p>This class contains a comment <b>"SqlOrder: 8"</b>, which means this class will be sorted by the given number 8 ascending when SQL code to create and drop the tables is generated. 
+ * <p>This class contains a comment <kbd><b>SqlOrder: 8</b></kbd>, which means this class will be sorted by the given number 8 ascending when SQL code to create and drop the tables is generated. 
  * </p>
  * <h2>Model: true</h2>
- * <p>This class contains a comment <b>"Model: true"</b>, which means this class will be stored in the database. 
+ * <p>This class contains a comment <kbd><b>Model: true</b></kbd>, which means this class will be stored in the database. 
  * Every protected void method that begins with "_" that contains a "Persist: true" comment will be a persisted field in the database table. 
  * </p>
  * <h2>Page: true</h2>
- * <p>This class contains a comment <b>"Page: true"</b>, which means this class will have webpage code generated for these objects. 
+ * <p>This class contains a comment <kbd><b>Page: true</b></kbd>, which means this class will have webpage code generated for these objects. 
  * Java Vert.x backend API code, Handlebars HTML template frontend code, and JavaScript code will all generated and can be extended. 
  * This creates a new Java class org.computate.aitelemetry.model.node.AiNodePage. 
  * </p>
  * <h2>SuperPage.enUS: PageLayout</h2>
- * <p>This class contains a comment <b>"SuperPage.enUS: PageLayout"</b>, which identifies the Java super class of the page code by it's class simple name "PageLayout". 
+ * <p>This class contains a comment <kbd><b>SuperPage.enUS: PageLayout</b></kbd>, which identifies the Java super class of the page code by it's class simple name "PageLayout". 
  * This means that the newly created class org.computate.aitelemetry.model.node.AiNodePage extends org.computate.aitelemetry.page.PageLayout. 
  * </p>
  * <h2>Promise: true</h2>
  * <p>
- *   This class contains a comment <b>"Promise: true"</b>
+ *   This class contains a comment <kbd><b>Promise: true</b></kbd>
  *   Sometimes a Java class must be initialized asynchronously when it involves calling a blocking API. 
  *   This means that the AiNode Java class has promiseDeep methods which must be initialized asynchronously as a Vert.x Promise  instead of initDeep methods which are a simple non-asynchronous method. 
  * </p>
@@ -147,24 +185,24 @@ import org.computate.search.response.solr.SolrResponse;
  *   If a super class of this Java class with `Model: true`, then the child class will also inherit `Promise: true`. 
  * </p>
  * <h2>AName.enUS: an AI node</h2>
- * <p>This class contains a comment <b>"AName.enUS: an AI node"</b>, which identifies the language context to describe a AiNode as "an AI node". 
+ * <p>This class contains a comment <kbd><b>AName.enUS: an AI node</b></kbd>, which identifies the language context to describe a AiNode as "an AI node". 
  * </p>
  * <p>
  * Delete the class AiNode in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.node.AiNode&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.node.AiNode&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the package org.computate.aitelemetry.model.node in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.model.node&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.model.node&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * Generated: true
@@ -1504,7 +1542,8 @@ public abstract class AiNodeGen<DEV> extends BaseModel {
   //////////////
 
   public Future<AiNodeGen<DEV>> promiseDeepAiNode(SiteRequest siteRequest_) {
-    setSiteRequest_(siteRequest_);
+    if(this.siteRequest_ == null)
+      setSiteRequest_(siteRequest_);
     return promiseDeepAiNode();
   }
 
@@ -1730,6 +1769,128 @@ public abstract class AiNodeGen<DEV> extends BaseModel {
       default:
         return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
     }
+  }
+
+  //////////////////
+  // authorization //
+  //////////////////
+
+  public static Future<AsyncResult<HttpResponse<Buffer>>> authorizationAiNode(SiteRequest siteRequest, WebClient webClient, Boolean classPublicRead, String classApiMethod, String classApiMethodMethod, String scope) {
+    Promise<AsyncResult<HttpResponse<Buffer>>> promise = Promise.promise();
+    try {
+      JsonObject config = siteRequest.getConfig();
+      SiteRequest siteRequest2 = siteRequest.copy();
+      String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
+      String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
+      List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+      MultiMap form = MultiMap.caseInsensitiveMultiMap();
+      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+      form.add("response_mode", "permissions");
+      form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
+      form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
+      form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
+      form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
+      form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
+      if(nodeResource != null)
+        form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, scope));
+      groups.stream().map(group -> {
+            Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
+            return mPermission.find() ? mPermission : null;
+          }).filter(v -> v != null).forEach(mPermission -> {
+            form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
+          });
+      groups.stream().map(group -> {
+            Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
+            return mPermission.find() ? mPermission : null;
+          }).filter(v -> v != null).forEach(mPermission -> {
+            form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
+          });
+      webClient.post(
+          config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+      .onComplete(authorizationDecisionResponse -> {
+        promise.complete(authorizationDecisionResponse);
+      });
+    } catch(Throwable ex) {
+      LOG.error("Error while querying theAI node", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<SiteRequest> authorizationScopesAiNode(AsyncResult<HttpResponse<Buffer>> authorizationDecisionResponse, SiteRequest siteRequest2, WebClient webClient, Boolean classPublicRead, String classApiMethod, String classApiMethodMethod, String scope) {
+    Promise<SiteRequest> promise = Promise.promise();
+    try {
+      siteRequest2.initDeepSiteRequest();
+      HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+      JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+      JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+      if(!scopes.contains(scope)) {
+        List<String> fqs = new ArrayList<>();
+        authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+              Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+              return permission.getJsonArray("scopes").contains(scope)
+                  && mPermission.find();
+            }).forEach(permission -> {
+              fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
+              permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope2 -> {
+                if(!scopes.contains(scope2))
+                  scopes.add(scope2);
+              });
+            });
+        authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
+              Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
+              return permission.getJsonArray("scopes").contains(scope)
+                  && mPermission.find();
+            }).forEach(permission -> {
+              fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
+              permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope2 -> {
+                if(!scopes.contains(scope2))
+                  scopes.add(scope2);
+              });
+            });
+        if(!"GET".equals(classApiMethodMethod) || !classPublicRead) {
+          JsonObject authParams = siteRequest2.getServiceRequest().getParams();
+          JsonObject authQuery = authParams.getJsonObject("query");
+          if(authQuery == null) {
+            authQuery = new JsonObject();
+            authParams.put("query", authQuery);
+          }
+          JsonArray fq = authQuery.getJsonArray("fq");
+          if(fq == null) {
+            fq = new JsonArray();
+            authQuery.put("fq", fq);
+          }
+          if(fqs.size() > 0) {
+            fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
+            if(!scopes.contains(scope))
+              scopes.add(scope);
+            siteRequest2.setFilteredScope(true);
+          }
+        }
+      }
+      if("GET".equals(classApiMethod) && !"GET".equals(classApiMethod)) {
+        siteRequest2.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+        promise.complete(siteRequest2);
+      } else if("GET".equals(classApiMethod) && authorizationDecisionResponse.failed() && !scopes.contains(classApiMethodMethod)
+           || authorizationDecisionResponse.failed() || !scopes.contains(classApiMethodMethod)) {
+        promise.complete(siteRequest2);
+      } else {
+        siteRequest2.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+        promise.complete(siteRequest2);
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying theAI node", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
   }
 
   //////////////////
@@ -2652,6 +2813,11 @@ public abstract class AiNodeGen<DEV> extends BaseModel {
   }
 
   @Override
+  public String enUSStringFormatUrlApiForClass() {
+    return "%s/en-us/api/ai-node/%s";
+  }
+
+  @Override
   public String enUSStringFormatUrlEditPageForClass() {
     return "%s/en-us/edit/ai-node/%s";
   }
@@ -2661,7 +2827,7 @@ public abstract class AiNodeGen<DEV> extends BaseModel {
     return "%s/en-us/user/ai-node/%s";
   }
 
-  public static String varJsonForClass(String var, Boolean patch) {
+  public static String varJson(String var, Boolean patch) {
     return AiNode.varJsonAiNode(var, patch);
   }
   public static String varJsonAiNode(String var, Boolean patch) {

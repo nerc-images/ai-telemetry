@@ -1,5 +1,79 @@
 package org.computate.aitelemetry.model.baremetalnode;
 
+import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.base.ComputateBaseModel;
+import org.computate.aitelemetry.request.SiteRequest;
+import java.lang.Object;
+import org.computate.aitelemetry.model.BaseModel;
+import io.vertx.core.json.JsonObject;
+import java.util.Date;
+import java.util.Set;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.aitelemetry.config.ConfigKeys;
+import java.util.Optional;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.computate.search.serialize.ComputateLocalDateSerializer;
+import org.computate.search.serialize.ComputateLocalDateDeserializer;
+import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
+import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
+import java.math.MathContext;
+import org.apache.commons.lang3.math.NumberUtils;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.math.RoundingMode;
+import java.util.Map;
+import java.lang.Long;
+import java.lang.String;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.lang.Boolean;
+import io.vertx.core.json.JsonArray;
+import org.computate.search.wrap.Wrap;
+import io.vertx.core.Promise;
+import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.response.solr.SolrResponse;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.user.SiteUser;
 import org.computate.vertx.api.ApiRequest;
@@ -123,54 +197,26 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNodeList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNode -> {
-                response200SearchBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchBareMetalNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalNodeList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalNode -> {
+              response200SearchBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchBareMetalNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchBareMetalNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchBareMetalNode failed. "), ex);
@@ -286,54 +332,26 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNodeList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNode -> {
-                response200GETBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("getBareMetalNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("getBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalNodeList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalNode -> {
+              response200GETBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("getBareMetalNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("getBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("getBareMetalNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("getBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("getBareMetalNode failed. "), ex);
@@ -387,88 +405,48 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "PATCH"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNodeList(siteRequest, false, true, true, "PATCH").onSuccess(listBareMetalNode -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-                  apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listBareMetalNode.first());
-                  apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getNodeId().toString()).orElse(null));
-                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalNodeList(siteRequest2, false, true, true, "PATCH").onSuccess(listBareMetalNode -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listBareMetalNode.getRequest().getRows());
+                apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listBareMetalNode.first());
+                apiRequest.setId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getNodeId().toString()).orElse(null));
+                apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
 
-                  listPATCHBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-                    response200PATCHBareMetalNode(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("patchBareMetalNode succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("patchBareMetalNode failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listPATCHBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
+                  response200PATCHBareMetalNode(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("patchBareMetalNode succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchBareMetalNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("patchBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("patchBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("patchBareMetalNode failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("patchBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("patchBareMetalNode failed. "), ex);
@@ -566,7 +544,8 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             apiRequest.setNumPATCH(0L);
             apiRequest.initDeepApiRequest(siteRequest);
             siteRequest.setApiRequest_(apiRequest);
-            if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+            Boolean refresh = Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L;
+            if(refresh) {
               siteRequest.getRequestVars().put( "refresh", "false" );
             }
             BareMetalNode o2;
@@ -583,6 +562,8 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               }).onFailure(ex -> {
                 eventHandler.handle(Future.failedFuture(ex));
               });
+            } else if(refresh) {
+              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
             } else {
               String m = String.format("%s %s not found", "bare metal node", null);
               eventHandler.handle(Future.failedFuture(m));
@@ -615,19 +596,23 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
       pgPool.withTransaction(sqlConnection -> {
         siteRequest.setSqlConnection(sqlConnection);
         varsBareMetalNode(siteRequest).onSuccess(a -> {
-          sqlPATCHBareMetalNode(o, inheritPrimaryKey).onSuccess(bareMetalNode -> {
-            persistBareMetalNode(bareMetalNode, true).onSuccess(c -> {
-              relateBareMetalNode(bareMetalNode).onSuccess(d -> {
-                indexBareMetalNode(bareMetalNode).onSuccess(o2 -> {
-                  if(apiRequest != null) {
-                    apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-                    if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-                      o2.apiRequestBareMetalNode();
-                      if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-                        eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+          upsertBareMetalNode(o, inheritPrimaryKey, true).onSuccess(c -> {
+            sqlPATCHBareMetalNode(o, inheritPrimaryKey).onSuccess(bareMetalNode -> {
+              persistBareMetalNode(bareMetalNode, true).onSuccess(d -> {
+                relateBareMetalNode(bareMetalNode).onSuccess(e -> {
+                  indexBareMetalNode(bareMetalNode).onSuccess(o2 -> {
+                    if(apiRequest != null) {
+                      apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
+                      if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
+                        o2.apiRequestBareMetalNode();
+                        if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
+                          eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+                      }
                     }
-                  }
-                  promise1.complete(bareMetalNode);
+                    promise1.complete(bareMetalNode);
+                  }).onFailure(ex -> {
+                    promise1.tryFail(ex);
+                  });
                 }).onFailure(ex -> {
                   promise1.tryFail(ex);
                 });
@@ -706,14 +691,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               num++;
               bParams.add(o2.sqlNetworkInfo());
             break;
-          case "setCreated":
-              o2.setCreated(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalNode.VAR_created + "=$" + num);
-              num++;
-              bParams.add(o2.sqlCreated());
-            break;
           case "setNodeId":
               o2.setNodeId(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -729,14 +706,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               bSql.append(BareMetalNode.VAR_nodeIsMaintenance + "=$" + num);
               num++;
               bParams.add(o2.sqlNodeIsMaintenance());
-            break;
-          case "setArchived":
-              o2.setArchived(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalNode.VAR_archived + "=$" + num);
-              num++;
-              bParams.add(o2.sqlArchived());
             break;
           case "setNodeLinks":
               o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
@@ -770,14 +739,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               num++;
               bParams.add(o2.sqlNodeProvisionState());
             break;
-          case "setSessionId":
-              o2.setSessionId(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalNode.VAR_sessionId + "=$" + num);
-              num++;
-              bParams.add(o2.sqlSessionId());
-            break;
           case "setNodeResourceClass":
               o2.setNodeResourceClass(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -785,6 +746,30 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
               num++;
               bParams.add(o2.sqlNodeResourceClass());
+            break;
+          case "setCreated":
+              o2.setCreated(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalNode.VAR_created + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCreated());
+            break;
+          case "setArchived":
+              o2.setArchived(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalNode.VAR_archived + "=$" + num);
+              num++;
+              bParams.add(o2.sqlArchived());
+            break;
+          case "setSessionId":
+              o2.setSessionId(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalNode.VAR_sessionId + "=$" + num);
+              num++;
+              bParams.add(o2.sqlSessionId());
             break;
           case "setUserKey":
               o2.setUserKey(jsonObject.getString(entityVar));
@@ -801,6 +786,14 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
               bSql.append(BareMetalNode.VAR_objectTitle + "=$" + num);
               num++;
               bParams.add(o2.sqlObjectTitle());
+            break;
+          case "setApiUrl":
+              o2.setApiUrl(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalNode.VAR_apiUrl + "=$" + num);
+              num++;
+              bParams.add(o2.sqlApiUrl());
             break;
           case "setDisplayPage":
               o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -894,90 +887,55 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "POST"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              apiRequest.setRows(1L);
-              apiRequest.setNumFound(1L);
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
-              JsonObject params = new JsonObject();
-              params.put("body", siteRequest.getJsonObject());
-              params.put("path", new JsonObject());
-              params.put("scopes", scopes2);
-              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-              params.put("form", new JsonObject());
-              JsonObject query = new JsonObject();
-              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-              if(softCommit == null && commitWithin == null)
-                softCommit = true;
-              if(softCommit != null)
-                query.put("softCommit", softCommit);
-              if(commitWithin != null)
-                query.put("commitWithin", commitWithin);
-              params.put("query", query);
-              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-              JsonObject json = new JsonObject().put("context", context);
-              eventBus.request(BareMetalNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postBareMetalNodeFuture")).onSuccess(a -> {
-                JsonObject responseMessage = (JsonObject)a.body();
-                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-                apiRequest.setSolrId(responseBody.getString(BareMetalNode.VAR_solrId));
-                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            apiRequest.setRows(1L);
+            apiRequest.setNumFound(1L);
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+            JsonObject params = new JsonObject();
+            params.put("body", siteRequest2.getJsonObject());
+            params.put("path", new JsonObject());
+            params.put("scopes", scopes2);
+            params.put("cookie", siteRequest2.getServiceRequest().getParams().getJsonObject("cookie"));
+            params.put("header", siteRequest2.getServiceRequest().getParams().getJsonObject("header"));
+            params.put("form", new JsonObject());
+            JsonObject query = new JsonObject();
+            Boolean softCommit = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+            Integer commitWithin = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+            if(softCommit == null && commitWithin == null)
+              softCommit = true;
+            if(softCommit != null)
+              query.put("softCommit", softCommit);
+            if(commitWithin != null)
+              query.put("commitWithin", commitWithin);
+            params.put("query", query);
+            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest2.getUserPrincipal());
+            JsonObject json = new JsonObject().put("context", context);
+            eventBus.request(BareMetalNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postBareMetalNodeFuture")).onSuccess(a -> {
+              JsonObject responseMessage = (JsonObject)a.body();
+              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+              apiRequest.setSolrId(responseBody.getString(BareMetalNode.VAR_solrId));
+              response200POSTBareMetalNode(siteRequest2, responseBody).onSuccess(response -> {
                 LOG.debug(String.format("postBareMetalNode succeeded. "));
+                eventHandler.handle(Future.succeededFuture(response));
               }).onFailure(ex -> {
                 LOG.error(String.format("postBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("postBareMetalNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("postBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("postBareMetalNode failed. "), ex);
@@ -1073,11 +1031,15 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
         siteRequest.setSqlConnection(sqlConnection);
         varsBareMetalNode(siteRequest).onSuccess(a -> {
           createBareMetalNode(siteRequest).onSuccess(bareMetalNode -> {
-            sqlPOSTBareMetalNode(bareMetalNode, nodeId).onSuccess(b -> {
-              persistBareMetalNode(bareMetalNode, false).onSuccess(c -> {
-                relateBareMetalNode(bareMetalNode).onSuccess(d -> {
-                  indexBareMetalNode(bareMetalNode).onSuccess(o2 -> {
-                    promise1.complete(bareMetalNode);
+            upsertBareMetalNode(bareMetalNode, nodeId, false).onSuccess(b -> {
+              sqlPOSTBareMetalNode(bareMetalNode, nodeId).onSuccess(c -> {
+                persistBareMetalNode(bareMetalNode, false).onSuccess(d -> {
+                  relateBareMetalNode(bareMetalNode).onSuccess(e -> {
+                    indexBareMetalNode(bareMetalNode).onSuccess(o2 -> {
+                      promise1.complete(bareMetalNode);
+                    }).onFailure(ex -> {
+                      promise1.tryFail(ex);
+                    });
                   }).onFailure(ex -> {
                     promise1.tryFail(ex);
                   });
@@ -1201,15 +1163,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             num++;
             bParams.add(o2.sqlNetworkInfo());
             break;
-          case BareMetalNode.VAR_created:
-            o2.setCreated(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalNode.VAR_created + "=$" + num);
-            num++;
-            bParams.add(o2.sqlCreated());
-            break;
           case BareMetalNode.VAR_nodeId:
             o2.setNodeId(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1227,15 +1180,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             bSql.append(BareMetalNode.VAR_nodeIsMaintenance + "=$" + num);
             num++;
             bParams.add(o2.sqlNodeIsMaintenance());
-            break;
-          case BareMetalNode.VAR_archived:
-            o2.setArchived(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalNode.VAR_archived + "=$" + num);
-            num++;
-            bParams.add(o2.sqlArchived());
             break;
           case BareMetalNode.VAR_nodeLinks:
             o2.setNodeLinks(jsonObject.getJsonArray(entityVar));
@@ -1273,15 +1217,6 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             num++;
             bParams.add(o2.sqlNodeProvisionState());
             break;
-          case BareMetalNode.VAR_sessionId:
-            o2.setSessionId(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalNode.VAR_sessionId + "=$" + num);
-            num++;
-            bParams.add(o2.sqlSessionId());
-            break;
           case BareMetalNode.VAR_nodeResourceClass:
             o2.setNodeResourceClass(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1290,6 +1225,24 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             bSql.append(BareMetalNode.VAR_nodeResourceClass + "=$" + num);
             num++;
             bParams.add(o2.sqlNodeResourceClass());
+            break;
+          case BareMetalNode.VAR_created:
+            o2.setCreated(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalNode.VAR_created + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCreated());
+            break;
+          case BareMetalNode.VAR_archived:
+            o2.setArchived(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalNode.VAR_archived + "=$" + num);
+            num++;
+            bParams.add(o2.sqlArchived());
             break;
           case BareMetalNode.VAR_userKey:
             o2.setUserKey(jsonObject.getString(entityVar));
@@ -1308,6 +1261,15 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
             bSql.append(BareMetalNode.VAR_objectTitle + "=$" + num);
             num++;
             bParams.add(o2.sqlObjectTitle());
+            break;
+          case BareMetalNode.VAR_apiUrl:
+            o2.setApiUrl(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalNode.VAR_apiUrl + "=$" + num);
+            num++;
+            bParams.add(o2.sqlApiUrl());
             break;
           case BareMetalNode.VAR_displayPage:
             o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -1382,11 +1344,9 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     return promise.future();
   }
 
-  public Future<ServiceResponse> response200POSTBareMetalNode(BareMetalNode o) {
+  public Future<ServiceResponse> response200POSTBareMetalNode(SiteRequest siteRequest, JsonObject json) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
-      SiteRequest siteRequest = o.getSiteRequest_();
-      JsonObject json = JsonObject.mapFrom(o);
       promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTBareMetalNode failed. "), ex);
@@ -1404,87 +1364,47 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "DELETE"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNodeList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalNode -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-                  apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listBareMetalNode.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalNodeList(siteRequest2, false, true, true, "DELETE").onSuccess(listBareMetalNode -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listBareMetalNode.getRequest().getRows());
+                apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listBareMetalNode.first());
+                apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-                    response200DELETEBareMetalNode(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deleteBareMetalNode succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deleteBareMetalNode failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
+                  response200DELETEBareMetalNode(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deleteBareMetalNode succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteBareMetalNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deleteBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deleteBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deleteBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deleteBareMetalNode failed. "), ex);
@@ -1754,79 +1674,39 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "PUT"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-              apiRequest.setRows(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
-              varsBareMetalNode(siteRequest).onSuccess(d -> {
-                listPUTImportBareMetalNode(apiRequest, siteRequest).onSuccess(e -> {
-                  response200PUTImportBareMetalNode(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("putimportBareMetalNode succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
-                  }).onFailure(ex -> {
-                    LOG.error(String.format("putimportBareMetalNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
-                  });
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            JsonArray jsonArray = Optional.ofNullable(siteRequest2.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+            apiRequest.setRows(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+            varsBareMetalNode(siteRequest2).onSuccess(d -> {
+              listPUTImportBareMetalNode(apiRequest, siteRequest2).onSuccess(e -> {
+                response200PUTImportBareMetalNode(siteRequest2).onSuccess(response -> {
+                  LOG.debug(String.format("putimportBareMetalNode succeeded. "));
+                  eventHandler.handle(Future.succeededFuture(response));
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
+                  error(siteRequest2, eventHandler, ex);
                 });
               }).onFailure(ex -> {
                 LOG.error(String.format("putimportBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("putimportBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("putimportBareMetalNode failed. "), ex);
@@ -2077,54 +1957,26 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNodeList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNode -> {
-                response200SearchPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchpageBareMetalNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalNodeList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalNode -> {
+              response200SearchPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchpageBareMetalNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchpageBareMetalNode failed. "), ex);
@@ -2183,6 +2035,45 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/bare-metal-node/BareMetalNodeSearchPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/bare-metal-node/BareMetalNodeGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2261,19 +2152,24 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
           Promise<Void> promise1 = Promise.promise();
           searchpageBareMetalNodePageInit(ctx, page, listBareMetalNode, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateSearchPageBareMetalNode(ctx, page, listBareMetalNode, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200SearchPageBareMetalNode failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateSearchPageBareMetalNode(ctx, page, listBareMetalNode, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200SearchPageBareMetalNode failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200SearchPageBareMetalNode failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2333,54 +2229,25 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNodeList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalNode -> {
-                response200EditPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("editpageBareMetalNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("editpageBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchBareMetalNodeList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalNode -> {
+              response200EditPageBareMetalNode(listBareMetalNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("editpageBareMetalNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageBareMetalNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("editpageBareMetalNode failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("editpageBareMetalNode failed. "), ex);
@@ -2439,6 +2306,45 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/bare-metal-node/BareMetalNodeEditPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/bare-metal-node/BareMetalNodeGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2517,19 +2423,24 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
           Promise<Void> promise1 = Promise.promise();
           editpageBareMetalNodePageInit(ctx, page, listBareMetalNode, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateEditPageBareMetalNode(ctx, page, listBareMetalNode, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200EditPageBareMetalNode failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateEditPageBareMetalNode(ctx, page, listBareMetalNode, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200EditPageBareMetalNode failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200EditPageBareMetalNode failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2590,87 +2501,47 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeId");
-        String BAREMETALNODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALNODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeId != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalNode.CLASS_AUTH_RESOURCE, nodeId, "DELETE"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALNODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalNodeList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalNode -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listBareMetalNode.getRequest().getRows());
-                  apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listBareMetalNode.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
+        BareMetalNode.authorizationBareMetalNode(siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          BareMetalNode.authorizationScopesBareMetalNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalNodeList(siteRequest2, false, true, true, "DELETE").onSuccess(listBareMetalNode -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listBareMetalNode.getRequest().getRows());
+                apiRequest.setNumFound(listBareMetalNode.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listBareMetalNode.first());
+                apiRequest.setSolrId(Optional.ofNullable(listBareMetalNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketBareMetalNode", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEFilterBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
-                    response200DELETEFilterBareMetalNode(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deletefilterBareMetalNode succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEFilterBareMetalNode(apiRequest, listBareMetalNode).onSuccess(e -> {
+                  response200DELETEFilterBareMetalNode(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deletefilterBareMetalNode succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deletefilterBareMetalNode failed. "), ex);
@@ -3251,13 +3122,147 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
   public void searchBareMetalNode2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<BareMetalNode> searchList) {
   }
 
+  public Future<JsonObject> upsertBareMetalNode(BareMetalNode o, Boolean inheritPrimaryKey, Boolean patch) {
+    Promise<JsonObject> promise = Promise.promise();
+    try {
+      SiteRequest siteRequest = o.getSiteRequest_();
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+        promise.complete();
+      } else {
+        JsonObject json = o.getSiteRequest_().getJsonObject();
+
+        JsonArray old_leaseInfo = BareMetalNode.staticJsonLeaseInfo(o.getLeaseInfo());
+        JsonArray new_leaseInfo = json.getJsonArray(BareMetalNode.varJson(BareMetalNode.VAR_leaseInfo, patch));
+
+        JsonArray old_networkInfo = BareMetalNode.staticJsonNetworkInfo(o.getNetworkInfo());
+        JsonArray new_networkInfo = json.getJsonArray(BareMetalNode.varJson(BareMetalNode.VAR_networkInfo, patch));
+
+        String old_nodeId = BareMetalNode.staticJsonNodeId(o.getNodeId());
+        String new_nodeId = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_nodeId, patch));
+
+        String old_nodeIsMaintenance = BareMetalNode.staticJsonNodeIsMaintenance(o.getNodeIsMaintenance());
+        String new_nodeIsMaintenance = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_nodeIsMaintenance, patch));
+
+        JsonArray old_nodeLinks = BareMetalNode.staticJsonNodeLinks(o.getNodeLinks());
+        JsonArray new_nodeLinks = json.getJsonArray(BareMetalNode.varJson(BareMetalNode.VAR_nodeLinks, patch));
+
+        String old_nodeName = BareMetalNode.staticJsonNodeName(o.getNodeName());
+        String new_nodeName = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_nodeName, patch));
+
+        String old_nodePowerState = BareMetalNode.staticJsonNodePowerState(o.getNodePowerState());
+        String new_nodePowerState = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_nodePowerState, patch));
+
+        String old_nodeProvisionState = BareMetalNode.staticJsonNodeProvisionState(o.getNodeProvisionState());
+        String new_nodeProvisionState = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_nodeProvisionState, patch));
+
+        String old_nodeResourceClass = BareMetalNode.staticJsonNodeResourceClass(o.getNodeResourceClass());
+        String new_nodeResourceClass = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_nodeResourceClass, patch));
+
+        String old_created = BareMetalNode.staticJsonCreated(o.getCreated());
+        String new_created = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_created, patch));
+
+        Boolean old_archived = BareMetalNode.staticJsonArchived(o.getArchived());
+        Boolean new_archived = json.getBoolean(BareMetalNode.varJson(BareMetalNode.VAR_archived, patch));
+
+        String old_sessionId = BareMetalNode.staticJsonSessionId(o.getSessionId());
+        String new_sessionId = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_sessionId, patch));
+
+        String old_userKey = BareMetalNode.staticJsonUserKey(o.getUserKey());
+        String new_userKey = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_userKey, patch));
+
+        String old_objectTitle = BareMetalNode.staticJsonObjectTitle(o.getObjectTitle());
+        String new_objectTitle = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_objectTitle, patch));
+
+        String old_apiUrl = BareMetalNode.staticJsonApiUrl(o.getApiUrl());
+        String new_apiUrl = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_apiUrl, patch));
+
+        String old_displayPage = BareMetalNode.staticJsonDisplayPage(o.getDisplayPage());
+        String new_displayPage = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_displayPage, patch));
+
+        String old_editPage = BareMetalNode.staticJsonEditPage(o.getEditPage());
+        String new_editPage = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_editPage, patch));
+
+        String old_userPage = BareMetalNode.staticJsonUserPage(o.getUserPage());
+        String new_userPage = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_userPage, patch));
+
+        String old_download = BareMetalNode.staticJsonDownload(o.getDownload());
+        String new_download = json.getString(BareMetalNode.varJson(BareMetalNode.VAR_download, patch));
+
+        JsonArray leaseInfo = Optional.ofNullable(Optional.ofNullable(new_leaseInfo).orElse(old_leaseInfo)).orElse(null);
+        // if(!Objects.equals(old_leaseInfo, leaseInfo))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_leaseInfo, patch), leaseInfo);
+        JsonArray networkInfo = Optional.ofNullable(Optional.ofNullable(new_networkInfo).orElse(old_networkInfo)).orElse(null);
+        // if(!Objects.equals(old_networkInfo, networkInfo))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_networkInfo, patch), networkInfo);
+        String nodeId = Optional.ofNullable(Optional.ofNullable(new_nodeId).orElse(old_nodeId)).orElse(null);
+        // if(!Objects.equals(old_nodeId, nodeId))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_nodeId, patch), nodeId);
+        String nodeIsMaintenance = Optional.ofNullable(Optional.ofNullable(new_nodeIsMaintenance).orElse(old_nodeIsMaintenance)).orElse(null);
+        // if(!Objects.equals(old_nodeIsMaintenance, nodeIsMaintenance))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_nodeIsMaintenance, patch), nodeIsMaintenance);
+        JsonArray nodeLinks = Optional.ofNullable(Optional.ofNullable(new_nodeLinks).orElse(old_nodeLinks)).orElse(null);
+        // if(!Objects.equals(old_nodeLinks, nodeLinks))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_nodeLinks, patch), nodeLinks);
+        String nodeName = Optional.ofNullable(Optional.ofNullable(new_nodeName).orElse(old_nodeName)).orElse(null);
+        // if(!Objects.equals(old_nodeName, nodeName))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_nodeName, patch), nodeName);
+        String nodePowerState = Optional.ofNullable(Optional.ofNullable(new_nodePowerState).orElse(old_nodePowerState)).orElse(null);
+        // if(!Objects.equals(old_nodePowerState, nodePowerState))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_nodePowerState, patch), nodePowerState);
+        String nodeProvisionState = Optional.ofNullable(Optional.ofNullable(new_nodeProvisionState).orElse(old_nodeProvisionState)).orElse(null);
+        // if(!Objects.equals(old_nodeProvisionState, nodeProvisionState))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_nodeProvisionState, patch), nodeProvisionState);
+        String nodeResourceClass = Optional.ofNullable(Optional.ofNullable(new_nodeResourceClass).orElse(old_nodeResourceClass)).orElse(null);
+        // if(!Objects.equals(old_nodeResourceClass, nodeResourceClass))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_nodeResourceClass, patch), nodeResourceClass);
+        String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
+        // if(!Objects.equals(old_created, created))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_created, patch), created);
+        Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
+        // if(!Objects.equals(old_archived, archived))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_archived, patch), archived);
+        String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
+        // if(!Objects.equals(old_sessionId, sessionId))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_sessionId, patch), sessionId);
+        String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
+        // if(!Objects.equals(old_userKey, userKey))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_userKey, patch), userKey);
+        String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
+        // if(!Objects.equals(old_objectTitle, objectTitle))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_objectTitle, patch), objectTitle);
+        String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
+        // if(!Objects.equals(old_apiUrl, apiUrl))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_apiUrl, patch), apiUrl);
+        String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
+        // if(!Objects.equals(old_displayPage, displayPage))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_displayPage, patch), displayPage);
+        String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
+        // if(!Objects.equals(old_editPage, editPage))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_editPage, patch), editPage);
+        String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
+        // if(!Objects.equals(old_userPage, userPage))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_userPage, patch), userPage);
+        String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
+        // if(!Objects.equals(old_download, download))
+          // json.put(BareMetalNode.varJson(BareMetalNode.VAR_download, patch), download);
+
+        promise.complete(json);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("upsertBareMetalNode failed. "), ex);
+      promise.tryFail(ex);
+    }
+    return promise.future();
+  }
+
   public Future<Void> persistBareMetalNode(BareMetalNode o, Boolean patch) {
     Promise<Void> promise = Promise.promise();
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT leaseInfo, networkInfo, created, nodeId, nodeIsMaintenance, archived, nodeLinks, nodeName, nodePowerState, nodeProvisionState, sessionId, nodeResourceClass, userKey, objectTitle, displayPage, editPage, userPage, download FROM BareMetalNode WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT leaseInfo, networkInfo, nodeId, nodeIsMaintenance, nodeLinks, nodeName, nodePowerState, nodeProvisionState, nodeResourceClass, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM BareMetalNode WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -3464,18 +3469,19 @@ public class BareMetalNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl imple
 
       o.persistForClass(BareMetalNode.VAR_leaseInfo, BareMetalNode.staticSetLeaseInfo(siteRequest2, (String)result.get(BareMetalNode.VAR_leaseInfo)));
       o.persistForClass(BareMetalNode.VAR_networkInfo, BareMetalNode.staticSetNetworkInfo(siteRequest2, (String)result.get(BareMetalNode.VAR_networkInfo)));
-      o.persistForClass(BareMetalNode.VAR_created, BareMetalNode.staticSetCreated(siteRequest2, (String)result.get(BareMetalNode.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(BareMetalNode.VAR_nodeId, BareMetalNode.staticSetNodeId(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeId)));
       o.persistForClass(BareMetalNode.VAR_nodeIsMaintenance, BareMetalNode.staticSetNodeIsMaintenance(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeIsMaintenance)));
-      o.persistForClass(BareMetalNode.VAR_archived, BareMetalNode.staticSetArchived(siteRequest2, (String)result.get(BareMetalNode.VAR_archived)));
       o.persistForClass(BareMetalNode.VAR_nodeLinks, BareMetalNode.staticSetNodeLinks(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeLinks)));
       o.persistForClass(BareMetalNode.VAR_nodeName, BareMetalNode.staticSetNodeName(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeName)));
       o.persistForClass(BareMetalNode.VAR_nodePowerState, BareMetalNode.staticSetNodePowerState(siteRequest2, (String)result.get(BareMetalNode.VAR_nodePowerState)));
       o.persistForClass(BareMetalNode.VAR_nodeProvisionState, BareMetalNode.staticSetNodeProvisionState(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeProvisionState)));
-      o.persistForClass(BareMetalNode.VAR_sessionId, BareMetalNode.staticSetSessionId(siteRequest2, (String)result.get(BareMetalNode.VAR_sessionId)));
       o.persistForClass(BareMetalNode.VAR_nodeResourceClass, BareMetalNode.staticSetNodeResourceClass(siteRequest2, (String)result.get(BareMetalNode.VAR_nodeResourceClass)));
+      o.persistForClass(BareMetalNode.VAR_created, BareMetalNode.staticSetCreated(siteRequest2, (String)result.get(BareMetalNode.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(BareMetalNode.VAR_archived, BareMetalNode.staticSetArchived(siteRequest2, (String)result.get(BareMetalNode.VAR_archived)));
+      o.persistForClass(BareMetalNode.VAR_sessionId, BareMetalNode.staticSetSessionId(siteRequest2, (String)result.get(BareMetalNode.VAR_sessionId)));
       o.persistForClass(BareMetalNode.VAR_userKey, BareMetalNode.staticSetUserKey(siteRequest2, (String)result.get(BareMetalNode.VAR_userKey)));
       o.persistForClass(BareMetalNode.VAR_objectTitle, BareMetalNode.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalNode.VAR_objectTitle)));
+      o.persistForClass(BareMetalNode.VAR_apiUrl, BareMetalNode.staticSetApiUrl(siteRequest2, (String)result.get(BareMetalNode.VAR_apiUrl)));
       o.persistForClass(BareMetalNode.VAR_displayPage, BareMetalNode.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalNode.VAR_displayPage)));
       o.persistForClass(BareMetalNode.VAR_editPage, BareMetalNode.staticSetEditPage(siteRequest2, (String)result.get(BareMetalNode.VAR_editPage)));
       o.persistForClass(BareMetalNode.VAR_userPage, BareMetalNode.staticSetUserPage(siteRequest2, (String)result.get(BareMetalNode.VAR_userPage)));

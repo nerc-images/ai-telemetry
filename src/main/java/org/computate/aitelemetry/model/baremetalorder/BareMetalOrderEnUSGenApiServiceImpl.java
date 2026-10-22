@@ -2,6 +2,80 @@ package org.computate.aitelemetry.model.baremetalorder;
 
 import org.computate.aitelemetry.model.baremetalnetwork.BareMetalNetworkEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.baremetalnetwork.BareMetalNetwork;
+import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.base.ComputateBaseModel;
+import org.computate.aitelemetry.request.SiteRequest;
+import java.lang.Object;
+import org.computate.aitelemetry.model.BaseModel;
+import io.vertx.core.json.JsonObject;
+import java.util.Date;
+import java.util.Set;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.aitelemetry.config.ConfigKeys;
+import java.util.Optional;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.computate.search.serialize.ComputateLocalDateSerializer;
+import org.computate.search.serialize.ComputateLocalDateDeserializer;
+import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
+import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
+import java.math.MathContext;
+import org.apache.commons.lang3.math.NumberUtils;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.math.RoundingMode;
+import java.util.Map;
+import java.lang.Long;
+import java.lang.String;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.lang.Boolean;
+import io.vertx.core.json.JsonArray;
+import org.computate.search.wrap.Wrap;
+import io.vertx.core.Promise;
+import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.response.solr.SolrResponse;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.user.SiteUser;
 import org.computate.vertx.api.ApiRequest;
@@ -125,56 +199,26 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "GET"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
-                response200SearchBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchBareMetalOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalOrderList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
+              response200SearchBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchBareMetalOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchBareMetalOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchBareMetalOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchBareMetalOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchBareMetalOrder failed. "), ex);
@@ -290,56 +334,26 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "GET"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
-                response200GETBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("getBareMetalOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("getBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalOrderList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
+              response200GETBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("getBareMetalOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("getBareMetalOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("getBareMetalOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("getBareMetalOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("getBareMetalOrder failed. "), ex);
@@ -393,92 +407,48 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "PATCH"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            scopes.add("GET");
-            scopes.add("PATCH");
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, true, "PATCH").onSuccess(listBareMetalOrder -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
-                  apiRequest.setNumFound(listBareMetalOrder.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listBareMetalOrder.first());
-                  apiRequest.setId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getPk().toString()).orElse(null));
-                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalOrderList(siteRequest2, false, true, true, "PATCH").onSuccess(listBareMetalOrder -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
+                apiRequest.setNumFound(listBareMetalOrder.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listBareMetalOrder.first());
+                apiRequest.setId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getPk().toString()).orElse(null));
+                apiRequest.setSolrId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
 
-                  listPATCHBareMetalOrder(apiRequest, listBareMetalOrder).onSuccess(e -> {
-                    response200PATCHBareMetalOrder(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("patchBareMetalOrder succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("patchBareMetalOrder failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listPATCHBareMetalOrder(apiRequest, listBareMetalOrder).onSuccess(e -> {
+                  response200PATCHBareMetalOrder(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("patchBareMetalOrder succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchBareMetalOrder failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("patchBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("patchBareMetalOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("patchBareMetalOrder failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("patchBareMetalOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("patchBareMetalOrder failed. "), ex);
@@ -576,7 +546,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             apiRequest.setNumPATCH(0L);
             apiRequest.initDeepApiRequest(siteRequest);
             siteRequest.setApiRequest_(apiRequest);
-            if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+            Boolean refresh = Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L;
+            if(refresh) {
               siteRequest.getRequestVars().put( "refresh", "false" );
             }
             BareMetalOrder o2;
@@ -593,6 +564,8 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               }).onFailure(ex -> {
                 eventHandler.handle(Future.failedFuture(ex));
               });
+            } else if(refresh) {
+              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
             } else {
               String m = String.format("%s %s not found", "bare metal order", null);
               eventHandler.handle(Future.failedFuture(m));
@@ -625,19 +598,23 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       pgPool.withTransaction(sqlConnection -> {
         siteRequest.setSqlConnection(sqlConnection);
         varsBareMetalOrder(siteRequest).onSuccess(a -> {
-          sqlPATCHBareMetalOrder(o, inheritPrimaryKey).onSuccess(bareMetalOrder -> {
-            persistBareMetalOrder(bareMetalOrder, true).onSuccess(c -> {
-              relateBareMetalOrder(bareMetalOrder).onSuccess(d -> {
-                indexBareMetalOrder(bareMetalOrder).onSuccess(o2 -> {
-                  if(apiRequest != null) {
-                    apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-                    if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-                      o2.apiRequestBareMetalOrder();
-                      if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-                        eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
+          upsertBareMetalOrder(o, inheritPrimaryKey, true).onSuccess(c -> {
+            sqlPATCHBareMetalOrder(o, inheritPrimaryKey).onSuccess(bareMetalOrder -> {
+              persistBareMetalOrder(bareMetalOrder, true).onSuccess(d -> {
+                relateBareMetalOrder(bareMetalOrder).onSuccess(e -> {
+                  indexBareMetalOrder(bareMetalOrder).onSuccess(o2 -> {
+                    if(apiRequest != null) {
+                      apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
+                      if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
+                        o2.apiRequestBareMetalOrder();
+                        if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
+                          eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
+                      }
                     }
-                  }
-                  promise1.complete(bareMetalOrder);
+                    promise1.complete(bareMetalOrder);
+                  }).onFailure(ex -> {
+                    promise1.tryFail(ex);
+                  });
                 }).onFailure(ex -> {
                   promise1.tryFail(ex);
                 });
@@ -708,14 +685,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               num++;
               bParams.add(o2.sqlDescription());
             break;
-          case "setCreated":
-              o2.setCreated(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_created + "=$" + num);
-              num++;
-              bParams.add(o2.sqlCreated());
-            break;
           case "setNetworkId":
             Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
               futures1.add(Future.future(promise2 -> {
@@ -747,14 +716,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               }));
             });
             break;
-          case "setArchived":
-              o2.setArchived(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_archived + "=$" + num);
-              num++;
-              bParams.add(o2.sqlArchived());
-            break;
           case "setNumberOfFc430":
               o2.setNumberOfFc430(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -771,14 +732,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               num++;
               bParams.add(o2.sqlNumberOfFc830());
             break;
-          case "setSessionId":
-              o2.setSessionId(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_sessionId + "=$" + num);
-              num++;
-              bParams.add(o2.sqlSessionId());
-            break;
           case "setNumberOfR730xd":
               o2.setNumberOfR730xd(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -786,14 +739,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               bSql.append(BareMetalOrder.VAR_numberOfR730xd + "=$" + num);
               num++;
               bParams.add(o2.sqlNumberOfR730xd());
-            break;
-          case "setUserKey":
-              o2.setUserKey(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_userKey + "=$" + num);
-              num++;
-              bParams.add(o2.sqlUserKey());
             break;
           case "setNumberOfWhiteboxFlax1":
               o2.setNumberOfWhiteboxFlax1(jsonObject.getString(entityVar));
@@ -819,14 +764,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               num++;
               bParams.add(o2.sqlNumberOfLenovoSd665nv3H100());
             break;
-          case "setObjectTitle":
-              o2.setObjectTitle(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_objectTitle + "=$" + num);
-              num++;
-              bParams.add(o2.sqlObjectTitle());
-            break;
           case "setImage":
               o2.setImage(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -834,14 +771,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               bSql.append(BareMetalOrder.VAR_image + "=$" + num);
               num++;
               bParams.add(o2.sqlImage());
-            break;
-          case "setDisplayPage":
-              o2.setDisplayPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_displayPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlDisplayPage());
             break;
           case "setSshPublicKey":
               o2.setSshPublicKey(jsonObject.getString(entityVar));
@@ -851,14 +780,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               num++;
               bParams.add(o2.sqlSshPublicKey());
             break;
-          case "setEditPage":
-              o2.setEditPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_editPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlEditPage());
-            break;
           case "setFloatingIp":
               o2.setFloatingIp(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -867,14 +788,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               num++;
               bParams.add(o2.sqlFloatingIp());
             break;
-          case "setUserPage":
-              o2.setUserPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(BareMetalOrder.VAR_userPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlUserPage());
-            break;
           case "setStatus":
               o2.setStatus(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -882,6 +795,78 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               bSql.append(BareMetalOrder.VAR_status + "=$" + num);
               num++;
               bParams.add(o2.sqlStatus());
+            break;
+          case "setCreated":
+              o2.setCreated(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_created + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCreated());
+            break;
+          case "setArchived":
+              o2.setArchived(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_archived + "=$" + num);
+              num++;
+              bParams.add(o2.sqlArchived());
+            break;
+          case "setSessionId":
+              o2.setSessionId(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_sessionId + "=$" + num);
+              num++;
+              bParams.add(o2.sqlSessionId());
+            break;
+          case "setUserKey":
+              o2.setUserKey(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_userKey + "=$" + num);
+              num++;
+              bParams.add(o2.sqlUserKey());
+            break;
+          case "setObjectTitle":
+              o2.setObjectTitle(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_objectTitle + "=$" + num);
+              num++;
+              bParams.add(o2.sqlObjectTitle());
+            break;
+          case "setApiUrl":
+              o2.setApiUrl(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_apiUrl + "=$" + num);
+              num++;
+              bParams.add(o2.sqlApiUrl());
+            break;
+          case "setDisplayPage":
+              o2.setDisplayPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_displayPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlDisplayPage());
+            break;
+          case "setEditPage":
+              o2.setEditPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_editPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlEditPage());
+            break;
+          case "setUserPage":
+              o2.setUserPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(BareMetalOrder.VAR_userPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlUserPage());
             break;
           case "setDownload":
               o2.setDownload(jsonObject.getString(entityVar));
@@ -951,94 +936,55 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "POST"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            scopes.add("GET");
-            scopes.add("PATCH");
-            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              apiRequest.setRows(1L);
-              apiRequest.setNumFound(1L);
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
-              JsonObject params = new JsonObject();
-              params.put("body", siteRequest.getJsonObject());
-              params.put("path", new JsonObject());
-              params.put("scopes", scopes2);
-              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-              params.put("form", new JsonObject());
-              JsonObject query = new JsonObject();
-              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-              if(softCommit == null && commitWithin == null)
-                softCommit = true;
-              if(softCommit != null)
-                query.put("softCommit", softCommit);
-              if(commitWithin != null)
-                query.put("commitWithin", commitWithin);
-              params.put("query", query);
-              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-              JsonObject json = new JsonObject().put("context", context);
-              eventBus.request(BareMetalOrder.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postBareMetalOrderFuture")).onSuccess(a -> {
-                JsonObject responseMessage = (JsonObject)a.body();
-                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-                apiRequest.setSolrId(responseBody.getString(BareMetalOrder.VAR_solrId));
-                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            apiRequest.setRows(1L);
+            apiRequest.setNumFound(1L);
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
+            JsonObject params = new JsonObject();
+            params.put("body", siteRequest2.getJsonObject());
+            params.put("path", new JsonObject());
+            params.put("scopes", scopes2);
+            params.put("cookie", siteRequest2.getServiceRequest().getParams().getJsonObject("cookie"));
+            params.put("header", siteRequest2.getServiceRequest().getParams().getJsonObject("header"));
+            params.put("form", new JsonObject());
+            JsonObject query = new JsonObject();
+            Boolean softCommit = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+            Integer commitWithin = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+            if(softCommit == null && commitWithin == null)
+              softCommit = true;
+            if(softCommit != null)
+              query.put("softCommit", softCommit);
+            if(commitWithin != null)
+              query.put("commitWithin", commitWithin);
+            params.put("query", query);
+            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest2.getUserPrincipal());
+            JsonObject json = new JsonObject().put("context", context);
+            eventBus.request(BareMetalOrder.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postBareMetalOrderFuture")).onSuccess(a -> {
+              JsonObject responseMessage = (JsonObject)a.body();
+              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+              apiRequest.setSolrId(responseBody.getString(BareMetalOrder.VAR_solrId));
+              response200POSTBareMetalOrder(siteRequest2, responseBody).onSuccess(response -> {
                 LOG.debug(String.format("postBareMetalOrder succeeded. "));
+                eventHandler.handle(Future.succeededFuture(response));
               }).onFailure(ex -> {
                 LOG.error(String.format("postBareMetalOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("postBareMetalOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("postBareMetalOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("postBareMetalOrder failed. "), ex);
@@ -1134,11 +1080,15 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setSqlConnection(sqlConnection);
         varsBareMetalOrder(siteRequest).onSuccess(a -> {
           createBareMetalOrder(siteRequest).onSuccess(bareMetalOrder -> {
-            sqlPOSTBareMetalOrder(bareMetalOrder, pk).onSuccess(b -> {
-              persistBareMetalOrder(bareMetalOrder, false).onSuccess(c -> {
-                relateBareMetalOrder(bareMetalOrder).onSuccess(d -> {
-                  indexBareMetalOrder(bareMetalOrder).onSuccess(o2 -> {
-                    promise1.complete(bareMetalOrder);
+            upsertBareMetalOrder(bareMetalOrder, pk, false).onSuccess(b -> {
+              sqlPOSTBareMetalOrder(bareMetalOrder, pk).onSuccess(c -> {
+                persistBareMetalOrder(bareMetalOrder, false).onSuccess(d -> {
+                  relateBareMetalOrder(bareMetalOrder).onSuccess(e -> {
+                    indexBareMetalOrder(bareMetalOrder).onSuccess(o2 -> {
+                      promise1.complete(bareMetalOrder);
+                    }).onFailure(ex -> {
+                      promise1.tryFail(ex);
+                    });
                   }).onFailure(ex -> {
                     promise1.tryFail(ex);
                   });
@@ -1253,15 +1203,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             num++;
             bParams.add(o2.sqlDescription());
             break;
-          case BareMetalOrder.VAR_created:
-            o2.setCreated(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_created + "=$" + num);
-            num++;
-            bParams.add(o2.sqlCreated());
-            break;
           case BareMetalOrder.VAR_networkId:
             Optional.ofNullable(jsonObject.getString(entityVar)).ifPresent(val -> {
               futures1.add(Future.future(promise2 -> {
@@ -1282,15 +1223,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               }));
             });
             break;
-          case BareMetalOrder.VAR_archived:
-            o2.setArchived(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_archived + "=$" + num);
-            num++;
-            bParams.add(o2.sqlArchived());
-            break;
           case BareMetalOrder.VAR_numberOfFc430:
             o2.setNumberOfFc430(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1309,15 +1241,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             num++;
             bParams.add(o2.sqlNumberOfFc830());
             break;
-          case BareMetalOrder.VAR_sessionId:
-            o2.setSessionId(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_sessionId + "=$" + num);
-            num++;
-            bParams.add(o2.sqlSessionId());
-            break;
           case BareMetalOrder.VAR_numberOfR730xd:
             o2.setNumberOfR730xd(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1326,15 +1249,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             bSql.append(BareMetalOrder.VAR_numberOfR730xd + "=$" + num);
             num++;
             bParams.add(o2.sqlNumberOfR730xd());
-            break;
-          case BareMetalOrder.VAR_userKey:
-            o2.setUserKey(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_userKey + "=$" + num);
-            num++;
-            bParams.add(o2.sqlUserKey());
             break;
           case BareMetalOrder.VAR_numberOfWhiteboxFlax1:
             o2.setNumberOfWhiteboxFlax1(jsonObject.getString(entityVar));
@@ -1363,15 +1277,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             num++;
             bParams.add(o2.sqlNumberOfLenovoSd665nv3H100());
             break;
-          case BareMetalOrder.VAR_objectTitle:
-            o2.setObjectTitle(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_objectTitle + "=$" + num);
-            num++;
-            bParams.add(o2.sqlObjectTitle());
-            break;
           case BareMetalOrder.VAR_image:
             o2.setImage(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1380,15 +1285,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             bSql.append(BareMetalOrder.VAR_image + "=$" + num);
             num++;
             bParams.add(o2.sqlImage());
-            break;
-          case BareMetalOrder.VAR_displayPage:
-            o2.setDisplayPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_displayPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlDisplayPage());
             break;
           case BareMetalOrder.VAR_sshPublicKey:
             o2.setSshPublicKey(jsonObject.getString(entityVar));
@@ -1399,15 +1295,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             num++;
             bParams.add(o2.sqlSshPublicKey());
             break;
-          case BareMetalOrder.VAR_editPage:
-            o2.setEditPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_editPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlEditPage());
-            break;
           case BareMetalOrder.VAR_floatingIp:
             o2.setFloatingIp(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1417,15 +1304,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             num++;
             bParams.add(o2.sqlFloatingIp());
             break;
-          case BareMetalOrder.VAR_userPage:
-            o2.setUserPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(BareMetalOrder.VAR_userPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlUserPage());
-            break;
           case BareMetalOrder.VAR_status:
             o2.setStatus(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1434,6 +1312,78 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             bSql.append(BareMetalOrder.VAR_status + "=$" + num);
             num++;
             bParams.add(o2.sqlStatus());
+            break;
+          case BareMetalOrder.VAR_created:
+            o2.setCreated(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_created + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCreated());
+            break;
+          case BareMetalOrder.VAR_archived:
+            o2.setArchived(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_archived + "=$" + num);
+            num++;
+            bParams.add(o2.sqlArchived());
+            break;
+          case BareMetalOrder.VAR_userKey:
+            o2.setUserKey(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_userKey + "=$" + num);
+            num++;
+            bParams.add(o2.sqlUserKey());
+            break;
+          case BareMetalOrder.VAR_objectTitle:
+            o2.setObjectTitle(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_objectTitle + "=$" + num);
+            num++;
+            bParams.add(o2.sqlObjectTitle());
+            break;
+          case BareMetalOrder.VAR_apiUrl:
+            o2.setApiUrl(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_apiUrl + "=$" + num);
+            num++;
+            bParams.add(o2.sqlApiUrl());
+            break;
+          case BareMetalOrder.VAR_displayPage:
+            o2.setDisplayPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_displayPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlDisplayPage());
+            break;
+          case BareMetalOrder.VAR_editPage:
+            o2.setEditPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_editPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlEditPage());
+            break;
+          case BareMetalOrder.VAR_userPage:
+            o2.setUserPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(BareMetalOrder.VAR_userPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlUserPage());
             break;
           case BareMetalOrder.VAR_download:
             o2.setDownload(jsonObject.getString(entityVar));
@@ -1481,11 +1431,9 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     return promise.future();
   }
 
-  public Future<ServiceResponse> response200POSTBareMetalOrder(BareMetalOrder o) {
+  public Future<ServiceResponse> response200POSTBareMetalOrder(SiteRequest siteRequest, JsonObject json) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
-      SiteRequest siteRequest = o.getSiteRequest_();
-      JsonObject json = JsonObject.mapFrom(o);
       promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTBareMetalOrder failed. "), ex);
@@ -1503,91 +1451,47 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "DELETE"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            scopes.add("GET");
-            scopes.add("PATCH");
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
-                  apiRequest.setNumFound(listBareMetalOrder.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listBareMetalOrder.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalOrderList(siteRequest2, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
+                apiRequest.setNumFound(listBareMetalOrder.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listBareMetalOrder.first());
+                apiRequest.setSolrId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEBareMetalOrder(apiRequest, listBareMetalOrder).onSuccess(e -> {
-                    response200DELETEBareMetalOrder(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deleteBareMetalOrder succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deleteBareMetalOrder failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEBareMetalOrder(apiRequest, listBareMetalOrder).onSuccess(e -> {
+                  response200DELETEBareMetalOrder(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deleteBareMetalOrder succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteBareMetalOrder failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deleteBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deleteBareMetalOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deleteBareMetalOrder failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deleteBareMetalOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deleteBareMetalOrder failed. "), ex);
@@ -1876,56 +1780,26 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "GET"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
-                response200SearchPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchpageBareMetalOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchpageBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalOrderList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
+              response200SearchPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchpageBareMetalOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageBareMetalOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchpageBareMetalOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchpageBareMetalOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchpageBareMetalOrder failed. "), ex);
@@ -1984,6 +1858,45 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/bare-metal-order/BareMetalOrderSearchPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/bare-metal-order/BareMetalOrderGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2062,19 +1975,24 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           searchpageBareMetalOrderPageInit(ctx, page, listBareMetalOrder, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateSearchPageBareMetalOrder(ctx, page, listBareMetalOrder, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200SearchPageBareMetalOrder failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateSearchPageBareMetalOrder(ctx, page, listBareMetalOrder, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200SearchPageBareMetalOrder failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200SearchPageBareMetalOrder failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2134,56 +2052,25 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "GET"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
-                response200EditPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("editpageBareMetalOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("editpageBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchBareMetalOrderList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
+              response200EditPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("editpageBareMetalOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageBareMetalOrder failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("editpageBareMetalOrder failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("editpageBareMetalOrder failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("editpageBareMetalOrder failed. "), ex);
@@ -2242,6 +2129,45 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/bare-metal-order/BareMetalOrderEditPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/bare-metal-order/BareMetalOrderGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2320,19 +2246,24 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           editpageBareMetalOrderPageInit(ctx, page, listBareMetalOrder, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateEditPageBareMetalOrder(ctx, page, listBareMetalOrder, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200EditPageBareMetalOrder failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateEditPageBareMetalOrder(ctx, page, listBareMetalOrder, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200EditPageBareMetalOrder failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200EditPageBareMetalOrder failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2392,56 +2323,25 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "GET"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
-                response200UserPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("userpageBareMetalOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("userpageBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "UserPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "UserPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchBareMetalOrderList(siteRequest2, false, true, false, "GET").onSuccess(listBareMetalOrder -> {
+              response200UserPageBareMetalOrder(listBareMetalOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("userpageBareMetalOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("userpageBareMetalOrder failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("userpageBareMetalOrder failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("userpageBareMetalOrder failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("userpageBareMetalOrder failed. "), ex);
@@ -2500,6 +2400,45 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "%s.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/bare-metal-order/BareMetalOrderGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2578,19 +2517,24 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           userpageBareMetalOrderPageInit(ctx, page, listBareMetalOrder, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateUserPageBareMetalOrder(ctx, page, listBareMetalOrder, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200UserPageBareMetalOrder failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateUserPageBareMetalOrder(ctx, page, listBareMetalOrder, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200UserPageBareMetalOrder failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200UserPageBareMetalOrder failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2651,91 +2595,47 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String pk = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("pk");
-        String BAREMETALORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("BAREMETALORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(pk != null)
-          form.add("permission", String.format("%s-%s#%s", BareMetalOrder.CLASS_AUTH_RESOURCE, pk, "DELETE"));
-        siteRequest.setPublicRead(classPublicRead);
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "BAREMETALORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            scopes.add("GET");
-            scopes.add("PATCH");
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchBareMetalOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
-                  apiRequest.setNumFound(listBareMetalOrder.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listBareMetalOrder.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
+        BareMetalOrder.authorizationBareMetalOrder(siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          BareMetalOrder.authorizationScopesBareMetalOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchBareMetalOrderList(siteRequest2, false, true, true, "DELETE").onSuccess(listBareMetalOrder -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listBareMetalOrder.getRequest().getRows());
+                apiRequest.setNumFound(listBareMetalOrder.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listBareMetalOrder.first());
+                apiRequest.setSolrId(Optional.ofNullable(listBareMetalOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketBareMetalOrder", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEFilterBareMetalOrder(apiRequest, listBareMetalOrder).onSuccess(e -> {
-                    response200DELETEFilterBareMetalOrder(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deletefilterBareMetalOrder succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deletefilterBareMetalOrder failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEFilterBareMetalOrder(apiRequest, listBareMetalOrder).onSuccess(e -> {
+                  response200DELETEFilterBareMetalOrder(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deletefilterBareMetalOrder succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterBareMetalOrder failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deletefilterBareMetalOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deletefilterBareMetalOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deletefilterBareMetalOrder failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deletefilterBareMetalOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deletefilterBareMetalOrder failed. "), ex);
@@ -3151,7 +3051,7 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       }
 
       if(!siteRequest.getScopes().contains("GET")) {
-        searchList.fq("sessionId_docvalues_string:" + SearchTool.escapeQueryChars(Optional.ofNullable(siteRequest.getSessionId()).orElse("\"-----\"")) + " OR " + "sessionId_docvalues_string:" + SearchTool.escapeQueryChars(Optional.ofNullable(siteRequest.getSessionIdBefore()).orElse("\"-----\""))
+        searchList.fq("sessionId_docvalues_string:" + SearchTool.escapeQueryChars(Optional.ofNullable(siteRequest.getSessionId()).orElse("\"-----\""))
             + " OR userId_docvalues_string:" + Optional.ofNullable(siteRequest.getUserId()).orElse("\"-----\""));
       }
 
@@ -3341,13 +3241,165 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
   public void searchBareMetalOrder2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<BareMetalOrder> searchList) {
   }
 
+  public Future<JsonObject> upsertBareMetalOrder(BareMetalOrder o, Boolean inheritPrimaryKey, Boolean patch) {
+    Promise<JsonObject> promise = Promise.promise();
+    try {
+      SiteRequest siteRequest = o.getSiteRequest_();
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+        promise.complete();
+      } else {
+        JsonObject json = o.getSiteRequest_().getJsonObject();
+
+        String old_description = BareMetalOrder.staticJsonDescription(o.getDescription());
+        String new_description = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_description, patch));
+
+        String old_networkId = BareMetalOrder.staticJsonNetworkId(o.getNetworkId());
+        String new_networkId = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_networkId, patch));
+
+        String old_numberOfFc430 = BareMetalOrder.staticJsonNumberOfFc430(o.getNumberOfFc430());
+        String new_numberOfFc430 = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfFc430, patch));
+
+        String old_numberOfFc830 = BareMetalOrder.staticJsonNumberOfFc830(o.getNumberOfFc830());
+        String new_numberOfFc830 = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfFc830, patch));
+
+        String old_numberOfR730xd = BareMetalOrder.staticJsonNumberOfR730xd(o.getNumberOfR730xd());
+        String new_numberOfR730xd = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfR730xd, patch));
+
+        String old_numberOfWhiteboxFlax1 = BareMetalOrder.staticJsonNumberOfWhiteboxFlax1(o.getNumberOfWhiteboxFlax1());
+        String new_numberOfWhiteboxFlax1 = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfWhiteboxFlax1, patch));
+
+        String old_numberOfLenovoSd650nv2A100 = BareMetalOrder.staticJsonNumberOfLenovoSd650nv2A100(o.getNumberOfLenovoSd650nv2A100());
+        String new_numberOfLenovoSd650nv2A100 = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfLenovoSd650nv2A100, patch));
+
+        String old_numberOfLenovoSd665nv3H100 = BareMetalOrder.staticJsonNumberOfLenovoSd665nv3H100(o.getNumberOfLenovoSd665nv3H100());
+        String new_numberOfLenovoSd665nv3H100 = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfLenovoSd665nv3H100, patch));
+
+        String old_image = BareMetalOrder.staticJsonImage(o.getImage());
+        String new_image = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_image, patch));
+
+        String old_sshPublicKey = BareMetalOrder.staticJsonSshPublicKey(o.getSshPublicKey());
+        String new_sshPublicKey = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_sshPublicKey, patch));
+
+        Boolean old_floatingIp = BareMetalOrder.staticJsonFloatingIp(o.getFloatingIp());
+        Boolean new_floatingIp = json.getBoolean(BareMetalOrder.varJson(BareMetalOrder.VAR_floatingIp, patch));
+
+        String old_status = BareMetalOrder.staticJsonStatus(o.getStatus());
+        String new_status = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_status, patch));
+
+        String old_created = BareMetalOrder.staticJsonCreated(o.getCreated());
+        String new_created = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_created, patch));
+
+        Boolean old_archived = BareMetalOrder.staticJsonArchived(o.getArchived());
+        Boolean new_archived = json.getBoolean(BareMetalOrder.varJson(BareMetalOrder.VAR_archived, patch));
+
+        String old_sessionId = BareMetalOrder.staticJsonSessionId(o.getSessionId());
+        String new_sessionId = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_sessionId, patch));
+
+        String old_userKey = BareMetalOrder.staticJsonUserKey(o.getUserKey());
+        String new_userKey = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_userKey, patch));
+
+        String old_objectTitle = BareMetalOrder.staticJsonObjectTitle(o.getObjectTitle());
+        String new_objectTitle = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_objectTitle, patch));
+
+        String old_apiUrl = BareMetalOrder.staticJsonApiUrl(o.getApiUrl());
+        String new_apiUrl = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_apiUrl, patch));
+
+        String old_displayPage = BareMetalOrder.staticJsonDisplayPage(o.getDisplayPage());
+        String new_displayPage = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_displayPage, patch));
+
+        String old_editPage = BareMetalOrder.staticJsonEditPage(o.getEditPage());
+        String new_editPage = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_editPage, patch));
+
+        String old_userPage = BareMetalOrder.staticJsonUserPage(o.getUserPage());
+        String new_userPage = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_userPage, patch));
+
+        String old_download = BareMetalOrder.staticJsonDownload(o.getDownload());
+        String new_download = json.getString(BareMetalOrder.varJson(BareMetalOrder.VAR_download, patch));
+
+        String description = Optional.ofNullable(Optional.ofNullable(new_description).orElse(old_description)).orElse(null);
+        // if(!Objects.equals(old_description, description))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_description, patch), description);
+        String networkId = Optional.ofNullable(Optional.ofNullable(new_networkId).orElse(old_networkId)).orElse(null);
+        // if(!Objects.equals(old_networkId, networkId))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_networkId, patch), networkId);
+        String numberOfFc430 = Optional.ofNullable(Optional.ofNullable(new_numberOfFc430).orElse(old_numberOfFc430)).orElse(null);
+        // if(!Objects.equals(old_numberOfFc430, numberOfFc430))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfFc430, patch), numberOfFc430);
+        String numberOfFc830 = Optional.ofNullable(Optional.ofNullable(new_numberOfFc830).orElse(old_numberOfFc830)).orElse(null);
+        // if(!Objects.equals(old_numberOfFc830, numberOfFc830))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfFc830, patch), numberOfFc830);
+        String numberOfR730xd = Optional.ofNullable(Optional.ofNullable(new_numberOfR730xd).orElse(old_numberOfR730xd)).orElse(null);
+        // if(!Objects.equals(old_numberOfR730xd, numberOfR730xd))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfR730xd, patch), numberOfR730xd);
+        String numberOfWhiteboxFlax1 = Optional.ofNullable(Optional.ofNullable(new_numberOfWhiteboxFlax1).orElse(old_numberOfWhiteboxFlax1)).orElse(null);
+        // if(!Objects.equals(old_numberOfWhiteboxFlax1, numberOfWhiteboxFlax1))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfWhiteboxFlax1, patch), numberOfWhiteboxFlax1);
+        String numberOfLenovoSd650nv2A100 = Optional.ofNullable(Optional.ofNullable(new_numberOfLenovoSd650nv2A100).orElse(old_numberOfLenovoSd650nv2A100)).orElse(null);
+        // if(!Objects.equals(old_numberOfLenovoSd650nv2A100, numberOfLenovoSd650nv2A100))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfLenovoSd650nv2A100, patch), numberOfLenovoSd650nv2A100);
+        String numberOfLenovoSd665nv3H100 = Optional.ofNullable(Optional.ofNullable(new_numberOfLenovoSd665nv3H100).orElse(old_numberOfLenovoSd665nv3H100)).orElse(null);
+        // if(!Objects.equals(old_numberOfLenovoSd665nv3H100, numberOfLenovoSd665nv3H100))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_numberOfLenovoSd665nv3H100, patch), numberOfLenovoSd665nv3H100);
+        String image = Optional.ofNullable(Optional.ofNullable(new_image).orElse(old_image)).orElse(null);
+        // if(!Objects.equals(old_image, image))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_image, patch), image);
+        String sshPublicKey = Optional.ofNullable(Optional.ofNullable(new_sshPublicKey).orElse(old_sshPublicKey)).orElse(null);
+        // if(!Objects.equals(old_sshPublicKey, sshPublicKey))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_sshPublicKey, patch), sshPublicKey);
+        Boolean floatingIp = Optional.ofNullable(Optional.ofNullable(new_floatingIp).orElse(old_floatingIp)).orElse(null);
+        // if(!Objects.equals(old_floatingIp, floatingIp))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_floatingIp, patch), floatingIp);
+        String status = Optional.ofNullable(Optional.ofNullable(new_status).orElse(old_status)).orElse(null);
+        // if(!Objects.equals(old_status, status))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_status, patch), status);
+        String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
+        // if(!Objects.equals(old_created, created))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_created, patch), created);
+        Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
+        // if(!Objects.equals(old_archived, archived))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_archived, patch), archived);
+        String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
+        // if(!Objects.equals(old_sessionId, sessionId))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_sessionId, patch), sessionId);
+        String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
+        // if(!Objects.equals(old_userKey, userKey))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_userKey, patch), userKey);
+        String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
+        // if(!Objects.equals(old_objectTitle, objectTitle))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_objectTitle, patch), objectTitle);
+        String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
+        // if(!Objects.equals(old_apiUrl, apiUrl))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_apiUrl, patch), apiUrl);
+        String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
+        // if(!Objects.equals(old_displayPage, displayPage))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_displayPage, patch), displayPage);
+        String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
+        // if(!Objects.equals(old_editPage, editPage))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_editPage, patch), editPage);
+        String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
+        // if(!Objects.equals(old_userPage, userPage))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_userPage, patch), userPage);
+        String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
+        // if(!Objects.equals(old_download, download))
+          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_download, patch), download);
+
+        promise.complete(json);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("upsertBareMetalOrder failed. "), ex);
+      promise.tryFail(ex);
+    }
+    return promise.future();
+  }
+
   public Future<Void> persistBareMetalOrder(BareMetalOrder o, Boolean patch) {
     Promise<Void> promise = Promise.promise();
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT description, created, networkId, archived, numberOfFc430, numberOfFc830, sessionId, numberOfR730xd, userKey, numberOfWhiteboxFlax1, numberOfLenovoSd650nv2A100, numberOfLenovoSd665nv3H100, objectTitle, image, displayPage, sshPublicKey, editPage, floatingIp, userPage, status, download FROM BareMetalOrder WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT description, networkId, numberOfFc430, numberOfFc830, numberOfR730xd, numberOfWhiteboxFlax1, numberOfLenovoSd650nv2A100, numberOfLenovoSd665nv3H100, image, sshPublicKey, floatingIp, status, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM BareMetalOrder WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -3615,25 +3667,26 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       o.setSiteRequest_((SiteRequest)siteRequest);
 
       o.persistForClass(BareMetalOrder.VAR_description, BareMetalOrder.staticSetDescription(siteRequest2, (String)result.get(BareMetalOrder.VAR_description)));
-      o.persistForClass(BareMetalOrder.VAR_created, BareMetalOrder.staticSetCreated(siteRequest2, (String)result.get(BareMetalOrder.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(BareMetalOrder.VAR_networkId, BareMetalOrder.staticSetNetworkId(siteRequest2, (String)result.get(BareMetalOrder.VAR_networkId)));
-      o.persistForClass(BareMetalOrder.VAR_archived, BareMetalOrder.staticSetArchived(siteRequest2, (String)result.get(BareMetalOrder.VAR_archived)));
       o.persistForClass(BareMetalOrder.VAR_numberOfFc430, BareMetalOrder.staticSetNumberOfFc430(siteRequest2, (String)result.get(BareMetalOrder.VAR_numberOfFc430)));
       o.persistForClass(BareMetalOrder.VAR_numberOfFc830, BareMetalOrder.staticSetNumberOfFc830(siteRequest2, (String)result.get(BareMetalOrder.VAR_numberOfFc830)));
-      o.persistForClass(BareMetalOrder.VAR_sessionId, BareMetalOrder.staticSetSessionId(siteRequest2, (String)result.get(BareMetalOrder.VAR_sessionId)));
       o.persistForClass(BareMetalOrder.VAR_numberOfR730xd, BareMetalOrder.staticSetNumberOfR730xd(siteRequest2, (String)result.get(BareMetalOrder.VAR_numberOfR730xd)));
-      o.persistForClass(BareMetalOrder.VAR_userKey, BareMetalOrder.staticSetUserKey(siteRequest2, (String)result.get(BareMetalOrder.VAR_userKey)));
       o.persistForClass(BareMetalOrder.VAR_numberOfWhiteboxFlax1, BareMetalOrder.staticSetNumberOfWhiteboxFlax1(siteRequest2, (String)result.get(BareMetalOrder.VAR_numberOfWhiteboxFlax1)));
       o.persistForClass(BareMetalOrder.VAR_numberOfLenovoSd650nv2A100, BareMetalOrder.staticSetNumberOfLenovoSd650nv2A100(siteRequest2, (String)result.get(BareMetalOrder.VAR_numberOfLenovoSd650nv2A100)));
       o.persistForClass(BareMetalOrder.VAR_numberOfLenovoSd665nv3H100, BareMetalOrder.staticSetNumberOfLenovoSd665nv3H100(siteRequest2, (String)result.get(BareMetalOrder.VAR_numberOfLenovoSd665nv3H100)));
-      o.persistForClass(BareMetalOrder.VAR_objectTitle, BareMetalOrder.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalOrder.VAR_objectTitle)));
       o.persistForClass(BareMetalOrder.VAR_image, BareMetalOrder.staticSetImage(siteRequest2, (String)result.get(BareMetalOrder.VAR_image)));
-      o.persistForClass(BareMetalOrder.VAR_displayPage, BareMetalOrder.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalOrder.VAR_displayPage)));
       o.persistForClass(BareMetalOrder.VAR_sshPublicKey, BareMetalOrder.staticSetSshPublicKey(siteRequest2, (String)result.get(BareMetalOrder.VAR_sshPublicKey)));
-      o.persistForClass(BareMetalOrder.VAR_editPage, BareMetalOrder.staticSetEditPage(siteRequest2, (String)result.get(BareMetalOrder.VAR_editPage)));
       o.persistForClass(BareMetalOrder.VAR_floatingIp, BareMetalOrder.staticSetFloatingIp(siteRequest2, (String)result.get(BareMetalOrder.VAR_floatingIp)));
-      o.persistForClass(BareMetalOrder.VAR_userPage, BareMetalOrder.staticSetUserPage(siteRequest2, (String)result.get(BareMetalOrder.VAR_userPage)));
       o.persistForClass(BareMetalOrder.VAR_status, BareMetalOrder.staticSetStatus(siteRequest2, (String)result.get(BareMetalOrder.VAR_status)));
+      o.persistForClass(BareMetalOrder.VAR_created, BareMetalOrder.staticSetCreated(siteRequest2, (String)result.get(BareMetalOrder.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(BareMetalOrder.VAR_archived, BareMetalOrder.staticSetArchived(siteRequest2, (String)result.get(BareMetalOrder.VAR_archived)));
+      o.persistForClass(BareMetalOrder.VAR_sessionId, BareMetalOrder.staticSetSessionId(siteRequest2, (String)result.get(BareMetalOrder.VAR_sessionId)));
+      o.persistForClass(BareMetalOrder.VAR_userKey, BareMetalOrder.staticSetUserKey(siteRequest2, (String)result.get(BareMetalOrder.VAR_userKey)));
+      o.persistForClass(BareMetalOrder.VAR_objectTitle, BareMetalOrder.staticSetObjectTitle(siteRequest2, (String)result.get(BareMetalOrder.VAR_objectTitle)));
+      o.persistForClass(BareMetalOrder.VAR_apiUrl, BareMetalOrder.staticSetApiUrl(siteRequest2, (String)result.get(BareMetalOrder.VAR_apiUrl)));
+      o.persistForClass(BareMetalOrder.VAR_displayPage, BareMetalOrder.staticSetDisplayPage(siteRequest2, (String)result.get(BareMetalOrder.VAR_displayPage)));
+      o.persistForClass(BareMetalOrder.VAR_editPage, BareMetalOrder.staticSetEditPage(siteRequest2, (String)result.get(BareMetalOrder.VAR_editPage)));
+      o.persistForClass(BareMetalOrder.VAR_userPage, BareMetalOrder.staticSetUserPage(siteRequest2, (String)result.get(BareMetalOrder.VAR_userPage)));
       o.persistForClass(BareMetalOrder.VAR_download, BareMetalOrder.staticSetDownload(siteRequest2, (String)result.get(BareMetalOrder.VAR_download)));
 
       o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {

@@ -33,6 +33,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.Arrays;
+import javax.measure.Quantity;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Length;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.math.MathContext;
@@ -405,16 +408,23 @@ public class AiNodeGenPage extends AiNodeGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _DEFAULT_MAP_LOCATION(Wrap<JsonObject> w) {
-    Point point = AiNode.staticSetLocation(siteRequest_, Optional.ofNullable(siteRequest_.getRequestVars().get(VAR_DEFAULT_MAP_LOCATION)).orElse(siteRequest_.getConfig().getString(ConfigKeys.DEFAULT_MAP_LOCATION)));
+  protected void _location(Wrap<JsonObject> w) {
+    Point point = AiNode.staticSetLocation(siteRequest_, Optional.ofNullable(siteRequest_.getRequestVars().get(VAR_location)).orElse(siteRequest_.getConfig().getString(ConfigKeys.DEFAULT_MAP_LOCATION)));
     w.o(new JsonObject().put("type", "Point").put("coordinates", new JsonArray().add(Double.valueOf(point.getX())).add(Double.valueOf(point.getY()))));
   }
 
   @Override
-  protected void _DEFAULT_MAP_ZOOM(Wrap<BigDecimal> w) {
-    String s = Optional.ofNullable(siteRequest_.getRequestVars().get(VAR_DEFAULT_MAP_ZOOM)).orElse(siteRequest_.getConfig().getString(ConfigKeys.DEFAULT_MAP_ZOOM));
+  protected void _zoom(Wrap<BigDecimal> w) {
+    String s = Optional.ofNullable(siteRequest_.getRequestVars().get(VAR_zoom)).orElse(siteRequest_.getConfig().getString(ConfigKeys.DEFAULT_MAP_ZOOM));
     if(s != null)
       w.o(new BigDecimal(s));
+  }
+
+  @Override
+  protected void _pitch(Wrap<Quantity<Angle>> w) {
+    String s = Optional.ofNullable(siteRequest_.getRequestVars().get(VAR_pitch)).orElse(siteRequest_.getConfig().getString(ConfigKeys.DEFAULT_MAP_PITCH));
+    if(s != null)
+      w.o(staticSetPitch(s));
   }
 
   @Override

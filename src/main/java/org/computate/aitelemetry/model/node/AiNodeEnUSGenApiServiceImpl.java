@@ -4,6 +4,80 @@ import org.computate.aitelemetry.model.hub.HubEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.hub.Hub;
 import org.computate.aitelemetry.model.cluster.ClusterEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.cluster.Cluster;
+import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.base.ComputateBaseModel;
+import org.computate.aitelemetry.request.SiteRequest;
+import java.lang.Object;
+import org.computate.aitelemetry.model.BaseModel;
+import io.vertx.core.json.JsonObject;
+import java.util.Date;
+import java.util.Set;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.aitelemetry.config.ConfigKeys;
+import java.util.Optional;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.computate.search.serialize.ComputateLocalDateSerializer;
+import org.computate.search.serialize.ComputateLocalDateDeserializer;
+import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
+import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
+import java.math.MathContext;
+import org.apache.commons.lang3.math.NumberUtils;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.math.RoundingMode;
+import java.util.Map;
+import java.lang.Long;
+import java.lang.String;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.lang.Boolean;
+import io.vertx.core.json.JsonArray;
+import org.computate.search.wrap.Wrap;
+import io.vertx.core.Promise;
+import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.response.solr.SolrResponse;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.user.SiteUser;
 import org.computate.vertx.api.ApiRequest;
@@ -127,110 +201,26 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, false, "GET").onSuccess(listAiNode -> {
-                response200SearchAiNode(listAiNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchAiNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchAiNodeList(siteRequest2, false, true, false, "GET").onSuccess(listAiNode -> {
+              response200SearchAiNode(listAiNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchAiNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchAiNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchAiNode failed. "), ex);
@@ -346,110 +336,26 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, false, "GET").onSuccess(listAiNode -> {
-                response200GETAiNode(listAiNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("getAiNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("getAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchAiNodeList(siteRequest2, false, true, false, "GET").onSuccess(listAiNode -> {
+              response200GETAiNode(listAiNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("getAiNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("getAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("getAiNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("getAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("getAiNode failed. "), ex);
@@ -503,142 +409,48 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "PATCH"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("PATCH")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PATCH")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PATCH")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("PATCH"))
-                  scopes.add("PATCH");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, true, "PATCH").onSuccess(listAiNode -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listAiNode.getRequest().getRows());
-                  apiRequest.setNumFound(listAiNode.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listAiNode.first());
-                  apiRequest.setId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getNodeResource().toString()).orElse(null));
-                  apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchAiNodeList(siteRequest2, false, true, true, "PATCH").onSuccess(listAiNode -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listAiNode.getRequest().getRows());
+                apiRequest.setNumFound(listAiNode.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listAiNode.first());
+                apiRequest.setId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getNodeResource().toString()).orElse(null));
+                apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
 
-                  listPATCHAiNode(apiRequest, listAiNode).onSuccess(e -> {
-                    response200PATCHAiNode(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("patchAiNode succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("patchAiNode failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listPATCHAiNode(apiRequest, listAiNode).onSuccess(e -> {
+                  response200PATCHAiNode(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("patchAiNode succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchAiNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("patchAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("patchAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("patchAiNode failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("patchAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("patchAiNode failed. "), ex);
@@ -736,7 +548,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
             apiRequest.setNumPATCH(0L);
             apiRequest.initDeepApiRequest(siteRequest);
             siteRequest.setApiRequest_(apiRequest);
-            if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+            Boolean refresh = Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L;
+            if(refresh) {
               siteRequest.getRequestVars().put( "refresh", "false" );
             }
             AiNode o2;
@@ -753,6 +566,8 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               }).onFailure(ex -> {
                 eventHandler.handle(Future.failedFuture(ex));
               });
+            } else if(refresh) {
+              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
             } else {
               String m = String.format("%s %s not found", "AI node", null);
               eventHandler.handle(Future.failedFuture(m));
@@ -785,19 +600,23 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
       pgPool.withTransaction(sqlConnection -> {
         siteRequest.setSqlConnection(sqlConnection);
         varsAiNode(siteRequest).onSuccess(a -> {
-          sqlPATCHAiNode(o, inheritPrimaryKey).onSuccess(aiNode -> {
-            persistAiNode(aiNode, true).onSuccess(c -> {
-              relateAiNode(aiNode).onSuccess(d -> {
-                indexAiNode(aiNode).onSuccess(o2 -> {
-                  if(apiRequest != null) {
-                    apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-                    if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-                      o2.apiRequestAiNode();
-                      if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-                        eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
+          upsertAiNode(o, inheritPrimaryKey, true).onSuccess(c -> {
+            sqlPATCHAiNode(o, inheritPrimaryKey).onSuccess(aiNode -> {
+              persistAiNode(aiNode, true).onSuccess(d -> {
+                relateAiNode(aiNode).onSuccess(e -> {
+                  indexAiNode(aiNode).onSuccess(o2 -> {
+                    if(apiRequest != null) {
+                      apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
+                      if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
+                        o2.apiRequestAiNode();
+                        if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
+                          eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
+                      }
                     }
-                  }
-                  promise1.complete(aiNode);
+                    promise1.complete(aiNode);
+                  }).onFailure(ex -> {
+                    promise1.tryFail(ex);
+                  });
                 }).onFailure(ex -> {
                   promise1.tryFail(ex);
                 });
@@ -899,14 +718,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               }));
             });
             break;
-          case "setCreated":
-              o2.setCreated(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_created + "=$" + num);
-              num++;
-              bParams.add(o2.sqlCreated());
-            break;
           case "setClusterName":
               o2.setClusterName(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -946,14 +757,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               }));
             });
             break;
-          case "setArchived":
-              o2.setArchived(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_archived + "=$" + num);
-              num++;
-              bParams.add(o2.sqlArchived());
-            break;
           case "setNodeName":
               o2.setNodeName(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -978,22 +781,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               num++;
               bParams.add(o2.sqlDescription());
             break;
-          case "setSessionId":
-              o2.setSessionId(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_sessionId + "=$" + num);
-              num++;
-              bParams.add(o2.sqlSessionId());
-            break;
-          case "setUserKey":
-              o2.setUserKey(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_userKey + "=$" + num);
-              num++;
-              bParams.add(o2.sqlUserKey());
-            break;
           case "setLocation":
               o2.setLocation(jsonObject.getJsonObject(entityVar));
               if(bParams.size() > 0)
@@ -1001,14 +788,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               bSql.append(AiNode.VAR_location + "=$" + num);
               num++;
               bParams.add(o2.sqlLocation());
-            break;
-          case "setObjectTitle":
-              o2.setObjectTitle(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_objectTitle + "=$" + num);
-              num++;
-              bParams.add(o2.sqlObjectTitle());
             break;
           case "setGpuDevicesTotal":
               o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
@@ -1018,14 +797,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               num++;
               bParams.add(o2.sqlGpuDevicesTotal());
             break;
-          case "setDisplayPage":
-              o2.setDisplayPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_displayPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlDisplayPage());
-            break;
           case "setId":
               o2.setId(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1034,22 +805,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               num++;
               bParams.add(o2.sqlId());
             break;
-          case "setEditPage":
-              o2.setEditPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_editPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlEditPage());
-            break;
-          case "setUserPage":
-              o2.setUserPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_userPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlUserPage());
-            break;
           case "setNgsildTenant":
               o2.setNgsildTenant(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1057,14 +812,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               bSql.append(AiNode.VAR_ngsildTenant + "=$" + num);
               num++;
               bParams.add(o2.sqlNgsildTenant());
-            break;
-          case "setDownload":
-              o2.setDownload(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(AiNode.VAR_download + "=$" + num);
-              num++;
-              bParams.add(o2.sqlDownload());
             break;
           case "setNgsildPath":
               o2.setNgsildPath(jsonObject.getString(entityVar));
@@ -1089,6 +836,86 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               bSql.append(AiNode.VAR_ngsildData + "=$" + num);
               num++;
               bParams.add(o2.sqlNgsildData());
+            break;
+          case "setCreated":
+              o2.setCreated(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_created + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCreated());
+            break;
+          case "setArchived":
+              o2.setArchived(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_archived + "=$" + num);
+              num++;
+              bParams.add(o2.sqlArchived());
+            break;
+          case "setSessionId":
+              o2.setSessionId(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_sessionId + "=$" + num);
+              num++;
+              bParams.add(o2.sqlSessionId());
+            break;
+          case "setUserKey":
+              o2.setUserKey(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_userKey + "=$" + num);
+              num++;
+              bParams.add(o2.sqlUserKey());
+            break;
+          case "setObjectTitle":
+              o2.setObjectTitle(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_objectTitle + "=$" + num);
+              num++;
+              bParams.add(o2.sqlObjectTitle());
+            break;
+          case "setApiUrl":
+              o2.setApiUrl(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_apiUrl + "=$" + num);
+              num++;
+              bParams.add(o2.sqlApiUrl());
+            break;
+          case "setDisplayPage":
+              o2.setDisplayPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_displayPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlDisplayPage());
+            break;
+          case "setEditPage":
+              o2.setEditPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_editPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlEditPage());
+            break;
+          case "setUserPage":
+              o2.setUserPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_userPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlUserPage());
+            break;
+          case "setDownload":
+              o2.setDownload(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(AiNode.VAR_download + "=$" + num);
+              num++;
+              bParams.add(o2.sqlDownload());
             break;
         }
       }
@@ -1150,144 +977,55 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "POST"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("POST")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("POST")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("POST")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("POST"))
-                  scopes.add("POST");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              apiRequest.setRows(1L);
-              apiRequest.setNumFound(1L);
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
-              JsonObject params = new JsonObject();
-              params.put("body", siteRequest.getJsonObject());
-              params.put("path", new JsonObject());
-              params.put("scopes", scopes2);
-              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-              params.put("form", new JsonObject());
-              JsonObject query = new JsonObject();
-              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-              if(softCommit == null && commitWithin == null)
-                softCommit = true;
-              if(softCommit != null)
-                query.put("softCommit", softCommit);
-              if(commitWithin != null)
-                query.put("commitWithin", commitWithin);
-              params.put("query", query);
-              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-              JsonObject json = new JsonObject().put("context", context);
-              eventBus.request(AiNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postAiNodeFuture")).onSuccess(a -> {
-                JsonObject responseMessage = (JsonObject)a.body();
-                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-                apiRequest.setSolrId(responseBody.getString(AiNode.VAR_solrId));
-                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            apiRequest.setRows(1L);
+            apiRequest.setNumFound(1L);
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
+            JsonObject params = new JsonObject();
+            params.put("body", siteRequest2.getJsonObject());
+            params.put("path", new JsonObject());
+            params.put("scopes", scopes2);
+            params.put("cookie", siteRequest2.getServiceRequest().getParams().getJsonObject("cookie"));
+            params.put("header", siteRequest2.getServiceRequest().getParams().getJsonObject("header"));
+            params.put("form", new JsonObject());
+            JsonObject query = new JsonObject();
+            Boolean softCommit = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+            Integer commitWithin = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+            if(softCommit == null && commitWithin == null)
+              softCommit = true;
+            if(softCommit != null)
+              query.put("softCommit", softCommit);
+            if(commitWithin != null)
+              query.put("commitWithin", commitWithin);
+            params.put("query", query);
+            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest2.getUserPrincipal());
+            JsonObject json = new JsonObject().put("context", context);
+            eventBus.request(AiNode.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postAiNodeFuture")).onSuccess(a -> {
+              JsonObject responseMessage = (JsonObject)a.body();
+              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+              apiRequest.setSolrId(responseBody.getString(AiNode.VAR_solrId));
+              response200POSTAiNode(siteRequest2, responseBody).onSuccess(response -> {
                 LOG.debug(String.format("postAiNode succeeded. "));
+                eventHandler.handle(Future.succeededFuture(response));
               }).onFailure(ex -> {
                 LOG.error(String.format("postAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("postAiNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("postAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("postAiNode failed. "), ex);
@@ -1383,11 +1121,15 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
         siteRequest.setSqlConnection(sqlConnection);
         varsAiNode(siteRequest).onSuccess(a -> {
           createAiNode(siteRequest).onSuccess(aiNode -> {
-            sqlPOSTAiNode(aiNode, nodeResource).onSuccess(b -> {
-              persistAiNode(aiNode, false).onSuccess(c -> {
-                relateAiNode(aiNode).onSuccess(d -> {
-                  indexAiNode(aiNode).onSuccess(o2 -> {
-                    promise1.complete(aiNode);
+            upsertAiNode(aiNode, nodeResource, false).onSuccess(b -> {
+              sqlPOSTAiNode(aiNode, nodeResource).onSuccess(c -> {
+                persistAiNode(aiNode, false).onSuccess(d -> {
+                  relateAiNode(aiNode).onSuccess(e -> {
+                    indexAiNode(aiNode).onSuccess(o2 -> {
+                      promise1.complete(aiNode);
+                    }).onFailure(ex -> {
+                      promise1.tryFail(ex);
+                    });
                   }).onFailure(ex -> {
                     promise1.tryFail(ex);
                   });
@@ -1522,15 +1264,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               }));
             });
             break;
-          case AiNode.VAR_created:
-            o2.setCreated(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_created + "=$" + num);
-            num++;
-            bParams.add(o2.sqlCreated());
-            break;
           case AiNode.VAR_clusterName:
             o2.setClusterName(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1560,15 +1293,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
               }));
             });
             break;
-          case AiNode.VAR_archived:
-            o2.setArchived(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_archived + "=$" + num);
-            num++;
-            bParams.add(o2.sqlArchived());
-            break;
           case AiNode.VAR_nodeName:
             o2.setNodeName(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1596,24 +1320,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
             num++;
             bParams.add(o2.sqlDescription());
             break;
-          case AiNode.VAR_sessionId:
-            o2.setSessionId(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_sessionId + "=$" + num);
-            num++;
-            bParams.add(o2.sqlSessionId());
-            break;
-          case AiNode.VAR_userKey:
-            o2.setUserKey(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_userKey + "=$" + num);
-            num++;
-            bParams.add(o2.sqlUserKey());
-            break;
           case AiNode.VAR_location:
             o2.setLocation(jsonObject.getJsonObject(entityVar));
             if(bParams.size() > 0) {
@@ -1622,15 +1328,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
             bSql.append(AiNode.VAR_location + "=$" + num);
             num++;
             bParams.add(o2.sqlLocation());
-            break;
-          case AiNode.VAR_objectTitle:
-            o2.setObjectTitle(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_objectTitle + "=$" + num);
-            num++;
-            bParams.add(o2.sqlObjectTitle());
             break;
           case AiNode.VAR_gpuDevicesTotal:
             o2.setGpuDevicesTotal(jsonObject.getString(entityVar));
@@ -1641,15 +1338,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
             num++;
             bParams.add(o2.sqlGpuDevicesTotal());
             break;
-          case AiNode.VAR_displayPage:
-            o2.setDisplayPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_displayPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlDisplayPage());
-            break;
           case AiNode.VAR_id:
             o2.setId(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1659,24 +1347,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
             num++;
             bParams.add(o2.sqlId());
             break;
-          case AiNode.VAR_editPage:
-            o2.setEditPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_editPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlEditPage());
-            break;
-          case AiNode.VAR_userPage:
-            o2.setUserPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_userPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlUserPage());
-            break;
           case AiNode.VAR_ngsildTenant:
             o2.setNgsildTenant(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1685,15 +1355,6 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
             bSql.append(AiNode.VAR_ngsildTenant + "=$" + num);
             num++;
             bParams.add(o2.sqlNgsildTenant());
-            break;
-          case AiNode.VAR_download:
-            o2.setDownload(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(AiNode.VAR_download + "=$" + num);
-            num++;
-            bParams.add(o2.sqlDownload());
             break;
           case AiNode.VAR_ngsildPath:
             o2.setNgsildPath(jsonObject.getString(entityVar));
@@ -1721,6 +1382,87 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
             bSql.append(AiNode.VAR_ngsildData + "=$" + num);
             num++;
             bParams.add(o2.sqlNgsildData());
+            break;
+          case AiNode.VAR_created:
+            o2.setCreated(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_created + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCreated());
+            break;
+          case AiNode.VAR_archived:
+            o2.setArchived(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_archived + "=$" + num);
+            num++;
+            bParams.add(o2.sqlArchived());
+            break;
+          case AiNode.VAR_userKey:
+            o2.setUserKey(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_userKey + "=$" + num);
+            num++;
+            bParams.add(o2.sqlUserKey());
+            break;
+          case AiNode.VAR_objectTitle:
+            o2.setObjectTitle(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_objectTitle + "=$" + num);
+            num++;
+            bParams.add(o2.sqlObjectTitle());
+            break;
+          case AiNode.VAR_apiUrl:
+            o2.setApiUrl(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_apiUrl + "=$" + num);
+            num++;
+            bParams.add(o2.sqlApiUrl());
+            break;
+          case AiNode.VAR_displayPage:
+            o2.setDisplayPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_displayPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlDisplayPage());
+            break;
+          case AiNode.VAR_editPage:
+            o2.setEditPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_editPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlEditPage());
+            break;
+          case AiNode.VAR_userPage:
+            o2.setUserPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_userPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlUserPage());
+            break;
+          case AiNode.VAR_download:
+            o2.setDownload(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(AiNode.VAR_download + "=$" + num);
+            num++;
+            bParams.add(o2.sqlDownload());
             break;
           }
         }
@@ -1759,11 +1501,9 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     return promise.future();
   }
 
-  public Future<ServiceResponse> response200POSTAiNode(AiNode o) {
+  public Future<ServiceResponse> response200POSTAiNode(SiteRequest siteRequest, JsonObject json) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
-      SiteRequest siteRequest = o.getSiteRequest_();
-      JsonObject json = JsonObject.mapFrom(o);
       promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTAiNode failed. "), ex);
@@ -1781,141 +1521,47 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "DELETE"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("DELETE")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("DELETE"))
-                  scopes.add("DELETE");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, true, "DELETE").onSuccess(listAiNode -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listAiNode.getRequest().getRows());
-                  apiRequest.setNumFound(listAiNode.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listAiNode.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchAiNodeList(siteRequest2, false, true, true, "DELETE").onSuccess(listAiNode -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listAiNode.getRequest().getRows());
+                apiRequest.setNumFound(listAiNode.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listAiNode.first());
+                apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEAiNode(apiRequest, listAiNode).onSuccess(e -> {
-                    response200DELETEAiNode(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deleteAiNode succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deleteAiNode failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEAiNode(apiRequest, listAiNode).onSuccess(e -> {
+                  response200DELETEAiNode(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deleteAiNode succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteAiNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deleteAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deleteAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deleteAiNode failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deleteAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deleteAiNode failed. "), ex);
@@ -2225,133 +1871,39 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "PUT"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("PUT")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PUT")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PUT")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("PUT"))
-                  scopes.add("PUT");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-              apiRequest.setRows(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
-              varsAiNode(siteRequest).onSuccess(d -> {
-                listPUTImportAiNode(apiRequest, siteRequest).onSuccess(e -> {
-                  response200PUTImportAiNode(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("putimportAiNode succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
-                  }).onFailure(ex -> {
-                    LOG.error(String.format("putimportAiNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
-                  });
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            JsonArray jsonArray = Optional.ofNullable(siteRequest2.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+            apiRequest.setRows(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
+            varsAiNode(siteRequest2).onSuccess(d -> {
+              listPUTImportAiNode(apiRequest, siteRequest2).onSuccess(e -> {
+                response200PUTImportAiNode(siteRequest2).onSuccess(response -> {
+                  LOG.debug(String.format("putimportAiNode succeeded. "));
+                  eventHandler.handle(Future.succeededFuture(response));
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
+                  error(siteRequest2, eventHandler, ex);
                 });
               }).onFailure(ex -> {
                 LOG.error(String.format("putimportAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("putimportAiNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("putimportAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("putimportAiNode failed. "), ex);
@@ -2604,110 +2156,26 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, false, "GET").onSuccess(listAiNode -> {
-                response200SearchPageAiNode(listAiNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchpageAiNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchpageAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchAiNodeList(siteRequest2, false, true, false, "GET").onSuccess(listAiNode -> {
+              response200SearchPageAiNode(listAiNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchpageAiNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchpageAiNode failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchpageAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchpageAiNode failed. "), ex);
@@ -2791,6 +2259,45 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/ai-node/AiNodeSearchPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
         promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/ai-node/AiNodeGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
+        promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
         String metaPrefixResult = String.format("%s.", i18n.getString(I18n.var_resultat));
@@ -2868,19 +2375,24 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
           Promise<Void> promise1 = Promise.promise();
           searchpageAiNodePageInit(ctx, page, listAiNode, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateSearchPageAiNode(ctx, page, listAiNode, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200SearchPageAiNode failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateSearchPageAiNode(ctx, page, listAiNode, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200SearchPageAiNode failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200SearchPageAiNode failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2940,110 +2452,25 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, false, "GET").onSuccess(listAiNode -> {
-                response200EditPageAiNode(listAiNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("editpageAiNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("editpageAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchAiNodeList(siteRequest2, false, true, false, "GET").onSuccess(listAiNode -> {
+              response200EditPageAiNode(listAiNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("editpageAiNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageAiNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("editpageAiNode failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("editpageAiNode failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("editpageAiNode failed. "), ex);
@@ -3102,6 +2529,45 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/ai-node/AiNodeEditPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/ai-node/AiNodeGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -3180,19 +2646,24 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
           Promise<Void> promise1 = Promise.promise();
           editpageAiNodePageInit(ctx, page, listAiNode, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateEditPageAiNode(ctx, page, listAiNode, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200EditPageAiNode failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateEditPageAiNode(ctx, page, listAiNode, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200EditPageAiNode failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200EditPageAiNode failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -3252,110 +2723,25 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, false, "GET").onSuccess(listAiNode -> {
-                response200UserPageAiNode(listAiNode).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("userpageAiNode succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("userpageAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "UserPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "UserPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchAiNodeList(siteRequest2, false, true, false, "GET").onSuccess(listAiNode -> {
+              response200UserPageAiNode(listAiNode).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("userpageAiNode succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("userpageAiNode failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("userpageAiNode failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("userpageAiNode failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("userpageAiNode failed. "), ex);
@@ -3414,6 +2800,45 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "%s.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/ai-node/AiNodeGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -3492,19 +2917,24 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
           Promise<Void> promise1 = Promise.promise();
           userpageAiNodePageInit(ctx, page, listAiNode, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateUserPageAiNode(ctx, page, listAiNode, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200UserPageAiNode failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateUserPageAiNode(ctx, page, listAiNode, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200UserPageAiNode failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200UserPageAiNode failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -3565,141 +2995,47 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String nodeResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("nodeResource");
-        String AINODE = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("AINODE");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(nodeResource != null)
-          form.add("permission", String.format("%s-%s#%s", AiNode.CLASS_AUTH_RESOURCE, nodeResource, "DELETE"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "AINODE".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("DELETE")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("DELETE"))
-                  scopes.add("DELETE");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchAiNodeList(siteRequest, false, true, true, "DELETE").onSuccess(listAiNode -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listAiNode.getRequest().getRows());
-                  apiRequest.setNumFound(listAiNode.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listAiNode.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
+        AiNode.authorizationAiNode(siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          AiNode.authorizationScopesAiNode(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchAiNodeList(siteRequest2, false, true, true, "DELETE").onSuccess(listAiNode -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listAiNode.getRequest().getRows());
+                apiRequest.setNumFound(listAiNode.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listAiNode.first());
+                apiRequest.setSolrId(Optional.ofNullable(listAiNode.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketAiNode", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEFilterAiNode(apiRequest, listAiNode).onSuccess(e -> {
-                    response200DELETEFilterAiNode(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deletefilterAiNode succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deletefilterAiNode failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEFilterAiNode(apiRequest, listAiNode).onSuccess(e -> {
+                  response200DELETEFilterAiNode(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deletefilterAiNode succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterAiNode failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deletefilterAiNode failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deletefilterAiNode failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deletefilterAiNode failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deletefilterAiNode failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deletefilterAiNode failed. "), ex);
@@ -4323,13 +3659,221 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
   public void searchAiNode2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<AiNode> searchList) {
   }
 
+  public Future<JsonObject> upsertAiNode(AiNode o, Boolean inheritPrimaryKey, Boolean patch) {
+    Promise<JsonObject> promise = Promise.promise();
+    try {
+      SiteRequest siteRequest = o.getSiteRequest_();
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+        promise.complete();
+      } else {
+        JsonObject json = o.getSiteRequest_().getJsonObject();
+        String old_hubResource = AiNode.staticJsonHubResource(o.getHubResource());
+        String new_hubResource = json.getString(AiNode.varJson(AiNode.VAR_hubResource, patch));
+        String hubResource = Optional.ofNullable(Optional.ofNullable(new_hubResource).orElse(old_hubResource)).orElse(null);
+        Hub.authorizationHub(siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(hubResourceAuthorizationDecisionResponse -> {
+          Hub.authorizationScopesHub(hubResourceAuthorizationDecisionResponse, siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(hubResourceSiteRequest -> {
+            Hub.fqHub(hubResourceSiteRequest, Hub.VAR_hubResource, hubResource).onSuccess(oHub -> {
+              try {
+                if(oHub == null) {
+                  RuntimeException ex = new RuntimeException(String.format("Could not find a matching Hub %s", hubResource));
+                  LOG.error(ex.getMessage(), ex);
+                  promise.fail(ex);
+                } else {
+                  if(!Objects.equals(old_hubResource, hubResource))
+                    json.put(Hub.varJson(Hub.VAR_hubResource, patch), hubResource);
+                  String old_clusterResource = AiNode.staticJsonClusterResource(o.getClusterResource());
+                  String new_clusterResource = json.getString(AiNode.varJson(AiNode.VAR_clusterResource, patch));
+                  String clusterResource = Optional.ofNullable(Optional.ofNullable(new_clusterResource).orElse(old_clusterResource)).orElse(null);
+                  Cluster.authorizationCluster(siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(clusterResourceAuthorizationDecisionResponse -> {
+                    Cluster.authorizationScopesCluster(clusterResourceAuthorizationDecisionResponse, siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(clusterResourceSiteRequest -> {
+                      Cluster.fqCluster(clusterResourceSiteRequest, Cluster.VAR_clusterResource, clusterResource).onSuccess(oCluster -> {
+                        try {
+                          if(oCluster == null) {
+                            RuntimeException ex = new RuntimeException(String.format("Could not find a matching Cluster %s", clusterResource));
+                            LOG.error(ex.getMessage(), ex);
+                            promise.fail(ex);
+                          } else {
+                            if(!Objects.equals(old_clusterResource, clusterResource))
+                              json.put(Cluster.varJson(Cluster.VAR_clusterResource, patch), clusterResource);
+
+                            String old_hubId = AiNode.staticJsonHubId(o.getHubId());
+                            String new_hubId = json.getString(AiNode.varJson(AiNode.VAR_hubId, patch));
+
+                            String old_clusterName = AiNode.staticJsonClusterName(o.getClusterName());
+                            String new_clusterName = json.getString(AiNode.varJson(AiNode.VAR_clusterName, patch));
+
+                            String old_nodeName = AiNode.staticJsonNodeName(o.getNodeName());
+                            String new_nodeName = json.getString(AiNode.varJson(AiNode.VAR_nodeName, patch));
+
+                            String old_nodeResource = AiNode.staticJsonNodeResource(o.getNodeResource());
+                            String new_nodeResource = json.getString(AiNode.varJson(AiNode.VAR_nodeResource, patch));
+
+                            String old_description = AiNode.staticJsonDescription(o.getDescription());
+                            String new_description = json.getString(AiNode.varJson(AiNode.VAR_description, patch));
+
+                            JsonObject old_location = AiNode.staticJsonLocation(o.getLocation());
+                            JsonObject new_location = json.getJsonObject(AiNode.varJson(AiNode.VAR_location, patch));
+
+                            String old_gpuDevicesTotal = AiNode.staticJsonGpuDevicesTotal(o.getGpuDevicesTotal());
+                            String new_gpuDevicesTotal = json.getString(AiNode.varJson(AiNode.VAR_gpuDevicesTotal, patch));
+
+                            String old_id = AiNode.staticJsonId(o.getId());
+                            String new_id = json.getString(AiNode.varJson(AiNode.VAR_id, patch));
+
+                            String old_ngsildTenant = AiNode.staticJsonNgsildTenant(o.getNgsildTenant());
+                            String new_ngsildTenant = json.getString(AiNode.varJson(AiNode.VAR_ngsildTenant, patch));
+
+                            String old_ngsildPath = AiNode.staticJsonNgsildPath(o.getNgsildPath());
+                            String new_ngsildPath = json.getString(AiNode.varJson(AiNode.VAR_ngsildPath, patch));
+
+                            String old_ngsildContext = AiNode.staticJsonNgsildContext(o.getNgsildContext());
+                            String new_ngsildContext = json.getString(AiNode.varJson(AiNode.VAR_ngsildContext, patch));
+
+                            JsonObject old_ngsildData = AiNode.staticJsonNgsildData(o.getNgsildData());
+                            JsonObject new_ngsildData = json.getJsonObject(AiNode.varJson(AiNode.VAR_ngsildData, patch));
+
+                            String old_created = AiNode.staticJsonCreated(o.getCreated());
+                            String new_created = json.getString(AiNode.varJson(AiNode.VAR_created, patch));
+
+                            Boolean old_archived = AiNode.staticJsonArchived(o.getArchived());
+                            Boolean new_archived = json.getBoolean(AiNode.varJson(AiNode.VAR_archived, patch));
+
+                            String old_sessionId = AiNode.staticJsonSessionId(o.getSessionId());
+                            String new_sessionId = json.getString(AiNode.varJson(AiNode.VAR_sessionId, patch));
+
+                            String old_userKey = AiNode.staticJsonUserKey(o.getUserKey());
+                            String new_userKey = json.getString(AiNode.varJson(AiNode.VAR_userKey, patch));
+
+                            String old_objectTitle = AiNode.staticJsonObjectTitle(o.getObjectTitle());
+                            String new_objectTitle = json.getString(AiNode.varJson(AiNode.VAR_objectTitle, patch));
+
+                            String old_apiUrl = AiNode.staticJsonApiUrl(o.getApiUrl());
+                            String new_apiUrl = json.getString(AiNode.varJson(AiNode.VAR_apiUrl, patch));
+
+                            String old_displayPage = AiNode.staticJsonDisplayPage(o.getDisplayPage());
+                            String new_displayPage = json.getString(AiNode.varJson(AiNode.VAR_displayPage, patch));
+
+                            String old_editPage = AiNode.staticJsonEditPage(o.getEditPage());
+                            String new_editPage = json.getString(AiNode.varJson(AiNode.VAR_editPage, patch));
+
+                            String old_userPage = AiNode.staticJsonUserPage(o.getUserPage());
+                            String new_userPage = json.getString(AiNode.varJson(AiNode.VAR_userPage, patch));
+
+                            String old_download = AiNode.staticJsonDownload(o.getDownload());
+                            String new_download = json.getString(AiNode.varJson(AiNode.VAR_download, patch));
+
+                            String hubId = Optional.ofNullable(Optional.ofNullable(new_hubId).orElse(old_hubId)).orElse(null);
+                            // if(!Objects.equals(old_hubId, hubId))
+                              // json.put(AiNode.varJson(AiNode.VAR_hubId, patch), hubId);
+                            String clusterName = Optional.ofNullable(Optional.ofNullable(new_clusterName).orElse(old_clusterName)).orElse(null);
+                            // if(!Objects.equals(old_clusterName, clusterName))
+                              // json.put(AiNode.varJson(AiNode.VAR_clusterName, patch), clusterName);
+                            String nodeName = Optional.ofNullable(Optional.ofNullable(new_nodeName).orElse(old_nodeName)).orElse(null);
+                            // if(!Objects.equals(old_nodeName, nodeName))
+                              // json.put(AiNode.varJson(AiNode.VAR_nodeName, patch), nodeName);
+                            String nodeResource = Optional.ofNullable(Optional.ofNullable(new_nodeResource).orElse(old_nodeResource)).orElse(null);
+                            // if(!Objects.equals(old_nodeResource, nodeResource))
+                              // json.put(AiNode.varJson(AiNode.VAR_nodeResource, patch), nodeResource);
+                            String description = Optional.ofNullable(Optional.ofNullable(new_description).orElse(old_description)).orElse(null);
+                            // if(!Objects.equals(old_description, description))
+                              // json.put(AiNode.varJson(AiNode.VAR_description, patch), description);
+                            JsonObject location = Optional.ofNullable(Optional.ofNullable(new_location).orElse(old_location)).orElse(null);
+                            // if(!Objects.equals(old_location, location))
+                              // json.put(AiNode.varJson(AiNode.VAR_location, patch), location);
+                            String gpuDevicesTotal = Optional.ofNullable(Optional.ofNullable(new_gpuDevicesTotal).orElse(old_gpuDevicesTotal)).orElse(null);
+                            // if(!Objects.equals(old_gpuDevicesTotal, gpuDevicesTotal))
+                              // json.put(AiNode.varJson(AiNode.VAR_gpuDevicesTotal, patch), gpuDevicesTotal);
+                            String id = Optional.ofNullable(Optional.ofNullable(new_id).orElse(old_id)).orElse(null);
+                            // if(!Objects.equals(old_id, id))
+                              // json.put(AiNode.varJson(AiNode.VAR_id, patch), id);
+                            String ngsildTenant = Optional.ofNullable(Optional.ofNullable(new_ngsildTenant).orElse(old_ngsildTenant)).orElse(null);
+                            // if(!Objects.equals(old_ngsildTenant, ngsildTenant))
+                              // json.put(AiNode.varJson(AiNode.VAR_ngsildTenant, patch), ngsildTenant);
+                            String ngsildPath = Optional.ofNullable(Optional.ofNullable(new_ngsildPath).orElse(old_ngsildPath)).orElse(null);
+                            // if(!Objects.equals(old_ngsildPath, ngsildPath))
+                              // json.put(AiNode.varJson(AiNode.VAR_ngsildPath, patch), ngsildPath);
+                            String ngsildContext = Optional.ofNullable(Optional.ofNullable(new_ngsildContext).orElse(old_ngsildContext)).orElse(null);
+                            // if(!Objects.equals(old_ngsildContext, ngsildContext))
+                              // json.put(AiNode.varJson(AiNode.VAR_ngsildContext, patch), ngsildContext);
+                            JsonObject ngsildData = Optional.ofNullable(Optional.ofNullable(new_ngsildData).orElse(old_ngsildData)).orElse(null);
+                            // if(!Objects.equals(old_ngsildData, ngsildData))
+                              // json.put(AiNode.varJson(AiNode.VAR_ngsildData, patch), ngsildData);
+                            String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
+                            // if(!Objects.equals(old_created, created))
+                              // json.put(AiNode.varJson(AiNode.VAR_created, patch), created);
+                            Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
+                            // if(!Objects.equals(old_archived, archived))
+                              // json.put(AiNode.varJson(AiNode.VAR_archived, patch), archived);
+                            String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
+                            // if(!Objects.equals(old_sessionId, sessionId))
+                              // json.put(AiNode.varJson(AiNode.VAR_sessionId, patch), sessionId);
+                            String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
+                            // if(!Objects.equals(old_userKey, userKey))
+                              // json.put(AiNode.varJson(AiNode.VAR_userKey, patch), userKey);
+                            String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
+                            // if(!Objects.equals(old_objectTitle, objectTitle))
+                              // json.put(AiNode.varJson(AiNode.VAR_objectTitle, patch), objectTitle);
+                            String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
+                            // if(!Objects.equals(old_apiUrl, apiUrl))
+                              // json.put(AiNode.varJson(AiNode.VAR_apiUrl, patch), apiUrl);
+                            String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
+                            // if(!Objects.equals(old_displayPage, displayPage))
+                              // json.put(AiNode.varJson(AiNode.VAR_displayPage, patch), displayPage);
+                            String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
+                            // if(!Objects.equals(old_editPage, editPage))
+                              // json.put(AiNode.varJson(AiNode.VAR_editPage, patch), editPage);
+                            String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
+                            // if(!Objects.equals(old_userPage, userPage))
+                              // json.put(AiNode.varJson(AiNode.VAR_userPage, patch), userPage);
+                            String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
+                            // if(!Objects.equals(old_download, download))
+                              // json.put(AiNode.varJson(AiNode.VAR_download, patch), download);
+
+                            promise.complete(json);
+                          }
+                        } catch(Exception ex) {
+                          LOG.error(String.format("upsertAiNode failed. "), ex);
+                          promise.tryFail(ex);
+                        }
+                      }).onFailure(ex -> {
+                        promise.fail(ex);
+                      });
+                    }).onFailure(ex -> {
+                      promise.fail(ex);
+                    });
+                  }).onFailure(ex -> {
+                    promise.fail(ex);
+                  });
+                }
+              } catch(Exception ex) {
+                LOG.error(String.format("upsertAiNode failed. "), ex);
+                promise.tryFail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
+          }).onFailure(ex -> {
+            promise.fail(ex);
+          });
+        }).onFailure(ex -> {
+          promise.fail(ex);
+        });
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("upsertAiNode failed. "), ex);
+      promise.tryFail(ex);
+    }
+    return promise.future();
+  }
+
   public Future<Void> persistAiNode(AiNode o, Boolean patch) {
     Promise<Void> promise = Promise.promise();
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT hubId, hubResource, created, clusterName, clusterResource, archived, nodeName, nodeResource, description, sessionId, userKey, location, objectTitle, gpuDevicesTotal, displayPage, id, editPage, userPage, ngsildTenant, download, ngsildPath, ngsildContext, ngsildData FROM AiNode WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, clusterResource, nodeName, nodeResource, description, location, gpuDevicesTotal, id, ngsildTenant, ngsildPath, ngsildContext, ngsildData, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM AiNode WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4634,27 +4178,28 @@ public class AiNodeEnUSGenApiServiceImpl extends BaseApiServiceImpl implements A
 
       o.persistForClass(AiNode.VAR_hubId, AiNode.staticSetHubId(siteRequest2, (String)result.get(AiNode.VAR_hubId)));
       o.persistForClass(AiNode.VAR_hubResource, AiNode.staticSetHubResource(siteRequest2, (String)result.get(AiNode.VAR_hubResource)));
-      o.persistForClass(AiNode.VAR_created, AiNode.staticSetCreated(siteRequest2, (String)result.get(AiNode.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(AiNode.VAR_clusterName, AiNode.staticSetClusterName(siteRequest2, (String)result.get(AiNode.VAR_clusterName)));
       o.persistForClass(AiNode.VAR_clusterResource, AiNode.staticSetClusterResource(siteRequest2, (String)result.get(AiNode.VAR_clusterResource)));
-      o.persistForClass(AiNode.VAR_archived, AiNode.staticSetArchived(siteRequest2, (String)result.get(AiNode.VAR_archived)));
       o.persistForClass(AiNode.VAR_nodeName, AiNode.staticSetNodeName(siteRequest2, (String)result.get(AiNode.VAR_nodeName)));
       o.persistForClass(AiNode.VAR_nodeResource, AiNode.staticSetNodeResource(siteRequest2, (String)result.get(AiNode.VAR_nodeResource)));
       o.persistForClass(AiNode.VAR_description, AiNode.staticSetDescription(siteRequest2, (String)result.get(AiNode.VAR_description)));
-      o.persistForClass(AiNode.VAR_sessionId, AiNode.staticSetSessionId(siteRequest2, (String)result.get(AiNode.VAR_sessionId)));
-      o.persistForClass(AiNode.VAR_userKey, AiNode.staticSetUserKey(siteRequest2, (String)result.get(AiNode.VAR_userKey)));
       o.persistForClass(AiNode.VAR_location, AiNode.staticSetLocation(siteRequest2, (String)result.get(AiNode.VAR_location)));
-      o.persistForClass(AiNode.VAR_objectTitle, AiNode.staticSetObjectTitle(siteRequest2, (String)result.get(AiNode.VAR_objectTitle)));
       o.persistForClass(AiNode.VAR_gpuDevicesTotal, AiNode.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(AiNode.VAR_gpuDevicesTotal)));
-      o.persistForClass(AiNode.VAR_displayPage, AiNode.staticSetDisplayPage(siteRequest2, (String)result.get(AiNode.VAR_displayPage)));
       o.persistForClass(AiNode.VAR_id, AiNode.staticSetId(siteRequest2, (String)result.get(AiNode.VAR_id)));
-      o.persistForClass(AiNode.VAR_editPage, AiNode.staticSetEditPage(siteRequest2, (String)result.get(AiNode.VAR_editPage)));
-      o.persistForClass(AiNode.VAR_userPage, AiNode.staticSetUserPage(siteRequest2, (String)result.get(AiNode.VAR_userPage)));
       o.persistForClass(AiNode.VAR_ngsildTenant, AiNode.staticSetNgsildTenant(siteRequest2, (String)result.get(AiNode.VAR_ngsildTenant)));
-      o.persistForClass(AiNode.VAR_download, AiNode.staticSetDownload(siteRequest2, (String)result.get(AiNode.VAR_download)));
       o.persistForClass(AiNode.VAR_ngsildPath, AiNode.staticSetNgsildPath(siteRequest2, (String)result.get(AiNode.VAR_ngsildPath)));
       o.persistForClass(AiNode.VAR_ngsildContext, AiNode.staticSetNgsildContext(siteRequest2, (String)result.get(AiNode.VAR_ngsildContext)));
       o.persistForClass(AiNode.VAR_ngsildData, AiNode.staticSetNgsildData(siteRequest2, (String)result.get(AiNode.VAR_ngsildData)));
+      o.persistForClass(AiNode.VAR_created, AiNode.staticSetCreated(siteRequest2, (String)result.get(AiNode.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(AiNode.VAR_archived, AiNode.staticSetArchived(siteRequest2, (String)result.get(AiNode.VAR_archived)));
+      o.persistForClass(AiNode.VAR_sessionId, AiNode.staticSetSessionId(siteRequest2, (String)result.get(AiNode.VAR_sessionId)));
+      o.persistForClass(AiNode.VAR_userKey, AiNode.staticSetUserKey(siteRequest2, (String)result.get(AiNode.VAR_userKey)));
+      o.persistForClass(AiNode.VAR_objectTitle, AiNode.staticSetObjectTitle(siteRequest2, (String)result.get(AiNode.VAR_objectTitle)));
+      o.persistForClass(AiNode.VAR_apiUrl, AiNode.staticSetApiUrl(siteRequest2, (String)result.get(AiNode.VAR_apiUrl)));
+      o.persistForClass(AiNode.VAR_displayPage, AiNode.staticSetDisplayPage(siteRequest2, (String)result.get(AiNode.VAR_displayPage)));
+      o.persistForClass(AiNode.VAR_editPage, AiNode.staticSetEditPage(siteRequest2, (String)result.get(AiNode.VAR_editPage)));
+      o.persistForClass(AiNode.VAR_userPage, AiNode.staticSetUserPage(siteRequest2, (String)result.get(AiNode.VAR_userPage)));
+      o.persistForClass(AiNode.VAR_download, AiNode.staticSetDownload(siteRequest2, (String)result.get(AiNode.VAR_download)));
 
       o.promiseDeepForClass((SiteRequest)siteRequest).onSuccess(o2 -> {
         try {

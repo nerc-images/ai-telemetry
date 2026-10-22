@@ -9,12 +9,17 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/nerc-images/ai-telemetry.git
+    repoURL: https://github.com/computateorg/ai-telemetry.git
     targetRevision: HEAD
     path: openshift-local/base/
   destination:
     namespace: aitelemetry
     server: 'https://kubernetes.default.svc'
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
   syncPolicy:
     automated:
       # resources that no longer exist get deleted on sync
@@ -27,3 +32,5 @@ spec:
         duration: 30s # Initial duration
         factor: 2 # Factor to multiply duration by on each retry
         maxDuration: 5m # Maximum duration between retries
+    syncOptions:
+      - CreateNamespace=true

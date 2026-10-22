@@ -1,5 +1,20 @@
 package org.computate.aitelemetry.model;
 
+import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.base.ComputateBaseModel;
 import org.computate.aitelemetry.request.SiteRequest;
 import java.lang.Object;
 import org.computate.aitelemetry.model.BaseModel;
@@ -27,6 +42,7 @@ import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
 import java.math.MathContext;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.text.NumberFormat;
@@ -54,13 +70,17 @@ import io.vertx.core.json.JsonArray;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
 
 /**
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
- * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these BaseModel objects in a RESTful API. 
+ * <li><p>
+ *   You can add a class comment <kbd><b>Api: true</b></kbd> if you wish to GET, POST, PATCH or PUT these  objects in a RESTful API. 
+ * </p>
  * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class BaseModelGen into the class BaseModel. 
  * </li>
  * <h3>About the BaseModel class and it's generated class BaseModelGen&lt;Object&gt;: </h3>extends BaseModelGen
@@ -79,33 +99,50 @@ import org.computate.search.response.solr.SolrResponse;
  * The generated <code>class BaseModelGen extends Object</code> which means that BaseModel extends BaseModelGen which extends Object. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
- * <h2>Api: true</h2>
+ * <h2>
+ *   Api: true
+ * </h2>
  * <h2>ApiTag.enUS: true</h2>
  * <h2>ApiUri.enUS: null</h2>
  * <h2>Color: null</h2>
  * <h2>Indexed: true</h2>
- * <p>This class contains a comment <b>"Indexed: true"</b>, which means this class will be indexed in the search engine. 
+ * <p>This class contains a comment <kbd><b>Indexed: true</b></kbd>, which means this class will be indexed in the search engine. 
  * Every protected void method that begins with "_" that is marked to be searched with a comment like "Indexed: true", "Stored: true", or "DocValues: true" will be indexed in the search engine. 
  * </p>
  * <h2>{@inheritDoc}</h2>
  * <p>By adding a class comment "{@inheritDoc}", the BaseModel class will inherit the helpful inherited class comments from the super class BaseModelGen. 
  * </p>
- * <h2>Rows: null</h2>
- * <h2>Order: 0</h2>
- * <p>This class contains a comment <b>"Order: 0"</b>, which means this class will be sorted by the given number 0 ascending when code that relates to multiple classes at the same time is generated. 
+ * <h2>
+ *   Rows: 10
+ * </h2>
+ * <p>This class contains a comment <kbd><b>Rows: 10</b></kbd>, which means the  API will return a default of 10 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the  API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <h2>
+ *   Order: 1
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Order: 1</b></kbd>, 
+ *   which means this class will be sorted by the given number 1 
+ *   ascending when code that relates to multiple classes at the same time is generated. 
  * </p>
  * <h2>SqlOrder: 0</h2>
- * <p>This class contains a comment <b>"SqlOrder: 0"</b>, which means this class will be sorted by the given number 0 ascending when SQL code to create and drop the tables is generated. 
+ * <p>This class contains a comment <kbd><b>SqlOrder: 0</b></kbd>, which means this class will be sorted by the given number 0 ascending when SQL code to create and drop the tables is generated. 
  * </p>
  * <h2>Model: true</h2>
- * <p>This class contains a comment <b>"Model: true"</b>, which means this class will be stored in the database. 
+ * <p>This class contains a comment <kbd><b>Model: true</b></kbd>, which means this class will be stored in the database. 
  * Every protected void method that begins with "_" that contains a "Persist: true" comment will be a persisted field in the database table. 
  * </p>
  * <h2>Page: true</h2>
  * <h2>SuperPage.enUS: null</h2>
  * <h2>Promise: true</h2>
  * <p>
- *   This class contains a comment <b>"Promise: true"</b>
+ *   This class contains a comment <kbd><b>Promise: true</b></kbd>
  *   Sometimes a Java class must be initialized asynchronously when it involves calling a blocking API. 
  *   This means that the BaseModel Java class has promiseDeep methods which must be initialized asynchronously as a Vert.x Promise  instead of initDeep methods which are a simple non-asynchronous method. 
  * </p>
@@ -130,19 +167,19 @@ import org.computate.search.response.solr.SolrResponse;
  * <p>
  * Delete the class BaseModel in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.BaseModel&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.BaseModel&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the package org.computate.aitelemetry.model in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.model&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.model&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * Generated: true
@@ -948,6 +985,68 @@ public abstract class BaseModelGen<DEV> extends Object {
     return objectTitle;
   }
 
+	////////////
+  // apiUrl //
+	////////////
+
+
+  /**
+   *  The entity apiUrl
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String apiUrl;
+
+  /**
+   * <br> The entity apiUrl
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.BaseModel&fq=entiteVar_enUS_indexed_string:apiUrl">Find the entity apiUrl in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _apiUrl(Wrap<String> w);
+
+  public String getApiUrl() {
+    return apiUrl;
+  }
+  public void setApiUrl(String o) {
+    this.apiUrl = BaseModel.staticSetApiUrl(siteRequest_, o);
+  }
+  public static String staticSetApiUrl(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected BaseModel apiUrlInit() {
+    Wrap<String> apiUrlWrap = new Wrap<String>().var("apiUrl");
+    if(apiUrl == null) {
+      _apiUrl(apiUrlWrap);
+      Optional.ofNullable(apiUrlWrap.getO()).ifPresent(o -> {
+        setApiUrl(o);
+      });
+    }
+    return (BaseModel)this;
+  }
+
+  public static String staticSearchApiUrl(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrApiUrl(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqApiUrl(SiteRequest siteRequest_, String o) {
+    return BaseModel.staticSearchApiUrl(siteRequest_, BaseModel.staticSetApiUrl(siteRequest_, o)).toString();
+  }
+
+  public String sqlApiUrl() {
+    return apiUrl;
+  }
+
+  public static String staticJsonApiUrl(String apiUrl) {
+    return apiUrl;
+  }
+
 	/////////////////
   // displayPage //
 	/////////////////
@@ -1385,7 +1484,8 @@ public abstract class BaseModelGen<DEV> extends Object {
   //////////////
 
   public Future<BaseModelGen<DEV>> promiseDeepBaseModel(SiteRequest siteRequest_) {
-    setSiteRequest_(siteRequest_);
+    if(this.siteRequest_ == null)
+      setSiteRequest_(siteRequest_);
     return promiseDeepBaseModel();
   }
 
@@ -1417,6 +1517,7 @@ public abstract class BaseModelGen<DEV> extends Object {
         userKeyInit();
         savesInit();
         objectTitleInit();
+        apiUrlInit();
         displayPageInit();
         editPageInit();
         userPageInit();
@@ -1500,6 +1601,8 @@ public abstract class BaseModelGen<DEV> extends Object {
         return oBaseModel.saves;
       case "objectTitle":
         return oBaseModel.objectTitle;
+      case "apiUrl":
+        return oBaseModel.apiUrl;
       case "displayPage":
         return oBaseModel.displayPage;
       case "editPage":
@@ -1573,6 +1676,8 @@ public abstract class BaseModelGen<DEV> extends Object {
       return BaseModel.staticSetSaves(siteRequest_, v);
     case "objectTitle":
       return BaseModel.staticSetObjectTitle(siteRequest_, v);
+    case "apiUrl":
+      return BaseModel.staticSetApiUrl(siteRequest_, v);
     case "displayPage":
       return BaseModel.staticSetDisplayPage(siteRequest_, v);
     case "editPage":
@@ -1623,6 +1728,8 @@ public abstract class BaseModelGen<DEV> extends Object {
       return BaseModel.staticSearchSaves(siteRequest_, (String)o);
     case "objectTitle":
       return BaseModel.staticSearchObjectTitle(siteRequest_, (String)o);
+    case "apiUrl":
+      return BaseModel.staticSearchApiUrl(siteRequest_, (String)o);
     case "displayPage":
       return BaseModel.staticSearchDisplayPage(siteRequest_, (String)o);
     case "editPage":
@@ -1673,6 +1780,8 @@ public abstract class BaseModelGen<DEV> extends Object {
       return BaseModel.staticSearchStrSaves(siteRequest_, (String)o);
     case "objectTitle":
       return BaseModel.staticSearchStrObjectTitle(siteRequest_, (String)o);
+    case "apiUrl":
+      return BaseModel.staticSearchStrApiUrl(siteRequest_, (String)o);
     case "displayPage":
       return BaseModel.staticSearchStrDisplayPage(siteRequest_, (String)o);
     case "editPage":
@@ -1723,6 +1832,8 @@ public abstract class BaseModelGen<DEV> extends Object {
       return BaseModel.staticSearchFqSaves(siteRequest_, o);
     case "objectTitle":
       return BaseModel.staticSearchFqObjectTitle(siteRequest_, o);
+    case "apiUrl":
+      return BaseModel.staticSearchFqApiUrl(siteRequest_, o);
     case "displayPage":
       return BaseModel.staticSearchFqDisplayPage(siteRequest_, o);
     case "editPage":
@@ -1808,6 +1919,12 @@ public abstract class BaseModelGen<DEV> extends Object {
           setObjectTitle((String)val);
         }
         saves.add("objectTitle");
+        return val;
+      } else if("apiurl".equals(varLower)) {
+        if(val instanceof String) {
+          setApiUrl((String)val);
+        }
+        saves.add("apiUrl");
         return val;
       } else if("displaypage".equals(varLower)) {
         if(val instanceof String) {
@@ -1919,6 +2036,12 @@ public abstract class BaseModelGen<DEV> extends Object {
           oBaseModel.setObjectTitle(objectTitle);
       }
 
+      if(saves.contains("apiUrl")) {
+        String apiUrl = (String)doc.get("apiUrl_docvalues_string");
+        if(apiUrl != null)
+          oBaseModel.setApiUrl(apiUrl);
+      }
+
       if(saves.contains("displayPage")) {
         String displayPage = (String)doc.get("displayPage_docvalues_string");
         if(displayPage != null)
@@ -1995,6 +2118,9 @@ public abstract class BaseModelGen<DEV> extends Object {
     if(objectTitle != null) {
       doc.put("objectTitle_docvalues_string", objectTitle);
     }
+    if(apiUrl != null) {
+      doc.put("apiUrl_docvalues_string", apiUrl);
+    }
     if(displayPage != null) {
       doc.put("displayPage_docvalues_string", displayPage);
     }
@@ -2046,6 +2172,8 @@ public abstract class BaseModelGen<DEV> extends Object {
         return "saves_docvalues_strings";
       case "objectTitle":
         return "objectTitle_docvalues_string";
+      case "apiUrl":
+        return "apiUrl_docvalues_string";
       case "displayPage":
         return "displayPage_docvalues_string";
       case "editPage":
@@ -2083,6 +2211,8 @@ public abstract class BaseModelGen<DEV> extends Object {
         return "saves_docvalues_strings";
       case "objectTitle":
         return "objectTitle_docvalues_string";
+      case "apiUrl":
+        return "apiUrl_docvalues_string";
       case "displayPage":
         return "displayPage_docvalues_string";
       case "editPage":
@@ -2126,6 +2256,8 @@ public abstract class BaseModelGen<DEV> extends Object {
         return "saves";
       case "objectTitle_docvalues_string":
         return "objectTitle";
+      case "apiUrl_docvalues_string":
+        return "apiUrl";
       case "displayPage_docvalues_string":
         return "displayPage";
       case "editPage_docvalues_string":
@@ -2191,6 +2323,7 @@ public abstract class BaseModelGen<DEV> extends Object {
       oBaseModel.addSaves(BaseModel.staticSetSaves(siteRequest, v.toString()));
     });
     oBaseModel.setObjectTitle(Optional.ofNullable(doc.get("objectTitle_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oBaseModel.setApiUrl(Optional.ofNullable(doc.get("apiUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
     oBaseModel.setDisplayPage(Optional.ofNullable(doc.get("displayPage_docvalues_string")).map(v -> v.toString()).orElse(null));
     oBaseModel.setEditPage(Optional.ofNullable(doc.get("editPage_docvalues_string")).map(v -> v.toString()).orElse(null));
     oBaseModel.setUserPage(Optional.ofNullable(doc.get("userPage_docvalues_string")).map(v -> v.toString()).orElse(null));
@@ -2234,6 +2367,8 @@ public abstract class BaseModelGen<DEV> extends Object {
         apiRequest.addVars("saves");
       if(!Objects.equals(objectTitle, original.getObjectTitle()))
         apiRequest.addVars("objectTitle");
+      if(!Objects.equals(apiUrl, original.getApiUrl()))
+        apiRequest.addVars("apiUrl");
       if(!Objects.equals(displayPage, original.getDisplayPage()))
         apiRequest.addVars("displayPage");
       if(!Objects.equals(editPage, original.getEditPage()))
@@ -2268,6 +2403,7 @@ public abstract class BaseModelGen<DEV> extends Object {
     sb.append(Optional.ofNullable(userKey).map(v -> "userKey: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(saves).map(v -> "saves: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(objectTitle).map(v -> "objectTitle: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(apiUrl).map(v -> "apiUrl: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(displayPage).map(v -> "displayPage: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(editPage).map(v -> "editPage: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(userPage).map(v -> "userPage: \"" + v + "\"\n" ).orElse(""));
@@ -2280,7 +2416,7 @@ public abstract class BaseModelGen<DEV> extends Object {
 
   public static final String CLASS_SIMPLE_NAME = "BaseModel";
   public static final String CLASS_CANONICAL_NAME = "org.computate.aitelemetry.model.BaseModel";
-  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_AUTH_RESOURCE = "BASEMODEL";
   public static final String VAR_siteRequest_ = "siteRequest_";
   public static final String SET_siteRequest_ = "setSiteRequest_";
   public static final String VAR_pk = "pk";
@@ -2305,6 +2441,8 @@ public abstract class BaseModelGen<DEV> extends Object {
   public static final String SET_saves = "setSaves";
   public static final String VAR_objectTitle = "objectTitle";
   public static final String SET_objectTitle = "setObjectTitle";
+  public static final String VAR_apiUrl = "apiUrl";
+  public static final String SET_apiUrl = "setApiUrl";
   public static final String VAR_displayPage = "displayPage";
   public static final String SET_displayPage = "setDisplayPage";
   public static final String VAR_editPage = "editPage";
@@ -2338,6 +2476,7 @@ public abstract class BaseModelGen<DEV> extends Object {
     vars.add(VAR_modified);
     vars.add(VAR_archived);
     vars.add(VAR_classSimpleName);
+    vars.add(VAR_apiUrl);
     vars.add(VAR_displayPage);
     vars.add(VAR_editPage);
     vars.add(VAR_userPage);
@@ -2367,6 +2506,7 @@ public abstract class BaseModelGen<DEV> extends Object {
   public static final String DISPLAY_NAME_userKey = "";
   public static final String DISPLAY_NAME_saves = "";
   public static final String DISPLAY_NAME_objectTitle = "title";
+  public static final String DISPLAY_NAME_apiUrl = "API URL";
   public static final String DISPLAY_NAME_displayPage = "display page";
   public static final String DISPLAY_NAME_editPage = "manage";
   public static final String DISPLAY_NAME_userPage = "user";
@@ -2395,6 +2535,10 @@ public abstract class BaseModelGen<DEV> extends Object {
     return null;
   }
 
+  public String enUSStringFormatUrlApiForClass() {
+    return null;
+  }
+
   public String enUSStringFormatUrlEditPageForClass() {
     return null;
   }
@@ -2411,7 +2555,7 @@ public abstract class BaseModelGen<DEV> extends Object {
     return null;
   }
 
-  public static String varJsonForClass(String var, Boolean patch) {
+  public static String varJson(String var, Boolean patch) {
     return BaseModel.varJsonBaseModel(var, patch);
   }
   public static String varJsonBaseModel(String var, Boolean patch) {
@@ -2440,6 +2584,8 @@ public abstract class BaseModelGen<DEV> extends Object {
       return patch ? SET_saves : VAR_saves;
     case VAR_objectTitle:
       return patch ? SET_objectTitle : VAR_objectTitle;
+    case VAR_apiUrl:
+      return patch ? SET_apiUrl : VAR_apiUrl;
     case VAR_displayPage:
       return patch ? SET_displayPage : VAR_displayPage;
     case VAR_editPage:
@@ -2488,6 +2634,8 @@ public abstract class BaseModelGen<DEV> extends Object {
       return DISPLAY_NAME_saves;
     case VAR_objectTitle:
       return DISPLAY_NAME_objectTitle;
+    case VAR_apiUrl:
+      return DISPLAY_NAME_apiUrl;
     case VAR_displayPage:
       return DISPLAY_NAME_displayPage;
     case VAR_editPage:
@@ -2535,6 +2683,8 @@ public abstract class BaseModelGen<DEV> extends Object {
       return "A list of fields that are saved for this record in the database";
     case VAR_objectTitle:
       return "The title of this page. ";
+    case VAR_apiUrl:
+      return "The API URL for this. ";
     case VAR_displayPage:
       return "Visit this landing page. ";
     case VAR_editPage:
@@ -2579,6 +2729,8 @@ public abstract class BaseModelGen<DEV> extends Object {
     case VAR_saves:
       return "List";
     case VAR_objectTitle:
+      return "String";
+    case VAR_apiUrl:
       return "String";
     case VAR_displayPage:
       return "String";

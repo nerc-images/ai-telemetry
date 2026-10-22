@@ -17,7 +17,7 @@ import org.computate.aitelemetry.request.SiteRequest;
  * Order: 1
  * Description: A user record for each site user
  * AName: a site user
- * Icon: <i class="fa-duotone fa-regular fa-user-gear"></i>
+ * Icon: <i class="fa-regular  fa-user-gear"></i>
  * 
  * Keyword: classSimpleNameSiteUser
  * Filter: userId
@@ -115,7 +115,6 @@ public class SiteUser extends SiteUserGen<BaseModel> implements ComputateSiteUse
   protected void _userProfileUrl(Wrap<String> w) {
     w.o(String.format("%s/realms/%s/account/", siteRequest_.getConfig().getString(ComputateConfigKeys.AUTH_URL), BaseApiServiceImpl.urlEncode(siteRequest_.getConfig().getString(ComputateConfigKeys.AUTH_REALM))));
   }
-
   /**
    * {@inheritDoc}
    * DocValues: true
@@ -125,11 +124,11 @@ public class SiteUser extends SiteUserGen<BaseModel> implements ComputateSiteUse
    * HtmRowTitleOpen: user options
    * DisplayName: see archived
    * Description: A user field allowing a user to see archived records
+   * Cookie: ENABLE_ARCHIVED
    */
   protected void _seeArchived(Wrap<Boolean> c) {
     c.o(false);
   }
-
   /**
    * DocValues: true
    * Persist: true
@@ -149,13 +148,22 @@ public class SiteUser extends SiteUserGen<BaseModel> implements ComputateSiteUse
    * DisplayName: font size
    * Description: The default font size for the site
    * Refresh: true
+   * Cookie: SITE_FONT_SIZE
    * Radio:
-   *   small: small
-   *   medium: medium
-   *   large: large
+   *   3xs: 3x-small
+   *   2xs: 2x-small
+   *   xs: x-small
+   *   s: small
+   *   m: medium
+   *   l: large
+   *   xl: x-large
+   *   2xl: 2x-large
+   *   3xl: 3x-large
+   *   4xl: 4x-large
+   *   5xl: 5x-large
    */
   protected void _siteFontSize(Wrap<String> w) {
-    w.o(Optional.ofNullable(siteRequest_.getUser().attributes().getJsonObject("accessToken")).map(t -> t.getString(SiteUser.VAR_siteFontSize)).orElse("medium"));
+    w.o(siteRequest_.getSessionSiteFontSize());
   }
 
   /**
@@ -167,12 +175,13 @@ public class SiteUser extends SiteUserGen<BaseModel> implements ComputateSiteUse
    * DisplayName: site theme
    * Description: The site theme, either light or dark. 
    * Refresh: true
+   * Cookie: SITE_THEME
    * Radio:
    *   light: Light
    *   dark: Dark
    */
   protected void _siteTheme(Wrap<String> w) {
-    w.o(Optional.ofNullable(siteRequest_.getUser().attributes().getJsonObject("accessToken")).map(t -> t.getString(SiteUser.VAR_siteTheme)).orElse("dark"));
+    w.o(siteRequest_.getSessionSiteTheme());
   }
 
   /**

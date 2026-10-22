@@ -82,7 +82,7 @@ GIT_DOMAIN: "github.com"
 # The Git organization for this project. 
 GIT_ORG: "computateorg"
 # Whether the repo is public. 
-SITE_REPO_PUBLIC: false
+SITE_REPO_PUBLIC: true
 # The ssh git repository for the project. 
 SITE_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_NAME }}.git"
 # The https git repository for the project. 
@@ -248,6 +248,15 @@ STATIC_BASE_URL: "{{ SITE_BASE_URL }}/static"
 STATIC_PATH: "{{ (SITE_SRC + '/../' + SITE_STATIC_NAME + '/' + ('webawesome' if WEB_COMPONENTS_PREFIX == 'wa-' else 'patternfly')) | realpath }}"
 # The path to the template files. 
 TEMPLATE_PATH: "{{ STATIC_PATH }}/templates"
+
+############
+# Map vars #
+############
+
+# Map default latitude,longitude. 
+DEFAULT_MAP_LOCATION: '{ "coordinates": [ -72.60793222470976, 42.202551398567465 ], "type": "Point" }'
+# Map default zoom level. 
+DEFAULT_MAP_ZOOM: "17"
 
 ######################
 # Developer defaults #

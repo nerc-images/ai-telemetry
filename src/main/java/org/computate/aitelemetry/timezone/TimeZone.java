@@ -8,11 +8,9 @@ import org.computate.aitelemetry.result.BaseResult;
  * Order: 2
  * Description: A timezone
  * AName: a time zone
- * Icon: <i class="fa-duotone fa-regular fa-globe"></i>
+ * Icon: <i class="fa-regular fa-globe"></i>
  * Rows: 10
  * Ignore: true
- * MenuDetails: info
- * MenuDetailsOpen: true
  * 
  * SearchPageUri: /en-us/search/time-zone
  * EditPageUri: /en-us/edit/time-zone/{id}

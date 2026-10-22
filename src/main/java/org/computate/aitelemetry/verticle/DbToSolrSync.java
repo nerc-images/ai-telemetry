@@ -35,6 +35,7 @@ import io.vertx.sqlclient.RowStream;
 
 import org.computate.aitelemetry.config.ConfigKeys;
 import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.aitelemetry.model.MapModel;
 import org.computate.aitelemetry.model.tenant.Tenant;
 import org.computate.aitelemetry.model.hub.Hub;
 import org.computate.aitelemetry.model.cluster.Cluster;
@@ -225,23 +226,25 @@ public class DbToSolrSync extends DbToSolrSyncGen<AbstractVerticle> {
       poolOptions.setMaxWaitQueueSize(Integer.parseInt(config.getString(ConfigKeys.DATABASE_MAX_WAIT_QUEUE_SIZE)));
 
       Pool pgPool = PgBuilder.pool().connectingTo(pgOptions).with(poolOptions).using(vertx).build();
-      dbToSolrSyncRecord(vertx, config, pgPool, Tenant.CLASS_SIMPLE_NAME).onSuccess(q1 -> {
-        dbToSolrSyncRecord(vertx, config, pgPool, Hub.CLASS_SIMPLE_NAME).onSuccess(q2 -> {
-          dbToSolrSyncRecord(vertx, config, pgPool, Cluster.CLASS_SIMPLE_NAME).onSuccess(q3 -> {
-            dbToSolrSyncRecord(vertx, config, pgPool, AiNode.CLASS_SIMPLE_NAME).onSuccess(q4 -> {
-              dbToSolrSyncRecord(vertx, config, pgPool, GpuDevice.CLASS_SIMPLE_NAME).onSuccess(q5 -> {
-                dbToSolrSyncRecord(vertx, config, pgPool, Project.CLASS_SIMPLE_NAME).onSuccess(q6 -> {
-                  dbToSolrSyncRecord(vertx, config, pgPool, VirtualMachine.CLASS_SIMPLE_NAME).onSuccess(q7 -> {
-                    dbToSolrSyncRecord(vertx, config, pgPool, ClusterRequest.CLASS_SIMPLE_NAME).onSuccess(q8 -> {
-                      dbToSolrSyncRecord(vertx, config, pgPool, ClusterOrder.CLASS_SIMPLE_NAME).onSuccess(q9 -> {
-                        dbToSolrSyncRecord(vertx, config, pgPool, ClusterTemplate.CLASS_SIMPLE_NAME).onSuccess(q10 -> {
-                          dbToSolrSyncRecord(vertx, config, pgPool, ManagedCluster.CLASS_SIMPLE_NAME).onSuccess(q11 -> {
-                            dbToSolrSyncRecord(vertx, config, pgPool, BareMetalOrder.CLASS_SIMPLE_NAME).onSuccess(q12 -> {
-                              dbToSolrSyncRecord(vertx, config, pgPool, BareMetalResourceClass.CLASS_SIMPLE_NAME).onSuccess(q13 -> {
-                                dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNetwork.CLASS_SIMPLE_NAME).onSuccess(q14 -> {
-                                  dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNode.CLASS_SIMPLE_NAME).onSuccess(q15 -> {
-                                    LOG.info(dbToSolrSyncComplete);
-                                    promise.complete();
+      dbToSolrSyncRecord(vertx, config, pgPool, MapModel.CLASS_SIMPLE_NAME).onSuccess(q1 -> {
+        dbToSolrSyncRecord(vertx, config, pgPool, Tenant.CLASS_SIMPLE_NAME).onSuccess(q2 -> {
+          dbToSolrSyncRecord(vertx, config, pgPool, Hub.CLASS_SIMPLE_NAME).onSuccess(q3 -> {
+            dbToSolrSyncRecord(vertx, config, pgPool, Cluster.CLASS_SIMPLE_NAME).onSuccess(q4 -> {
+              dbToSolrSyncRecord(vertx, config, pgPool, AiNode.CLASS_SIMPLE_NAME).onSuccess(q5 -> {
+                dbToSolrSyncRecord(vertx, config, pgPool, GpuDevice.CLASS_SIMPLE_NAME).onSuccess(q6 -> {
+                  dbToSolrSyncRecord(vertx, config, pgPool, Project.CLASS_SIMPLE_NAME).onSuccess(q7 -> {
+                    dbToSolrSyncRecord(vertx, config, pgPool, VirtualMachine.CLASS_SIMPLE_NAME).onSuccess(q8 -> {
+                      dbToSolrSyncRecord(vertx, config, pgPool, ClusterRequest.CLASS_SIMPLE_NAME).onSuccess(q9 -> {
+                        dbToSolrSyncRecord(vertx, config, pgPool, ClusterOrder.CLASS_SIMPLE_NAME).onSuccess(q10 -> {
+                          dbToSolrSyncRecord(vertx, config, pgPool, ClusterTemplate.CLASS_SIMPLE_NAME).onSuccess(q11 -> {
+                            dbToSolrSyncRecord(vertx, config, pgPool, ManagedCluster.CLASS_SIMPLE_NAME).onSuccess(q12 -> {
+                              dbToSolrSyncRecord(vertx, config, pgPool, BareMetalOrder.CLASS_SIMPLE_NAME).onSuccess(q13 -> {
+                                dbToSolrSyncRecord(vertx, config, pgPool, BareMetalResourceClass.CLASS_SIMPLE_NAME).onSuccess(q14 -> {
+                                  dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNetwork.CLASS_SIMPLE_NAME).onSuccess(q15 -> {
+                                    dbToSolrSyncRecord(vertx, config, pgPool, BareMetalNode.CLASS_SIMPLE_NAME).onSuccess(q16 -> {
+                                      LOG.info(dbToSolrSyncComplete);
+                                      promise.complete();
+                                    }).onFailure(ex -> promise.fail(ex));
                                   }).onFailure(ex -> promise.fail(ex));
                                 }).onFailure(ex -> promise.fail(ex));
                               }).onFailure(ex -> promise.fail(ex));

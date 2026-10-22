@@ -52,6 +52,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * FormatHtm: MMM d, yyyy h:mm:ss a
    * Description: A created timestamp for this record in the database
    * Facet: true
+   * StringFormat: null
    */
   protected void _created(Wrap<ZonedDateTime> w) {
     w.o(ZonedDateTime.now(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE))));
@@ -69,9 +70,9 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * DisplayName.enUS: modified
    * Description: A modified timestamp for this record in the database
    * Facet: true
+   * StringFormat: ZonedDateTime.now(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE)))
    */
   protected void _modified(Wrap<ZonedDateTime> w) {
-    w.o(ZonedDateTime.now(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE))));
   }
 
   /**
@@ -84,6 +85,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * HidePATCH: true
    * DisplayName.enUS: archived
    * Description: For archiving this record
+   * StringFormat: null
    */
   protected void _archived(Wrap<Boolean> w) {
     w.o(false);
@@ -151,9 +153,28 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * DisplayName: title
    * Description: The title of this page. 
    * VarTitle: true
+   * StringFormat: null
    */
   protected void _objectTitle(Wrap<String> w) {
     w.o(String.format("%s — %s", classNameAdjectiveSingularForClass(), nameForClass()));
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: API URL
+   * Description: The API URL for this. 
+   * Link: true
+   * VarUrlApi: true
+   * StringFormat: null
+   */
+  protected void _apiUrl(Wrap<String> w) {
+    String f = enUSStringFormatUrlApiForClass();
+    if(f != null) {
+      w.o(String.format(f, siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_BASE_URL), urlEncode(idForClass())));
+    }
   }
 
   /**
@@ -165,6 +186,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * Facet: true
    * Link: true
    * VarUrlDisplayPage: true
+   * StringFormat: null
    */
   protected void _displayPage(Wrap<String> w) {
     String f = enUSStringFormatUrlDisplayPageForClass();
@@ -186,8 +208,9 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * DisplayName: manage
    * Description: Manage this
    * Link: true
-   * Icon: <i class="fa-duotone fa-regular fa-pen-to-square"></i>
+   * Icon: <i class="fa-regular fa-pen-to-square"></i>
    * VarUrlEditPage: true
+   * StringFormat: null
    */
   protected void _editPage(Wrap<String> w) {
     String f = enUSStringFormatUrlEditPageForClass();
@@ -204,6 +227,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * Description: User page
    * Link: true
    * VarUrlUserPage: true
+   * StringFormat: null
    */
   protected void _userPage(Wrap<String> w) {
     String f = enUSStringFormatUrlUserPageForClass();
@@ -220,6 +244,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * Description: the download URL
    * Link: true
    * VarUrlDownload: true
+   * StringFormat: null
    */
   protected void _download(Wrap<String> w) {
     String f = enUSStringFormatUrlDownloadForClass();
@@ -267,6 +292,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * UniqueKey: true
    * Persist: true
    * Description: The unique key for this record in the search engine
+   * StringFormat: null
    */
   protected void _solrId(Wrap<String> w) {
     String objectId = idForClass();

@@ -1,5 +1,16 @@
 package org.computate.aitelemetry.user;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Optional;
+import org.computate.search.wrap.Wrap;
+import org.computate.vertx.api.BaseApiServiceImpl;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.user.ComputateSiteUser;
+import org.computate.vertx.request.ComputateSiteRequest;
+import org.computate.aitelemetry.model.BaseModel;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.model.BaseModel;
 import io.vertx.core.json.JsonObject;
@@ -26,6 +37,7 @@ import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
 import java.math.MathContext;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.text.NumberFormat;
@@ -41,6 +53,14 @@ import java.lang.String;
 import io.vertx.core.json.JsonArray;
 import java.lang.Boolean;
 import org.computate.search.wrap.Wrap;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.core.MultiMap;
+import io.vertx.core.http.HttpResponseExpectation;
+import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.buffer.Buffer;
+import org.computate.vertx.config.ComputateConfigKeys;
+import java.util.stream.Collectors;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import org.computate.vertx.search.list.SearchList;
@@ -52,9 +72,11 @@ import org.computate.search.response.solr.SolrResponse;
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
  * <li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class SiteUserGen into the class SiteUser. 
- * </li><li>You can add a class comment "Rows: 100" if you wish the SiteUser API to return more or less than 10 records by default. 
- * In this case, the API will return 100 records from the API instead of 10 by default. 
- * Each API has built in pagination of the search records to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </li><li><p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the site user API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
  * </li>
  * <h3>About the SiteUser class and it's generated class SiteUserGen&lt;BaseModel&gt;: </h3>extends SiteUserGen
  * <p>
@@ -72,46 +94,64 @@ import org.computate.search.response.solr.SolrResponse;
  * The generated <code>class SiteUserGen extends BaseModel</code> which means that SiteUser extends SiteUserGen which extends BaseModel. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
- * <h2>Api: true</h2>
- * <p>This class contains a comment <b>"Api: true"</b>, which means this class will have Java Vert.x API backend code generated for these objects. 
+ * <h2>
+ *   Api: true
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Api: true</b></kbd>, which means this class will have Java Vert.x API backend code generated for these objects. 
  * </p>
  * <h2>ApiTag.enUS: true</h2>
- * <p>This class contains a comment <b>"ApiTag: site users"</b>, which groups all of the OpenAPIs for SiteUser objects under the tag "site users". 
+ * <p>This class contains a comment <kbd><b>ApiTag: site users</b></kbd>, which groups all of the OpenAPIs for SiteUser objects under the tag "site users". 
  * </p>
  * <h2>ApiUri.enUS: /en-us/api/user</h2>
- * <p>This class contains a comment <b>"ApiUri: /en-us/api/user"</b>, which defines the base API URI for SiteUser objects as "/en-us/api/user" in the OpenAPI spec. 
+ * <p>This class contains a comment <kbd><b>ApiUri: /en-us/api/user</b></kbd>, which defines the base API URI for SiteUser objects as "/en-us/api/user" in the OpenAPI spec. 
  * </p>
  * <h2>Color: null</h2>
  * <h2>Indexed: true</h2>
- * <p>This class contains a comment <b>"Indexed: true"</b>, which means this class will be indexed in the search engine. 
+ * <p>This class contains a comment <kbd><b>Indexed: true</b></kbd>, which means this class will be indexed in the search engine. 
  * Every protected void method that begins with "_" that is marked to be searched with a comment like "Indexed: true", "Stored: true", or "DocValues: true" will be indexed in the search engine. 
  * </p>
  * <h2>{@inheritDoc}</h2>
  * <p>By adding a class comment "{@inheritDoc}", the SiteUser class will inherit the helpful inherited class comments from the super class SiteUserGen. 
  * </p>
- * <h2>Rows: null</h2>
- * <h2>Order: 1</h2>
- * <p>This class contains a comment <b>"Order: 1"</b>, which means this class will be sorted by the given number 1 ascending when code that relates to multiple classes at the same time is generated. 
+ * <h2>
+ *   Rows: 10
+ * </h2>
+ * <p>This class contains a comment <kbd><b>Rows: 10</b></kbd>, which means the site user API will return a default of 10 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the site user API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <h2>
+ *   Order: 1
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Order: 1</b></kbd>, 
+ *   which means this class will be sorted by the given number 1 
+ *   ascending when code that relates to multiple classes at the same time is generated. 
  * </p>
  * <h2>SqlOrder: 1</h2>
- * <p>This class contains a comment <b>"SqlOrder: 1"</b>, which means this class will be sorted by the given number 1 ascending when SQL code to create and drop the tables is generated. 
+ * <p>This class contains a comment <kbd><b>SqlOrder: 1</b></kbd>, which means this class will be sorted by the given number 1 ascending when SQL code to create and drop the tables is generated. 
  * </p>
  * <h2>Model: true</h2>
- * <p>This class contains a comment <b>"Model: true"</b>, which means this class will be stored in the database. 
+ * <p>This class contains a comment <kbd><b>Model: true</b></kbd>, which means this class will be stored in the database. 
  * Every protected void method that begins with "_" that contains a "Persist: true" comment will be a persisted field in the database table. 
  * </p>
  * <h2>Page: true</h2>
- * <p>This class contains a comment <b>"Page: true"</b>, which means this class will have webpage code generated for these objects. 
+ * <p>This class contains a comment <kbd><b>Page: true</b></kbd>, which means this class will have webpage code generated for these objects. 
  * Java Vert.x backend API code, Handlebars HTML template frontend code, and JavaScript code will all generated and can be extended. 
  * This creates a new Java class org.computate.aitelemetry.user.SiteUserPage. 
  * </p>
  * <h2>SuperPage.enUS: PageLayout</h2>
- * <p>This class contains a comment <b>"SuperPage.enUS: PageLayout"</b>, which identifies the Java super class of the page code by it's class simple name "PageLayout". 
+ * <p>This class contains a comment <kbd><b>SuperPage.enUS: PageLayout</b></kbd>, which identifies the Java super class of the page code by it's class simple name "PageLayout". 
  * This means that the newly created class org.computate.aitelemetry.user.SiteUserPage extends org.computate.aitelemetry.page.PageLayout. 
  * </p>
  * <h2>Promise: true</h2>
  * <p>
- *   This class contains a comment <b>"Promise: true"</b>
+ *   This class contains a comment <kbd><b>Promise: true</b></kbd>
  *   Sometimes a Java class must be initialized asynchronously when it involves calling a blocking API. 
  *   This means that the SiteUser Java class has promiseDeep methods which must be initialized asynchronously as a Vert.x Promise  instead of initDeep methods which are a simple non-asynchronous method. 
  * </p>
@@ -133,24 +173,24 @@ import org.computate.search.response.solr.SolrResponse;
  *   If a super class of this Java class with `Model: true`, then the child class will also inherit `Promise: true`. 
  * </p>
  * <h2>AName.enUS: a site user</h2>
- * <p>This class contains a comment <b>"AName.enUS: a site user"</b>, which identifies the language context to describe a SiteUser as "a site user". 
+ * <p>This class contains a comment <kbd><b>AName.enUS: a site user</b></kbd>, which identifies the language context to describe a SiteUser as "a site user". 
  * </p>
  * <p>
  * Delete the class SiteUser in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.user.SiteUser&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.user.SiteUser&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the package org.computate.aitelemetry.user in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.user&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.user&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * Generated: true
@@ -196,7 +236,7 @@ public abstract class SiteUserGen<DEV> extends BaseModel {
   public static final String EditPage_enUS_StringFormatUri = "/en-us/edit/user/%s";
   public static final String EditPage_enUS_StringFormatUrl = "%s/en-us/edit/user/%s";
 
-  public static final String Icon = "<i class=\"fa-duotone fa-regular fa-user-gear\"></i>";
+  public static final String Icon = "<i class=\"fa-regular  fa-user-gear\"></i>";
 
 	//////////////
   // userKeys //
@@ -1038,7 +1078,8 @@ public abstract class SiteUserGen<DEV> extends BaseModel {
   //////////////
 
   public Future<SiteUserGen<DEV>> promiseDeepSiteUser(SiteRequest siteRequest_) {
-    setSiteRequest_(siteRequest_);
+    if(this.siteRequest_ == null)
+      setSiteRequest_(siteRequest_);
     return promiseDeepSiteUser();
   }
 
@@ -1222,6 +1263,68 @@ public abstract class SiteUserGen<DEV> extends BaseModel {
       default:
         return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
     }
+  }
+
+  //////////////////
+  // authorization //
+  //////////////////
+
+  public static Future<AsyncResult<HttpResponse<Buffer>>> authorizationSiteUser(SiteRequest siteRequest, WebClient webClient, Boolean classPublicRead, String classApiMethod, String classApiMethodMethod, String scope) {
+    Promise<AsyncResult<HttpResponse<Buffer>>> promise = Promise.promise();
+    try {
+      JsonObject config = siteRequest.getConfig();
+      SiteRequest siteRequest2 = siteRequest.copy();
+      String userId = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("userId");
+      String SITEUSER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("SITEUSER");
+      List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
+      MultiMap form = MultiMap.caseInsensitiveMultiMap();
+      form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
+      form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
+      form.add("response_mode", "permissions");
+      if(userId != null)
+        form.add("permission", String.format("%s-%s#%s", SiteUser.CLASS_AUTH_RESOURCE, userId, scope));
+      siteRequest2.setPublicRead(classPublicRead);
+      webClient.post(
+          config.getInteger(ComputateConfigKeys.AUTH_PORT)
+            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
+            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
+            )
+            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
+            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
+            .sendForm(form)
+            .expecting(HttpResponseExpectation.SC_OK)
+      .onComplete(authorizationDecisionResponse -> {
+        promise.complete(authorizationDecisionResponse);
+      });
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the site user", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<SiteRequest> authorizationScopesSiteUser(AsyncResult<HttpResponse<Buffer>> authorizationDecisionResponse, SiteRequest siteRequest2, WebClient webClient, Boolean classPublicRead, String classApiMethod, String classApiMethodMethod, String scope) {
+    Promise<SiteRequest> promise = Promise.promise();
+    try {
+      siteRequest2.initDeepSiteRequest();
+      HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
+      JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
+      JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "SITEUSER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
+      if("GET".equals(classApiMethod) && !"GET".equals(classApiMethod)) {
+        siteRequest2.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+        promise.complete(siteRequest2);
+      } else if("GET".equals(classApiMethod) && authorizationDecisionResponse.failed() && !scopes.contains(classApiMethodMethod)
+           || authorizationDecisionResponse.failed() || !scopes.contains(classApiMethodMethod)) {
+        promise.complete(siteRequest2);
+      } else {
+        siteRequest2.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
+        promise.complete(siteRequest2);
+      }
+    } catch(Throwable ex) {
+      LOG.error("Error while querying the site user", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
   }
 
   //////////////////
@@ -1921,7 +2024,7 @@ public abstract class SiteUserGen<DEV> extends BaseModel {
     return "%s/en-us/edit/user/%s";
   }
 
-  public static String varJsonForClass(String var, Boolean patch) {
+  public static String varJson(String var, Boolean patch) {
     return SiteUser.varJsonSiteUser(var, patch);
   }
   public static String varJsonSiteUser(String var, Boolean patch) {

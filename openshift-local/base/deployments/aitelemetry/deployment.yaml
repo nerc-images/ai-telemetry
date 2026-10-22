@@ -50,7 +50,7 @@ spec:
           image: docker.io/alpine/git
           args:
             - >-
-              git clone https://computate.org:$GITHUB_DEVELOPERS_TOKEN@github.com/computate-org/ai-telemetry-developer.git /home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer; 
+              git clone https://computate.org:$GIT_DEVELOPERS_TOKEN@github.com/computate-org/ai-telemetry-developer.git /home/default/ai-telemetry-static/webawesome/templates/en-us/ai-telemetry-developer; 
       containers:
       - name: aitelemetry
         env:
@@ -76,8 +76,6 @@ spec:
             name: cloud-database
         - secretRef:
             name: cloud-auth
-        - secretRef:
-            name: cloud-context-broker
         - secretRef:
             name: cloud-site
         - secretRef:

@@ -48,9 +48,9 @@ data:
     # The domain name of the site. 
     DOMAIN_NAME: "computate.org"
     # The GitHub organization for this project. 
-    GIT_ORG: "nerc-images"
+    GIT_ORG: "computateorg"
     # The main git repository for the project. 
-    SITE_REPO: "git@github.com:nerc-images/ai-telemetry.git"
+    SITE_REPO: "git@github.com:computateorg/ai-telemetry.git"
     # The main git repository for the project via ssh. 
     SITE_REPO_HTTPS: "{{ SITE_REPO | replace('git@github.com:', 'https://github.com/') }}"
     # The port of the site. 
@@ -60,13 +60,15 @@ data:
     # The base URL of the site. 
     SITE_BASE_URL: "{{ lookup('env', 'SITE_BASE_URL') | default('https://' + SITE_HOST_NAME, true) }}"
     # The public facing URL for the site. 
-    SITE_PUBLIC_URL: "https://ai-telemetry.apps.obs.nerc.mghpcc.org"
+    SITE_PUBLIC_URL: "https://aitelemetry.apps.oac-prod-workload0.hcp.oac.massopen.cloud"
     # The port of the Zookeeper cluster manager. 
     CLUSTER_PORT: "{{ (SITE_PORT | int) + 1 }}"
     # The public port of the Zookeeper cluster manager. 
     CLUSTER_PUBLIC_PORT: "{{ (SITE_PORT | int) + 1 }}"
     # Zookeeper root path to avoid conflicts with other apps using Zookeeper for clustering. 
     ZOOKEEPER_ROOT_PATH: "{{ lookup('env', 'ZOOKEEPER_ROOT_PATH') | default(SITE_NAME + '-cloud', true) }}"
+    # Zookeeper root path to avoid conflicts with other apps using Zookeeper for clustering. 
+    ZOOKEEPER_RETRY_POLICY: "exponential_backoff"
     # Verify SSL connections. 
     SSL_VERIFY: "{{ lookup('env', 'SSL_VERIFY') | default('false', true) | bool }}"
     # The public search endpoint for searching public items in the site. 
@@ -201,7 +203,7 @@ data:
     WEB_COMPONENTS_THEME: "active"
     FONTAWESOME_KIT: ""
     # A default FontAwesome style. 
-    FONTAWESOME_STYLE: "fa-duotone fa-regular "
+    FONTAWESOME_STYLE: "fa-regular "
     # Site default theme, light or dark. 
     SITE_THEME: "dark"
     # The site logo relative URI
@@ -209,7 +211,7 @@ data:
     # The name of the repository containing the web static content. 
     SITE_STATIC_NAME: "ai-telemetry-static"
     # The static files git repository for the project. 
-    SITE_STATIC_REPO: "git@github.com:nerc-images/ai-telemetry-static.git"
+    SITE_STATIC_REPO: "git@github.com:computateorg/ai-telemetry-static.git"
     # The base URL to the static files. 
     STATIC_BASE_URL: "{{ SITE_BASE_URL }}/static"
     # The path to the static files. 
@@ -323,8 +325,6 @@ data:
     DATABASE_SECRET: "postgres-pguser-aitelemetry"
     # The database secret containing the user password to connect to the database. 
     DATABASE_SECRET_KEY: "{{ lookup('env', 'DATABASE_SECRET_KEY_' + SITE_SHORT_NAME) | default('DATABASE_PASSWORD', true) }}"
-    # The PostgreSQL database password of the site. 
-    DATABASE_PASSWORD: "{{ (query('kubernetes.core.k8s', kind='Secret', resource_name=(DATABASE_SECRET), namespace=SITE_NAMESPACE) | first | default({})).data[DATABASE_SECRET_KEY] | default('') | b64decode }}"
     # The PostgreSQL database name of the site. 
     DATABASE_DATABASE: "{{ lookup('env', 'DATABASE_DATABASE_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME + 'cloud', true) }}"
     # The PostgreSQL database max pool size. 
@@ -379,130 +379,15 @@ data:
     # Enables authorization fine-grained resource permissions. 
     AUTH_FINE_GRAINED_POLICY_PERMISSIONS: true
 
-    ###############
-    # FIWARE vars #
-    ###############
+    ############
+    # Map vars #
+    ############
 
-    # Enable FIWARE Smart Data Model integrations. 
-    ENABLE_FIWARE: false
-    # FIWARE Smart Data Model source code directory. 
-    SMART_DATA_MODELS_SRC: "{{ (PARENT_SRC + '/smart-data-models') | realpath }}"
     # Map default latitude,longitude. 
     DEFAULT_MAP_LOCATION: '{ "coordinates": [ -86.00911511758058, 30.02832599643655 ], "type": "Point" }'
     # Map default zoom level. 
     DEFAULT_MAP_ZOOM: "17"
 
-    # Whether to use SSL when connecting to Solr. 
-    SOLR_SSL_FIWARE: "{{ lookup('env', 'SOLR_SSL_FIWARE') | default(SOLR_SSL, true) | bool }}"
-    # The host name to connect to Solr in OpenShift. 
-    SOLR_HOST_NAME_FIWARE: "{{ lookup('env', 'SOLR_HOST_NAME_FIWARE') | default(SOLR_HOST_NAME, true) }}"
-    # The default port that Solr runs. 
-    SOLR_PORT_FIWARE: "{{ lookup('env', 'SOLR_PORT_FIWARE') | default(SOLR_PORT, true) }}"
-    # The solr collection to use for the site. 
-    SOLR_COLLECTION_FIWARE: "{{ lookup('env', 'SOLR_COLLECTION_FIWARE') | default('fiware', true) }}"
-    # The URL to the Solr collection. 
-    SOLR_URL_FIWARE: "{{ ('https://' if SOLR_SSL_FIWARE | bool == True else 'http://') + SOLR_HOST_NAME_FIWARE + ('' if SOLR_PORT_FIWARE | int == 443 else (':' + SOLR_PORT_FIWARE)) }}/solr/{{ SOLR_COLLECTION_FIWARE }}"
-
-    ##################
-    # Context Broker #
-    ##################
-
-    # Enable context broker integration in the Fiware enabled Smart Data Model APIs. 
-    ENABLE_CONTEXT_BROKER: true
-    # Enable sending context broker data. 
-    ENABLE_CONTEXT_BROKER_SEND: false
-    # The Context Broker namespace. 
-    CONTEXT_BROKER_NAMESPACE: "scorpiobroker"
-    # Whether to use SSL when connecting to the Context Broker. 
-    CONTEXT_BROKER_SSL: "{{ (lookup('env', 'CONTEXT_BROKER_SSL') | lower) | default(false) }}"
-    # The host name to connect to the Context Broker in OpenShift. 
-    CONTEXT_BROKER_HOST_NAME: "{{ lookup('env', 'CONTEXT_BROKER_HOST_NAME') | default('scorpiobroker.scorpiobroker.svc', true) }}"
-    # The default port that the Context Broker runs. 
-    CONTEXT_BROKER_PORT: "{{ lookup('env', 'CONTEXT_BROKER_PORT') | default('9090', true) }}"
-    # The delay between messages and requerying entity @context. 
-    CONTEXT_BROKER_DELAY_MILLIS: 0
-    # The Context Broker namespace. 
-    CONTEXT_BROKER_CONTEXT: "{{ SITE_PUBLIC_URL }}/static/fiware/context.jsonld"
-    # The base URL where the project will put NGSI-LD context information public on the Internet. 
-    NGSILD_BASE_URL: "{{ lookup('env', 'NGSILD_BASE_URL') | default(SITE_PUBLIC_URL + '/static/fiware', true) }}"
-    # The default NGSI-LD tenant environment variable
-    NGSILD_TENANT_ENV: "{{ lookup('env', 'NGSILD_TENANT_ENV') | default('NGSILD_TENANT', true) }}"
-    # The default NGSI-LD path
-    NGSILD_PATH_ENV: "{{ lookup('env', 'NGSILD_PATH_ENV') | default('NGSILD_PATH', true) }}"
-    # The default NGSI-LD tenant
-    NGSILD_TENANT: "{{ lookup('env', NGSILD_TENANT_ENV) | default('', true) }}"
-    # The default NGSI-LD path
-    NGSILD_PATH: "{{ lookup('env', NGSILD_PATH_ENV) | default('', true) }}"
-
-    ##############
-    # Kafka vars #
-    ##############
-
-    # Enable Kafka message integration. 
-    ENABLE_KAFKA: false
-    # The namespace in OpenShift where Kafka will run. 
-    KAFKA_NAMESPACE: "{{ KAFKA_NAMESPACE }}"
-    # The Kafka SSL KeyStore secret name. 
-    KAFKA_SSL_KEYSTORE_SECRET: "{{ SITE_SHORT_NAME }}-kafka"
-    # The Kafka SSL TrustStore secret name. 
-    KAFKA_SSL_TRUSTSTORE_SECRET: "{{ KAFKA_SSL_TRUSTSTORE_SECRET }}"
-    # The Kafka port. 
-    KAFKA_PORT: 9093
-
-    #############
-    # MQTT vars #
-    #############
-
-    # Enable MQTT message integration. 
-    ENABLE_MQTT: "{{ (lookup('env', 'ENABLE_MQTT') | lower) == 'true' }}"
-    # The namespace in OpenShift where the MQTT message broker will run. 
-    MQTT_NAMESPACE: "{{ lookup('env', 'MQTT_NAMESPACE') | default('amq-broker', true) }}"
-    # The MQTT port (default 1883). 
-    MQTT_PORT: "{{ lookup('env', 'MQTT_PORT') | default('30083', true) }}"
-    # The MQTT host name. 
-    MQTT_HOST_NAME: "{{ lookup('env', 'MQTT_HOST_NAME') | default('import-broker-mqtt-0-svc.' + OPENSHIFT_APPS_DOMAIN, true) }}"
-    # The MQTT user. 
-    MQTT_USERNAME: "{{ lookup('env', 'MQTT_USERNAME') | default('user', true) }}"
-    # The MQTT password. 
-    MQTT_PASSWORD: "{{ lookup('env', 'MQTT_PASSWORD') | default('password', true) }}"
-
-    #############
-    # AMQP vars #
-    #############
-
-    # Enable AMQP message integration. 
-    ENABLE_AMQP: "{{ (lookup('env', 'ENABLE_AMQP') | lower) == 'true' }}"
-    # The namespace in OpenShift where the AMQP message broker will run. 
-    AMQP_NAMESPACE: "{{ lookup('env', 'AMQP_NAMESPACE') | default('amq-broker', true) }}"
-    # The AMQP port (default 5672). 
-    AMQP_PORT: "{{ lookup('env', 'AMQP_PORT') | default('30072', true) }}"
-    # The AMQP host name. 
-    AMQP_HOST_NAME: "{{ lookup('env', 'AMQP_HOST_NAME') | default('import-broker-AMQP-0-svc.' + OPENSHIFT_APPS_DOMAIN, true) }}"
-    # The AMQP user. 
-    AMQP_USERNAME: "{{ lookup('env', 'AMQP_USERNAME') | default('user', true) }}"
-    # The AMQP password. 
-    AMQP_PASSWORD: "{{ lookup('env', 'AMQP_PASSWORD') | default('password', true) }}"
-    # The AMQP virtual host. 
-    AMQP_VIRTUAL_HOST: "%2F"
-
-    #################
-    # RabbitMQ vars #
-    #################
-
-    # Enable RabbitMQ message integration. 
-    ENABLE_RABBITMQ: "{{ (lookup('env', 'ENABLE_RABBITMQ') | lower) == 'true' }}"
-    # The namespace in OpenShift where the RabbitMQ message broker will run. 
-    RABBITMQ_NAMESPACE: "{{ lookup('env', 'RABBITMQ_NAMESPACE') | default('rabbitmq', true) }}"
-    # The RabbitMQ port (default 5672). 
-    RABBITMQ_PORT: "{{ lookup('env', 'RABBITMQ_PORT') | default('30072', true) }}"
-    # The RabbitMQ host name. 
-    RABBITMQ_HOST_NAME: "{{ lookup('env', 'RABBITMQ_HOST_NAME') | default('rabbitmq.' + OPENSHIFT_APPS_DOMAIN, true) }}"
-    # The RabbitMQ user. 
-    RABBITMQ_USERNAME: "{{ lookup('env', 'RABBITMQ_USERNAME') | default('user', true) }}"
-    # The RabbitMQ password. 
-    RABBITMQ_PASSWORD: "{{ lookup('env', 'RABBITMQ_PASSWORD') | default('password', true) }}"
-    # The RabbitMQ virtual host. 
-    RABBITMQ_VIRTUAL_HOST: "/"
     ################################
     # OpenShift Deployment Details #
     ################################

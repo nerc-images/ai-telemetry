@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Quantity;
+import javax.measure.quantity.Angle;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.computate.search.response.solr.SolrResponse;
@@ -399,10 +402,13 @@ public class PageLayout extends PageLayoutGen<Object> {
   protected void _defaultPivotMinCount(Wrap<Integer> w) {
   }
 
-  protected void _DEFAULT_MAP_LOCATION(Wrap<JsonObject> w) {
+  protected void _location(Wrap<JsonObject> w) {
   }
 
-  protected void _DEFAULT_MAP_ZOOM(Wrap<BigDecimal> w) {
+  protected void _zoom(Wrap<BigDecimal> w) {
+  }
+
+  protected void _pitch(Wrap<Quantity<Angle>> w) {
   }
 
   /**

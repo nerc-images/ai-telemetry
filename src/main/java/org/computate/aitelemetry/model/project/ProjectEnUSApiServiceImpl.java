@@ -136,7 +136,9 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
   ////////////////////
 
   @Override
-  protected Future<Void> importModelFromFile(Vertx vertx, ComputateSiteRequest siteRequest, YamlProcessor yamlProcessor, String templatePath, String classCanonicalName, String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
+  protected Future<Void> importModelFromFile(String clientUuid, Vertx vertx, ComputateSiteRequest siteRequest,
+      YamlProcessor yamlProcessor, String templatePath, String classCanonicalName, String classSimpleName,
+      String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
     Promise<Void> promise = Promise.promise();
     vertx.fileSystem().readFile(templatePath).onSuccess(buffer -> {
       try {

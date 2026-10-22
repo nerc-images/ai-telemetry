@@ -267,8 +267,9 @@ public class TenantEnUSApiServiceImpl extends TenantEnUSGenApiServiceImpl {
   }
 
   @Override
-  public Future<Void> importData(Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest, String classCanonicalName,
-      String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
+  public Future<Void> importData(String clientUuid, Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest,
+      String classCanonicalName, String classSimpleName, String classApiAddress, String classAuthResource,
+      String varPageId, String varUserUrl, String varDownload) {
     Promise<Void> promise = Promise.promise();
     importTenantsFromEnv(pagePath, vertx, siteRequest, classCanonicalName, classSimpleName, classApiAddress, classAuthResource, varPageId, varUserUrl, varDownload).onSuccess(a -> {
       try {

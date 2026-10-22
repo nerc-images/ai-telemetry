@@ -6,6 +6,80 @@ import org.computate.aitelemetry.model.hub.HubEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.hub.Hub;
 import org.computate.aitelemetry.model.cluster.ClusterEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.cluster.Cluster;
+import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.base.ComputateBaseModel;
+import org.computate.aitelemetry.request.SiteRequest;
+import java.lang.Object;
+import org.computate.aitelemetry.model.BaseModel;
+import io.vertx.core.json.JsonObject;
+import java.util.Date;
+import java.util.Set;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.aitelemetry.config.ConfigKeys;
+import java.util.Optional;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.computate.search.serialize.ComputateLocalDateSerializer;
+import org.computate.search.serialize.ComputateLocalDateDeserializer;
+import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
+import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
+import java.math.MathContext;
+import org.apache.commons.lang3.math.NumberUtils;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.math.RoundingMode;
+import java.util.Map;
+import java.lang.Long;
+import java.lang.String;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.lang.Boolean;
+import io.vertx.core.json.JsonArray;
+import org.computate.search.wrap.Wrap;
+import io.vertx.core.Promise;
+import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.response.solr.SolrResponse;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.user.SiteUser;
 import org.computate.vertx.api.ApiRequest;
@@ -129,146 +203,25 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "GETManager"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GETManager")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GETManager")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GETManager")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GETManager")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GETManager")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GETManager"))
-                    scopes.add("GETManager");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, false, "GETManager").onSuccess(listProject -> {
-                response200UserPageProject(listProject).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("userpageProject succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("userpageProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "UserPage", "GET", "GETManager").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "UserPage", "GET", "GETManager").onSuccess(siteRequest2 -> {
+            searchProjectList(siteRequest2, false, true, false, "GETManager").onSuccess(listProject -> {
+              response200UserPageProject(listProject).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("userpageProject succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("userpageProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("userpageProject failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("userpageProject failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("userpageProject failed. "), ex);
@@ -327,6 +280,45 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "%s.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/project/ProjectGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -482,146 +474,26 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, false, "GET").onSuccess(listProject -> {
-                response200SearchProject(listProject).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchProject succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchProjectList(siteRequest2, false, true, false, "GET").onSuccess(listProject -> {
+              response200SearchProject(listProject).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchProject succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchProject failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchProject failed. "), ex);
@@ -685,6 +557,8 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         }
         if(!scopes.contains("GETManager"))
           json2.remove(Project.VAR_statusPageTemplateUri);
+        if(!scopes.contains("GETManager"))
+          json2.remove(Project.VAR_userPage);
         l.add(json2);
       });
       json.put("list", l);
@@ -739,146 +613,26 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, false, "GET").onSuccess(listProject -> {
-                response200GETProject(listProject).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("getProject succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("getProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchProjectList(siteRequest2, false, true, false, "GET").onSuccess(listProject -> {
+              response200GETProject(listProject).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("getProject succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("getProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("getProject failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("getProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("getProject failed. "), ex);
@@ -932,178 +686,48 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "PATCH"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("PATCH")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PATCH")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PATCH")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PATCH")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PATCH")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("PATCH"))
-                  scopes.add("PATCH");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, true, "PATCH").onSuccess(listProject -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listProject.getRequest().getRows());
-                  apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listProject.first());
-                  apiRequest.setId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getProjectResource().toString()).orElse(null));
-                  apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchProjectList(siteRequest2, false, true, true, "PATCH").onSuccess(listProject -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listProject.getRequest().getRows());
+                apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listProject.first());
+                apiRequest.setId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getProjectResource().toString()).orElse(null));
+                apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
 
-                  listPATCHProject(apiRequest, listProject).onSuccess(e -> {
-                    response200PATCHProject(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("patchProject succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("patchProject failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listPATCHProject(apiRequest, listProject).onSuccess(e -> {
+                  response200PATCHProject(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("patchProject succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchProject failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("patchProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("patchProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("patchProject failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("patchProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("patchProject failed. "), ex);
@@ -1201,7 +825,8 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             apiRequest.setNumPATCH(0L);
             apiRequest.initDeepApiRequest(siteRequest);
             siteRequest.setApiRequest_(apiRequest);
-            if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+            Boolean refresh = Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L;
+            if(refresh) {
               siteRequest.getRequestVars().put( "refresh", "false" );
             }
             Project o2;
@@ -1218,6 +843,8 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               }).onFailure(ex -> {
                 eventHandler.handle(Future.failedFuture(ex));
               });
+            } else if(refresh) {
+              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
             } else {
               String m = String.format("%s %s not found", "project", null);
               eventHandler.handle(Future.failedFuture(m));
@@ -1250,19 +877,23 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       pgPool.withTransaction(sqlConnection -> {
         siteRequest.setSqlConnection(sqlConnection);
         varsProject(siteRequest).onSuccess(a -> {
-          sqlPATCHProject(o, inheritPrimaryKey).onSuccess(project -> {
-            persistProject(project, true).onSuccess(c -> {
-              relateProject(project).onSuccess(d -> {
-                indexProject(project).onSuccess(o2 -> {
-                  if(apiRequest != null) {
-                    apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-                    if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-                      o2.apiRequestProject();
-                      if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-                        eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+          upsertProject(o, inheritPrimaryKey, true).onSuccess(c -> {
+            sqlPATCHProject(o, inheritPrimaryKey).onSuccess(project -> {
+              persistProject(project, true).onSuccess(d -> {
+                relateProject(project).onSuccess(e -> {
+                  indexProject(project).onSuccess(o2 -> {
+                    if(apiRequest != null) {
+                      apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
+                      if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
+                        o2.apiRequestProject();
+                        if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
+                          eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+                      }
                     }
-                  }
-                  promise1.complete(project);
+                    promise1.complete(project);
+                  }).onFailure(ex -> {
+                    promise1.tryFail(ex);
+                  });
                 }).onFailure(ex -> {
                   promise1.tryFail(ex);
                 });
@@ -1364,14 +995,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlLocalClusterName());
             break;
-          case "setCreated":
-              o2.setCreated(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_created + "=$" + num);
-              num++;
-              bParams.add(o2.sqlCreated());
-            break;
           case "setHubId":
               o2.setHubId(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1410,14 +1033,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 });
               }));
             });
-            break;
-          case "setArchived":
-              o2.setArchived(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_archived + "=$" + num);
-              num++;
-              bParams.add(o2.sqlArchived());
             break;
           case "setClusterName":
               o2.setClusterName(jsonObject.getString(entityVar));
@@ -1474,22 +1089,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlProjectResource());
             break;
-          case "setSessionId":
-              o2.setSessionId(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_sessionId + "=$" + num);
-              num++;
-              bParams.add(o2.sqlSessionId());
-            break;
-          case "setUserKey":
-              o2.setUserKey(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_userKey + "=$" + num);
-              num++;
-              bParams.add(o2.sqlUserKey());
-            break;
           case "setProjectTitle":
               o2.setProjectTitle(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1514,14 +1113,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlProjectFieldOfScience());
             break;
-          case "setObjectTitle":
-              o2.setObjectTitle(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_objectTitle + "=$" + num);
-              num++;
-              bParams.add(o2.sqlObjectTitle());
-            break;
           case "setProjectActive":
               o2.setProjectActive(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1529,14 +1120,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_projectActive + "=$" + num);
               num++;
               bParams.add(o2.sqlProjectActive());
-            break;
-          case "setDisplayPage":
-              o2.setDisplayPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_displayPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlDisplayPage());
             break;
           case "setGpuEnabled":
               o2.setGpuEnabled(jsonObject.getString(entityVar));
@@ -1546,14 +1129,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlGpuEnabled());
             break;
-          case "setEditPage":
-              o2.setEditPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_editPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlEditPage());
-            break;
           case "setVllmEnabled":
               o2.setVllmEnabled(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1562,14 +1137,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlVllmEnabled());
             break;
-          case "setUserPage":
-              o2.setUserPage(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_userPage + "=$" + num);
-              num++;
-              bParams.add(o2.sqlUserPage());
-            break;
           case "setPodRestartCount":
               o2.setPodRestartCount(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1577,14 +1144,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_podRestartCount + "=$" + num);
               num++;
               bParams.add(o2.sqlPodRestartCount());
-            break;
-          case "setDownload":
-              o2.setDownload(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(Project.VAR_download + "=$" + num);
-              num++;
-              bParams.add(o2.sqlDownload());
             break;
           case "setPodsRestarting":
               o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
@@ -1641,6 +1200,86 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Project.VAR_statusPageTemplateUri + "=$" + num);
               num++;
               bParams.add(o2.sqlStatusPageTemplateUri());
+            break;
+          case "setCreated":
+              o2.setCreated(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_created + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCreated());
+            break;
+          case "setArchived":
+              o2.setArchived(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_archived + "=$" + num);
+              num++;
+              bParams.add(o2.sqlArchived());
+            break;
+          case "setSessionId":
+              o2.setSessionId(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_sessionId + "=$" + num);
+              num++;
+              bParams.add(o2.sqlSessionId());
+            break;
+          case "setUserKey":
+              o2.setUserKey(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_userKey + "=$" + num);
+              num++;
+              bParams.add(o2.sqlUserKey());
+            break;
+          case "setObjectTitle":
+              o2.setObjectTitle(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_objectTitle + "=$" + num);
+              num++;
+              bParams.add(o2.sqlObjectTitle());
+            break;
+          case "setApiUrl":
+              o2.setApiUrl(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_apiUrl + "=$" + num);
+              num++;
+              bParams.add(o2.sqlApiUrl());
+            break;
+          case "setDisplayPage":
+              o2.setDisplayPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_displayPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlDisplayPage());
+            break;
+          case "setEditPage":
+              o2.setEditPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_editPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlEditPage());
+            break;
+          case "setUserPage":
+              o2.setUserPage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_userPage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlUserPage());
+            break;
+          case "setDownload":
+              o2.setDownload(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_download + "=$" + num);
+              num++;
+              bParams.add(o2.sqlDownload());
             break;
         }
       }
@@ -1702,180 +1341,55 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "POST"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("POST")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("POST")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("POST")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("POST")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("POST")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("POST"))
-                  scopes.add("POST");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              apiRequest.setRows(1L);
-              apiRequest.setNumFound(1L);
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
-              JsonObject params = new JsonObject();
-              params.put("body", siteRequest.getJsonObject());
-              params.put("path", new JsonObject());
-              params.put("scopes", scopes2);
-              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-              params.put("form", new JsonObject());
-              JsonObject query = new JsonObject();
-              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-              if(softCommit == null && commitWithin == null)
-                softCommit = true;
-              if(softCommit != null)
-                query.put("softCommit", softCommit);
-              if(commitWithin != null)
-                query.put("commitWithin", commitWithin);
-              params.put("query", query);
-              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-              JsonObject json = new JsonObject().put("context", context);
-              eventBus.request(Project.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postProjectFuture")).onSuccess(a -> {
-                JsonObject responseMessage = (JsonObject)a.body();
-                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-                apiRequest.setSolrId(responseBody.getString(Project.VAR_solrId));
-                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            apiRequest.setRows(1L);
+            apiRequest.setNumFound(1L);
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+            JsonObject params = new JsonObject();
+            params.put("body", siteRequest2.getJsonObject());
+            params.put("path", new JsonObject());
+            params.put("scopes", scopes2);
+            params.put("cookie", siteRequest2.getServiceRequest().getParams().getJsonObject("cookie"));
+            params.put("header", siteRequest2.getServiceRequest().getParams().getJsonObject("header"));
+            params.put("form", new JsonObject());
+            JsonObject query = new JsonObject();
+            Boolean softCommit = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+            Integer commitWithin = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+            if(softCommit == null && commitWithin == null)
+              softCommit = true;
+            if(softCommit != null)
+              query.put("softCommit", softCommit);
+            if(commitWithin != null)
+              query.put("commitWithin", commitWithin);
+            params.put("query", query);
+            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest2.getUserPrincipal());
+            JsonObject json = new JsonObject().put("context", context);
+            eventBus.request(Project.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postProjectFuture")).onSuccess(a -> {
+              JsonObject responseMessage = (JsonObject)a.body();
+              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+              apiRequest.setSolrId(responseBody.getString(Project.VAR_solrId));
+              response200POSTProject(siteRequest2, responseBody).onSuccess(response -> {
                 LOG.debug(String.format("postProject succeeded. "));
+                eventHandler.handle(Future.succeededFuture(response));
               }).onFailure(ex -> {
                 LOG.error(String.format("postProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("postProject failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("postProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("postProject failed. "), ex);
@@ -1971,11 +1485,15 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         siteRequest.setSqlConnection(sqlConnection);
         varsProject(siteRequest).onSuccess(a -> {
           createProject(siteRequest).onSuccess(project -> {
-            sqlPOSTProject(project, projectResource).onSuccess(b -> {
-              persistProject(project, false).onSuccess(c -> {
-                relateProject(project).onSuccess(d -> {
-                  indexProject(project).onSuccess(o2 -> {
-                    promise1.complete(project);
+            upsertProject(project, projectResource, false).onSuccess(b -> {
+              sqlPOSTProject(project, projectResource).onSuccess(c -> {
+                persistProject(project, false).onSuccess(d -> {
+                  relateProject(project).onSuccess(e -> {
+                    indexProject(project).onSuccess(o2 -> {
+                      promise1.complete(project);
+                    }).onFailure(ex -> {
+                      promise1.tryFail(ex);
+                    });
                   }).onFailure(ex -> {
                     promise1.tryFail(ex);
                   });
@@ -2110,15 +1628,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlLocalClusterName());
             break;
-          case Project.VAR_created:
-            o2.setCreated(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_created + "=$" + num);
-            num++;
-            bParams.add(o2.sqlCreated());
-            break;
           case Project.VAR_hubId:
             o2.setHubId(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -2147,15 +1656,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                 });
               }));
             });
-            break;
-          case Project.VAR_archived:
-            o2.setArchived(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_archived + "=$" + num);
-            num++;
-            bParams.add(o2.sqlArchived());
             break;
           case Project.VAR_clusterName:
             o2.setClusterName(jsonObject.getString(entityVar));
@@ -2204,24 +1704,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlProjectResource());
             break;
-          case Project.VAR_sessionId:
-            o2.setSessionId(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_sessionId + "=$" + num);
-            num++;
-            bParams.add(o2.sqlSessionId());
-            break;
-          case Project.VAR_userKey:
-            o2.setUserKey(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_userKey + "=$" + num);
-            num++;
-            bParams.add(o2.sqlUserKey());
-            break;
           case Project.VAR_projectTitle:
             o2.setProjectTitle(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -2249,15 +1731,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlProjectFieldOfScience());
             break;
-          case Project.VAR_objectTitle:
-            o2.setObjectTitle(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_objectTitle + "=$" + num);
-            num++;
-            bParams.add(o2.sqlObjectTitle());
-            break;
           case Project.VAR_projectActive:
             o2.setProjectActive(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -2266,15 +1739,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_projectActive + "=$" + num);
             num++;
             bParams.add(o2.sqlProjectActive());
-            break;
-          case Project.VAR_displayPage:
-            o2.setDisplayPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_displayPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlDisplayPage());
             break;
           case Project.VAR_gpuEnabled:
             o2.setGpuEnabled(jsonObject.getString(entityVar));
@@ -2285,15 +1749,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlGpuEnabled());
             break;
-          case Project.VAR_editPage:
-            o2.setEditPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_editPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlEditPage());
-            break;
           case Project.VAR_vllmEnabled:
             o2.setVllmEnabled(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -2303,15 +1758,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlVllmEnabled());
             break;
-          case Project.VAR_userPage:
-            o2.setUserPage(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_userPage + "=$" + num);
-            num++;
-            bParams.add(o2.sqlUserPage());
-            break;
           case Project.VAR_podRestartCount:
             o2.setPodRestartCount(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -2320,15 +1766,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_podRestartCount + "=$" + num);
             num++;
             bParams.add(o2.sqlPodRestartCount());
-            break;
-          case Project.VAR_download:
-            o2.setDownload(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(Project.VAR_download + "=$" + num);
-            num++;
-            bParams.add(o2.sqlDownload());
             break;
           case Project.VAR_podsRestarting:
             o2.setPodsRestarting(jsonObject.getJsonArray(entityVar));
@@ -2393,6 +1830,87 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlStatusPageTemplateUri());
             break;
+          case Project.VAR_created:
+            o2.setCreated(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_created + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCreated());
+            break;
+          case Project.VAR_archived:
+            o2.setArchived(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_archived + "=$" + num);
+            num++;
+            bParams.add(o2.sqlArchived());
+            break;
+          case Project.VAR_userKey:
+            o2.setUserKey(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_userKey + "=$" + num);
+            num++;
+            bParams.add(o2.sqlUserKey());
+            break;
+          case Project.VAR_objectTitle:
+            o2.setObjectTitle(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_objectTitle + "=$" + num);
+            num++;
+            bParams.add(o2.sqlObjectTitle());
+            break;
+          case Project.VAR_apiUrl:
+            o2.setApiUrl(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_apiUrl + "=$" + num);
+            num++;
+            bParams.add(o2.sqlApiUrl());
+            break;
+          case Project.VAR_displayPage:
+            o2.setDisplayPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_displayPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlDisplayPage());
+            break;
+          case Project.VAR_editPage:
+            o2.setEditPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_editPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlEditPage());
+            break;
+          case Project.VAR_userPage:
+            o2.setUserPage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_userPage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlUserPage());
+            break;
+          case Project.VAR_download:
+            o2.setDownload(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_download + "=$" + num);
+            num++;
+            bParams.add(o2.sqlDownload());
+            break;
           }
         }
       }
@@ -2430,11 +1948,9 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     return promise.future();
   }
 
-  public Future<ServiceResponse> response200POSTProject(Project o) {
+  public Future<ServiceResponse> response200POSTProject(SiteRequest siteRequest, JsonObject json) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
-      SiteRequest siteRequest = o.getSiteRequest_();
-      JsonObject json = JsonObject.mapFrom(o);
       promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTProject failed. "), ex);
@@ -2452,177 +1968,47 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "DELETE"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("DELETE")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("DELETE"))
-                  scopes.add("DELETE");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, true, "DELETE").onSuccess(listProject -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listProject.getRequest().getRows());
-                  apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listProject.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchProjectList(siteRequest2, false, true, true, "DELETE").onSuccess(listProject -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listProject.getRequest().getRows());
+                apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listProject.first());
+                apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEProject(apiRequest, listProject).onSuccess(e -> {
-                    response200DELETEProject(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deleteProject succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deleteProject failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEProject(apiRequest, listProject).onSuccess(e -> {
+                  response200DELETEProject(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deleteProject succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteProject failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deleteProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deleteProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deleteProject failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deleteProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deleteProject failed. "), ex);
@@ -2952,169 +2338,39 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "PUT"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("PUT")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PUT")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PUT")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PUT")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("PUT")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("PUT"))
-                  scopes.add("PUT");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-              apiRequest.setRows(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
-              varsProject(siteRequest).onSuccess(d -> {
-                listPUTImportProject(apiRequest, siteRequest).onSuccess(e -> {
-                  response200PUTImportProject(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("putimportProject succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
-                  }).onFailure(ex -> {
-                    LOG.error(String.format("putimportProject failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
-                  });
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            JsonArray jsonArray = Optional.ofNullable(siteRequest2.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+            apiRequest.setRows(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+            varsProject(siteRequest2).onSuccess(d -> {
+              listPUTImportProject(apiRequest, siteRequest2).onSuccess(e -> {
+                response200PUTImportProject(siteRequest2).onSuccess(response -> {
+                  LOG.debug(String.format("putimportProject succeeded. "));
+                  eventHandler.handle(Future.succeededFuture(response));
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
+                  error(siteRequest2, eventHandler, ex);
                 });
               }).onFailure(ex -> {
                 LOG.error(String.format("putimportProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("putimportProject failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("putimportProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("putimportProject failed. "), ex);
@@ -3367,146 +2623,26 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, false, "GET").onSuccess(listProject -> {
-                response200SearchPageProject(listProject).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchpageProject succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchpageProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchProjectList(siteRequest2, false, true, false, "GET").onSuccess(listProject -> {
+              response200SearchPageProject(listProject).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchpageProject succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchpageProject failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchpageProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchpageProject failed. "), ex);
@@ -3589,6 +2725,45 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/project/ProjectSearchPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/project/ProjectGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -3744,146 +2919,25 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "GET"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("GET")) {
-              List<String> fqs = new ArrayList<>();
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                    Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                    return permission.getJsonArray("scopes").contains("GET")
-                        && mPermission.find();
-                  }).forEach(permission -> {
-                    fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                    permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                      if(!scopes.contains(scope))
-                        scopes.add(scope);
-                    });
-                  });
-              if(!classPublicRead) {
-                JsonObject authParams = siteRequest.getServiceRequest().getParams();
-                JsonObject authQuery = authParams.getJsonObject("query");
-                if(authQuery == null) {
-                  authQuery = new JsonObject();
-                  authParams.put("query", authQuery);
-                }
-                JsonArray fq = authQuery.getJsonArray("fq");
-                if(fq == null) {
-                  fq = new JsonArray();
-                  authQuery.put("fq", fq);
-                }
-                if(fqs.size() > 0) {
-                  fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                  if(!scopes.contains("GET"))
-                    scopes.add("GET");
-                  siteRequest.setFilteredScope(true);
-                }
-              }
-            }
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, false, "GET").onSuccess(listProject -> {
-                response200EditPageProject(listProject).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("editpageProject succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("editpageProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchProjectList(siteRequest2, false, true, false, "GET").onSuccess(listProject -> {
+              response200EditPageProject(listProject).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("editpageProject succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageProject failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("editpageProject failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("editpageProject failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("editpageProject failed. "), ex);
@@ -3942,6 +2996,45 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/project/ProjectEditPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/project/ProjectGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -4098,177 +3191,47 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String projectResource = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("projectResource");
-        String PROJECT = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("PROJECT");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "GETManager"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", Project.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(projectResource != null)
-          form.add("permission", String.format("%s#%s", projectResource, "DELETE"));
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?TENANT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?HUB-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?CLUSTER-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        groups.stream().map(group -> {
-              Matcher mPermission = Pattern.compile("^/(.*-?PROJECT-([a-z0-9\\-]+))-(\\w+)$").matcher(group);
-              return mPermission.find() ? mPermission : null;
-            }).filter(v -> v != null).forEach(mPermission -> {
-              form.add("permission", String.format("%s#%s", mPermission.group(1), mPermission.group(3)));
-            });
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "PROJECT".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(!scopes.contains("DELETE")) {
-            List<String> fqs = new ArrayList<>();
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?TENANT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "tenantResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?HUB-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "hubResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?CLUSTER-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "clusterResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-            authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(permission -> {
-                  Matcher mPermission = Pattern.compile("^(.*-?PROJECT-([a-z0-9\\-]+))$").matcher(permission.getString("rsname"));
-                  return permission.getJsonArray("scopes").contains("DELETE")
-                      && mPermission.find();
-                }).forEach(permission -> {
-                  fqs.add(String.format("%s:%s", "projectResource", permission.getString("rsname")));
-                  permission.getJsonArray("scopes").stream().map(s -> (String)s).forEach(scope -> {
-                    if(!scopes.contains(scope))
-                      scopes.add(scope);
-                  });
-                });
-              JsonObject authParams = siteRequest.getServiceRequest().getParams();
-              JsonObject authQuery = authParams.getJsonObject("query");
-              if(authQuery == null) {
-                authQuery = new JsonObject();
-                authParams.put("query", authQuery);
-              }
-              JsonArray fq = authQuery.getJsonArray("fq");
-              if(fq == null) {
-                fq = new JsonArray();
-                authQuery.put("fq", fq);
-              }
-              if(fqs.size() > 0) {
-                fq.add(fqs.stream().collect(Collectors.joining(" OR ")));
-                if(!scopes.contains("DELETE"))
-                  scopes.add("DELETE");
-                siteRequest.setFilteredScope(true);
-              }
-            }
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchProjectList(siteRequest, false, true, true, "DELETE").onSuccess(listProject -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listProject.getRequest().getRows());
-                  apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listProject.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
+        Project.authorizationProject(siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          Project.authorizationScopesProject(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchProjectList(siteRequest2, false, true, true, "DELETE").onSuccess(listProject -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listProject.getRequest().getRows());
+                apiRequest.setNumFound(listProject.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listProject.first());
+                apiRequest.setSolrId(Optional.ofNullable(listProject.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketProject", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEFilterProject(apiRequest, listProject).onSuccess(e -> {
-                    response200DELETEFilterProject(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deletefilterProject succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deletefilterProject failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEFilterProject(apiRequest, listProject).onSuccess(e -> {
+                  response200DELETEFilterProject(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deletefilterProject succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterProject failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deletefilterProject failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deletefilterProject failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deletefilterProject failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deletefilterProject failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deletefilterProject failed. "), ex);
@@ -4912,13 +3875,291 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
   public void searchProject2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<Project> searchList) {
   }
 
+  public Future<JsonObject> upsertProject(Project o, Boolean inheritPrimaryKey, Boolean patch) {
+    Promise<JsonObject> promise = Promise.promise();
+    try {
+      SiteRequest siteRequest = o.getSiteRequest_();
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+        promise.complete();
+      } else {
+        JsonObject json = o.getSiteRequest_().getJsonObject();
+        String old_tenantResource = Project.staticJsonTenantResource(o.getTenantResource());
+        String new_tenantResource = json.getString(Project.varJson(Project.VAR_tenantResource, patch));
+        String tenantResource = Optional.ofNullable(Optional.ofNullable(new_tenantResource).orElse(old_tenantResource)).orElse(null);
+        Tenant.authorizationTenant(siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(tenantResourceAuthorizationDecisionResponse -> {
+          Tenant.authorizationScopesTenant(tenantResourceAuthorizationDecisionResponse, siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(tenantResourceSiteRequest -> {
+            Tenant.fqTenant(tenantResourceSiteRequest, Tenant.VAR_tenantResource, tenantResource).onSuccess(oTenant -> {
+              try {
+                if(oTenant == null) {
+                  RuntimeException ex = new RuntimeException(String.format("Could not find a matching Tenant %s", tenantResource));
+                  LOG.error(ex.getMessage(), ex);
+                  promise.fail(ex);
+                } else {
+                  if(!Objects.equals(old_tenantResource, tenantResource))
+                    json.put(Tenant.varJson(Tenant.VAR_tenantResource, patch), tenantResource);
+                  String old_hubResource = Project.staticJsonHubResource(o.getHubResource());
+                  String new_hubResource = json.getString(Project.varJson(Project.VAR_hubResource, patch));
+                  String hubResource = Optional.ofNullable(Optional.ofNullable(new_hubResource).orElse(old_hubResource)).orElse(null);
+                  Hub.authorizationHub(siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(hubResourceAuthorizationDecisionResponse -> {
+                    Hub.authorizationScopesHub(hubResourceAuthorizationDecisionResponse, siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(hubResourceSiteRequest -> {
+                      Hub.fqHub(hubResourceSiteRequest, Hub.VAR_hubResource, hubResource).onSuccess(oHub -> {
+                        try {
+                          if(oHub == null) {
+                            RuntimeException ex = new RuntimeException(String.format("Could not find a matching Hub %s", hubResource));
+                            LOG.error(ex.getMessage(), ex);
+                            promise.fail(ex);
+                          } else {
+                            if(!Objects.equals(old_hubResource, hubResource))
+                              json.put(Hub.varJson(Hub.VAR_hubResource, patch), hubResource);
+                            String old_clusterResource = Project.staticJsonClusterResource(o.getClusterResource());
+                            String new_clusterResource = json.getString(Project.varJson(Project.VAR_clusterResource, patch));
+                            String clusterResource = Optional.ofNullable(Optional.ofNullable(new_clusterResource).orElse(old_clusterResource)).orElse(null);
+                            Cluster.authorizationCluster(siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(clusterResourceAuthorizationDecisionResponse -> {
+                              Cluster.authorizationScopesCluster(clusterResourceAuthorizationDecisionResponse, siteRequest, webClient, false, "GET", "GET", "GET").onSuccess(clusterResourceSiteRequest -> {
+                                Cluster.fqCluster(clusterResourceSiteRequest, Cluster.VAR_clusterResource, clusterResource).onSuccess(oCluster -> {
+                                  try {
+                                    if(oCluster == null) {
+                                      RuntimeException ex = new RuntimeException(String.format("Could not find a matching Cluster %s", clusterResource));
+                                      LOG.error(ex.getMessage(), ex);
+                                      promise.fail(ex);
+                                    } else {
+                                      if(!Objects.equals(old_clusterResource, clusterResource))
+                                        json.put(Cluster.varJson(Cluster.VAR_clusterResource, patch), clusterResource);
+
+                                      String old_localClusterName = Project.staticJsonLocalClusterName(o.getLocalClusterName());
+                                      String new_localClusterName = json.getString(Project.varJson(Project.VAR_localClusterName, patch));
+
+                                      String old_hubId = Project.staticJsonHubId(o.getHubId());
+                                      String new_hubId = json.getString(Project.varJson(Project.VAR_hubId, patch));
+
+                                      String old_clusterName = Project.staticJsonClusterName(o.getClusterName());
+                                      String new_clusterName = json.getString(Project.varJson(Project.VAR_clusterName, patch));
+
+                                      String old_projectName = Project.staticJsonProjectName(o.getProjectName());
+                                      String new_projectName = json.getString(Project.varJson(Project.VAR_projectName, patch));
+
+                                      String old_projectResource = Project.staticJsonProjectResource(o.getProjectResource());
+                                      String new_projectResource = json.getString(Project.varJson(Project.VAR_projectResource, patch));
+
+                                      String old_projectTitle = Project.staticJsonProjectTitle(o.getProjectTitle());
+                                      String new_projectTitle = json.getString(Project.varJson(Project.VAR_projectTitle, patch));
+
+                                      String old_description = Project.staticJsonDescription(o.getDescription());
+                                      String new_description = json.getString(Project.varJson(Project.VAR_description, patch));
+
+                                      String old_projectFieldOfScience = Project.staticJsonProjectFieldOfScience(o.getProjectFieldOfScience());
+                                      String new_projectFieldOfScience = json.getString(Project.varJson(Project.VAR_projectFieldOfScience, patch));
+
+                                      Boolean old_projectActive = Project.staticJsonProjectActive(o.getProjectActive());
+                                      Boolean new_projectActive = json.getBoolean(Project.varJson(Project.VAR_projectActive, patch));
+
+                                      Boolean old_gpuEnabled = Project.staticJsonGpuEnabled(o.getGpuEnabled());
+                                      Boolean new_gpuEnabled = json.getBoolean(Project.varJson(Project.VAR_gpuEnabled, patch));
+
+                                      Boolean old_vllmEnabled = Project.staticJsonVllmEnabled(o.getVllmEnabled());
+                                      Boolean new_vllmEnabled = json.getBoolean(Project.varJson(Project.VAR_vllmEnabled, patch));
+
+                                      String old_podRestartCount = Project.staticJsonPodRestartCount(o.getPodRestartCount());
+                                      String new_podRestartCount = json.getString(Project.varJson(Project.VAR_podRestartCount, patch));
+
+                                      JsonArray old_podsRestarting = Project.staticJsonPodsRestarting(o.getPodsRestarting());
+                                      JsonArray new_podsRestarting = json.getJsonArray(Project.varJson(Project.VAR_podsRestarting, patch));
+
+                                      String old_podTerminatingCount = Project.staticJsonPodTerminatingCount(o.getPodTerminatingCount());
+                                      String new_podTerminatingCount = json.getString(Project.varJson(Project.VAR_podTerminatingCount, patch));
+
+                                      JsonArray old_podsTerminating = Project.staticJsonPodsTerminating(o.getPodsTerminating());
+                                      JsonArray new_podsTerminating = json.getJsonArray(Project.varJson(Project.VAR_podsTerminating, patch));
+
+                                      String old_fullPvcsCount = Project.staticJsonFullPvcsCount(o.getFullPvcsCount());
+                                      String new_fullPvcsCount = json.getString(Project.varJson(Project.VAR_fullPvcsCount, patch));
+
+                                      JsonArray old_fullPvcs = Project.staticJsonFullPvcs(o.getFullPvcs());
+                                      JsonArray new_fullPvcs = json.getJsonArray(Project.varJson(Project.VAR_fullPvcs, patch));
+
+                                      Boolean old_namespaceTerminating = Project.staticJsonNamespaceTerminating(o.getNamespaceTerminating());
+                                      Boolean new_namespaceTerminating = json.getBoolean(Project.varJson(Project.VAR_namespaceTerminating, patch));
+
+                                      String old_statusPageTemplateUri = Project.staticJsonStatusPageTemplateUri(o.getStatusPageTemplateUri());
+                                      String new_statusPageTemplateUri = json.getString(Project.varJson(Project.VAR_statusPageTemplateUri, patch));
+
+                                      String old_created = Project.staticJsonCreated(o.getCreated());
+                                      String new_created = json.getString(Project.varJson(Project.VAR_created, patch));
+
+                                      Boolean old_archived = Project.staticJsonArchived(o.getArchived());
+                                      Boolean new_archived = json.getBoolean(Project.varJson(Project.VAR_archived, patch));
+
+                                      String old_sessionId = Project.staticJsonSessionId(o.getSessionId());
+                                      String new_sessionId = json.getString(Project.varJson(Project.VAR_sessionId, patch));
+
+                                      String old_userKey = Project.staticJsonUserKey(o.getUserKey());
+                                      String new_userKey = json.getString(Project.varJson(Project.VAR_userKey, patch));
+
+                                      String old_objectTitle = Project.staticJsonObjectTitle(o.getObjectTitle());
+                                      String new_objectTitle = json.getString(Project.varJson(Project.VAR_objectTitle, patch));
+
+                                      String old_apiUrl = Project.staticJsonApiUrl(o.getApiUrl());
+                                      String new_apiUrl = json.getString(Project.varJson(Project.VAR_apiUrl, patch));
+
+                                      String old_displayPage = Project.staticJsonDisplayPage(o.getDisplayPage());
+                                      String new_displayPage = json.getString(Project.varJson(Project.VAR_displayPage, patch));
+
+                                      String old_editPage = Project.staticJsonEditPage(o.getEditPage());
+                                      String new_editPage = json.getString(Project.varJson(Project.VAR_editPage, patch));
+
+                                      String old_userPage = Project.staticJsonUserPage(o.getUserPage());
+                                      String new_userPage = json.getString(Project.varJson(Project.VAR_userPage, patch));
+
+                                      String old_download = Project.staticJsonDownload(o.getDownload());
+                                      String new_download = json.getString(Project.varJson(Project.VAR_download, patch));
+
+                                      String localClusterName = Optional.ofNullable(Optional.ofNullable(new_localClusterName).orElse(old_localClusterName)).orElse(null);
+                                      // if(!Objects.equals(old_localClusterName, localClusterName))
+                                        // json.put(Project.varJson(Project.VAR_localClusterName, patch), localClusterName);
+                                      String hubId = Optional.ofNullable(Optional.ofNullable(new_hubId).orElse(old_hubId)).orElse(null);
+                                      // if(!Objects.equals(old_hubId, hubId))
+                                        // json.put(Project.varJson(Project.VAR_hubId, patch), hubId);
+                                      String clusterName = Optional.ofNullable(Optional.ofNullable(new_clusterName).orElse(old_clusterName)).orElse(null);
+                                      // if(!Objects.equals(old_clusterName, clusterName))
+                                        // json.put(Project.varJson(Project.VAR_clusterName, patch), clusterName);
+                                      String projectName = Optional.ofNullable(Optional.ofNullable(new_projectName).orElse(old_projectName)).orElse(null);
+                                      // if(!Objects.equals(old_projectName, projectName))
+                                        // json.put(Project.varJson(Project.VAR_projectName, patch), projectName);
+                                      String projectResource = Optional.ofNullable(Optional.ofNullable(new_projectResource).orElse(old_projectResource)).orElse(null);
+                                      // if(!Objects.equals(old_projectResource, projectResource))
+                                        // json.put(Project.varJson(Project.VAR_projectResource, patch), projectResource);
+                                      String projectTitle = Optional.ofNullable(Optional.ofNullable(new_projectTitle).orElse(old_projectTitle)).orElse(null);
+                                      // if(!Objects.equals(old_projectTitle, projectTitle))
+                                        // json.put(Project.varJson(Project.VAR_projectTitle, patch), projectTitle);
+                                      String description = Optional.ofNullable(Optional.ofNullable(new_description).orElse(old_description)).orElse(null);
+                                      // if(!Objects.equals(old_description, description))
+                                        // json.put(Project.varJson(Project.VAR_description, patch), description);
+                                      String projectFieldOfScience = Optional.ofNullable(Optional.ofNullable(new_projectFieldOfScience).orElse(old_projectFieldOfScience)).orElse(null);
+                                      // if(!Objects.equals(old_projectFieldOfScience, projectFieldOfScience))
+                                        // json.put(Project.varJson(Project.VAR_projectFieldOfScience, patch), projectFieldOfScience);
+                                      Boolean projectActive = Optional.ofNullable(Optional.ofNullable(new_projectActive).orElse(old_projectActive)).orElse(null);
+                                      // if(!Objects.equals(old_projectActive, projectActive))
+                                        // json.put(Project.varJson(Project.VAR_projectActive, patch), projectActive);
+                                      Boolean gpuEnabled = Optional.ofNullable(Optional.ofNullable(new_gpuEnabled).orElse(old_gpuEnabled)).orElse(null);
+                                      // if(!Objects.equals(old_gpuEnabled, gpuEnabled))
+                                        // json.put(Project.varJson(Project.VAR_gpuEnabled, patch), gpuEnabled);
+                                      Boolean vllmEnabled = Optional.ofNullable(Optional.ofNullable(new_vllmEnabled).orElse(old_vllmEnabled)).orElse(null);
+                                      // if(!Objects.equals(old_vllmEnabled, vllmEnabled))
+                                        // json.put(Project.varJson(Project.VAR_vllmEnabled, patch), vllmEnabled);
+                                      String podRestartCount = Optional.ofNullable(Optional.ofNullable(new_podRestartCount).orElse(old_podRestartCount)).orElse(null);
+                                      // if(!Objects.equals(old_podRestartCount, podRestartCount))
+                                        // json.put(Project.varJson(Project.VAR_podRestartCount, patch), podRestartCount);
+                                      JsonArray podsRestarting = Optional.ofNullable(Optional.ofNullable(new_podsRestarting).orElse(old_podsRestarting)).orElse(null);
+                                      // if(!Objects.equals(old_podsRestarting, podsRestarting))
+                                        // json.put(Project.varJson(Project.VAR_podsRestarting, patch), podsRestarting);
+                                      String podTerminatingCount = Optional.ofNullable(Optional.ofNullable(new_podTerminatingCount).orElse(old_podTerminatingCount)).orElse(null);
+                                      // if(!Objects.equals(old_podTerminatingCount, podTerminatingCount))
+                                        // json.put(Project.varJson(Project.VAR_podTerminatingCount, patch), podTerminatingCount);
+                                      JsonArray podsTerminating = Optional.ofNullable(Optional.ofNullable(new_podsTerminating).orElse(old_podsTerminating)).orElse(null);
+                                      // if(!Objects.equals(old_podsTerminating, podsTerminating))
+                                        // json.put(Project.varJson(Project.VAR_podsTerminating, patch), podsTerminating);
+                                      String fullPvcsCount = Optional.ofNullable(Optional.ofNullable(new_fullPvcsCount).orElse(old_fullPvcsCount)).orElse(null);
+                                      // if(!Objects.equals(old_fullPvcsCount, fullPvcsCount))
+                                        // json.put(Project.varJson(Project.VAR_fullPvcsCount, patch), fullPvcsCount);
+                                      JsonArray fullPvcs = Optional.ofNullable(Optional.ofNullable(new_fullPvcs).orElse(old_fullPvcs)).orElse(null);
+                                      // if(!Objects.equals(old_fullPvcs, fullPvcs))
+                                        // json.put(Project.varJson(Project.VAR_fullPvcs, patch), fullPvcs);
+                                      Boolean namespaceTerminating = Optional.ofNullable(Optional.ofNullable(new_namespaceTerminating).orElse(old_namespaceTerminating)).orElse(null);
+                                      // if(!Objects.equals(old_namespaceTerminating, namespaceTerminating))
+                                        // json.put(Project.varJson(Project.VAR_namespaceTerminating, patch), namespaceTerminating);
+                                      String statusPageTemplateUri = Optional.ofNullable(Optional.ofNullable(new_statusPageTemplateUri).orElse(old_statusPageTemplateUri)).orElse(null);
+                                      // if(!Objects.equals(old_statusPageTemplateUri, statusPageTemplateUri))
+                                        // json.put(Project.varJson(Project.VAR_statusPageTemplateUri, patch), statusPageTemplateUri);
+                                      String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
+                                      // if(!Objects.equals(old_created, created))
+                                        // json.put(Project.varJson(Project.VAR_created, patch), created);
+                                      Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
+                                      // if(!Objects.equals(old_archived, archived))
+                                        // json.put(Project.varJson(Project.VAR_archived, patch), archived);
+                                      String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
+                                      // if(!Objects.equals(old_sessionId, sessionId))
+                                        // json.put(Project.varJson(Project.VAR_sessionId, patch), sessionId);
+                                      String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
+                                      // if(!Objects.equals(old_userKey, userKey))
+                                        // json.put(Project.varJson(Project.VAR_userKey, patch), userKey);
+                                      String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
+                                      // if(!Objects.equals(old_objectTitle, objectTitle))
+                                        // json.put(Project.varJson(Project.VAR_objectTitle, patch), objectTitle);
+                                      String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
+                                      // if(!Objects.equals(old_apiUrl, apiUrl))
+                                        // json.put(Project.varJson(Project.VAR_apiUrl, patch), apiUrl);
+                                      String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
+                                      // if(!Objects.equals(old_displayPage, displayPage))
+                                        // json.put(Project.varJson(Project.VAR_displayPage, patch), displayPage);
+                                      String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
+                                      // if(!Objects.equals(old_editPage, editPage))
+                                        // json.put(Project.varJson(Project.VAR_editPage, patch), editPage);
+                                      String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
+                                      // if(!Objects.equals(old_userPage, userPage))
+                                        // json.put(Project.varJson(Project.VAR_userPage, patch), userPage);
+                                      String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
+                                      // if(!Objects.equals(old_download, download))
+                                        // json.put(Project.varJson(Project.VAR_download, patch), download);
+
+                                      promise.complete(json);
+                                    }
+                                  } catch(Exception ex) {
+                                    LOG.error(String.format("upsertProject failed. "), ex);
+                                    promise.tryFail(ex);
+                                  }
+                                }).onFailure(ex -> {
+                                  promise.fail(ex);
+                                });
+                              }).onFailure(ex -> {
+                                promise.fail(ex);
+                              });
+                            }).onFailure(ex -> {
+                              promise.fail(ex);
+                            });
+                          }
+                        } catch(Exception ex) {
+                          LOG.error(String.format("upsertProject failed. "), ex);
+                          promise.tryFail(ex);
+                        }
+                      }).onFailure(ex -> {
+                        promise.fail(ex);
+                      });
+                    }).onFailure(ex -> {
+                      promise.fail(ex);
+                    });
+                  }).onFailure(ex -> {
+                    promise.fail(ex);
+                  });
+                }
+              } catch(Exception ex) {
+                LOG.error(String.format("upsertProject failed. "), ex);
+                promise.tryFail(ex);
+              }
+            }).onFailure(ex -> {
+              promise.fail(ex);
+            });
+          }).onFailure(ex -> {
+            promise.fail(ex);
+          });
+        }).onFailure(ex -> {
+          promise.fail(ex);
+        });
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("upsertProject failed. "), ex);
+      promise.tryFail(ex);
+    }
+    return promise.future();
+  }
+
   public Future<Void> persistProject(Project o, Boolean patch) {
     Promise<Void> promise = Promise.promise();
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, created, hubId, hubResource, archived, clusterName, clusterResource, projectName, projectResource, sessionId, userKey, projectTitle, description, projectFieldOfScience, objectTitle, projectActive, displayPage, gpuEnabled, editPage, vllmEnabled, userPage, podRestartCount, download, podsRestarting, podTerminatingCount, podsTerminating, fullPvcsCount, fullPvcs, namespaceTerminating, statusPageTemplateUri FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, hubId, hubResource, clusterName, clusterResource, projectName, projectResource, projectTitle, description, projectFieldOfScience, projectActive, gpuEnabled, vllmEnabled, podRestartCount, podsRestarting, podTerminatingCount, podsTerminating, fullPvcsCount, fullPvcs, namespaceTerminating, statusPageTemplateUri, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -5259,35 +4500,36 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 
       o.persistForClass(Project.VAR_tenantResource, Project.staticSetTenantResource(siteRequest2, (String)result.get(Project.VAR_tenantResource)));
       o.persistForClass(Project.VAR_localClusterName, Project.staticSetLocalClusterName(siteRequest2, (String)result.get(Project.VAR_localClusterName)));
-      o.persistForClass(Project.VAR_created, Project.staticSetCreated(siteRequest2, (String)result.get(Project.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(Project.VAR_hubId, Project.staticSetHubId(siteRequest2, (String)result.get(Project.VAR_hubId)));
       o.persistForClass(Project.VAR_hubResource, Project.staticSetHubResource(siteRequest2, (String)result.get(Project.VAR_hubResource)));
-      o.persistForClass(Project.VAR_archived, Project.staticSetArchived(siteRequest2, (String)result.get(Project.VAR_archived)));
       o.persistForClass(Project.VAR_clusterName, Project.staticSetClusterName(siteRequest2, (String)result.get(Project.VAR_clusterName)));
       o.persistForClass(Project.VAR_clusterResource, Project.staticSetClusterResource(siteRequest2, (String)result.get(Project.VAR_clusterResource)));
       o.persistForClass(Project.VAR_projectName, Project.staticSetProjectName(siteRequest2, (String)result.get(Project.VAR_projectName)));
       o.persistForClass(Project.VAR_projectResource, Project.staticSetProjectResource(siteRequest2, (String)result.get(Project.VAR_projectResource)));
-      o.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
-      o.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
       o.persistForClass(Project.VAR_projectTitle, Project.staticSetProjectTitle(siteRequest2, (String)result.get(Project.VAR_projectTitle)));
       o.persistForClass(Project.VAR_description, Project.staticSetDescription(siteRequest2, (String)result.get(Project.VAR_description)));
       o.persistForClass(Project.VAR_projectFieldOfScience, Project.staticSetProjectFieldOfScience(siteRequest2, (String)result.get(Project.VAR_projectFieldOfScience)));
-      o.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
       o.persistForClass(Project.VAR_projectActive, Project.staticSetProjectActive(siteRequest2, (String)result.get(Project.VAR_projectActive)));
-      o.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
       o.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
-      o.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
       o.persistForClass(Project.VAR_vllmEnabled, Project.staticSetVllmEnabled(siteRequest2, (String)result.get(Project.VAR_vllmEnabled)));
-      o.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
       o.persistForClass(Project.VAR_podRestartCount, Project.staticSetPodRestartCount(siteRequest2, (String)result.get(Project.VAR_podRestartCount)));
-      o.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
-      o.persistForClass(Project.VAR_podsRestarting, Project.staticSetPodsRestarting(siteRequest2, (String)result.get(Project.VAR_podsRestarting)));
+      o.persistForClass(Project.VAR_podsRestarting, result.get(Project.VAR_podsRestarting));
       o.persistForClass(Project.VAR_podTerminatingCount, Project.staticSetPodTerminatingCount(siteRequest2, (String)result.get(Project.VAR_podTerminatingCount)));
-      o.persistForClass(Project.VAR_podsTerminating, Project.staticSetPodsTerminating(siteRequest2, (String)result.get(Project.VAR_podsTerminating)));
+      o.persistForClass(Project.VAR_podsTerminating, result.get(Project.VAR_podsTerminating));
       o.persistForClass(Project.VAR_fullPvcsCount, Project.staticSetFullPvcsCount(siteRequest2, (String)result.get(Project.VAR_fullPvcsCount)));
-      o.persistForClass(Project.VAR_fullPvcs, Project.staticSetFullPvcs(siteRequest2, (String)result.get(Project.VAR_fullPvcs)));
+      o.persistForClass(Project.VAR_fullPvcs, result.get(Project.VAR_fullPvcs));
       o.persistForClass(Project.VAR_namespaceTerminating, Project.staticSetNamespaceTerminating(siteRequest2, (String)result.get(Project.VAR_namespaceTerminating)));
       o.persistForClass(Project.VAR_statusPageTemplateUri, Project.staticSetStatusPageTemplateUri(siteRequest2, (String)result.get(Project.VAR_statusPageTemplateUri)));
+      o.persistForClass(Project.VAR_created, Project.staticSetCreated(siteRequest2, (String)result.get(Project.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
+      o.persistForClass(Project.VAR_archived, Project.staticSetArchived(siteRequest2, (String)result.get(Project.VAR_archived)));
+      o.persistForClass(Project.VAR_sessionId, Project.staticSetSessionId(siteRequest2, (String)result.get(Project.VAR_sessionId)));
+      o.persistForClass(Project.VAR_userKey, Project.staticSetUserKey(siteRequest2, (String)result.get(Project.VAR_userKey)));
+      o.persistForClass(Project.VAR_objectTitle, Project.staticSetObjectTitle(siteRequest2, (String)result.get(Project.VAR_objectTitle)));
+      o.persistForClass(Project.VAR_apiUrl, Project.staticSetApiUrl(siteRequest2, (String)result.get(Project.VAR_apiUrl)));
+      o.persistForClass(Project.VAR_displayPage, Project.staticSetDisplayPage(siteRequest2, (String)result.get(Project.VAR_displayPage)));
+      o.persistForClass(Project.VAR_editPage, Project.staticSetEditPage(siteRequest2, (String)result.get(Project.VAR_editPage)));
+      o.persistForClass(Project.VAR_userPage, Project.staticSetUserPage(siteRequest2, (String)result.get(Project.VAR_userPage)));
+      o.persistForClass(Project.VAR_download, Project.staticSetDownload(siteRequest2, (String)result.get(Project.VAR_download)));
       if(templatePath.startsWith(String.format("%s%s", config.getString(ComputateConfigKeys.TEMPLATE_PATH), "/en-us/user/project/"))) {
         o.persistForClass(Project.VAR_statusPageTemplateUri, Project.staticSetStatusPageTemplateUri(siteRequest2, StringUtils.substringAfter(templatePath, config.getString(ComputateConfigKeys.TEMPLATE_PATH))));
       }

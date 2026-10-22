@@ -39,12 +39,15 @@ import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.timezone.TimeZone;
 import org.computate.aitelemetry.timezone.TimeZoneEnUSApiServiceImpl;
 import org.computate.aitelemetry.timezone.TimeZoneEnUSGenApiService;
-import org.computate.aitelemetry.page.SitePage;
-import org.computate.aitelemetry.page.SitePageEnUSApiServiceImpl;
-import org.computate.aitelemetry.page.SitePageEnUSGenApiService;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSGenApiService;
+import org.computate.aitelemetry.page.SitePage;
+import org.computate.aitelemetry.page.SitePageEnUSApiServiceImpl;
+import org.computate.aitelemetry.page.SitePageEnUSGenApiService;
+import org.computate.aitelemetry.model.MapModel;
+import org.computate.aitelemetry.model.MapModelEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.MapModelEnUSGenApiService;
 import org.computate.aitelemetry.model.tenant.Tenant;
 import org.computate.aitelemetry.model.tenant.TenantEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.tenant.TenantEnUSGenApiService;
@@ -93,9 +96,6 @@ import org.computate.aitelemetry.model.baremetalnode.BareMetalNodeEnUSGenApiServ
 import org.computate.vertx.api.ApiCounter;
 import org.computate.vertx.api.ApiRequest;
 import org.computate.vertx.config.ComputateConfigKeys;
-import org.computate.vertx.handlebars.AuthHelpers;
-import org.computate.vertx.handlebars.DateHelpers;
-import org.computate.vertx.handlebars.SiteHelpers;
 import org.computate.vertx.openapi.ComputateOAuth2AuthHandlerImpl;
 import org.computate.vertx.api.BaseApiServiceInterface;
 import org.slf4j.Logger;
@@ -461,13 +461,19 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       siteRequest.initDeepSiteRequest(siteRequest);
       siteRequest.addScopes("GET");
       String templatePath = config().getString(ComputateConfigKeys.TEMPLATE_PATH);
+      String realmName = config().getString(ComputateConfigKeys.AUTH_REALM);
+      String clientId = config().getString(ComputateConfigKeys.AUTH_CLIENT);
 
+      SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
+      initializeApiService(apiSiteUser);
       TimeZoneEnUSApiServiceImpl apiTimeZone = new TimeZoneEnUSApiServiceImpl();
       initializeApiService(apiTimeZone);
-      SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
-      initializeApiService(apiSitePage);
       AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
       initializeApiService(apiAiTelemetryDeveloper);
+      SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
+      initializeApiService(apiSitePage);
+      MapModelEnUSApiServiceImpl apiMapModel = new MapModelEnUSApiServiceImpl();
+      initializeApiService(apiMapModel);
       TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
       initializeApiService(apiTenant);
       HubEnUSApiServiceImpl apiHub = new HubEnUSApiServiceImpl();
@@ -490,6 +496,8 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       initializeApiService(apiClusterTemplate);
       ManagedClusterEnUSApiServiceImpl apiManagedCluster = new ManagedClusterEnUSApiServiceImpl();
       initializeApiService(apiManagedCluster);
+      BareMetalOrderEnUSApiServiceImpl apiBareMetalOrder = new BareMetalOrderEnUSApiServiceImpl();
+      initializeApiService(apiBareMetalOrder);
       BareMetalResourceClassEnUSApiServiceImpl apiBareMetalResourceClass = new BareMetalResourceClassEnUSApiServiceImpl();
       initializeApiService(apiBareMetalResourceClass);
       BareMetalNetworkEnUSApiServiceImpl apiBareMetalNetwork = new BareMetalNetworkEnUSApiServiceImpl();
@@ -497,25 +505,33 @@ public class WorkerVerticle extends WorkerVerticleGen<AbstractVerticle> {
       BareMetalNodeEnUSApiServiceImpl apiBareMetalNode = new BareMetalNodeEnUSApiServiceImpl();
       initializeApiService(apiBareMetalNode);
 
-      apiTimeZone.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, TimeZone.CLASS_CANONICAL_NAME, TimeZone.CLASS_SIMPLE_NAME, TimeZone.CLASS_API_ADDRESS_TimeZone, TimeZone.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q1 -> {
-        apiSitePage.importTimer(Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q2 -> {
-          apiAiTelemetryDeveloper.importTimer(Paths.get(templatePath, "/en-us/ai-telemetry-developer/learn"), vertx, siteRequest, AiTelemetryDeveloper.CLASS_CANONICAL_NAME, AiTelemetryDeveloper.CLASS_SIMPLE_NAME, AiTelemetryDeveloper.CLASS_API_ADDRESS_AiTelemetryDeveloper, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q3 -> {
-            apiTenant.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Tenant.CLASS_CANONICAL_NAME, Tenant.CLASS_SIMPLE_NAME, Tenant.CLASS_API_ADDRESS_Tenant, Tenant.CLASS_AUTH_RESOURCE, "tenantId", "userPage", "download").onSuccess(q4 -> {
-              apiHub.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubId", "userPage", "download").onSuccess(q5 -> {
-                apiCluster.importTimer(Paths.get(templatePath, "/en-us/user/cluster"), vertx, siteRequest, Cluster.CLASS_CANONICAL_NAME, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, Cluster.CLASS_AUTH_RESOURCE, "clusterResource", "userPage", "download").onSuccess(q6 -> {
-                  apiAiNode.importTimer(Paths.get(templatePath, "/en-us/user/ai-node"), vertx, siteRequest, AiNode.CLASS_CANONICAL_NAME, AiNode.CLASS_SIMPLE_NAME, AiNode.CLASS_API_ADDRESS_AiNode, AiNode.CLASS_AUTH_RESOURCE, "nodeResource", "userPage", "download").onSuccess(q7 -> {
-                    apiGpuDevice.importTimer(Paths.get(templatePath, "/en-us/user/gpu-device"), vertx, siteRequest, GpuDevice.CLASS_CANONICAL_NAME, GpuDevice.CLASS_SIMPLE_NAME, GpuDevice.CLASS_API_ADDRESS_GpuDevice, GpuDevice.CLASS_AUTH_RESOURCE, "gpuDeviceResource", "userPage", "download").onSuccess(q8 -> {
-                      apiProject.importTimer(Paths.get(templatePath, "/en-us/user/project"), vertx, siteRequest, Project.CLASS_CANONICAL_NAME, Project.CLASS_SIMPLE_NAME, Project.CLASS_API_ADDRESS_Project, Project.CLASS_AUTH_RESOURCE, "projectResource", "userPage", "download").onSuccess(q9 -> {
-                        apiVirtualMachine.importTimer(Paths.get(templatePath, "/en-us/user/vm"), vertx, siteRequest, VirtualMachine.CLASS_CANONICAL_NAME, VirtualMachine.CLASS_SIMPLE_NAME, VirtualMachine.CLASS_API_ADDRESS_VirtualMachine, VirtualMachine.CLASS_AUTH_RESOURCE, "vmResource", "userPage", "download").onSuccess(q10 -> {
-                          apiClusterRequest.importTimer(Paths.get(templatePath, "/en-us/user/cluster-request"), vertx, siteRequest, ClusterRequest.CLASS_CANONICAL_NAME, ClusterRequest.CLASS_SIMPLE_NAME, ClusterRequest.CLASS_API_ADDRESS_ClusterRequest, ClusterRequest.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q11 -> {
-                            apiClusterOrder.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterOrder.CLASS_CANONICAL_NAME, ClusterOrder.CLASS_SIMPLE_NAME, ClusterOrder.CLASS_API_ADDRESS_ClusterOrder, ClusterOrder.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q12 -> {
-                              apiClusterTemplate.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterTemplate.CLASS_CANONICAL_NAME, ClusterTemplate.CLASS_SIMPLE_NAME, ClusterTemplate.CLASS_API_ADDRESS_ClusterTemplate, ClusterTemplate.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q13 -> {
-                                apiManagedCluster.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, ManagedCluster.CLASS_CANONICAL_NAME, ManagedCluster.CLASS_SIMPLE_NAME, ManagedCluster.CLASS_API_ADDRESS_ManagedCluster, ManagedCluster.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q14 -> {
-                                  apiBareMetalResourceClass.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalResourceClass.CLASS_CANONICAL_NAME, BareMetalResourceClass.CLASS_SIMPLE_NAME, BareMetalResourceClass.CLASS_API_ADDRESS_BareMetalResourceClass, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q15 -> {
-                                    apiBareMetalNetwork.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNetwork.CLASS_CANONICAL_NAME, BareMetalNetwork.CLASS_SIMPLE_NAME, BareMetalNetwork.CLASS_API_ADDRESS_BareMetalNetwork, BareMetalNetwork.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q16 -> {
-                                      apiBareMetalNode.importTimer(Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNode.CLASS_CANONICAL_NAME, BareMetalNode.CLASS_SIMPLE_NAME, BareMetalNode.CLASS_API_ADDRESS_BareMetalNode, BareMetalNode.CLASS_AUTH_RESOURCE, "nodeId", "userPage", "download").onSuccess(q17 -> {
-                                        LOG.info("data import complete");
-                                        promise.complete();
+      apiSiteUser.obtainKeycloakAdminToken().onSuccess(adminToken -> {
+        apiSiteUser.obtainClientUuid(adminToken, realmName, clientId).onSuccess(clientUuid -> {
+          apiTimeZone.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, TimeZone.CLASS_CANONICAL_NAME, TimeZone.CLASS_SIMPLE_NAME, TimeZone.CLASS_API_ADDRESS_TimeZone, TimeZone.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q1 -> {
+            apiAiTelemetryDeveloper.importTimer(clientUuid, Paths.get(templatePath, "/en-us/ai-telemetry-developer/learn"), vertx, siteRequest, AiTelemetryDeveloper.CLASS_CANONICAL_NAME, AiTelemetryDeveloper.CLASS_SIMPLE_NAME, AiTelemetryDeveloper.CLASS_API_ADDRESS_AiTelemetryDeveloper, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q2 -> {
+              apiSitePage.importTimer(clientUuid, Paths.get(templatePath, "/en-us/view/article"), vertx, siteRequest, SitePage.CLASS_CANONICAL_NAME, SitePage.CLASS_SIMPLE_NAME, SitePage.CLASS_API_ADDRESS_SitePage, SitePage.CLASS_AUTH_RESOURCE, "pageId", "userPage", "download").onSuccess(q3 -> {
+                apiMapModel.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, MapModel.CLASS_CANONICAL_NAME, MapModel.CLASS_SIMPLE_NAME, MapModel.CLASS_API_ADDRESS_MapModel, MapModel.CLASS_AUTH_RESOURCE, "entityShortId", "userPage", "download").onSuccess(q4 -> {
+                  apiTenant.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, Tenant.CLASS_CANONICAL_NAME, Tenant.CLASS_SIMPLE_NAME, Tenant.CLASS_API_ADDRESS_Tenant, Tenant.CLASS_AUTH_RESOURCE, "tenantId", "userPage", "download").onSuccess(q5 -> {
+                    apiHub.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, Hub.CLASS_CANONICAL_NAME, Hub.CLASS_SIMPLE_NAME, Hub.CLASS_API_ADDRESS_Hub, Hub.CLASS_AUTH_RESOURCE, "hubId", "userPage", "download").onSuccess(q6 -> {
+                      apiCluster.importTimer(clientUuid, Paths.get(templatePath, "/en-us/user/cluster"), vertx, siteRequest, Cluster.CLASS_CANONICAL_NAME, Cluster.CLASS_SIMPLE_NAME, Cluster.CLASS_API_ADDRESS_Cluster, Cluster.CLASS_AUTH_RESOURCE, "clusterResource", "userPage", "download").onSuccess(q7 -> {
+                        apiAiNode.importTimer(clientUuid, Paths.get(templatePath, "/en-us/user/ai-node"), vertx, siteRequest, AiNode.CLASS_CANONICAL_NAME, AiNode.CLASS_SIMPLE_NAME, AiNode.CLASS_API_ADDRESS_AiNode, AiNode.CLASS_AUTH_RESOURCE, "nodeResource", "userPage", "download").onSuccess(q8 -> {
+                          apiGpuDevice.importTimer(clientUuid, Paths.get(templatePath, "/en-us/user/gpu-device"), vertx, siteRequest, GpuDevice.CLASS_CANONICAL_NAME, GpuDevice.CLASS_SIMPLE_NAME, GpuDevice.CLASS_API_ADDRESS_GpuDevice, GpuDevice.CLASS_AUTH_RESOURCE, "gpuDeviceResource", "userPage", "download").onSuccess(q9 -> {
+                            apiProject.importTimer(clientUuid, Paths.get(templatePath, "/en-us/user/project"), vertx, siteRequest, Project.CLASS_CANONICAL_NAME, Project.CLASS_SIMPLE_NAME, Project.CLASS_API_ADDRESS_Project, Project.CLASS_AUTH_RESOURCE, "projectResource", "userPage", "download").onSuccess(q10 -> {
+                              apiVirtualMachine.importTimer(clientUuid, Paths.get(templatePath, "/en-us/user/vm"), vertx, siteRequest, VirtualMachine.CLASS_CANONICAL_NAME, VirtualMachine.CLASS_SIMPLE_NAME, VirtualMachine.CLASS_API_ADDRESS_VirtualMachine, VirtualMachine.CLASS_AUTH_RESOURCE, "vmResource", "userPage", "download").onSuccess(q11 -> {
+                                apiClusterRequest.importTimer(clientUuid, Paths.get(templatePath, "/en-us/user/cluster-request"), vertx, siteRequest, ClusterRequest.CLASS_CANONICAL_NAME, ClusterRequest.CLASS_SIMPLE_NAME, ClusterRequest.CLASS_API_ADDRESS_ClusterRequest, ClusterRequest.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q12 -> {
+                                  apiClusterOrder.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterOrder.CLASS_CANONICAL_NAME, ClusterOrder.CLASS_SIMPLE_NAME, ClusterOrder.CLASS_API_ADDRESS_ClusterOrder, ClusterOrder.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q13 -> {
+                                    apiClusterTemplate.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, ClusterTemplate.CLASS_CANONICAL_NAME, ClusterTemplate.CLASS_SIMPLE_NAME, ClusterTemplate.CLASS_API_ADDRESS_ClusterTemplate, ClusterTemplate.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q14 -> {
+                                      apiManagedCluster.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, ManagedCluster.CLASS_CANONICAL_NAME, ManagedCluster.CLASS_SIMPLE_NAME, ManagedCluster.CLASS_API_ADDRESS_ManagedCluster, ManagedCluster.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q15 -> {
+                                        apiBareMetalOrder.importTimer(clientUuid, Paths.get(templatePath, "/en-us/user/bare-metal-order"), vertx, siteRequest, BareMetalOrder.CLASS_CANONICAL_NAME, BareMetalOrder.CLASS_SIMPLE_NAME, BareMetalOrder.CLASS_API_ADDRESS_BareMetalOrder, BareMetalOrder.CLASS_AUTH_RESOURCE, "pk", "userPage", "download").onSuccess(q16 -> {
+                                          apiBareMetalResourceClass.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalResourceClass.CLASS_CANONICAL_NAME, BareMetalResourceClass.CLASS_SIMPLE_NAME, BareMetalResourceClass.CLASS_API_ADDRESS_BareMetalResourceClass, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "name", "userPage", "download").onSuccess(q17 -> {
+                                            apiBareMetalNetwork.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNetwork.CLASS_CANONICAL_NAME, BareMetalNetwork.CLASS_SIMPLE_NAME, BareMetalNetwork.CLASS_API_ADDRESS_BareMetalNetwork, BareMetalNetwork.CLASS_AUTH_RESOURCE, "id", "userPage", "download").onSuccess(q18 -> {
+                                              apiBareMetalNode.importTimer(clientUuid, Paths.get(templatePath, "TODO"), vertx, siteRequest, BareMetalNode.CLASS_CANONICAL_NAME, BareMetalNode.CLASS_SIMPLE_NAME, BareMetalNode.CLASS_API_ADDRESS_BareMetalNode, BareMetalNode.CLASS_AUTH_RESOURCE, "nodeId", "userPage", "download").onSuccess(q19 -> {
+                                                LOG.info("data import complete");
+                                                promise.complete();
+                                              }).onFailure(ex -> promise.fail(ex));
+                                            }).onFailure(ex -> promise.fail(ex));
+                                          }).onFailure(ex -> promise.fail(ex));
+                                        }).onFailure(ex -> promise.fail(ex));
                                       }).onFailure(ex -> promise.fail(ex));
                                     }).onFailure(ex -> promise.fail(ex));
                                   }).onFailure(ex -> promise.fail(ex));
