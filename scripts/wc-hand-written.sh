@@ -6,15 +6,15 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZone.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZonePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZoneEnUSApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModel.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelEnUSApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloper.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePagePage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePageEnUSApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModel.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelEnUSApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/Tenant.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantEnUSApiServiceImpl.java \

@@ -80,7 +80,7 @@ USER_SEARCH_URI: "/user-search"
 # The Git domain name for this project. 
 GIT_DOMAIN: "github.com"
 # The Git organization for this project. 
-GIT_ORG: "computateorg"
+GIT_ORG: "nerc-images"
 # Whether the repo is public. 
 SITE_REPO_PUBLIC: true
 # The ssh git repository for the project. 
@@ -92,9 +92,9 @@ SITE_STATIC_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_NAME }}-static.git"
 # The static files https git repository for the project. 
 SITE_STATIC_REPO_HTTPS: "https://github.com/{{ GIT_ORG }}/{{ SITE_NAME }}-static.git"
 # The developer tools ssh repo for this site. 
-DEVELOPER_REPO: "git@github.com:{{ GIT_ORG }}/{{ SITE_NAME }}-developer.git"
+DEVELOPER_REPO: "ssh://git@ssh.computate.org/{{ GIT_ORG }}/{{ SITE_NAME }}-developer.git"
 # The developer tools https repo for this site. 
-DEVELOPER_REPO_HTTPS: "https://github.com/{{ GIT_ORG }}/{{ SITE_NAME }}-developer.git"
+DEVELOPER_REPO_HTTPS: "https://git.computate.org/{{ GIT_ORG }}/{{ SITE_NAME }}-developer.git"
 
 #########################
 # Mailing list defaults #

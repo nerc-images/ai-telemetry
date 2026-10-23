@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.computate.search.tool.SearchTool;
+import org.computate.vertx.api.BaseApiServiceImpl;
 import org.computate.vertx.config.ComputateConfigKeys;
 import org.computate.vertx.search.list.SearchList;
 import org.computate.aitelemetry.config.ConfigKeys;
@@ -153,112 +154,23 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
     try {
       String clusterName = body.getString(Cluster.VAR_clusterName);
       String groupName = String.format("%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
-      String policyId = String.format("%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
-      String policyName = String.format("%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
       String resourceName = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
-      String permissionName = String.format("%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
-      String resourceDisplayName = String.format("%s %s %s %s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName);
-      String authAdminUsername = config.getString(ComputateConfigKeys.AUTH_ADMIN_USERNAME);
-      String authAdminPassword = config.getString(ComputateConfigKeys.AUTH_ADMIN_PASSWORD);
-      Integer authPort = Integer.parseInt(config.getString(ComputateConfigKeys.AUTH_PORT));
-      String authHostName = config.getString(ComputateConfigKeys.AUTH_HOST_NAME);
-      Boolean authSsl = Boolean.parseBoolean(config.getString(ComputateConfigKeys.AUTH_SSL));
-      String authRealm = config.getString(ComputateConfigKeys.AUTH_REALM);
-      String authClient = config.getString(ComputateConfigKeys.AUTH_CLIENT);
-      webClient.post(authPort, authHostName, "/realms/master/protocol/openid-connect/token").ssl(authSsl)
-          .sendForm(MultiMap.caseInsensitiveMultiMap()
-              .add("username", authAdminUsername)
-              .add("password", authAdminPassword)
-              .add("grant_type", "password")
-              .add("client_id", "admin-cli")
-              ).onSuccess(tokenResponse -> {
-        try {
-          String authToken = tokenResponse.bodyAsJsonObject().getString("access_token");
-          webClient.post(authPort, authHostName, String.format("/admin/realms/%s/groups", authRealm)).ssl(authSsl)
-              .putHeader("Authorization", String.format("Bearer %s", authToken))
-              .sendJson(new JsonObject().put("name", groupName))
-              .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
-              .onSuccess(createGroupResponse -> {
-            try {
-              webClient.get(authPort, authHostName, String.format("/admin/realms/%s/groups?exact=true&global=true&first=0&max=1&search=%s", authRealm, URLEncoder.encode(groupName, "UTF-8"))).ssl(authSsl)
-                  .putHeader("Authorization", String.format("Bearer %s", authToken))
-                  .send()
-                  .expecting(HttpResponseExpectation.SC_OK)
-                  .onSuccess(groupsResponse -> {
-                try {
-                  JsonArray groups = Optional.ofNullable(groupsResponse.bodyAsJsonArray()).orElse(new JsonArray());
-                  JsonObject group = groups.stream().findFirst().map(o -> (JsonObject)o).orElse(null);
-                  if(group != null) {
-                    String groupId = group.getString("id");
-                    webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/policy/group", authRealm, authClient)).ssl(authSsl)
-                        .putHeader("Authorization", String.format("Bearer %s", authToken))
-                        .sendJson(new JsonObject().put("id", policyId).put("name", policyName).put("description", String.format("%s group", groupName)).put("groups", new JsonArray().add(groupId)))
-                        .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
-                        .onSuccess(createPolicyResponse -> {
-                      webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource", authRealm, authClient)).ssl(authSsl)
-                          .putHeader("Authorization", String.format("Bearer %s", authToken))
-                          .sendJson(new JsonObject()
-                              .put("name", resourceName)
-                              .put("displayName", resourceDisplayName)
-                              .put("scopes", new JsonArray().add("GET").add("PATCH"))
-                              )
-                          .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
-                          .onSuccess(createResourceResponse -> {
-                        webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/permission/scope", authRealm, authClient)).ssl(authSsl)
-                            .putHeader("Authorization", String.format("Bearer %s", authToken))
-                            .sendJson(new JsonObject()
-                                .put("name", permissionName)
-                                .put("description", String.format("GET %s", groupName))
-                                .put("decisionStrategy", "AFFIRMATIVE")
-                                .put("resources", new JsonArray().add(resourceName))
-                                .put("policies", new JsonArray().add(policyName))
-                                .put("scopes", new JsonArray().add(String.format("%s-GET", authRealm)))
-                                )
-                            .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
-                            .onSuccess(createPermissionResponse -> {
-                          LOG.info(String.format("Successfully granted %s access to %s", "GET", resourceName));
-                          promise.complete();
-                        }).onFailure(ex -> {
-                          LOG.error(String.format("Failed to create an auth permission for resource %s. ", resourceName), ex);
-                          promise.fail(ex);
-                        });
-                      }).onFailure(ex -> {
-                        LOG.error(String.format("Failed to create an auth resource %s. ", resourceName), ex);
-                        promise.fail(ex);
-                      });
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("Failed to create an auth policy for group %s. ", groupName), ex);
-                      promise.fail(ex);
-                    });
-                  } else {
-                    Throwable ex = new RuntimeException(String.format("Failed to find group %s", groupName));
-                    LOG.error(ex.getMessage(), ex);
-                    promise.fail(ex);
-                  }
-                } catch(Throwable ex) {
-                  LOG.error("Failed to set up fine-grained resource permissions. ", ex);
-                  promise.fail(ex);
-                }
-              }).onFailure(ex -> {
-                LOG.error(String.format("Failed to query the group %s. ", groupName), ex);
-                promise.fail(ex);
-              });
-            } catch(Throwable ex) {
-              LOG.error("Failed to set up fine-grained resource permissions. ", ex);
-              promise.fail(ex);
-            }
-          }).onFailure(ex -> {
-            LOG.error(String.format("Failed to create the group %s. ", groupName), ex);
-            promise.fail(ex);
-          });
-        } catch(Throwable ex) {
-          LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for group %s", groupName), ex);
-          promise.fail(ex);
-        }
-      }).onFailure(ex -> {
-        LOG.error(String.format("Failed to get an admin token while creating fine-grained resource permissions for group %s", groupName), ex);
-        promise.fail(ex);
-      });
+      String realmName = config.getString(ComputateConfigKeys.AUTH_REALM);
+      String clientId = config.getString(ComputateConfigKeys.AUTH_CLIENT);
+      String[] defaultScopes = new String[] { "GET", "DELETE", "PATCH", "POST", "SuperAdmin", "Admin", "GETManager", "PUT" };
+      JsonArray authScopesJson = new JsonArray();
+      String[] scopes = new String[] { "GET" };
+      for(String scope : scopes) {
+        authScopesJson.add(String.format("%s-%s", realmName, scope));
+      }
+      BaseApiServiceImpl.obtainKeycloakAdminTokenStatic(config, webClient).onSuccess(adminToken -> {
+        BaseApiServiceImpl.obtainClientUuidStatic(config, webClient, adminToken, realmName, clientId).onSuccess(clientUuid -> {
+          BaseApiServiceImpl.authorizeGroupDataStatic(config, webClient, adminToken, realmName, clientId, clientUuid, Cluster.CLASS_AUTH_RESOURCE, groupName, scopes, defaultScopes).onSuccess(a -> {
+            LOG.info(String.format("Successfully granted %s access to %s", "GET", resourceName));
+            promise.complete();
+          }).onFailure(ex -> promise.fail(ex));
+        }).onFailure(ex -> promise.fail(ex));
+      }).onFailure(ex -> promise.fail(ex));
     } catch(Throwable ex) {
       LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for %s", classSimpleName), ex);
       promise.fail(ex);

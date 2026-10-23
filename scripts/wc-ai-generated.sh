@@ -10,15 +10,15 @@ find \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZoneGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZoneEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/timezone/TimeZoneEnUSGenApiService.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelGenPage.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelEnUSGenApiServiceImpl.java \
+  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/developer/aitelemetry/AiTelemetryDeveloperEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePageGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePageEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/page/SitePageEnUSGenApiService.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelGenPage.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelEnUSGenApiServiceImpl.java \
-  ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/MapModelEnUSGenApiService.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantGenPage.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantEnUSGenApiServiceImpl.java \
   ~/.local/src/ai-telemetry/src/main/java/org/computate/aitelemetry/model/tenant/TenantEnUSGenApiService.java \
@@ -82,6 +82,12 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/time-zone/TimeZoneSidebar.htm \
+        ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelGenSearchPage.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelLocation.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelPaginationButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelSearchButtons.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelSearchForm.htm \
+      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelSidebar.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/ai-telemetry-developer/AiTelemetryDeveloperGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/ai-telemetry-developer/AiTelemetryDeveloperLocation.htm \
@@ -96,12 +102,6 @@ find \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchButtons.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSearchForm.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/article/SitePageSidebar.htm \
-        ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelGenSearchPage.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelLocation.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelPaginationButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelSearchButtons.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelSearchForm.htm \
-      ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/map-model/MapModelSidebar.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/edit/tenant/TenantGenEditPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantGenSearchPage.htm \
       ~/.local/src/ai-telemetry-static/webawesome/templates/en-us/search/tenant/TenantLocation.htm \

@@ -2,6 +2,7 @@ package org.computate.aitelemetry.model.project;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.computate.i18n.I18n;
 import org.computate.search.tool.SearchTool;
+import org.computate.vertx.api.BaseApiServiceImpl;
 import org.computate.vertx.config.ComputateConfigKeys;
 import org.computate.vertx.request.ComputateSiteRequest;
 import org.computate.vertx.search.list.SearchList;
@@ -48,11 +51,13 @@ import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpResponseExpectation;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import jinjava.org.jsoup.Jsoup;
 import jinjava.org.jsoup.nodes.Document;
@@ -689,38 +694,34 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
   public static Future<Void> importProjectAuth(Vertx vertx, WebClient webClient, JsonObject config, String hubId, String classSimpleName, String classApiAddress, JsonObject body) {
     Promise<Void> promise = Promise.promise();
     try {
-      String clusterName = body.getString(Project.VAR_clusterName);
-      String projectName = body.getString(Project.VAR_projectName);
-      String groupName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String policyId = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String policyName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String resourceName = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String permissionName = String.format("%s-%s-%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String resourceDisplayName = String.format("%s %s %s %s %s %s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String authAdminUsername = config.getString(ComputateConfigKeys.AUTH_ADMIN_USERNAME);
-      String authAdminPassword = config.getString(ComputateConfigKeys.AUTH_ADMIN_PASSWORD);
       Integer authPort = Integer.parseInt(config.getString(ComputateConfigKeys.AUTH_PORT));
       String authHostName = config.getString(ComputateConfigKeys.AUTH_HOST_NAME);
       Boolean authSsl = Boolean.parseBoolean(config.getString(ComputateConfigKeys.AUTH_SSL));
-      String authRealm = config.getString(ComputateConfigKeys.AUTH_REALM);
-      String authClient = config.getString(ComputateConfigKeys.AUTH_CLIENT);
-      webClient.post(authPort, authHostName, "/realms/master/protocol/openid-connect/token").ssl(authSsl)
-          .sendForm(MultiMap.caseInsensitiveMultiMap()
-              .add("username", authAdminUsername)
-              .add("password", authAdminPassword)
-              .add("grant_type", "password")
-              .add("client_id", "admin-cli")
-              ).onSuccess(tokenResponse -> {
-        try {
-          String authToken = tokenResponse.bodyAsJsonObject().getString("access_token");
-          webClient.post(authPort, authHostName, String.format("/admin/realms/%s/groups", authRealm)).ssl(authSsl)
-              .putHeader("Authorization", String.format("Bearer %s", authToken))
+      String realmName = config.getString(ComputateConfigKeys.AUTH_REALM);
+      String clientId = config.getString(ComputateConfigKeys.AUTH_CLIENT);
+      String clusterName = body.getString(Project.VAR_clusterName);
+      String projectName = body.getString(Project.VAR_projectName);
+      String groupName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String policyId = UUID.nameUUIDFromBytes(String.format("%s-group-%s", realmName, groupName).getBytes(StandardCharsets.UTF_8)).toString();
+      String policyName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String permissionName = String.format("%s-%s-%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String classAuthResource = Project.CLASS_AUTH_RESOURCE;
+      String[] defaultScopes = new String[] { "GET", "DELETE", "PATCH", "POST", "SuperAdmin", "Admin", "GETManager", "PUT" };
+      String[] scopes = new String[] { "GET" };
+      JsonArray authScopesJson = new JsonArray();
+      for(String scope : scopes) {
+        authScopesJson.add(String.format("%s-%s", realmName, scope));
+      }
+      BaseApiServiceImpl.obtainKeycloakAdminTokenStatic(config, webClient).onSuccess(adminToken -> {
+        BaseApiServiceImpl.obtainClientUuidStatic(config, webClient, adminToken, realmName, clientId).onSuccess(clientUuid -> {
+          webClient.post(authPort, authHostName, String.format("/admin/realms/%s/groups", realmName)).ssl(authSsl)
+              .putHeader("Authorization", String.format("Bearer %s", adminToken))
               .sendJson(new JsonObject().put("name", groupName))
               .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
               .onSuccess(createGroupResponse -> {
             try {
-              webClient.get(authPort, authHostName, String.format("/admin/realms/%s/groups?exact=true&global=true&first=0&max=1&search=%s", authRealm, URLEncoder.encode(groupName, "UTF-8"))).ssl(authSsl)
-                  .putHeader("Authorization", String.format("Bearer %s", authToken))
+              webClient.get(authPort, authHostName, String.format("/admin/realms/%s/groups?exact=true&global=true&first=0&max=1&search=%s", realmName, URLEncoder.encode(groupName, "UTF-8"))).ssl(authSsl)
+                  .putHeader("Authorization", String.format("Bearer %s", adminToken))
                   .send()
                   .expecting(HttpResponseExpectation.SC_OK)
                   .onSuccess(groupsResponse -> {
@@ -729,128 +730,131 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                   JsonObject group = groups.stream().findFirst().map(o -> (JsonObject)o).orElse(null);
                   if(group != null) {
                     String groupId = group.getString("id");
-                    webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/policy/group", authRealm, authClient)).ssl(authSsl)
-                        .putHeader("Authorization", String.format("Bearer %s", authToken))
+                    webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/policy/group", realmName, clientUuid)).ssl(authSsl)
+                        .putHeader("Authorization", String.format("Bearer %s", adminToken))
                         .sendJson(new JsonObject().put("id", policyId).put("name", policyName).put("description", String.format("%s group", groupName)).put("groups", new JsonArray().add(groupId)))
                         .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
                         .onSuccess(createPolicyResponse -> {
-                      webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource", authRealm, authClient)).ssl(authSsl)
-                          .putHeader("Authorization", String.format("Bearer %s", authToken))
+                      webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource", realmName, clientUuid)).ssl(authSsl)
+                          .putHeader("Authorization", String.format("Bearer %s", adminToken))
                           .sendJson(new JsonObject()
-                              .put("name", resourceName)
-                              .put("displayName", resourceDisplayName)
-                              .put("scopes", new JsonArray().add("GET").add("PATCH"))
+                              .put("name", classAuthResource)
+                              .put("displayName", classAuthResource)
+                              .put("scopes", defaultScopes)
                               )
                           .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
                           .onSuccess(createResourceResponse -> {
-                        try {
-                          webClient.get(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource?first=0&max=1&permission=false&name=%s", authRealm, authClient, URLEncoder.encode(resourceName, "UTF-8"))).ssl(authSsl)
-                              .putHeader("Authorization", String.format("Bearer %s", authToken))
-                              .send()
-                              .expecting(HttpResponseExpectation.SC_OK)
-                              .onSuccess(resourceResponse -> {
-                            try {
-                              JsonArray resourceBody = resourceResponse.bodyAsJsonArray();
-                              JsonObject resource = resourceBody.getJsonObject(0);
-                              String resourceId = resource.getString("_id");
-                              SiteRequest siteRequest = new SiteRequest();
-                              siteRequest.setConfig(config);
-                              siteRequest.setWebClient(webClient);
-                              siteRequest.initDeepSiteRequest(siteRequest);
-                              siteRequest.addScopes("GET");
-                              SearchList<Project> searchList = new SearchList<Project>();
-                              searchList.setStore(true);
-                              searchList.q("*:*");
-                              searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_hubId), SearchTool.escapeQueryChars(hubId)));
-                              searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_clusterName), SearchTool.escapeQueryChars(clusterName)));
-                              searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_projectName), SearchTool.escapeQueryChars(projectName)));
-                              searchList.setC(Project.class);
-                              searchList.setSiteRequest_(siteRequest);
-                              searchList.promiseDeepForClass(siteRequest).onSuccess(projectList -> {
-                                Project first = projectList.getList().stream().findFirst().orElse(null);
-                                if(first != null) {
-                                  JsonArray policies = new JsonArray();
-                                  policies.add(policyName);
-                                  String tenantResource = first.getTenantResource();
-                                  if(tenantResource != null) {
-                                    String tenantPolicyName = String.format("%s-GET", tenantResource);
-                                    policies.add(tenantPolicyName);
-                                  }
-
-                                  webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/permission/scope", authRealm, authClient)).ssl(authSsl)
-                                      .putHeader("Authorization", String.format("Bearer %s", authToken))
-                                      .sendJson(new JsonObject()
-                                          .put("name", permissionName)
-                                          .put("description", String.format("GET %s", groupName))
-                                          .put("decisionStrategy", "AFFIRMATIVE")
-                                          .put("resources", new JsonArray().add(resourceId))
-                                          .put("policies", policies)
-                                          .put("scopes", new JsonArray().add(String.format("%s-GET", authRealm)))
-                                          )
-                                      .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
-                                      .onSuccess(createPermissionResponse -> {
-                                    LOG.info(String.format("Successfully granted %s access to %s", "GET", resourceName));
-                                    promise.complete();
-                                  }).onFailure(ex -> {
-                                    LOG.error(String.format("Failed to create an auth permission %s for resource %s with policies %s. ", permissionName, resourceName, policies), ex);
-                                    promise.fail(ex);
-                                  });
-                                } else {
-                                  promise.complete();
+                        webClient.get(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource?first=0&max=1&deep=false&name=%s", realmName, clientUuid, urlEncode(classAuthResource))).ssl(authSsl)
+                            .putHeader("Authorization", String.format("Bearer %s", adminToken))
+                            .send()
+                            .expecting(HttpResponseExpectation.SC_OK)
+                            .onSuccess(getResourceResponse -> {
+                          try {
+                            String resourceId = getResourceResponse.bodyAsJsonArray().stream().map(r -> (JsonObject)r).findFirst().map(r -> r.getString("_id")).orElse(null);
+                            SiteRequest siteRequest = new SiteRequest();
+                            siteRequest.setConfig(config);
+                            siteRequest.setWebClient(webClient);
+                            siteRequest.initDeepSiteRequest(siteRequest);
+                            siteRequest.addScopes("GET");
+                            SearchList<Project> searchList = new SearchList<Project>();
+                            searchList.setStore(true);
+                            searchList.q("*:*");
+                            searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_hubId), SearchTool.escapeQueryChars(hubId)));
+                            searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_clusterName), SearchTool.escapeQueryChars(clusterName)));
+                            searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_projectName), SearchTool.escapeQueryChars(projectName)));
+                            searchList.setC(Project.class);
+                            searchList.setSiteRequest_(siteRequest);
+                            searchList.promiseDeepForClass(siteRequest).onSuccess(projectList -> {
+                              Project first = projectList.getList().stream().findFirst().orElse(null);
+                              if(first != null) {
+                                JsonArray policies = new JsonArray();
+                                policies.add(policyId);
+                                String tenantResource = first.getTenantResource();
+                                if(tenantResource != null) {
+                                  String tenantPolicyName = String.format("%s-GET", tenantResource);
+                                  String tenantPolicyId = UUID.nameUUIDFromBytes(String.format("%s-group-%s", realmName, tenantPolicyName).getBytes(StandardCharsets.UTF_8)).toString();
+                                  policies.add(tenantPolicyId);
                                 }
-                              }).onFailure(ex -> {
-                                LOG.error(String.format("Failed to query project %s. ", projectName), ex);
-                                promise.fail(ex);
-                              });
-                            } catch(Throwable ex) {
-                              LOG.error("Failed to set up fine-grained resource permissions. ", ex);
+
+                                webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/permission/scope", realmName, clientUuid)).ssl(authSsl)
+                                    .putHeader("Authorization", String.format("Bearer %s", adminToken))
+                                    .sendJson(new JsonObject()
+                                        .put("name", permissionName)
+                                        .put("description", String.format("GET %s", groupName))
+                                        .put("decisionStrategy", "AFFIRMATIVE")
+                                        .put("resources", new JsonArray().add(resourceId))
+                                        .put("policies", policies)
+                                        .put("scopes", authScopesJson)
+                                        )
+                                    .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
+                                    .onComplete(createPermissionResult -> {
+                                  if(createPermissionResult.succeeded()) {
+                                    HttpResponse<Buffer> createPermissionResponse = createPermissionResult.result();
+                                    if(createPermissionResponse.statusCode() == 201 || createPermissionResponse.statusCode() == 409) {
+                                      LOG.info(String.format("Successfully granted %s permission to %s policy to %s resource", authScopesJson.encode(), policyName, classAuthResource));
+                                      promise.complete();
+                                    } else {
+                                      String message = String.format("Failed to grant %s permission to %s policy to %s resource because a %s error occured: %s", authScopesJson.encode(), policyName, classAuthResource, createPermissionResponse.statusCode(), createPermissionResponse.bodyAsString());
+                                      RuntimeException ex = new RuntimeException(message);
+                                      LOG.error(message, ex);
+                                      promise.fail(ex);
+                                    }
+                                  } else {
+                                    String message = String.format("Failed to grant %s permission to %s policy to %s resource because an error occured: %s", authScopesJson.encode(), policyName, classAuthResource, createPermissionResult.cause().getMessage());
+                                    RuntimeException ex = new RuntimeException(message);
+                                    LOG.error(message, ex);
+                                    promise.fail(ex);
+                                  }
+                                }).onFailure(ex -> {
+                                  LOG.error(String.format("Failed to grant %s permission to %s policy to %s resource", authScopesJson.encode(), policyName, classAuthResource), ex);
+                                  promise.fail(ex);
+                                });
+                              } else {
+                                promise.complete();
+                              }
+                            }).onFailure(ex -> {
+                              LOG.error(String.format("Failed to query project %s. ", projectName), ex);
                               promise.fail(ex);
-                            }
-                          }).onFailure(ex -> {
-                            LOG.error(String.format("Failed to query the group %s. ", groupName), ex);
+                            });
+                          } catch(Throwable ex) {
+                            LOG.error("Failed to set up fine-grained resource permissions. ", ex);
                             promise.fail(ex);
-                          });
-                        } catch(Throwable ex) {
-                          LOG.error(String.format("Failed to create an auth permission for resource %s. ", resourceName), ex);
+                          }
+                        }).onFailure(ex -> {
+                          LOG.error(String.format("Failed to query auth resource %s", classAuthResource), ex);
                           promise.fail(ex);
-                        }
+                        });
                       }).onFailure(ex -> {
-                        LOG.error(String.format("Failed to create an auth resource %s. ", resourceName), ex);
+                        LOG.error(String.format("Failed to create %s auth resource %s", authScopesJson.encode(), classAuthResource), ex);
                         promise.fail(ex);
                       });
                     }).onFailure(ex -> {
-                      LOG.error(String.format("Failed to create an auth policy for group %s. ", groupName), ex);
+                      LOG.error(String.format("Failed to create auth policy %s for resource %s", policyName, classAuthResource), ex);
                       promise.fail(ex);
                     });
                   } else {
-                    Throwable ex = new RuntimeException(String.format("Failed to find group %s", groupName));
+                    Throwable ex = new RuntimeException(String.format("Failed to find group %s for resource %s", groupName, classAuthResource));
                     LOG.error(ex.getMessage(), ex);
                     promise.fail(ex);
                   }
                 } catch(Throwable ex) {
-                  LOG.error("Failed to set up fine-grained resource permissions. ", ex);
+                  LOG.error(String.format("Failed to set up fine-grained resource permissions for resource %s. ", classAuthResource), ex);
                   promise.fail(ex);
                 }
               }).onFailure(ex -> {
-                LOG.error(String.format("Failed to query the group %s. ", groupName), ex);
+                LOG.error(String.format("Failed to query the group %s for resource %s. ", groupName, classAuthResource), ex);
                 promise.fail(ex);
               });
             } catch(Throwable ex) {
-              LOG.error("Failed to set up fine-grained resource permissions. ", ex);
+              LOG.error(String.format("Failed to set up fine-grained resource permissions for resource %s. ", classAuthResource), ex);
               promise.fail(ex);
             }
           }).onFailure(ex -> {
-            LOG.error(String.format("Failed to create the group %s. ", groupName), ex);
+            LOG.error(String.format("Failed to create the group %s for resource %s. ", groupName, classAuthResource), ex);
             promise.fail(ex);
           });
-        } catch(Throwable ex) {
-          LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for group %s", groupName), ex);
-          promise.fail(ex);
-        }
-      }).onFailure(ex -> {
-        LOG.error(String.format("Failed to get an admin token while creating fine-grained resource permissions for group %s", groupName), ex);
-        promise.fail(ex);
-      });
+        }).onFailure(ex -> promise.fail(ex));
+      }).onFailure(ex -> promise.fail(ex));
     } catch(Throwable ex) {
       LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for %s", classSimpleName), ex);
       promise.fail(ex);
