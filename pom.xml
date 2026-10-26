@@ -7,7 +7,7 @@
   <version>1.0.0</version>
   <name>AI Telemetry</name>
   <description>AI telemetry on OpenShift dashboards</description>
-  <url>https://ai-telemetry.apps.obs.nerc.mghpcc.org</url>
+  <url>https://aitelemetry.apps.oac-prod-workload0.hcp.oac.massopen.cloud</url>
   <packaging>jar</packaging>
 
   <licenses>
@@ -29,7 +29,7 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/nerc-images/ai-telemetry/issues</url>
+    <url>https://github.com/computateorg/ai-telemetry/issues</url>
   </issueManagement>
 
   <organization>
@@ -46,9 +46,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/nerc-images/ai-telemetry.git</connection>
-    <developerConnection>scm:git:ssh://github.com:nerc-images/ai-telemetry.git</developerConnection>
-    <url>http://github.com/nerc-images/ai-telemetry/tree/master</url>
+    <connection>scm:git:git://github.com/computateorg/ai-telemetry.git</connection>
+    <developerConnection>scm:git:ssh://github.com:computateorg/ai-telemetry.git</developerConnection>
+    <url>http://github.com/computateorg/ai-telemetry/tree/master</url>
   </scm>
 
   <repositories>
@@ -83,8 +83,8 @@
     <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
     <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-    <postgresql.version>42.7.11</postgresql.version>
-    <ongres-scram.version>3.2</ongres-scram.version>
+    <postgresql.version>42.7.12</postgresql.version>
+    <ongres-scram.version>3.3</ongres-scram.version>
     <junit.version>6.0.3</junit.version>
     <junit-platform-launcher.version>6.0.3</junit-platform-launcher.version>
     <mockito.version>5.22.0</mockito.version>
@@ -92,20 +92,20 @@
 
     <rest-assured.version>5.3.2</rest-assured.version>
 
-    <vertx-base.version>4.5.27</vertx-base.version>
+    <vertx-base.version>4.5.32</vertx-base.version>
     <vertx.version>${vertx-base.version}</vertx.version>
 
-    <jinjava.version>2.8.3</jinjava.version>
+    <jinjava.version>2.8.4</jinjava.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
     <commons-beanutils.version>1.11.0</commons-beanutils.version>
     <commons-text.version>1.15.0</commons-text.version>
-    <log4j.version>2.25.4</log4j.version>
+    <log4j.version>2.25.5</log4j.version>
     <slf4j.version>2.0.17</slf4j.version>
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
     <solr.version>9.10.1</solr.version>
-    <jackson.version>2.21.1</jackson.version>
+    <jackson.version>2.21.5</jackson.version>
     <jackson-annotations.version>2.21</jackson-annotations.version>
-    <jackson-databind.version>2.21.1</jackson-databind.version>
+    <jackson-databind.version>2.21.5</jackson-databind.version>
     <snakeyaml.version>2.6</snakeyaml.version>
     <zookeeper.version>3.9.5</zookeeper.version>
     <opentelemetry.version>1.62.0</opentelemetry.version>
@@ -113,12 +113,12 @@
     <indriya.version>2.2.3</indriya.version>
     <systems-common.version>2.2</systems-common.version>
     <gson.version>2.8.9</gson.version>
-    <c3p0.version>0.13.0</c3p0.version>
+    <c3p0.version>0.14.1</c3p0.version>
     <libthrift.version>0.23.0</libthrift.version>
     <mchange-commons-java.version>0.4.0</mchange-commons-java.version>
     <ironpdf.version>2026.5.1</ironpdf.version>
 
-    <computate.version>4.5.27.1</computate.version>
+    <computate.version>4.5.32.1</computate.version>
   </properties>
 
   <dependencyManagement>
@@ -448,6 +448,16 @@
     <dependency>
       <groupId>systems.uom</groupId>
       <artifactId>systems-common</artifactId>
+      <version>${systems-common.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>systems.uom</groupId>
+      <artifactId>systems-quantity</artifactId>
+      <version>${systems-common.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>systems.uom</groupId>
+      <artifactId>systems-unicode</artifactId>
       <version>${systems-common.version}</version>
     </dependency>
 

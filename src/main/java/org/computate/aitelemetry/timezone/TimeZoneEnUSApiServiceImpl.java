@@ -76,39 +76,34 @@ public class TimeZoneEnUSApiServiceImpl extends TimeZoneEnUSGenApiServiceImpl {
   }
 
   @Override
-  public Future<Void> importData(Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest,
+  public Future<Void> importData(String clientUuid, Path pagePath, Vertx vertx, ComputateSiteRequest siteRequest,
       String classCanonicalName, String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl,
       String varDownload) {
     Promise<Void> promise = Promise.promise();
     try {
-      if(Boolean.parseBoolean(config.getString(String.format("%s_%s", ComputateConfigKeys.ENABLE_IMPORT_DATA, classSimpleName), "true"))) {
-        ZonedDateTime dateTimeStarted = ZonedDateTime.now();
-        String[] timeZoneIds = java.util.TimeZone.getAvailableIDs();
+      ZonedDateTime dateTimeStarted = ZonedDateTime.now();
+      String[] timeZoneIds = java.util.TimeZone.getAvailableIDs();
 
-        List<Future<?>> futures = new ArrayList<>();
-        for(Integer i = 0; i < timeZoneIds.length; i++) {
-          String timeZoneId = timeZoneIds[i];
-          java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone(timeZoneIds[i]);
-          ZoneId zoneId = timeZone.toZoneId();
-          String abbreviation = zoneId.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH);
-          String name = zoneId.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-          futures.add(Future.future(promise1 -> {
-            importResult(classSimpleName, classApiAddress, timeZoneId, abbreviation, name).onComplete(b -> {
-              promise1.complete();
-            }).onFailure(ex -> {
-              LOG.error(String.format(importDataFail, classSimpleName), ex);
-              promise1.fail(ex);
-            });
-          }));
-        }
-        Future.all(futures).onSuccess(b -> {
-          vertx.timer(1L, TimeUnit.SECONDS).onSuccess(c -> {
-            cleanupOldTimeZones(siteRequest, dateTimeStarted, classSimpleName).onSuccess(d -> {
-              promise.complete();
-            }).onFailure(ex -> {
-              LOG.error(String.format(importDataFail, classSimpleName), ex);
-              promise.fail(ex);
-            });
+      List<Future<?>> futures = new ArrayList<>();
+      for(Integer i = 0; i < timeZoneIds.length; i++) {
+        String timeZoneId = timeZoneIds[i];
+        java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone(timeZoneIds[i]);
+        ZoneId zoneId = timeZone.toZoneId();
+        String abbreviation = zoneId.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH);
+        String name = zoneId.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        futures.add(Future.future(promise1 -> {
+          importResult(classSimpleName, classApiAddress, timeZoneId, abbreviation, name).onComplete(b -> {
+            promise1.complete();
+          }).onFailure(ex -> {
+            LOG.error(String.format(importDataFail, classSimpleName), ex);
+            promise1.fail(ex);
+          });
+        }));
+      }
+      Future.all(futures).onSuccess(b -> {
+        vertx.timer(1L, TimeUnit.SECONDS).onSuccess(c -> {
+          cleanupOldTimeZones(siteRequest, dateTimeStarted, classSimpleName).onSuccess(d -> {
+            promise.complete();
           }).onFailure(ex -> {
             LOG.error(String.format(importDataFail, classSimpleName), ex);
             promise.fail(ex);
@@ -117,9 +112,10 @@ public class TimeZoneEnUSApiServiceImpl extends TimeZoneEnUSGenApiServiceImpl {
           LOG.error(String.format(importDataFail, classSimpleName), ex);
           promise.fail(ex);
         });
-      } else {
-        promise.complete();
-      }
+      }).onFailure(ex -> {
+        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        promise.fail(ex);
+      });
     } catch(Throwable ex) {
       LOG.error(String.format(importDataFail, classSimpleName), ex);
       promise.fail(ex);

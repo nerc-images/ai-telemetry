@@ -1,5 +1,79 @@
 package org.computate.aitelemetry.model.managedcluster;
 
+import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.base.ComputateBaseModel;
+import org.computate.aitelemetry.request.SiteRequest;
+import java.lang.Object;
+import org.computate.aitelemetry.model.BaseModel;
+import io.vertx.core.json.JsonObject;
+import java.util.Date;
+import java.util.Set;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.aitelemetry.config.ConfigKeys;
+import java.util.Optional;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.computate.search.serialize.ComputateLocalDateSerializer;
+import org.computate.search.serialize.ComputateLocalDateDeserializer;
+import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
+import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
+import java.math.MathContext;
+import org.apache.commons.lang3.math.NumberUtils;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.math.RoundingMode;
+import java.util.Map;
+import java.lang.Long;
+import java.lang.String;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.lang.Boolean;
+import io.vertx.core.json.JsonArray;
+import org.computate.search.wrap.Wrap;
+import io.vertx.core.Promise;
+import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.response.solr.SolrResponse;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.user.SiteUser;
 import org.computate.vertx.api.ApiRequest;
@@ -123,55 +197,26 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
-                response200SearchManagedCluster(listManagedCluster).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchManagedCluster succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchManagedClusterList(siteRequest2, false, true, false, "GET").onSuccess(listManagedCluster -> {
+              response200SearchManagedCluster(listManagedCluster).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchManagedCluster succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchManagedCluster failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchManagedCluster failed. "), ex);
@@ -287,55 +332,26 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
-                response200GETManagedCluster(listManagedCluster).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("getManagedCluster succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("getManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchManagedClusterList(siteRequest2, false, true, false, "GET").onSuccess(listManagedCluster -> {
+              response200GETManagedCluster(listManagedCluster).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("getManagedCluster succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("getManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("getManagedCluster failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("getManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("getManagedCluster failed. "), ex);
@@ -389,89 +405,48 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "PATCH"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, true, "PATCH").onSuccess(listManagedCluster -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listManagedCluster.getRequest().getRows());
-                  apiRequest.setNumFound(listManagedCluster.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listManagedCluster.first());
-                  apiRequest.setId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getId().toString()).orElse(null));
-                  apiRequest.setSolrId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchManagedClusterList(siteRequest2, false, true, true, "PATCH").onSuccess(listManagedCluster -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listManagedCluster.getRequest().getRows());
+                apiRequest.setNumFound(listManagedCluster.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listManagedCluster.first());
+                apiRequest.setId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getId().toString()).orElse(null));
+                apiRequest.setSolrId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
 
-                  listPATCHManagedCluster(apiRequest, listManagedCluster).onSuccess(e -> {
-                    response200PATCHManagedCluster(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("patchManagedCluster succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("patchManagedCluster failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listPATCHManagedCluster(apiRequest, listManagedCluster).onSuccess(e -> {
+                  response200PATCHManagedCluster(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("patchManagedCluster succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchManagedCluster failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("patchManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("patchManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("patchManagedCluster failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("patchManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("patchManagedCluster failed. "), ex);
@@ -569,7 +544,8 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             apiRequest.setNumPATCH(0L);
             apiRequest.initDeepApiRequest(siteRequest);
             siteRequest.setApiRequest_(apiRequest);
-            if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+            Boolean refresh = Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L;
+            if(refresh) {
               siteRequest.getRequestVars().put( "refresh", "false" );
             }
             ManagedCluster o2;
@@ -586,6 +562,8 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               }).onFailure(ex -> {
                 eventHandler.handle(Future.failedFuture(ex));
               });
+            } else if(refresh) {
+              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
             } else {
               String m = String.format("%s %s not found", "tenant cluster", null);
               eventHandler.handle(Future.failedFuture(m));
@@ -618,19 +596,23 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       pgPool.withTransaction(sqlConnection -> {
         siteRequest.setSqlConnection(sqlConnection);
         varsManagedCluster(siteRequest).onSuccess(a -> {
-          sqlPATCHManagedCluster(o, inheritPrimaryKey).onSuccess(managedCluster -> {
-            persistManagedCluster(managedCluster, true).onSuccess(c -> {
-              relateManagedCluster(managedCluster).onSuccess(d -> {
-                indexManagedCluster(managedCluster).onSuccess(o2 -> {
-                  if(apiRequest != null) {
-                    apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-                    if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-                      o2.apiRequestManagedCluster();
-                      if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-                        eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
+          upsertManagedCluster(o, inheritPrimaryKey, true).onSuccess(c -> {
+            sqlPATCHManagedCluster(o, inheritPrimaryKey).onSuccess(managedCluster -> {
+              persistManagedCluster(managedCluster, true).onSuccess(d -> {
+                relateManagedCluster(managedCluster).onSuccess(e -> {
+                  indexManagedCluster(managedCluster).onSuccess(o2 -> {
+                    if(apiRequest != null) {
+                      apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
+                      if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
+                        o2.apiRequestManagedCluster();
+                        if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
+                          eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
+                      }
                     }
-                  }
-                  promise1.complete(managedCluster);
+                    promise1.complete(managedCluster);
+                  }).onFailure(ex -> {
+                    promise1.tryFail(ex);
+                  });
                 }).onFailure(ex -> {
                   promise1.tryFail(ex);
                 });
@@ -709,22 +691,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               num++;
               bParams.add(o2.sqlState());
             break;
-          case "setCreated":
-              o2.setCreated(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(ManagedCluster.VAR_created + "=$" + num);
-              num++;
-              bParams.add(o2.sqlCreated());
-            break;
-          case "setApiUrl":
-              o2.setApiUrl(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(ManagedCluster.VAR_apiUrl + "=$" + num);
-              num++;
-              bParams.add(o2.sqlApiUrl());
-            break;
           case "setConsoleUrl":
               o2.setConsoleUrl(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -732,6 +698,14 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               bSql.append(ManagedCluster.VAR_consoleUrl + "=$" + num);
               num++;
               bParams.add(o2.sqlConsoleUrl());
+            break;
+          case "setCreated":
+              o2.setCreated(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(ManagedCluster.VAR_created + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCreated());
             break;
           case "setArchived":
               o2.setArchived(jsonObject.getString(entityVar));
@@ -764,6 +738,14 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
               bSql.append(ManagedCluster.VAR_objectTitle + "=$" + num);
               num++;
               bParams.add(o2.sqlObjectTitle());
+            break;
+          case "setApiUrl":
+              o2.setApiUrl(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(ManagedCluster.VAR_apiUrl + "=$" + num);
+              num++;
+              bParams.add(o2.sqlApiUrl());
             break;
           case "setDisplayPage":
               o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -857,91 +839,55 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "POST"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              apiRequest.setRows(1L);
-              apiRequest.setNumFound(1L);
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
-              JsonObject params = new JsonObject();
-              params.put("body", siteRequest.getJsonObject());
-              params.put("path", new JsonObject());
-              params.put("scopes", scopes2);
-              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-              params.put("form", new JsonObject());
-              JsonObject query = new JsonObject();
-              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-              if(softCommit == null && commitWithin == null)
-                softCommit = true;
-              if(softCommit != null)
-                query.put("softCommit", softCommit);
-              if(commitWithin != null)
-                query.put("commitWithin", commitWithin);
-              params.put("query", query);
-              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-              JsonObject json = new JsonObject().put("context", context);
-              eventBus.request(ManagedCluster.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postManagedClusterFuture")).onSuccess(a -> {
-                JsonObject responseMessage = (JsonObject)a.body();
-                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-                apiRequest.setSolrId(responseBody.getString(ManagedCluster.VAR_solrId));
-                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            apiRequest.setRows(1L);
+            apiRequest.setNumFound(1L);
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
+            JsonObject params = new JsonObject();
+            params.put("body", siteRequest2.getJsonObject());
+            params.put("path", new JsonObject());
+            params.put("scopes", scopes2);
+            params.put("cookie", siteRequest2.getServiceRequest().getParams().getJsonObject("cookie"));
+            params.put("header", siteRequest2.getServiceRequest().getParams().getJsonObject("header"));
+            params.put("form", new JsonObject());
+            JsonObject query = new JsonObject();
+            Boolean softCommit = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+            Integer commitWithin = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+            if(softCommit == null && commitWithin == null)
+              softCommit = true;
+            if(softCommit != null)
+              query.put("softCommit", softCommit);
+            if(commitWithin != null)
+              query.put("commitWithin", commitWithin);
+            params.put("query", query);
+            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest2.getUserPrincipal());
+            JsonObject json = new JsonObject().put("context", context);
+            eventBus.request(ManagedCluster.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postManagedClusterFuture")).onSuccess(a -> {
+              JsonObject responseMessage = (JsonObject)a.body();
+              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+              apiRequest.setSolrId(responseBody.getString(ManagedCluster.VAR_solrId));
+              response200POSTManagedCluster(siteRequest2, responseBody).onSuccess(response -> {
                 LOG.debug(String.format("postManagedCluster succeeded. "));
+                eventHandler.handle(Future.succeededFuture(response));
               }).onFailure(ex -> {
                 LOG.error(String.format("postManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("postManagedCluster failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("postManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("postManagedCluster failed. "), ex);
@@ -1037,11 +983,15 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         siteRequest.setSqlConnection(sqlConnection);
         varsManagedCluster(siteRequest).onSuccess(a -> {
           createManagedCluster(siteRequest).onSuccess(managedCluster -> {
-            sqlPOSTManagedCluster(managedCluster, id).onSuccess(b -> {
-              persistManagedCluster(managedCluster, false).onSuccess(c -> {
-                relateManagedCluster(managedCluster).onSuccess(d -> {
-                  indexManagedCluster(managedCluster).onSuccess(o2 -> {
-                    promise1.complete(managedCluster);
+            upsertManagedCluster(managedCluster, id, false).onSuccess(b -> {
+              sqlPOSTManagedCluster(managedCluster, id).onSuccess(c -> {
+                persistManagedCluster(managedCluster, false).onSuccess(d -> {
+                  relateManagedCluster(managedCluster).onSuccess(e -> {
+                    indexManagedCluster(managedCluster).onSuccess(o2 -> {
+                      promise1.complete(managedCluster);
+                    }).onFailure(ex -> {
+                      promise1.tryFail(ex);
+                    });
                   }).onFailure(ex -> {
                     promise1.tryFail(ex);
                   });
@@ -1165,24 +1115,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             num++;
             bParams.add(o2.sqlState());
             break;
-          case ManagedCluster.VAR_created:
-            o2.setCreated(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(ManagedCluster.VAR_created + "=$" + num);
-            num++;
-            bParams.add(o2.sqlCreated());
-            break;
-          case ManagedCluster.VAR_apiUrl:
-            o2.setApiUrl(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(ManagedCluster.VAR_apiUrl + "=$" + num);
-            num++;
-            bParams.add(o2.sqlApiUrl());
-            break;
           case ManagedCluster.VAR_consoleUrl:
             o2.setConsoleUrl(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1192,6 +1124,15 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             num++;
             bParams.add(o2.sqlConsoleUrl());
             break;
+          case ManagedCluster.VAR_created:
+            o2.setCreated(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(ManagedCluster.VAR_created + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCreated());
+            break;
           case ManagedCluster.VAR_archived:
             o2.setArchived(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1200,15 +1141,6 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             bSql.append(ManagedCluster.VAR_archived + "=$" + num);
             num++;
             bParams.add(o2.sqlArchived());
-            break;
-          case ManagedCluster.VAR_sessionId:
-            o2.setSessionId(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(ManagedCluster.VAR_sessionId + "=$" + num);
-            num++;
-            bParams.add(o2.sqlSessionId());
             break;
           case ManagedCluster.VAR_userKey:
             o2.setUserKey(jsonObject.getString(entityVar));
@@ -1227,6 +1159,15 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
             bSql.append(ManagedCluster.VAR_objectTitle + "=$" + num);
             num++;
             bParams.add(o2.sqlObjectTitle());
+            break;
+          case ManagedCluster.VAR_apiUrl:
+            o2.setApiUrl(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(ManagedCluster.VAR_apiUrl + "=$" + num);
+            num++;
+            bParams.add(o2.sqlApiUrl());
             break;
           case ManagedCluster.VAR_displayPage:
             o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -1301,11 +1242,9 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     return promise.future();
   }
 
-  public Future<ServiceResponse> response200POSTManagedCluster(ManagedCluster o) {
+  public Future<ServiceResponse> response200POSTManagedCluster(SiteRequest siteRequest, JsonObject json) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
-      SiteRequest siteRequest = o.getSiteRequest_();
-      JsonObject json = JsonObject.mapFrom(o);
       promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTManagedCluster failed. "), ex);
@@ -1323,88 +1262,47 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "DELETE"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listManagedCluster.getRequest().getRows());
-                  apiRequest.setNumFound(listManagedCluster.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listManagedCluster.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchManagedClusterList(siteRequest2, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listManagedCluster.getRequest().getRows());
+                apiRequest.setNumFound(listManagedCluster.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listManagedCluster.first());
+                apiRequest.setSolrId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEManagedCluster(apiRequest, listManagedCluster).onSuccess(e -> {
-                    response200DELETEManagedCluster(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deleteManagedCluster succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deleteManagedCluster failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEManagedCluster(apiRequest, listManagedCluster).onSuccess(e -> {
+                  response200DELETEManagedCluster(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deleteManagedCluster succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteManagedCluster failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deleteManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deleteManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deleteManagedCluster failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deleteManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deleteManagedCluster failed. "), ex);
@@ -1674,80 +1572,39 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "PUT"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-              apiRequest.setRows(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
-              varsManagedCluster(siteRequest).onSuccess(d -> {
-                listPUTImportManagedCluster(apiRequest, siteRequest).onSuccess(e -> {
-                  response200PUTImportManagedCluster(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("putimportManagedCluster succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
-                  }).onFailure(ex -> {
-                    LOG.error(String.format("putimportManagedCluster failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
-                  });
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            JsonArray jsonArray = Optional.ofNullable(siteRequest2.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+            apiRequest.setRows(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
+            varsManagedCluster(siteRequest2).onSuccess(d -> {
+              listPUTImportManagedCluster(apiRequest, siteRequest2).onSuccess(e -> {
+                response200PUTImportManagedCluster(siteRequest2).onSuccess(response -> {
+                  LOG.debug(String.format("putimportManagedCluster succeeded. "));
+                  eventHandler.handle(Future.succeededFuture(response));
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
+                  error(siteRequest2, eventHandler, ex);
                 });
               }).onFailure(ex -> {
                 LOG.error(String.format("putimportManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("putimportManagedCluster failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("putimportManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("putimportManagedCluster failed. "), ex);
@@ -1998,55 +1855,25 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
-                response200DownloadManagedCluster(listManagedCluster).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("downloadManagedCluster succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("downloadManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "Download", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "Download", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchManagedClusterList(siteRequest2, false, true, false, "GET").onSuccess(listManagedCluster -> {
+              response200DownloadManagedCluster(listManagedCluster).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("downloadManagedCluster succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("downloadManagedCluster failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("downloadManagedCluster failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("downloadManagedCluster failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("downloadManagedCluster failed. "), ex);
@@ -2104,6 +1931,45 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, ""), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/managed-cluster/ManagedClusterGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2195,55 +2061,26 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
-                response200SearchPageManagedCluster(listManagedCluster).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchpageManagedCluster succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchpageManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchManagedClusterList(siteRequest2, false, true, false, "GET").onSuccess(listManagedCluster -> {
+              response200SearchPageManagedCluster(listManagedCluster).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchpageManagedCluster succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchpageManagedCluster failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchpageManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchpageManagedCluster failed. "), ex);
@@ -2302,6 +2139,45 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/managed-cluster/ManagedClusterSearchPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/managed-cluster/ManagedClusterGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2380,19 +2256,24 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           searchpageManagedClusterPageInit(ctx, page, listManagedCluster, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateSearchPageManagedCluster(ctx, page, listManagedCluster, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200SearchPageManagedCluster failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateSearchPageManagedCluster(ctx, page, listManagedCluster, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200SearchPageManagedCluster failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200SearchPageManagedCluster failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2452,55 +2333,25 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, false, "GET").onSuccess(listManagedCluster -> {
-                response200EditPageManagedCluster(listManagedCluster).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("editpageManagedCluster succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("editpageManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchManagedClusterList(siteRequest2, false, true, false, "GET").onSuccess(listManagedCluster -> {
+              response200EditPageManagedCluster(listManagedCluster).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("editpageManagedCluster succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageManagedCluster failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("editpageManagedCluster failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("editpageManagedCluster failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("editpageManagedCluster failed. "), ex);
@@ -2559,6 +2410,45 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/managed-cluster/ManagedClusterEditPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/managed-cluster/ManagedClusterGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2637,19 +2527,24 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
           Promise<Void> promise1 = Promise.promise();
           editpageManagedClusterPageInit(ctx, page, listManagedCluster, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateEditPageManagedCluster(ctx, page, listManagedCluster, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200EditPageManagedCluster failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateEditPageManagedCluster(ctx, page, listManagedCluster, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200EditPageManagedCluster failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200EditPageManagedCluster failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2710,88 +2605,47 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String MANAGEDCLUSTER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("MANAGEDCLUSTER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ManagedCluster.CLASS_AUTH_RESOURCE, id, "DELETE"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "MANAGEDCLUSTER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchManagedClusterList(siteRequest, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listManagedCluster.getRequest().getRows());
-                  apiRequest.setNumFound(listManagedCluster.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listManagedCluster.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
+        ManagedCluster.authorizationManagedCluster(siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          ManagedCluster.authorizationScopesManagedCluster(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchManagedClusterList(siteRequest2, false, true, true, "DELETE").onSuccess(listManagedCluster -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listManagedCluster.getRequest().getRows());
+                apiRequest.setNumFound(listManagedCluster.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listManagedCluster.first());
+                apiRequest.setSolrId(Optional.ofNullable(listManagedCluster.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketManagedCluster", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEFilterManagedCluster(apiRequest, listManagedCluster).onSuccess(e -> {
-                    response200DELETEFilterManagedCluster(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deletefilterManagedCluster succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deletefilterManagedCluster failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEFilterManagedCluster(apiRequest, listManagedCluster).onSuccess(e -> {
+                  response200DELETEFilterManagedCluster(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deletefilterManagedCluster succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterManagedCluster failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deletefilterManagedCluster failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deletefilterManagedCluster failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deletefilterManagedCluster failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deletefilterManagedCluster failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deletefilterManagedCluster failed. "), ex);
@@ -3372,13 +3226,111 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
   public void searchManagedCluster2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<ManagedCluster> searchList) {
   }
 
+  public Future<JsonObject> upsertManagedCluster(ManagedCluster o, Boolean inheritPrimaryKey, Boolean patch) {
+    Promise<JsonObject> promise = Promise.promise();
+    try {
+      SiteRequest siteRequest = o.getSiteRequest_();
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+        promise.complete();
+      } else {
+        JsonObject json = o.getSiteRequest_().getJsonObject();
+
+        String old_id = ManagedCluster.staticJsonId(o.getId());
+        String new_id = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_id, patch));
+
+        String old_state = ManagedCluster.staticJsonState(o.getState());
+        String new_state = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_state, patch));
+
+        String old_consoleUrl = ManagedCluster.staticJsonConsoleUrl(o.getConsoleUrl());
+        String new_consoleUrl = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_consoleUrl, patch));
+
+        String old_created = ManagedCluster.staticJsonCreated(o.getCreated());
+        String new_created = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_created, patch));
+
+        Boolean old_archived = ManagedCluster.staticJsonArchived(o.getArchived());
+        Boolean new_archived = json.getBoolean(ManagedCluster.varJson(ManagedCluster.VAR_archived, patch));
+
+        String old_sessionId = ManagedCluster.staticJsonSessionId(o.getSessionId());
+        String new_sessionId = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_sessionId, patch));
+
+        String old_userKey = ManagedCluster.staticJsonUserKey(o.getUserKey());
+        String new_userKey = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_userKey, patch));
+
+        String old_objectTitle = ManagedCluster.staticJsonObjectTitle(o.getObjectTitle());
+        String new_objectTitle = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_objectTitle, patch));
+
+        String old_apiUrl = ManagedCluster.staticJsonApiUrl(o.getApiUrl());
+        String new_apiUrl = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_apiUrl, patch));
+
+        String old_displayPage = ManagedCluster.staticJsonDisplayPage(o.getDisplayPage());
+        String new_displayPage = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_displayPage, patch));
+
+        String old_editPage = ManagedCluster.staticJsonEditPage(o.getEditPage());
+        String new_editPage = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_editPage, patch));
+
+        String old_userPage = ManagedCluster.staticJsonUserPage(o.getUserPage());
+        String new_userPage = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_userPage, patch));
+
+        String old_download = ManagedCluster.staticJsonDownload(o.getDownload());
+        String new_download = json.getString(ManagedCluster.varJson(ManagedCluster.VAR_download, patch));
+
+        String id = Optional.ofNullable(Optional.ofNullable(new_id).orElse(old_id)).orElse(null);
+        // if(!Objects.equals(old_id, id))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_id, patch), id);
+        String state = Optional.ofNullable(Optional.ofNullable(new_state).orElse(old_state)).orElse(null);
+        // if(!Objects.equals(old_state, state))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_state, patch), state);
+        String consoleUrl = Optional.ofNullable(Optional.ofNullable(new_consoleUrl).orElse(old_consoleUrl)).orElse(null);
+        // if(!Objects.equals(old_consoleUrl, consoleUrl))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_consoleUrl, patch), consoleUrl);
+        String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
+        // if(!Objects.equals(old_created, created))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_created, patch), created);
+        Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
+        // if(!Objects.equals(old_archived, archived))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_archived, patch), archived);
+        String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
+        // if(!Objects.equals(old_sessionId, sessionId))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_sessionId, patch), sessionId);
+        String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
+        // if(!Objects.equals(old_userKey, userKey))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_userKey, patch), userKey);
+        String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
+        // if(!Objects.equals(old_objectTitle, objectTitle))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_objectTitle, patch), objectTitle);
+        String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
+        // if(!Objects.equals(old_apiUrl, apiUrl))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_apiUrl, patch), apiUrl);
+        String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
+        // if(!Objects.equals(old_displayPage, displayPage))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_displayPage, patch), displayPage);
+        String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
+        // if(!Objects.equals(old_editPage, editPage))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_editPage, patch), editPage);
+        String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
+        // if(!Objects.equals(old_userPage, userPage))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_userPage, patch), userPage);
+        String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
+        // if(!Objects.equals(old_download, download))
+          // json.put(ManagedCluster.varJson(ManagedCluster.VAR_download, patch), download);
+
+        promise.complete(json);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("upsertManagedCluster failed. "), ex);
+      promise.tryFail(ex);
+    }
+    return promise.future();
+  }
+
   public Future<Void> persistManagedCluster(ManagedCluster o, Boolean patch) {
     Promise<Void> promise = Promise.promise();
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT id, state, created, apiUrl, consoleUrl, archived, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM ManagedCluster WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT id, state, consoleUrl, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM ManagedCluster WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -3585,13 +3537,13 @@ public class ManagedClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
 
       o.persistForClass(ManagedCluster.VAR_id, ManagedCluster.staticSetId(siteRequest2, (String)result.get(ManagedCluster.VAR_id)));
       o.persistForClass(ManagedCluster.VAR_state, ManagedCluster.staticSetState(siteRequest2, (String)result.get(ManagedCluster.VAR_state)));
-      o.persistForClass(ManagedCluster.VAR_created, ManagedCluster.staticSetCreated(siteRequest2, (String)result.get(ManagedCluster.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
-      o.persistForClass(ManagedCluster.VAR_apiUrl, ManagedCluster.staticSetApiUrl(siteRequest2, (String)result.get(ManagedCluster.VAR_apiUrl)));
       o.persistForClass(ManagedCluster.VAR_consoleUrl, ManagedCluster.staticSetConsoleUrl(siteRequest2, (String)result.get(ManagedCluster.VAR_consoleUrl)));
+      o.persistForClass(ManagedCluster.VAR_created, ManagedCluster.staticSetCreated(siteRequest2, (String)result.get(ManagedCluster.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(ManagedCluster.VAR_archived, ManagedCluster.staticSetArchived(siteRequest2, (String)result.get(ManagedCluster.VAR_archived)));
       o.persistForClass(ManagedCluster.VAR_sessionId, ManagedCluster.staticSetSessionId(siteRequest2, (String)result.get(ManagedCluster.VAR_sessionId)));
       o.persistForClass(ManagedCluster.VAR_userKey, ManagedCluster.staticSetUserKey(siteRequest2, (String)result.get(ManagedCluster.VAR_userKey)));
       o.persistForClass(ManagedCluster.VAR_objectTitle, ManagedCluster.staticSetObjectTitle(siteRequest2, (String)result.get(ManagedCluster.VAR_objectTitle)));
+      o.persistForClass(ManagedCluster.VAR_apiUrl, ManagedCluster.staticSetApiUrl(siteRequest2, (String)result.get(ManagedCluster.VAR_apiUrl)));
       o.persistForClass(ManagedCluster.VAR_displayPage, ManagedCluster.staticSetDisplayPage(siteRequest2, (String)result.get(ManagedCluster.VAR_displayPage)));
       o.persistForClass(ManagedCluster.VAR_editPage, ManagedCluster.staticSetEditPage(siteRequest2, (String)result.get(ManagedCluster.VAR_editPage)));
       o.persistForClass(ManagedCluster.VAR_userPage, ManagedCluster.staticSetUserPage(siteRequest2, (String)result.get(ManagedCluster.VAR_userPage)));

@@ -38,7 +38,7 @@ import io.vertx.core.json.JsonObject;
  * Description: Learn how to become an AI Telemetry platform developer — Providing access control to observability metrics for cloud environments, ACM hubs, OpenShift Clusters, virtual machines, bare metal hardware, and cloud projects. 
 
  * AName: an AI Telemetry developer
- * Icon: <i class="fa-duotone fa-regular fa-chart-fft"></i>
+ * <i class="{{ FONTAWESOME_STYLE }} fa-chart-fft"></i>
  * Sort.asc: courseNum
  * 
  * SearchPageUri: /en-us/search/ai-telemetry-developer

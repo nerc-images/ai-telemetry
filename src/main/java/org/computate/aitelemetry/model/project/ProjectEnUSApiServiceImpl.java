@@ -2,6 +2,7 @@ package org.computate.aitelemetry.model.project;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.computate.i18n.I18n;
 import org.computate.search.tool.SearchTool;
+import org.computate.vertx.api.BaseApiServiceImpl;
 import org.computate.vertx.config.ComputateConfigKeys;
 import org.computate.vertx.request.ComputateSiteRequest;
 import org.computate.vertx.search.list.SearchList;
@@ -48,11 +51,13 @@ import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpResponseExpectation;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import jinjava.org.jsoup.Jsoup;
 import jinjava.org.jsoup.nodes.Document;
@@ -136,7 +141,9 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
   ////////////////////
 
   @Override
-  protected Future<Void> importModelFromFile(Vertx vertx, ComputateSiteRequest siteRequest, YamlProcessor yamlProcessor, String templatePath, String classCanonicalName, String classSimpleName, String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
+  protected Future<Void> importModelFromFile(String clientUuid, Vertx vertx, ComputateSiteRequest siteRequest,
+      YamlProcessor yamlProcessor, String templatePath, String classCanonicalName, String classSimpleName,
+      String classApiAddress, String classAuthResource, String varPageId, String varUserUrl, String varDownload) {
     Promise<Void> promise = Promise.promise();
     vertx.fileSystem().readFile(templatePath).onSuccess(buffer -> {
       try {
@@ -283,6 +290,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                   LOG.info(String.format("Successfully updated project %s with page template %s", "GET", projectName, templatePath));
                   promise.complete();
                 }).onFailure(ex -> {
+                  LOG.error(String.format("Failed to update project %s with page template %s", "GET", projectName, templatePath), ex);
                   promise.complete();
                 });
               } else {
@@ -340,160 +348,163 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                     ProjectEnUSApiServiceImpl.queryPodTerminating(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(podTerminatingResponse -> {
                       ProjectEnUSApiServiceImpl.queryInitPodRestarts(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(initPodRestartsResponse -> {
                         ProjectEnUSApiServiceImpl.queryPvcsFull(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(fullPvcsResponse -> {
-                          List<Future<?>> futures = new ArrayList<>();
-                          for(Integer i = 0; i < nonOpenShiftNamespacesTotal.size(); i++) {
-                            JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
-                            String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
-                            String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
-                            String namespacePhaseTerminating = namespaceResult.getJsonArray("value").getString(1);
-                            Boolean namespaceTerminating = "1".equals(namespacePhaseTerminating);
+                          try {
+                            List<Future<?>> futures = new ArrayList<>();
+                            for(Integer i = 0; i < nonOpenShiftNamespacesTotal.size(); i++) {
+                              JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
+                              String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
+                              String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
+                              String namespacePhaseTerminating = namespaceResult.getJsonArray("value").getString(1);
+                              Boolean namespaceTerminating = "1".equals(namespacePhaseTerminating);
 
-                            JsonObject coldfrontProject = coldfrontProjects.stream().map(o -> (JsonObject)o).filter(proj -> 
-                                Objects.equals(projectName, Optional.ofNullable(proj.getJsonObject("attributes")).map(attributes -> attributes.getString("Allocated Project ID")).orElse(null))
-                                ).findFirst().orElse(null);
+                              JsonObject coldfrontProject = coldfrontProjects.stream().map(o -> (JsonObject)o).filter(proj -> 
+                                  Objects.equals(projectName, Optional.ofNullable(proj.getJsonObject("attributes")).map(attributes -> attributes.getString("Allocated Project ID")).orElse(null))
+                                  ).findFirst().orElse(null);
 
-                            JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
-                                ).findFirst().orElse(null);
+                              JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
+                                  ).findFirst().orElse(null);
 
-                            JsonObject vllmResult = vllmTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).findFirst().orElse(null);
+                              JsonObject vllmResult = vllmTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).findFirst().orElse(null);
 
-                            List<JsonObject> podRestartsResults = podRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer podRestartCount = Optional.ofNullable(podRestartsResults).map(l -> l.size()).orElse(0);
-                            List<String> podsRestarting = Optional.ofNullable(podRestartsResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
+                              List<JsonObject> podRestartsResults = podRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer podRestartCount = Optional.ofNullable(podRestartsResults).map(l -> l.size()).orElse(0);
+                              List<String> podsRestarting = Optional.ofNullable(podRestartsResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
 
-                            List<JsonObject> podTerminatingResults = podTerminatingResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer podTerminatingCount = Optional.ofNullable(podTerminatingResults).map(l -> l.size()).orElse(0);
-                            List<String> podsTerminating = Optional.ofNullable(podTerminatingResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
+                              List<JsonObject> podTerminatingResults = podTerminatingResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer podTerminatingCount = Optional.ofNullable(podTerminatingResults).map(l -> l.size()).orElse(0);
+                              List<String> podsTerminating = Optional.ofNullable(podTerminatingResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
 
-                            List<JsonObject> initPodRestartsResults = initPodRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer initPodRestartCount = Optional.ofNullable(initPodRestartsResults).map(l -> l.size()).orElse(0);
-                            List<String> initPodsRestarting = Optional.ofNullable(initPodRestartsResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
-                            Integer totalPodsRestarting = podRestartCount + initPodRestartCount;
-                            Set<String> allPodsRestarting = new HashSet<>();
-                            allPodsRestarting.addAll(podsRestarting);
-                            allPodsRestarting.addAll(initPodsRestarting);
+                              List<JsonObject> initPodRestartsResults = initPodRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer initPodRestartCount = Optional.ofNullable(initPodRestartsResults).map(l -> l.size()).orElse(0);
+                              List<String> initPodsRestarting = Optional.ofNullable(initPodRestartsResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
+                              Integer totalPodsRestarting = podRestartCount + initPodRestartCount;
+                              Set<String> allPodsRestarting = new HashSet<>();
+                              allPodsRestarting.addAll(podsRestarting);
+                              allPodsRestarting.addAll(initPodsRestarting);
 
-                            List<JsonObject> fullPvcsResults = fullPvcsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer fullPvcsCount = Optional.ofNullable(fullPvcsResults).map(l -> l.size()).orElse(0);
-                            List<String> fullPvcs = Optional.ofNullable(fullPvcsResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("persistentvolumeclaim")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
+                              List<JsonObject> fullPvcsResults = fullPvcsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer fullPvcsCount = Optional.ofNullable(fullPvcsResults).map(l -> l.size()).orElse(0);
+                              List<String> fullPvcs = Optional.ofNullable(fullPvcsResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("persistentvolumeclaim")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
 
-                            if(projectName != null) {
-                              futures.add(Future.future(promise1 -> {
-                                try {
-                                  String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
-                                  String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
-                                  String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+                              if(projectName != null) {
+                                futures.add(Future.future(promise1 -> {
+                                  try {
+                                    String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
+                                    String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
+                                    String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
 
-                                  List<String> pageTemplatePaths = new ArrayList<>();
-                                  Path pagePath = Paths.get(config.getString(ComputateConfigKeys.TEMPLATE_PATH), "/en-us/user/project");
-                                  if(Files.exists(pagePath)) {
-                                    try(Stream<Path> stream = Files.walk(pagePath, 1, FileVisitOption.FOLLOW_LINKS)) {
-                                      stream.filter(Files::isRegularFile).filter(p -> 
-                                          p.getFileName().toString().equals(projectResource + ".htm")
-                                          || p.getFileName().toString().equals(projectResource + ".html")
-                                          || p.getFileName().toString().equals(projectResource + ".md")
-                                          ).forEach(path -> {
-                                        pageTemplatePaths.add(path.toAbsolutePath().toString());
-                                      });
+                                    List<String> pageTemplatePaths = new ArrayList<>();
+                                    Path pagePath = Paths.get(config.getString(ComputateConfigKeys.TEMPLATE_PATH), "/en-us/user/project");
+                                    if(Files.exists(pagePath)) {
+                                      try(Stream<Path> stream = Files.walk(pagePath, 1, FileVisitOption.FOLLOW_LINKS)) {
+                                        stream.filter(Files::isRegularFile).filter(p -> 
+                                            p.getFileName().toString().equals(projectResource + ".htm")
+                                            || p.getFileName().toString().equals(projectResource + ".html")
+                                            || p.getFileName().toString().equals(projectResource + ".md")
+                                            ).forEach(path -> {
+                                          pageTemplatePaths.add(path.toAbsolutePath().toString());
+                                        });
+                                      }
                                     }
-                                  }
-                                  String templatePath = pageTemplatePaths.stream().findFirst().orElse(null);
-                                  SiteRequest siteRequest = new SiteRequest();
-                                  siteRequest.setConfig(config);
-                                  siteRequest.setWebClient(webClient);
-                                  siteRequest.initDeepSiteRequest(siteRequest);
-                                  Jinjava jinjava = new Jinjava();
-                                  JsonObject body = new JsonObject();
-                                  if(coldfrontProject != null) {
-                                    body.put(Project.VAR_description, coldfrontProject.getJsonObject("project").getString("description").replace("\r\n", " ").replace("\n", " "));
-                                    body.put(Project.VAR_projectTitle, coldfrontProject.getJsonObject("project").getString("title").replace("\r\n", " ").replace("\n", " "));
-                                    body.put(Project.VAR_projectFieldOfScience, coldfrontProject.getJsonObject("project").getString("field_of_science").replace("\r\n", " ").replace("\n", " "));
-                                    body.put(Project.VAR_projectActive, "Active".equals(coldfrontProject.getString("status")));
-                                  }
-                                  importPageFromFile(body, vertx, config, jinjava, siteRequest, templatePath, Project.CLASS_SIMPLE_NAME).onSuccess(a -> {
-                                    body.put(Project.VAR_pk, projectResource);
-                                    body.put(Project.VAR_hubId, hubId);
-                                    body.put(Project.VAR_hubResource, hubResource);
-                                    body.put(Project.VAR_clusterName, clusterName);
-                                    body.put(Project.VAR_clusterResource, clusterResource);
-                                    body.put(Project.VAR_projectResource, projectResource);
-                                    body.put(Project.VAR_projectName, projectName);
-                                    body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
-                                    body.put(Project.VAR_vllmEnabled, vllmResult != null);
-                                    body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
-                                    body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
-                                    body.put(Project.VAR_podTerminatingCount, podTerminatingCount.toString());
-                                    body.put(Project.VAR_podsTerminating, new ArrayList<>(podsTerminating));
-                                    body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
-                                    body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
-                                    body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
+                                    String templatePath = pageTemplatePaths.stream().findFirst().orElse(null);
+                                    SiteRequest siteRequest = new SiteRequest();
+                                    siteRequest.setConfig(config);
+                                    siteRequest.setWebClient(webClient);
+                                    siteRequest.initDeepSiteRequest(siteRequest);
+                                    Jinjava jinjava = new Jinjava();
+                                    JsonObject body = new JsonObject();
+                                    if(coldfrontProject != null) {
+                                      body.put(Project.VAR_description, coldfrontProject.getJsonObject("project").getString("description").replace("\r\n", " ").replace("\n", " "));
+                                      body.put(Project.VAR_projectTitle, coldfrontProject.getJsonObject("project").getString("title").replace("\r\n", " ").replace("\n", " "));
+                                      body.put(Project.VAR_projectFieldOfScience, coldfrontProject.getJsonObject("project").getString("field_of_science").replace("\r\n", " ").replace("\n", " "));
+                                      body.put(Project.VAR_projectActive, "Active".equals(coldfrontProject.getString("status")));
+                                    }
+                                    importPageFromFile(body, vertx, config, jinjava, siteRequest, templatePath, Project.CLASS_SIMPLE_NAME).onSuccess(a -> {
+                                      body.put(Project.VAR_pk, projectResource);
+                                      body.put(Project.VAR_hubId, hubId);
+                                      body.put(Project.VAR_hubResource, hubResource);
+                                      body.put(Project.VAR_clusterName, clusterName);
+                                      body.put(Project.VAR_clusterResource, clusterResource);
+                                      body.put(Project.VAR_projectResource, projectResource);
+                                      body.put(Project.VAR_projectName, projectName);
+                                      body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
+                                      body.put(Project.VAR_vllmEnabled, vllmResult != null);
+                                      body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
+                                      body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
+                                      body.put(Project.VAR_podTerminatingCount, podTerminatingCount.toString());
+                                      body.put(Project.VAR_podsTerminating, new ArrayList<>(podsTerminating));
+                                      body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
+                                      body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
+                                      body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
 
-                                    JsonObject pageParams = new JsonObject();
-                                    pageParams.put("body", body);
-                                    pageParams.put("path", new JsonObject());
-                                    pageParams.put("cookie", new JsonObject());
-                                    pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
-                                    pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
-                                    JsonObject pageContext = new JsonObject().put("params", pageParams);
-                                    JsonObject pageRequest = new JsonObject().put("context", pageContext);
+                                      JsonObject pageParams = new JsonObject();
+                                      pageParams.put("body", body);
+                                      pageParams.put("path", new JsonObject());
+                                      pageParams.put("cookie", new JsonObject());
+                                      pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
+                                      pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
+                                      JsonObject pageContext = new JsonObject().put("params", pageParams);
+                                      JsonObject pageRequest = new JsonObject().put("context", pageContext);
 
-                                    vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
-                                        .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
-                                        .addHeader("action", String.format("putimport%sFuture", classSimpleName))
-                                        ).onSuccess(message -> {
-                                      ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
-                                        LOG.info(String.format("Imported %s project", projectResource));
-                                        promise1.complete();
+                                      vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
+                                          .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
+                                          .addHeader("action", String.format("putimport%sFuture", classSimpleName))
+                                          ).onSuccess(message -> {
+                                        ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
+                                          LOG.info(String.format("Imported %s project", projectResource));
+                                          promise1.complete();
+                                        }).onFailure(ex -> {
+                                          promise1.fail(ex);
+                                        });
                                       }).onFailure(ex -> {
                                         LOG.error(String.format(importDataFail, classSimpleName), ex);
                                         promise1.fail(ex);
                                       });
                                     }).onFailure(ex -> {
-                                      LOG.error(String.format(importDataFail, classSimpleName), ex);
                                       promise1.fail(ex);
                                     });
-                                  }).onFailure(ex -> {
+                                  } catch(Exception ex) {
                                     LOG.error(String.format(importDataFail, classSimpleName), ex);
                                     promise1.fail(ex);
-                                  });
-                                } catch(Exception ex) {
-                                  LOG.error(String.format(importDataFail, classSimpleName), ex);
-                                  promise1.fail(ex);
-                                }
-                              }));
+                                  }
+                                }));
+                              }
                             }
-                          }
-                          Future.all(futures).onSuccess(b -> {
-                            promise.complete();
-                          }).onFailure(ex -> {
+                            Future.all(futures).onSuccess(b -> {
+                              promise.complete();
+                            }).onFailure(ex -> {
+                              LOG.error(String.format(importDataFail, classSimpleName), ex);
+                              promise.fail(ex);
+                            });
+                          } catch(Throwable ex) {
                             LOG.error(String.format(importDataFail, classSimpleName), ex);
                             promise.fail(ex);
-                          });
+                          }
                         }).onFailure(ex -> {
                           LOG.error(String.format(importDataFail, classSimpleName), ex);
                           promise.fail(ex);
@@ -687,38 +698,35 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
   public static Future<Void> importProjectAuth(Vertx vertx, WebClient webClient, JsonObject config, String hubId, String classSimpleName, String classApiAddress, JsonObject body) {
     Promise<Void> promise = Promise.promise();
     try {
-      String clusterName = body.getString(Project.VAR_clusterName);
-      String projectName = body.getString(Project.VAR_projectName);
-      String groupName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String policyId = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String policyName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String resourceName = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String permissionName = String.format("%s-%s-%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String resourceDisplayName = String.format("%s %s %s %s %s %s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
-      String authAdminUsername = config.getString(ComputateConfigKeys.AUTH_ADMIN_USERNAME);
-      String authAdminPassword = config.getString(ComputateConfigKeys.AUTH_ADMIN_PASSWORD);
       Integer authPort = Integer.parseInt(config.getString(ComputateConfigKeys.AUTH_PORT));
       String authHostName = config.getString(ComputateConfigKeys.AUTH_HOST_NAME);
       Boolean authSsl = Boolean.parseBoolean(config.getString(ComputateConfigKeys.AUTH_SSL));
-      String authRealm = config.getString(ComputateConfigKeys.AUTH_REALM);
-      String authClient = config.getString(ComputateConfigKeys.AUTH_CLIENT);
-      webClient.post(authPort, authHostName, "/realms/master/protocol/openid-connect/token").ssl(authSsl)
-          .sendForm(MultiMap.caseInsensitiveMultiMap()
-              .add("username", authAdminUsername)
-              .add("password", authAdminPassword)
-              .add("grant_type", "password")
-              .add("client_id", "admin-cli")
-              ).onSuccess(tokenResponse -> {
-        try {
-          String authToken = tokenResponse.bodyAsJsonObject().getString("access_token");
-          webClient.post(authPort, authHostName, String.format("/admin/realms/%s/groups", authRealm)).ssl(authSsl)
-              .putHeader("Authorization", String.format("Bearer %s", authToken))
+      String realmName = config.getString(ComputateConfigKeys.AUTH_REALM);
+      String clientId = config.getString(ComputateConfigKeys.AUTH_CLIENT);
+      String clusterName = body.getString(Project.VAR_clusterName);
+      String projectName = body.getString(Project.VAR_projectName);
+      String groupName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String policyId = UUID.nameUUIDFromBytes(String.format("%s-group-%s", realmName, groupName).getBytes(StandardCharsets.UTF_8)).toString();
+      String policyName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String resourceName = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String permissionName = String.format("%s-%s-%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String classAuthResource = Project.CLASS_AUTH_RESOURCE;
+      String[] defaultScopes = new String[] { "GET", "DELETE", "PATCH", "POST", "SuperAdmin", "Admin", "GETManager", "PUT" };
+      String[] scopes = new String[] { "GET" };
+      JsonArray authScopesJson = new JsonArray();
+      for(String scope : scopes) {
+        authScopesJson.add(String.format("%s-%s", realmName, scope));
+      }
+      BaseApiServiceImpl.obtainKeycloakAdminTokenStatic(config, webClient).onSuccess(adminToken -> {
+        BaseApiServiceImpl.obtainClientUuidStatic(config, webClient, adminToken, realmName, clientId).onSuccess(clientUuid -> {
+          webClient.post(authPort, authHostName, String.format("/admin/realms/%s/groups", realmName)).ssl(authSsl)
+              .putHeader("Authorization", String.format("Bearer %s", adminToken))
               .sendJson(new JsonObject().put("name", groupName))
               .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
               .onSuccess(createGroupResponse -> {
             try {
-              webClient.get(authPort, authHostName, String.format("/admin/realms/%s/groups?exact=true&global=true&first=0&max=1&search=%s", authRealm, URLEncoder.encode(groupName, "UTF-8"))).ssl(authSsl)
-                  .putHeader("Authorization", String.format("Bearer %s", authToken))
+              webClient.get(authPort, authHostName, String.format("/admin/realms/%s/groups?exact=true&global=true&first=0&max=1&search=%s", realmName, URLEncoder.encode(groupName, "UTF-8"))).ssl(authSsl)
+                  .putHeader("Authorization", String.format("Bearer %s", adminToken))
                   .send()
                   .expecting(HttpResponseExpectation.SC_OK)
                   .onSuccess(groupsResponse -> {
@@ -727,128 +735,131 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                   JsonObject group = groups.stream().findFirst().map(o -> (JsonObject)o).orElse(null);
                   if(group != null) {
                     String groupId = group.getString("id");
-                    webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/policy/group", authRealm, authClient)).ssl(authSsl)
-                        .putHeader("Authorization", String.format("Bearer %s", authToken))
+                    webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/policy/group", realmName, clientUuid)).ssl(authSsl)
+                        .putHeader("Authorization", String.format("Bearer %s", adminToken))
                         .sendJson(new JsonObject().put("id", policyId).put("name", policyName).put("description", String.format("%s group", groupName)).put("groups", new JsonArray().add(groupId)))
                         .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
                         .onSuccess(createPolicyResponse -> {
-                      webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource", authRealm, authClient)).ssl(authSsl)
-                          .putHeader("Authorization", String.format("Bearer %s", authToken))
+                      webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource", realmName, clientUuid)).ssl(authSsl)
+                          .putHeader("Authorization", String.format("Bearer %s", adminToken))
                           .sendJson(new JsonObject()
                               .put("name", resourceName)
-                              .put("displayName", resourceDisplayName)
-                              .put("scopes", new JsonArray().add("GET").add("PATCH"))
+                              .put("displayName", resourceName)
+                              .put("scopes", defaultScopes)
                               )
                           .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
                           .onSuccess(createResourceResponse -> {
-                        try {
-                          webClient.get(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource?first=0&max=1&permission=false&name=%s", authRealm, authClient, URLEncoder.encode(resourceName, "UTF-8"))).ssl(authSsl)
-                              .putHeader("Authorization", String.format("Bearer %s", authToken))
-                              .send()
-                              .expecting(HttpResponseExpectation.SC_OK)
-                              .onSuccess(resourceResponse -> {
-                            try {
-                              JsonArray resourceBody = resourceResponse.bodyAsJsonArray();
-                              JsonObject resource = resourceBody.getJsonObject(0);
-                              String resourceId = resource.getString("_id");
-                              SiteRequest siteRequest = new SiteRequest();
-                              siteRequest.setConfig(config);
-                              siteRequest.setWebClient(webClient);
-                              siteRequest.initDeepSiteRequest(siteRequest);
-                              siteRequest.addScopes("GET");
-                              SearchList<Project> searchList = new SearchList<Project>();
-                              searchList.setStore(true);
-                              searchList.q("*:*");
-                              searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_hubId), SearchTool.escapeQueryChars(hubId)));
-                              searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_clusterName), SearchTool.escapeQueryChars(clusterName)));
-                              searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_projectName), SearchTool.escapeQueryChars(projectName)));
-                              searchList.setC(Project.class);
-                              searchList.setSiteRequest_(siteRequest);
-                              searchList.promiseDeepForClass(siteRequest).onSuccess(projectList -> {
-                                Project first = projectList.getList().stream().findFirst().orElse(null);
-                                if(first != null) {
-                                  JsonArray policies = new JsonArray();
-                                  policies.add(policyName);
-                                  String tenantResource = first.getTenantResource();
-                                  if(tenantResource != null) {
-                                    String tenantPolicyName = String.format("%s-GET", tenantResource);
-                                    policies.add(tenantPolicyName);
-                                  }
-
-                                  webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/permission/scope", authRealm, authClient)).ssl(authSsl)
-                                      .putHeader("Authorization", String.format("Bearer %s", authToken))
-                                      .sendJson(new JsonObject()
-                                          .put("name", permissionName)
-                                          .put("description", String.format("GET %s", groupName))
-                                          .put("decisionStrategy", "AFFIRMATIVE")
-                                          .put("resources", new JsonArray().add(resourceId))
-                                          .put("policies", policies)
-                                          .put("scopes", new JsonArray().add(String.format("%s-GET", authRealm)))
-                                          )
-                                      .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
-                                      .onSuccess(createPermissionResponse -> {
-                                    LOG.info(String.format("Successfully granted %s access to %s", "GET", resourceName));
-                                    promise.complete();
-                                  }).onFailure(ex -> {
-                                    LOG.error(String.format("Failed to create an auth permission %s for resource %s with policies %s. ", permissionName, resourceName, policies), ex);
-                                    promise.fail(ex);
-                                  });
-                                } else {
-                                  promise.complete();
+                        webClient.get(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource?first=0&max=1&deep=false&name=%s", realmName, clientUuid, urlEncode(classAuthResource))).ssl(authSsl)
+                            .putHeader("Authorization", String.format("Bearer %s", adminToken))
+                            .send()
+                            .expecting(HttpResponseExpectation.SC_OK)
+                            .onSuccess(getResourceResponse -> {
+                          try {
+                            String resourceId = getResourceResponse.bodyAsJsonArray().stream().map(r -> (JsonObject)r).findFirst().map(r -> r.getString("_id")).orElse(null);
+                            SiteRequest siteRequest = new SiteRequest();
+                            siteRequest.setConfig(config);
+                            siteRequest.setWebClient(webClient);
+                            siteRequest.initDeepSiteRequest(siteRequest);
+                            siteRequest.addScopes("GET");
+                            SearchList<Project> searchList = new SearchList<Project>();
+                            searchList.setStore(true);
+                            searchList.q("*:*");
+                            searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_hubId), SearchTool.escapeQueryChars(hubId)));
+                            searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_clusterName), SearchTool.escapeQueryChars(clusterName)));
+                            searchList.fq(String.format("%s:%s", Project.varIndexedProject(Project.VAR_projectName), SearchTool.escapeQueryChars(projectName)));
+                            searchList.setC(Project.class);
+                            searchList.setSiteRequest_(siteRequest);
+                            searchList.promiseDeepForClass(siteRequest).onSuccess(projectList -> {
+                              Project first = projectList.getList().stream().findFirst().orElse(null);
+                              if(first != null) {
+                                JsonArray policies = new JsonArray();
+                                policies.add(policyId);
+                                String tenantResource = first.getTenantResource();
+                                if(tenantResource != null) {
+                                  String tenantPolicyName = String.format("%s-GET", tenantResource);
+                                  String tenantPolicyId = UUID.nameUUIDFromBytes(String.format("%s-group-%s", realmName, tenantPolicyName).getBytes(StandardCharsets.UTF_8)).toString();
+                                  policies.add(tenantPolicyId);
                                 }
-                              }).onFailure(ex -> {
-                                LOG.error(String.format("Failed to query project %s. ", projectName), ex);
-                                promise.fail(ex);
-                              });
-                            } catch(Throwable ex) {
-                              LOG.error("Failed to set up fine-grained resource permissions. ", ex);
+
+                                webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/permission/scope", realmName, clientUuid)).ssl(authSsl)
+                                    .putHeader("Authorization", String.format("Bearer %s", adminToken))
+                                    .sendJson(new JsonObject()
+                                        .put("name", permissionName)
+                                        .put("description", String.format("GET %s", groupName))
+                                        .put("decisionStrategy", "AFFIRMATIVE")
+                                        .put("resources", new JsonArray().add(resourceId))
+                                        .put("policies", policies)
+                                        .put("scopes", authScopesJson)
+                                        )
+                                    .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))
+                                    .onComplete(createPermissionResult -> {
+                                  if(createPermissionResult.succeeded()) {
+                                    HttpResponse<Buffer> createPermissionResponse = createPermissionResult.result();
+                                    if(createPermissionResponse.statusCode() == 201 || createPermissionResponse.statusCode() == 409) {
+                                      LOG.info(String.format("Successfully granted %s permission to %s policy to %s resource", authScopesJson.encode(), policyName, classAuthResource));
+                                      promise.complete();
+                                    } else {
+                                      String message = String.format("Failed to grant %s permission to %s policy to %s resource because a %s error occured: %s", authScopesJson.encode(), policyName, classAuthResource, createPermissionResponse.statusCode(), createPermissionResponse.bodyAsString());
+                                      RuntimeException ex = new RuntimeException(message);
+                                      LOG.error(message, ex);
+                                      promise.fail(ex);
+                                    }
+                                  } else {
+                                    String message = String.format("Failed to grant %s permission to %s policy to %s resource because an error occured: %s", authScopesJson.encode(), policyName, classAuthResource, createPermissionResult.cause().getMessage());
+                                    RuntimeException ex = new RuntimeException(message);
+                                    LOG.error(message, ex);
+                                    promise.fail(ex);
+                                  }
+                                }).onFailure(ex -> {
+                                  LOG.error(String.format("Failed to grant %s permission to %s policy to %s resource", authScopesJson.encode(), policyName, classAuthResource), ex);
+                                  promise.fail(ex);
+                                });
+                              } else {
+                                promise.complete();
+                              }
+                            }).onFailure(ex -> {
+                              LOG.error(String.format("Failed to query project %s. ", projectName), ex);
                               promise.fail(ex);
-                            }
-                          }).onFailure(ex -> {
-                            LOG.error(String.format("Failed to query the group %s. ", groupName), ex);
+                            });
+                          } catch(Throwable ex) {
+                            LOG.error("Failed to set up fine-grained resource permissions. ", ex);
                             promise.fail(ex);
-                          });
-                        } catch(Throwable ex) {
-                          LOG.error(String.format("Failed to create an auth permission for resource %s. ", resourceName), ex);
+                          }
+                        }).onFailure(ex -> {
+                          LOG.error(String.format("Failed to query auth resource %s", classAuthResource), ex);
                           promise.fail(ex);
-                        }
+                        });
                       }).onFailure(ex -> {
-                        LOG.error(String.format("Failed to create an auth resource %s. ", resourceName), ex);
+                        LOG.error(String.format("Failed to create %s auth resource %s", authScopesJson.encode(), classAuthResource), ex);
                         promise.fail(ex);
                       });
                     }).onFailure(ex -> {
-                      LOG.error(String.format("Failed to create an auth policy for group %s. ", groupName), ex);
+                      LOG.error(String.format("Failed to create auth policy %s for resource %s", policyName, classAuthResource), ex);
                       promise.fail(ex);
                     });
                   } else {
-                    Throwable ex = new RuntimeException(String.format("Failed to find group %s", groupName));
+                    Throwable ex = new RuntimeException(String.format("Failed to find group %s for resource %s", groupName, classAuthResource));
                     LOG.error(ex.getMessage(), ex);
                     promise.fail(ex);
                   }
                 } catch(Throwable ex) {
-                  LOG.error("Failed to set up fine-grained resource permissions. ", ex);
+                  LOG.error(String.format("Failed to set up fine-grained resource permissions for resource %s. ", classAuthResource), ex);
                   promise.fail(ex);
                 }
               }).onFailure(ex -> {
-                LOG.error(String.format("Failed to query the group %s. ", groupName), ex);
+                LOG.error(String.format("Failed to query the group %s for resource %s. ", groupName, classAuthResource), ex);
                 promise.fail(ex);
               });
             } catch(Throwable ex) {
-              LOG.error("Failed to set up fine-grained resource permissions. ", ex);
+              LOG.error(String.format("Failed to set up fine-grained resource permissions for resource %s. ", classAuthResource), ex);
               promise.fail(ex);
             }
           }).onFailure(ex -> {
-            LOG.error(String.format("Failed to create the group %s. ", groupName), ex);
+            LOG.error(String.format("Failed to create the group %s for resource %s. ", groupName, classAuthResource), ex);
             promise.fail(ex);
           });
-        } catch(Throwable ex) {
-          LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for group %s", groupName), ex);
-          promise.fail(ex);
-        }
-      }).onFailure(ex -> {
-        LOG.error(String.format("Failed to get an admin token while creating fine-grained resource permissions for group %s", groupName), ex);
-        promise.fail(ex);
-      });
+        }).onFailure(ex -> promise.fail(ex));
+      }).onFailure(ex -> promise.fail(ex));
     } catch(Throwable ex) {
       LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for %s", classSimpleName), ex);
       promise.fail(ex);

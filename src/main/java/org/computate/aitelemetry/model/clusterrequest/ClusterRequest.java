@@ -8,7 +8,7 @@ import org.computate.aitelemetry.model.BaseModel;
  * Order: 12
  * Description: An OpenShift cluster request
  * AName: an OpenShift cluster request
- * Icon: <i class="fa-regular fa-server"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-server"></i>
  *
  * SearchPageUri: /en-us/search/cluster-request
  * EditPageUri: /en-us/edit/cluster-request/{name}

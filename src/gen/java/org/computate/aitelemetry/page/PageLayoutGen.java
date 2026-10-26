@@ -1,5 +1,35 @@
 package org.computate.aitelemetry.page;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.measure.Quantity;
+import javax.measure.quantity.Angle;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.response.solr.SolrResponse;
+import org.computate.search.tool.SearchTool;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Session;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.client.WebClient;
 import org.computate.aitelemetry.request.SiteRequest;
 import java.lang.Object;
 import org.computate.aitelemetry.model.BaseModel;
@@ -24,6 +54,7 @@ import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
 import java.math.MathContext;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.text.NumberFormat;
@@ -59,14 +90,34 @@ import java.time.format.DateTimeFormatter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.math.BigDecimal;
+import javax.measure.Quantity;
+import javax.measure.quantity.Angle;
+import org.computate.vertx.tool.VertxTool;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import java.util.stream.Collectors;
+import io.vertx.core.json.Json;
+import io.vertx.pgclient.data.Point;
+import tech.units.indriya.format.SimpleUnitFormat;
+import org.computate.vertx.tool.GeoTool;
+import org.computate.vertx.serialize.unit.QuantitySerializer;
+import org.computate.vertx.serialize.unit.QuantityDeserializer;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 
 /**
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
- * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these PageLayout objects in a RESTful API. 
+ * <li><p>
+ *   You can add a class comment <kbd><b>Api: true</b></kbd> if you wish to GET, POST, PATCH or PUT these  objects in a RESTful API. 
+ * </p>
  * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class PageLayoutGen into the class PageLayout. 
  * </li>
  * <h3>About the PageLayout class and it's generated class PageLayoutGen&lt;Object&gt;: </h3>extends PageLayoutGen
@@ -85,7 +136,9 @@ import io.vertx.core.Future;
  * The generated <code>class PageLayoutGen extends Object</code> which means that PageLayout extends PageLayoutGen which extends Object. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
- * <h2>Api: true</h2>
+ * <h2>
+ *   Api: true
+ * </h2>
  * <h2>ApiTag.enUS: true</h2>
  * <h2>ApiUri.enUS: null</h2>
  * <h2>Color: null</h2>
@@ -93,13 +146,36 @@ import io.vertx.core.Future;
  * <h2>{@inheritDoc}</h2>
  * <p>By adding a class comment "{@inheritDoc}", the PageLayout class will inherit the helpful inherited class comments from the super class PageLayoutGen. 
  * </p>
- * <h2>Rows: null</h2>
+ * <h2>
+ *   Rows: 10
+ * </h2>
+ * <p>This class contains a comment <kbd><b>Rows: 10</b></kbd>, which means the  API will return a default of 10 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the  API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <h2>
+ *   Order: 1
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Order: 1</b></kbd>, 
+ *   which means this class will be sorted by the given number 1 
+ *   ascending when code that relates to multiple classes at the same time is generated. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Order: </b></kbd>, followed by an Integer to sort this class compared to other classes in the project. 
+ *   There is code that is generated that queries several classes and writes code for each class in a sequence. 
+ *   The <kbd><b>Order</b></kbd> comment allows you to define which order the class code is generated. 
+ * </p>
  * <h2>Model: true</h2>
  * <h2>Page: true</h2>
  * <h2>SuperPage.enUS: null</h2>
  * <h2>Promise: true</h2>
  * <p>
- *   This class contains a comment <b>"Promise: true"</b>
+ *   This class contains a comment <kbd><b>Promise: true</b></kbd>
  *   Sometimes a Java class must be initialized asynchronously when it involves calling a blocking API. 
  *   This means that the PageLayout Java class has promiseDeep methods which must be initialized asynchronously as a Vert.x Promise  instead of initDeep methods which are a simple non-asynchronous method. 
  * </p>
@@ -124,19 +200,19 @@ import io.vertx.core.Future;
  * <p>
  * Delete the class PageLayout in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.PageLayout&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.PageLayout&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the package org.computate.aitelemetry.page in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.page&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.page&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * Generated: true
@@ -3992,148 +4068,217 @@ public abstract class PageLayoutGen<DEV> extends Object {
     return PageLayout.staticSearchDefaultPivotMinCount(siteRequest_, PageLayout.staticSetDefaultPivotMinCount(siteRequest_, o)).toString();
   }
 
-	//////////////////////////
-  // DEFAULT_MAP_LOCATION //
-	//////////////////////////
+	//////////////
+  // location //
+	//////////////
 
 
   /**
-   *  The entity DEFAULT_MAP_LOCATION
+   *  The entity location
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonDeserialize(using = JsonObjectDeserializer.class)
   @JsonInclude(Include.NON_NULL)
-  protected JsonObject DEFAULT_MAP_LOCATION;
+  protected JsonObject location;
 
   /**
-   * <br> The entity DEFAULT_MAP_LOCATION
+   * <br> The entity location
    *  is defined as null before being initialized. 
-   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.PageLayout&fq=entiteVar_enUS_indexed_string:DEFAULT_MAP_LOCATION">Find the entity DEFAULT_MAP_LOCATION in Solr</a>
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.PageLayout&fq=entiteVar_enUS_indexed_string:location">Find the entity location in Solr</a>
    * <br>
    * @param w is for wrapping a value to assign to this entity during initialization. 
    **/
-  protected abstract void _DEFAULT_MAP_LOCATION(Wrap<JsonObject> w);
+  protected abstract void _location(Wrap<JsonObject> w);
 
-  public JsonObject getDEFAULT_MAP_LOCATION() {
-    return DEFAULT_MAP_LOCATION;
+  public JsonObject getLocation() {
+    return location;
   }
 
-  public void setDEFAULT_MAP_LOCATION(JsonObject DEFAULT_MAP_LOCATION) {
-    this.DEFAULT_MAP_LOCATION = DEFAULT_MAP_LOCATION;
+  public void setLocation(JsonObject location) {
+    this.location = location;
   }
   @JsonIgnore
-  public void setDEFAULT_MAP_LOCATION(String o) {
-    this.DEFAULT_MAP_LOCATION = PageLayout.staticSetDEFAULT_MAP_LOCATION(siteRequest_, o);
+  public void setLocation(String o) {
+    this.location = PageLayout.staticSetLocation(siteRequest_, o);
   }
-  public static JsonObject staticSetDEFAULT_MAP_LOCATION(SiteRequest siteRequest_, String o) {
+  public static JsonObject staticSetLocation(SiteRequest siteRequest_, String o) {
     if(o != null) {
         return new JsonObject(o);
     }
     return null;
   }
-  protected PageLayout DEFAULT_MAP_LOCATIONInit() {
-    Wrap<JsonObject> DEFAULT_MAP_LOCATIONWrap = new Wrap<JsonObject>().var("DEFAULT_MAP_LOCATION");
-    if(DEFAULT_MAP_LOCATION == null) {
-      _DEFAULT_MAP_LOCATION(DEFAULT_MAP_LOCATIONWrap);
-      Optional.ofNullable(DEFAULT_MAP_LOCATIONWrap.getO()).ifPresent(o -> {
-        setDEFAULT_MAP_LOCATION(o);
+  protected PageLayout locationInit() {
+    Wrap<JsonObject> locationWrap = new Wrap<JsonObject>().var("location");
+    if(location == null) {
+      _location(locationWrap);
+      Optional.ofNullable(locationWrap.getO()).ifPresent(o -> {
+        setLocation(o);
       });
     }
     return (PageLayout)this;
   }
 
-  public static String staticSearchDEFAULT_MAP_LOCATION(SiteRequest siteRequest_, JsonObject o) {
+  public static String staticSearchLocation(SiteRequest siteRequest_, JsonObject o) {
     return o.toString();
   }
 
-  public static String staticSearchStrDEFAULT_MAP_LOCATION(SiteRequest siteRequest_, String o) {
+  public static String staticSearchStrLocation(SiteRequest siteRequest_, String o) {
     return o == null ? null : o.toString();
   }
 
-  public static String staticSearchFqDEFAULT_MAP_LOCATION(SiteRequest siteRequest_, String o) {
-    return PageLayout.staticSearchDEFAULT_MAP_LOCATION(siteRequest_, PageLayout.staticSetDEFAULT_MAP_LOCATION(siteRequest_, o)).toString();
+  public static String staticSearchFqLocation(SiteRequest siteRequest_, String o) {
+    return PageLayout.staticSearchLocation(siteRequest_, PageLayout.staticSetLocation(siteRequest_, o)).toString();
   }
 
-	//////////////////////
-  // DEFAULT_MAP_ZOOM //
-	//////////////////////
+	//////////
+  // zoom //
+	//////////
 
 
   /**
-   *  The entity DEFAULT_MAP_ZOOM
+   *  The entity zoom
    *	 is defined as null before being initialized. 
    */
   @JsonProperty
   @JsonSerialize(using = ToStringSerializer.class)
   @JsonInclude(Include.NON_NULL)
-  protected BigDecimal DEFAULT_MAP_ZOOM;
+  protected BigDecimal zoom;
 
   /**
-   * <br> The entity DEFAULT_MAP_ZOOM
+   * <br> The entity zoom
    *  is defined as null before being initialized. 
-   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.PageLayout&fq=entiteVar_enUS_indexed_string:DEFAULT_MAP_ZOOM">Find the entity DEFAULT_MAP_ZOOM in Solr</a>
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.PageLayout&fq=entiteVar_enUS_indexed_string:zoom">Find the entity zoom in Solr</a>
    * <br>
    * @param w is for wrapping a value to assign to this entity during initialization. 
    **/
-  protected abstract void _DEFAULT_MAP_ZOOM(Wrap<BigDecimal> w);
+  protected abstract void _zoom(Wrap<BigDecimal> w);
 
-  public BigDecimal getDEFAULT_MAP_ZOOM() {
-    return DEFAULT_MAP_ZOOM;
+  public BigDecimal getZoom() {
+    return zoom;
   }
 
-  public void setDEFAULT_MAP_ZOOM(BigDecimal DEFAULT_MAP_ZOOM) {
-    this.DEFAULT_MAP_ZOOM = DEFAULT_MAP_ZOOM;
+  public void setZoom(BigDecimal zoom) {
+    this.zoom = zoom;
   }
   @JsonIgnore
-  public void setDEFAULT_MAP_ZOOM(String o) {
-    this.DEFAULT_MAP_ZOOM = PageLayout.staticSetDEFAULT_MAP_ZOOM(siteRequest_, o);
+  public void setZoom(String o) {
+    this.zoom = PageLayout.staticSetZoom(siteRequest_, o);
   }
-  public static Integer staticScaleDEFAULT_MAP_ZOOM() {
+  public static Integer staticScaleZoom() {
     return 2;
   }
-  public static MathContext staticMathContextDEFAULT_MAP_ZOOM() {
+  public static MathContext staticMathContextZoom() {
     return new MathContext(0, RoundingMode.valueOf("HALF_UP"));
   }
-  public static BigDecimal staticSetDEFAULT_MAP_ZOOM(SiteRequest siteRequest_, String o) {
+  public static BigDecimal staticSetZoom(SiteRequest siteRequest_, String o) {
     o = StringUtils.removeAll(o, "[^\\d\\.-]");
     if(NumberUtils.isParsable(o))
-      return new BigDecimal(o, staticMathContextDEFAULT_MAP_ZOOM()).setScale(staticScaleDEFAULT_MAP_ZOOM(), RoundingMode.valueOf("HALF_UP"));
+      return new BigDecimal(o, staticMathContextZoom()).setScale(staticScaleZoom(), RoundingMode.valueOf("HALF_UP"));
     return null;
   }
   @JsonIgnore
-  public void setDEFAULT_MAP_ZOOM(Double o) {
-    setDEFAULT_MAP_ZOOM(new BigDecimal(o, staticMathContextDEFAULT_MAP_ZOOM()).setScale(staticScaleDEFAULT_MAP_ZOOM(), RoundingMode.valueOf("HALF_UP")));
+  public void setZoom(Double o) {
+    setZoom(new BigDecimal(o, staticMathContextZoom()).setScale(staticScaleZoom(), RoundingMode.valueOf("HALF_UP")));
   }
   @JsonIgnore
-  public void setDEFAULT_MAP_ZOOM(Integer o) {
-    setDEFAULT_MAP_ZOOM(new BigDecimal(o, staticMathContextDEFAULT_MAP_ZOOM()).setScale(staticScaleDEFAULT_MAP_ZOOM(), RoundingMode.valueOf("HALF_UP")));
+  public void setZoom(Integer o) {
+    setZoom(new BigDecimal(o, staticMathContextZoom()).setScale(staticScaleZoom(), RoundingMode.valueOf("HALF_UP")));
   }
   @JsonIgnore
-  public void setDEFAULT_MAP_ZOOM(Number o) {
-    setDEFAULT_MAP_ZOOM(new BigDecimal(o.doubleValue(), staticMathContextDEFAULT_MAP_ZOOM()).setScale(staticScaleDEFAULT_MAP_ZOOM(), RoundingMode.valueOf("HALF_UP")));
+  public void setZoom(Number o) {
+    setZoom(new BigDecimal(o.doubleValue(), staticMathContextZoom()).setScale(staticScaleZoom(), RoundingMode.valueOf("HALF_UP")));
   }
-  protected PageLayout DEFAULT_MAP_ZOOMInit() {
-    Wrap<BigDecimal> DEFAULT_MAP_ZOOMWrap = new Wrap<BigDecimal>().var("DEFAULT_MAP_ZOOM");
-    if(DEFAULT_MAP_ZOOM == null) {
-      _DEFAULT_MAP_ZOOM(DEFAULT_MAP_ZOOMWrap);
-      Optional.ofNullable(DEFAULT_MAP_ZOOMWrap.getO()).ifPresent(o -> {
-        setDEFAULT_MAP_ZOOM(o);
+  protected PageLayout zoomInit() {
+    Wrap<BigDecimal> zoomWrap = new Wrap<BigDecimal>().var("zoom");
+    if(zoom == null) {
+      _zoom(zoomWrap);
+      Optional.ofNullable(zoomWrap.getO()).ifPresent(o -> {
+        setZoom(o);
       });
     }
     return (PageLayout)this;
   }
 
-  public static String staticSearchDEFAULT_MAP_ZOOM(SiteRequest siteRequest_, BigDecimal o) {
+  public static String staticSearchZoom(SiteRequest siteRequest_, BigDecimal o) {
     return o == null ? null : o.toString();
   }
 
-  public static String staticSearchStrDEFAULT_MAP_ZOOM(SiteRequest siteRequest_, String o) {
+  public static String staticSearchStrZoom(SiteRequest siteRequest_, String o) {
     return o == null ? null : o.toString();
   }
 
-  public static String staticSearchFqDEFAULT_MAP_ZOOM(SiteRequest siteRequest_, String o) {
-    return PageLayout.staticSearchDEFAULT_MAP_ZOOM(siteRequest_, PageLayout.staticSetDEFAULT_MAP_ZOOM(siteRequest_, o)).toString();
+  public static String staticSearchFqZoom(SiteRequest siteRequest_, String o) {
+    return PageLayout.staticSearchZoom(siteRequest_, PageLayout.staticSetZoom(siteRequest_, o)).toString();
+  }
+
+	///////////
+  // pitch //
+	///////////
+
+
+  /**
+   *  The entity pitch
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = QuantityDeserializer.class)
+  @JsonSerialize(using = QuantitySerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Quantity<Angle> pitch;
+
+  /**
+   * <br> The entity pitch
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.page.PageLayout&fq=entiteVar_enUS_indexed_string:pitch">Find the entity pitch in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _pitch(Wrap<Quantity<Angle>> w);
+
+  public Quantity<Angle> getPitch() {
+    return pitch;
+  }
+
+  public void setPitch(Quantity<Angle> pitch) {
+    this.pitch = pitch;
+  }
+  /** Example: 100 meters, 1 m, 2 feet, 1 ft **/
+  @JsonIgnore
+  public void setPitch(String o) {
+    this.pitch = PageLayout.staticSetPitch(siteRequest_, o);
+  }
+  public static Quantity<Angle> staticSetPitch(String o) {
+    if(o != null)
+      return GeoTool.parseQuantity(o).asType(javax.measure.quantity.Angle.class);
+    return null;
+  }
+  public static Quantity<Angle> staticSetPitch(SiteRequest siteRequest_, String o) {
+    if(o != null)
+      return GeoTool.parseQuantity(o).asType(javax.measure.quantity.Angle.class);
+    return null;
+  }
+  protected PageLayout pitchInit() {
+    Wrap<Quantity<Angle>> pitchWrap = new Wrap<Quantity<Angle>>().var("pitch");
+    if(pitch == null) {
+      _pitch(pitchWrap);
+      Optional.ofNullable(pitchWrap.getO()).ifPresent(o -> {
+        setPitch(o);
+      });
+    }
+    return (PageLayout)this;
+  }
+
+  public static String staticSearchPitch(SiteRequest siteRequest_, Quantity o) {
+    return o.toString();
+  }
+
+  public static String staticSearchStrPitch(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqPitch(SiteRequest siteRequest_, String o) {
+    return PageLayout.staticSearchPitch(siteRequest_, PageLayout.staticSetPitch(siteRequest_, o)).toString();
   }
 
 	//////////////
@@ -4580,7 +4725,8 @@ public abstract class PageLayoutGen<DEV> extends Object {
   //////////////
 
   public Future<PageLayoutGen<DEV>> promiseDeepPageLayout(SiteRequest siteRequest_) {
-    setSiteRequest_(siteRequest_);
+    if(this.siteRequest_ == null)
+      setSiteRequest_(siteRequest_);
     return promiseDeepPageLayout();
   }
 
@@ -4681,8 +4827,9 @@ public abstract class PageLayoutGen<DEV> extends Object {
         defaultFacetLimitInit();
         defaultFacetMinCountInit();
         defaultPivotMinCountInit();
-        DEFAULT_MAP_LOCATIONInit();
-        DEFAULT_MAP_ZOOMInit();
+        locationInit();
+        zoomInit();
+        pitchInit();
         queryStrInit();
         promise2.complete();
       } catch(Exception ex) {
@@ -4890,10 +5037,12 @@ public abstract class PageLayoutGen<DEV> extends Object {
         return oPageLayout.defaultFacetMinCount;
       case "defaultPivotMinCount":
         return oPageLayout.defaultPivotMinCount;
-      case "DEFAULT_MAP_LOCATION":
-        return oPageLayout.DEFAULT_MAP_LOCATION;
-      case "DEFAULT_MAP_ZOOM":
-        return oPageLayout.DEFAULT_MAP_ZOOM;
+      case "location":
+        return oPageLayout.location;
+      case "zoom":
+        return oPageLayout.zoom;
+      case "pitch":
+        return oPageLayout.pitch;
       case "queryStr":
         return oPageLayout.queryStr;
       case "promiseAfter":
@@ -5057,10 +5206,12 @@ public abstract class PageLayoutGen<DEV> extends Object {
       return PageLayout.staticSetDefaultFacetMinCount(siteRequest_, v);
     case "defaultPivotMinCount":
       return PageLayout.staticSetDefaultPivotMinCount(siteRequest_, v);
-    case "DEFAULT_MAP_LOCATION":
-      return PageLayout.staticSetDEFAULT_MAP_LOCATION(siteRequest_, v);
-    case "DEFAULT_MAP_ZOOM":
-      return PageLayout.staticSetDEFAULT_MAP_ZOOM(siteRequest_, v);
+    case "location":
+      return PageLayout.staticSetLocation(siteRequest_, v);
+    case "zoom":
+      return PageLayout.staticSetZoom(siteRequest_, v);
+    case "pitch":
+      return PageLayout.staticSetPitch(siteRequest_, v);
     case "queryStr":
       return PageLayout.staticSetQueryStr(siteRequest_, v);
     case "pageImageUri":
@@ -5201,10 +5352,12 @@ public abstract class PageLayoutGen<DEV> extends Object {
       return PageLayout.staticSearchDefaultFacetMinCount(siteRequest_, (Integer)o);
     case "defaultPivotMinCount":
       return PageLayout.staticSearchDefaultPivotMinCount(siteRequest_, (Integer)o);
-    case "DEFAULT_MAP_LOCATION":
-      return PageLayout.staticSearchDEFAULT_MAP_LOCATION(siteRequest_, (JsonObject)o);
-    case "DEFAULT_MAP_ZOOM":
-      return PageLayout.staticSearchDEFAULT_MAP_ZOOM(siteRequest_, (BigDecimal)o);
+    case "location":
+      return PageLayout.staticSearchLocation(siteRequest_, (JsonObject)o);
+    case "zoom":
+      return PageLayout.staticSearchZoom(siteRequest_, (BigDecimal)o);
+    case "pitch":
+      return PageLayout.staticSearchPitch(siteRequest_, (Quantity<Angle>)o);
     case "queryStr":
       return PageLayout.staticSearchQueryStr(siteRequest_, (String)o);
     case "pageImageUri":
@@ -5345,10 +5498,12 @@ public abstract class PageLayoutGen<DEV> extends Object {
       return PageLayout.staticSearchStrDefaultFacetMinCount(siteRequest_, (Integer)o);
     case "defaultPivotMinCount":
       return PageLayout.staticSearchStrDefaultPivotMinCount(siteRequest_, (Integer)o);
-    case "DEFAULT_MAP_LOCATION":
-      return PageLayout.staticSearchStrDEFAULT_MAP_LOCATION(siteRequest_, (String)o);
-    case "DEFAULT_MAP_ZOOM":
-      return PageLayout.staticSearchStrDEFAULT_MAP_ZOOM(siteRequest_, (String)o);
+    case "location":
+      return PageLayout.staticSearchStrLocation(siteRequest_, (String)o);
+    case "zoom":
+      return PageLayout.staticSearchStrZoom(siteRequest_, (String)o);
+    case "pitch":
+      return PageLayout.staticSearchStrPitch(siteRequest_, (String)o);
     case "queryStr":
       return PageLayout.staticSearchStrQueryStr(siteRequest_, (String)o);
     case "pageImageUri":
@@ -5489,10 +5644,12 @@ public abstract class PageLayoutGen<DEV> extends Object {
       return PageLayout.staticSearchFqDefaultFacetMinCount(siteRequest_, o);
     case "defaultPivotMinCount":
       return PageLayout.staticSearchFqDefaultPivotMinCount(siteRequest_, o);
-    case "DEFAULT_MAP_LOCATION":
-      return PageLayout.staticSearchFqDEFAULT_MAP_LOCATION(siteRequest_, o);
-    case "DEFAULT_MAP_ZOOM":
-      return PageLayout.staticSearchFqDEFAULT_MAP_ZOOM(siteRequest_, o);
+    case "location":
+      return PageLayout.staticSearchFqLocation(siteRequest_, o);
+    case "zoom":
+      return PageLayout.staticSearchFqZoom(siteRequest_, o);
+    case "pitch":
+      return PageLayout.staticSearchFqPitch(siteRequest_, o);
     case "queryStr":
       return PageLayout.staticSearchFqQueryStr(siteRequest_, o);
     case "pageImageUri":
@@ -5523,7 +5680,7 @@ public abstract class PageLayoutGen<DEV> extends Object {
 
   public static final String CLASS_SIMPLE_NAME = "PageLayout";
   public static final String CLASS_CANONICAL_NAME = "org.computate.aitelemetry.page.PageLayout";
-  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_AUTH_RESOURCE = "PAGELAYOUT";
   public static final String VAR_webClient = "webClient";
   public static final String SET_webClient = "setWebClient";
   public static final String VAR_vertx = "vertx";
@@ -5656,10 +5813,12 @@ public abstract class PageLayoutGen<DEV> extends Object {
   public static final String SET_defaultFacetMinCount = "setDefaultFacetMinCount";
   public static final String VAR_defaultPivotMinCount = "defaultPivotMinCount";
   public static final String SET_defaultPivotMinCount = "setDefaultPivotMinCount";
-  public static final String VAR_DEFAULT_MAP_LOCATION = "DEFAULT_MAP_LOCATION";
-  public static final String SET_DEFAULT_MAP_LOCATION = "setDEFAULT_MAP_LOCATION";
-  public static final String VAR_DEFAULT_MAP_ZOOM = "DEFAULT_MAP_ZOOM";
-  public static final String SET_DEFAULT_MAP_ZOOM = "setDEFAULT_MAP_ZOOM";
+  public static final String VAR_location = "location";
+  public static final String SET_location = "setLocation";
+  public static final String VAR_zoom = "zoom";
+  public static final String SET_zoom = "setZoom";
+  public static final String VAR_pitch = "pitch";
+  public static final String SET_pitch = "setPitch";
   public static final String VAR_queryStr = "queryStr";
   public static final String SET_queryStr = "setQueryStr";
   public static final String VAR_promiseAfter = "promiseAfter";
@@ -5743,8 +5902,9 @@ public abstract class PageLayoutGen<DEV> extends Object {
   public static final String DISPLAY_NAME_defaultFacetLimit = "";
   public static final String DISPLAY_NAME_defaultFacetMinCount = "";
   public static final String DISPLAY_NAME_defaultPivotMinCount = "";
-  public static final String DISPLAY_NAME_DEFAULT_MAP_LOCATION = "";
-  public static final String DISPLAY_NAME_DEFAULT_MAP_ZOOM = "";
+  public static final String DISPLAY_NAME_location = "";
+  public static final String DISPLAY_NAME_zoom = "";
+  public static final String DISPLAY_NAME_pitch = "";
   public static final String DISPLAY_NAME_queryStr = "";
   public static final String DISPLAY_NAME_promiseAfter = "";
   public static final String DISPLAY_NAME_pageImageUri = "";
@@ -5891,10 +6051,12 @@ public abstract class PageLayoutGen<DEV> extends Object {
       return DISPLAY_NAME_defaultFacetMinCount;
     case VAR_defaultPivotMinCount:
       return DISPLAY_NAME_defaultPivotMinCount;
-    case VAR_DEFAULT_MAP_LOCATION:
-      return DISPLAY_NAME_DEFAULT_MAP_LOCATION;
-    case VAR_DEFAULT_MAP_ZOOM:
-      return DISPLAY_NAME_DEFAULT_MAP_ZOOM;
+    case VAR_location:
+      return DISPLAY_NAME_location;
+    case VAR_zoom:
+      return DISPLAY_NAME_zoom;
+    case VAR_pitch:
+      return DISPLAY_NAME_pitch;
     case VAR_queryStr:
       return DISPLAY_NAME_queryStr;
     case VAR_promiseAfter:

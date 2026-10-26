@@ -1,32 +1,29 @@
 package org.computate.aitelemetry.model.cluster;
 
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import javax.measure.Quantity;
+
 import org.apache.commons.lang3.StringUtils;
-import org.computate.search.tool.SearchTool;
 import org.computate.search.wrap.Wrap;
 import org.computate.vertx.api.BaseApiServiceImpl;
 import org.computate.vertx.config.ComputateConfigKeys;
-import org.computate.vertx.search.list.SearchList;
 import org.computate.aitelemetry.config.ConfigKeys;
 import org.computate.aitelemetry.model.BaseModel;
 import org.computate.aitelemetry.model.hub.Hub;
 
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.pgclient.data.Path;
 import io.vertx.pgclient.data.Point;
-import io.vertx.pgclient.data.Polygon;
+import systems.uom.quantity.Information;
 
 /**
  * Order: 7
  * Description: A Red Hat OpenShift cluster containing GPUs
  * AName: an OpenShift cluster
- * Icon: <i class="fa-regular fa-server"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-server"></i>
  * Sort.asc: hubId
  * Sort.asc: clusterName
  * Rows: 100
@@ -64,7 +61,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: ACM Hub
    * Description: The name of the ACM Hub for this cluster in Prometheus Keycloak Proxy. 
-   * HtmRow: 3
+   * HtmRow: 4
    * HtmCell: 1
    * HtmColumn: 1
    * HtmRowTitleOpen: cluster details
@@ -93,7 +90,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: cluster name
    * Description: The name of this cluster
-   * HtmRow: 3
+   * HtmRow: 4
    * HtmCell: 3
    * HtmColumn: 2
    * Facet: true
@@ -107,7 +104,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: hub cluster
    * Description: Whether this cluster is a hub cluster
-   * HtmRow: 3
+   * HtmRow: 4
    * HtmCell: 4
    * Facet: true
    **/
@@ -120,7 +117,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * DocValues: true
    * DisplayName: cluster name for metrics
    * Description: The name of this cluster in ACM Observability metrics
-   * HtmRow: 3
+   * HtmRow: 4
    * HtmCell: 5
    * Facet: true
    **/
@@ -148,7 +145,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * DocValues: true
    * DisplayName: unique name
    * Description: The unique name of this cluster
-   * HtmRow: 3
+   * HtmRow: 4
    * HtmCell: 6
    * Facet: true
    * VarName: true
@@ -163,7 +160,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: description
    * Description: A description of this cluster
-   * HtmRow: 3
+   * HtmRow: 4
    * HtmCell: 7
    * VarDescription: true
    * Multiline: true
@@ -216,7 +213,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: location
    * Description: Geojson reference to the item. It can be Point, LineString, Polygon, MultiPoint, MultiLineString or MultiPolygon
-   * HtmRow: 3
+   * HtmRow: 4
    * HtmCell: 8
    * Facet: true
    **/
@@ -231,7 +228,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * DisplayName: entity ID
    * Description: A unique ID for this Smart Data Model
    * HtmRowTitle: NGSI-LD data
-   * HtmRow: 5
+   * HtmRow: 6
    * HtmCell: 1
    * Facet: true
    */
@@ -258,7 +255,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: NGSILD-Tenant
    * Description: The NGSILD-Tenant or Fiware-Service
-   * HtmRow: 5
+   * HtmRow: 6
    * HtmCell: 2
    * Facet: true
    */
@@ -272,7 +269,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: NGSILD-Path
    * Description: The NGSILD-Path or Fiware-ServicePath
-   * HtmRow: 5
+   * HtmRow: 6
    * HtmCell: 3
    * Facet: true
    */
@@ -286,7 +283,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: NGSILD context
    * Description: The NGSILD context URL for @context data
-   * HtmRow: 5
+   * HtmRow: 6
    * HtmCell: 4
    * Facet: true
    */
@@ -300,7 +297,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: NGSILD data
    * Description: The NGSILD data with @context from the context broker
-   * HtmRow: 5
+   * HtmRow: 6
    * HtmCell: 5
    * Facet: true
    * Multiline: true
@@ -315,7 +312,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * DisplayName: AI nodes total
    * Description: The total number of AI nodes on this cluster. 
    * HtmRowTitleOpen: cluster totals
-   * HtmRow: 4
+   * HtmRow: 5
    * HtmCell: 1
    * Facet: true
    */
@@ -327,7 +324,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: GPU devices total
    * Description: The total number of GPU devices on this cluster. 
-   * HtmRow: 4
+   * HtmRow: 5
    * HtmCell: 2
    * Facet: true
    */
@@ -339,7 +336,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: VMs total
    * Description: The total number of VMs on this cluster. 
-   * HtmRow: 4
+   * HtmRow: 5
    * HtmCell: 3
    * Facet: true
    */
@@ -351,7 +348,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: CPU cores total
    * Description: The total number of CPU cores on this cluster. 
-   * HtmRow: 4
+   * HtmRow: 5
    * HtmCell: 4
    * Facet: true
    */
@@ -363,7 +360,7 @@ public class Cluster extends ClusterGen<BaseModel> {
    * Persist: true
    * DisplayName: memory bytes total
    * Description: The total number of memory bytes on this cluster. 
-   * HtmRow: 4
+   * HtmRow: 5
    * HtmCell: 4
    * Facet: true
    */
@@ -372,9 +369,35 @@ public class Cluster extends ClusterGen<BaseModel> {
   /**
    * {@inheritDoc}
    * DocValues: true
+   * Persist: true
+   * DisplayName: Ceph used bytes
+   * Description: The amount of Ceph storage used on this cluster. 
+   * HtmRow: 5
+   * HtmCell: 4
+   * Facet: true
+   */
+  protected void _cephUsedBytes(Wrap<Quantity<Information>> w) {
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: Ceph capacity bytes
+   * Description: The amount of Ceph storage total capacity on this cluster. 
+   * HtmRow: 5
+   * HtmCell: 4
+   * Facet: true
+   */
+  protected void _cephCapacityBytes(Wrap<Quantity<Information>> w) {
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
    * DisplayName: Grafana GPU utilization
    * Description: Explore this cluster's GPU utilization in Grafana. 
-   * HtmRow: 4
+   * HtmRow: 5
    * HtmRowTitleOpen: Useful URLs
    * HtmCell: 3
    * Facet: true
@@ -397,6 +420,31 @@ public class Cluster extends ClusterGen<BaseModel> {
   @Override
   protected void _modified(Wrap<ZonedDateTime> w) {
     super._modified(w);
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: Storage
+   * Description: {{ 'Warning, no storage metrics were found. The system cannot determine the health of the storage of this cluster. ' if (cephUsedBytes is not defined or cephCapacityBytes is not defined) else 'Ceph storage status' }}
+   * HtmRowTitleOpen: {{ result.clusterName }} cluster status
+   * HtmRow: 3
+   * HtmCell: 0
+   * Option:
+   *   success: Successful
+   *   neutral: Neutral
+   *   warning: Warning
+   *   danger: Danger
+   * wa-step:
+   *   start: true
+   *   end: true
+   *   completed: "{{ result.statusStorage == 'success' }}"
+   *   variant: "{{ result.statusStorage }}"
+   * Icon: <i slot="icon" class="{{ FONTAWESOME_STYLE }} fa-{{ 'check' if result.statusStorage == 'success' else ('check' if result.statusStorage == 'neutral' else ('bell-exclamation' if result.statusStorage == 'danger' else result.statusStorage)) }}"></i>
+   **/
+  protected void _statusStorage(Wrap<String> w) {
+    w.o((cephUsedBytes == null || cephCapacityBytes == null) ? "warning" : "neutral");
   }
 }
 

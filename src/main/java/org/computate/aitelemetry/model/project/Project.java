@@ -25,7 +25,7 @@ import io.vertx.pgclient.data.Polygon;
  * Description: A research project using AI and GPUs
  * AName: an project
  * PluralName: projects
- * Icon: <i class="fa-regular fa-people-line"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-people-line"></i>
  * Sort.asc: hubId
  * Sort.asc: clusterName
  * Sort.asc: projectName

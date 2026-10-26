@@ -1,5 +1,150 @@
 package org.computate.aitelemetry.verticle;
 
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Stack;
+import java.util.concurrent.TimeUnit;
+import org.yaml.snakeyaml.Yaml;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
+import org.computate.search.tool.TimeTool;
+import org.computate.search.tool.XmlTool;
+import org.computate.vertx.api.ApiCounter;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.vertx.api.ApiCounter;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.aitelemetry.timezone.TimeZone;
+import org.computate.aitelemetry.timezone.TimeZoneEnUSApiServiceImpl;
+import org.computate.aitelemetry.timezone.TimeZoneEnUSGenApiService;
+import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper;
+import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSGenApiService;
+import org.computate.aitelemetry.page.SitePage;
+import org.computate.aitelemetry.page.SitePageEnUSApiServiceImpl;
+import org.computate.aitelemetry.page.SitePageEnUSGenApiService;
+import org.computate.aitelemetry.model.MapModel;
+import org.computate.aitelemetry.model.MapModelEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.MapModelEnUSGenApiService;
+import org.computate.aitelemetry.model.tenant.Tenant;
+import org.computate.aitelemetry.model.tenant.TenantEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.tenant.TenantEnUSGenApiService;
+import org.computate.aitelemetry.model.hub.Hub;
+import org.computate.aitelemetry.model.hub.HubEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.hub.HubEnUSGenApiService;
+import org.computate.aitelemetry.model.cluster.Cluster;
+import org.computate.aitelemetry.model.cluster.ClusterEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.cluster.ClusterEnUSGenApiService;
+import org.computate.aitelemetry.model.node.AiNode;
+import org.computate.aitelemetry.model.node.AiNodeEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.node.AiNodeEnUSGenApiService;
+import org.computate.aitelemetry.model.gpudevice.GpuDevice;
+import org.computate.aitelemetry.model.gpudevice.GpuDeviceEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.gpudevice.GpuDeviceEnUSGenApiService;
+import org.computate.aitelemetry.model.project.Project;
+import org.computate.aitelemetry.model.project.ProjectEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.project.ProjectEnUSGenApiService;
+import org.computate.aitelemetry.model.virtualmachine.VirtualMachine;
+import org.computate.aitelemetry.model.virtualmachine.VirtualMachineEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.virtualmachine.VirtualMachineEnUSGenApiService;
+import org.computate.aitelemetry.model.clusterrequest.ClusterRequest;
+import org.computate.aitelemetry.model.clusterrequest.ClusterRequestEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.clusterrequest.ClusterRequestEnUSGenApiService;
+import org.computate.aitelemetry.model.clusterorder.ClusterOrder;
+import org.computate.aitelemetry.model.clusterorder.ClusterOrderEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.clusterorder.ClusterOrderEnUSGenApiService;
+import org.computate.aitelemetry.model.clustertemplate.ClusterTemplate;
+import org.computate.aitelemetry.model.clustertemplate.ClusterTemplateEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.clustertemplate.ClusterTemplateEnUSGenApiService;
+import org.computate.aitelemetry.model.managedcluster.ManagedCluster;
+import org.computate.aitelemetry.model.managedcluster.ManagedClusterEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.managedcluster.ManagedClusterEnUSGenApiService;
+import org.computate.aitelemetry.model.baremetalorder.BareMetalOrder;
+import org.computate.aitelemetry.model.baremetalorder.BareMetalOrderEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.baremetalorder.BareMetalOrderEnUSGenApiService;
+import org.computate.aitelemetry.model.baremetalresourceclass.BareMetalResourceClass;
+import org.computate.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.baremetalresourceclass.BareMetalResourceClassEnUSGenApiService;
+import org.computate.aitelemetry.model.baremetalnetwork.BareMetalNetwork;
+import org.computate.aitelemetry.model.baremetalnetwork.BareMetalNetworkEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.baremetalnetwork.BareMetalNetworkEnUSGenApiService;
+import org.computate.aitelemetry.model.baremetalnode.BareMetalNode;
+import org.computate.aitelemetry.model.baremetalnode.BareMetalNodeEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.baremetalnode.BareMetalNodeEnUSGenApiService;
+import org.computate.vertx.api.ApiCounter;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.openapi.ComputateOAuth2AuthHandlerImpl;
+import org.computate.vertx.api.BaseApiServiceInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.google.common.io.PatternFilenameFilter;
+import com.hubspot.jinjava.Jinjava;
+import com.hubspot.jinjava.loader.FileLocator;
+import io.vertx.config.yaml.YamlProcessor;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
+import io.vertx.core.MultiMap;
+import io.vertx.core.Promise;
+import io.vertx.core.WorkerExecutor;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.opentelemetry.sdk.metrics.SdkMeterProvider;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.api.trace.Tracer;
+import io.vertx.ext.auth.authentication.TokenCredentials;
+import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
+import io.vertx.ext.mail.MailClient;
+import io.vertx.ext.mail.MailConfig;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.WebClientOptions;
+import io.vertx.kafka.client.producer.KafkaProducer;
+import io.netty.handler.codec.mqtt.MqttQoS;
+import io.vertx.mqtt.MqttClient;
+import io.vertx.amqp.AmqpClient;
+import io.vertx.amqp.AmqpClientOptions;
+import io.vertx.amqp.AmqpSender;
+import io.vertx.rabbitmq.RabbitMQClient;
+import io.vertx.rabbitmq.RabbitMQOptions;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AMQP.BasicProperties;
+import io.vertx.amqp.AmqpMessage;
+import io.vertx.amqp.AmqpMessageBuilder;
+import io.vertx.amqp.AmqpSenderOptions;
+import io.vertx.pgclient.PgBuilder;
+import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.sqlclient.Pool;
+import io.vertx.sqlclient.Cursor;
+import io.vertx.sqlclient.PoolOptions;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowStream;
+import io.vertx.sqlclient.SqlConnection;
+import org.computate.aitelemetry.user.SiteUser;
+import org.computate.aitelemetry.user.SiteUserEnUSApiServiceImpl;
+import org.computate.aitelemetry.user.SiteUserEnUSGenApiService;
 import org.computate.aitelemetry.request.SiteRequest;
 import io.vertx.core.AbstractVerticle;
 import org.computate.aitelemetry.model.BaseModel;
@@ -24,6 +169,7 @@ import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
 import java.math.MathContext;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.text.NumberFormat;
@@ -38,11 +184,15 @@ import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 
 /**
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
- * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these WorkerVerticle objects in a RESTful API. 
+ * <li><p>
+ *   You can add a class comment <kbd><b>Api: true</b></kbd> if you wish to GET, POST, PATCH or PUT these  objects in a RESTful API. 
+ * </p>
  * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class WorkerVerticleGen into the class WorkerVerticle. 
  * </li>
  * <h3>About the WorkerVerticle class and it's generated class WorkerVerticleGen&lt;AbstractVerticle&gt;: </h3>extends WorkerVerticleGen
@@ -61,7 +211,9 @@ import io.vertx.core.json.JsonArray;
  * The generated <code>class WorkerVerticleGen extends AbstractVerticle</code> which means that WorkerVerticle extends WorkerVerticleGen which extends AbstractVerticle. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
- * <h2>Api: true</h2>
+ * <h2>
+ *   Api: true
+ * </h2>
  * <h2>ApiTag.enUS: true</h2>
  * <h2>ApiUri.enUS: null</h2>
  * <h2>Color: null</h2>
@@ -69,7 +221,30 @@ import io.vertx.core.json.JsonArray;
  * <h2>{@inheritDoc}</h2>
  * <p>By adding a class comment "{@inheritDoc}", the WorkerVerticle class will inherit the helpful inherited class comments from the super class WorkerVerticleGen. 
  * </p>
- * <h2>Rows: null</h2>
+ * <h2>
+ *   Rows: 10
+ * </h2>
+ * <p>This class contains a comment <kbd><b>Rows: 10</b></kbd>, which means the  API will return a default of 10 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the  API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <h2>
+ *   Order: 1
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Order: 1</b></kbd>, 
+ *   which means this class will be sorted by the given number 1 
+ *   ascending when code that relates to multiple classes at the same time is generated. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Order: </b></kbd>, followed by an Integer to sort this class compared to other classes in the project. 
+ *   There is code that is generated that queries several classes and writes code for each class in a sequence. 
+ *   The <kbd><b>Order</b></kbd> comment allows you to define which order the class code is generated. 
+ * </p>
  * <h2>Model: true</h2>
  * <h2>Page: true</h2>
  * <h2>SuperPage.enUS: null</h2>
@@ -78,19 +253,19 @@ import io.vertx.core.json.JsonArray;
  * <p>
  * Delete the class WorkerVerticle in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.verticle.WorkerVerticle&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.verticle.WorkerVerticle&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the package org.computate.aitelemetry.verticle in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.verticle&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.verticle&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * Generated: true
@@ -270,7 +445,7 @@ public abstract class WorkerVerticleGen<DEV> extends AbstractVerticle {
 
   public static final String CLASS_SIMPLE_NAME = "WorkerVerticle";
   public static final String CLASS_CANONICAL_NAME = "org.computate.aitelemetry.verticle.WorkerVerticle";
-  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_AUTH_RESOURCE = "WORKERVERTICLE";
 
 
   public static String displayNameForClass(String var) {

@@ -1,5 +1,27 @@
 package org.computate.aitelemetry.request;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.user.ComputateSiteUser;
+import org.computate.vertx.request.ComputateSiteRequest;
+import com.hubspot.jinjava.Jinjava;
+import org.computate.aitelemetry.user.SiteUser;
+import io.vertx.core.MultiMap;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.User;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.sqlclient.SqlConnection;
 import org.computate.aitelemetry.request.SiteRequest;
 import java.lang.Object;
 import org.computate.aitelemetry.model.BaseModel;
@@ -24,6 +46,7 @@ import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
 import java.math.MathContext;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.text.NumberFormat;
@@ -37,11 +60,12 @@ import java.util.Map;
 import io.vertx.core.json.JsonObject;
 import org.computate.vertx.serialize.vertx.JsonObjectDeserializer;
 import io.vertx.ext.web.client.WebClient;
+import com.hubspot.jinjava.Jinjava;
 import io.vertx.ext.web.api.service.ServiceRequest;
+import java.lang.Boolean;
 import java.lang.String;
 import io.vertx.ext.auth.User;
 import java.lang.Long;
-import java.lang.Boolean;
 import io.vertx.core.json.JsonArray;
 import org.computate.aitelemetry.user.SiteUser;
 import io.vertx.sqlclient.SqlConnection;
@@ -49,11 +73,15 @@ import io.vertx.core.MultiMap;
 import org.computate.search.wrap.Wrap;
 import io.vertx.core.Promise;
 import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
 
 /**
  * <ol>
 <h3>Suggestions that can generate more code for you: </h3> * </ol>
- * <li>You can add a class comment <b>"Api: true"</b> if you wish to GET, POST, PATCH or PUT these SiteRequest objects in a RESTful API. 
+ * <li><p>
+ *   You can add a class comment <kbd><b>Api: true</b></kbd> if you wish to GET, POST, PATCH or PUT these  objects in a RESTful API. 
+ * </p>
  * </li><li>You can add a class comment "{@inheritDoc}" if you wish to inherit the helpful inherited class comments from class SiteRequestGen into the class SiteRequest. 
  * </li>
  * <h3>About the SiteRequest class and it's generated class SiteRequestGen&lt;Object&gt;: </h3>extends SiteRequestGen
@@ -72,7 +100,9 @@ import io.vertx.core.Future;
  * The generated <code>class SiteRequestGen extends Object</code> which means that SiteRequest extends SiteRequestGen which extends Object. 
  * This generated inheritance is a powerful feature that allows a lot of boiler plate code to be created for you automatically while still preserving inheritance through the power of Java Generic classes. 
  * </p>
- * <h2>Api: true</h2>
+ * <h2>
+ *   Api: true
+ * </h2>
  * <h2>ApiTag.enUS: true</h2>
  * <h2>ApiUri.enUS: null</h2>
  * <h2>Color: null</h2>
@@ -80,7 +110,30 @@ import io.vertx.core.Future;
  * <h2>{@inheritDoc}</h2>
  * <p>By adding a class comment "{@inheritDoc}", the SiteRequest class will inherit the helpful inherited class comments from the super class SiteRequestGen. 
  * </p>
- * <h2>Rows: null</h2>
+ * <h2>
+ *   Rows: 10
+ * </h2>
+ * <p>This class contains a comment <kbd><b>Rows: 10</b></kbd>, which means the  API will return a default of 10 results instead of 10 by default. 
+ * Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Rows: 100</b></kbd> if you wish for the  API to return more or less than 10 results by default. 
+ *   In this case, the API will return 100 results from the API instead of 10 by default. 
+ *   Each API has built in pagination of the search results to ensure a user can query all the data a page at a time without running the application out of memory. 
+ * </p>
+ * <h2>
+ *   Order: 1
+ * </h2>
+ * <p>
+ *   This class contains a comment <kbd><b>Order: 1</b></kbd>, 
+ *   which means this class will be sorted by the given number 1 
+ *   ascending when code that relates to multiple classes at the same time is generated. 
+ * </p>
+ * <p>
+ *   You can add a class comment <kbd><b>Order: </b></kbd>, followed by an Integer to sort this class compared to other classes in the project. 
+ *   There is code that is generated that queries several classes and writes code for each class in a sequence. 
+ *   The <kbd><b>Order</b></kbd> comment allows you to define which order the class code is generated. 
+ * </p>
  * <h2>Model: true</h2>
  * <h2>Page: true</h2>
  * <h2>SuperPage.enUS: null</h2>
@@ -89,19 +142,19 @@ import io.vertx.core.Future;
  * <p>
  * Delete the class SiteRequest in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.request.SiteRequest&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.request.SiteRequest&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the package org.computate.aitelemetry.request in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.request&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;classeNomEnsemble_enUS_indexed_string:org.computate.aitelemetry.request&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * <p>
  * Delete  the project ai-telemetry in Solr: 
  * <pre>
- * curl -k 'https://solr.apps-crc.testing/solr/computate-computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
+ * curl -k 'https://solr.apps-crc.testing/solr/computate/update?commitWithin=1000&amp;overwrite=true&amp;wt=json' -X POST -H 'Content-type: text/xml' -u "admin:$(oc -n solr get secret/solr-solrcloud-security-bootstrap -o jsonpath={.data.admin} | base64 -d)" --data-raw '&lt;delete&gt;&lt;query&gt;siteNom_indexed_string:ai\-telemetry&lt;/query&gt;&lt;/delete&gt;'
  * </pre>
  * </p>
  * Generated: true
@@ -321,6 +374,49 @@ public abstract class SiteRequestGen<DEV> extends Object {
     return (SiteRequest)this;
   }
 
+	/////////////
+  // jinjava //
+	/////////////
+
+
+  /**
+   *  The entity jinjava
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Jinjava jinjava;
+
+  /**
+   * <br> The entity jinjava
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.request.SiteRequest&fq=entiteVar_enUS_indexed_string:jinjava">Find the entity jinjava in Solr</a>
+   * <br>
+   * @param c is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _jinjava(Wrap<Jinjava> c);
+
+  public Jinjava getJinjava() {
+    return jinjava;
+  }
+
+  public void setJinjava(Jinjava jinjava) {
+    this.jinjava = jinjava;
+  }
+  public static Jinjava staticSetJinjava(SiteRequest siteRequest_, String o) {
+    return null;
+  }
+  protected SiteRequest jinjavaInit() {
+    Wrap<Jinjava> jinjavaWrap = new Wrap<Jinjava>().var("jinjava");
+    if(jinjava == null) {
+      _jinjava(jinjavaWrap);
+      Optional.ofNullable(jinjavaWrap.getO()).ifPresent(o -> {
+        setJinjava(o);
+      });
+    }
+    return (SiteRequest)this;
+  }
+
 	/////////////////
   // apiRequest_ //
 	/////////////////
@@ -468,6 +564,65 @@ public abstract class SiteRequestGen<DEV> extends Object {
       });
     }
     return (SiteRequest)this;
+  }
+
+	/////////////////
+  // seeArchived //
+	/////////////////
+
+
+  /**
+   *  The entity seeArchived
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Boolean seeArchived;
+
+  /**
+   * <br> The entity seeArchived
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.request.SiteRequest&fq=entiteVar_enUS_indexed_string:seeArchived">Find the entity seeArchived in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _seeArchived(Wrap<Boolean> w);
+
+  public Boolean getSeeArchived() {
+    return seeArchived;
+  }
+
+  public void setSeeArchived(Boolean seeArchived) {
+    this.seeArchived = seeArchived;
+  }
+  @JsonIgnore
+  public void setSeeArchived(String o) {
+    this.seeArchived = SiteRequest.staticSetSeeArchived(siteRequest_, o);
+  }
+  public static Boolean staticSetSeeArchived(SiteRequest siteRequest_, String o) {
+    return Boolean.parseBoolean(o);
+  }
+  protected SiteRequest seeArchivedInit() {
+    Wrap<Boolean> seeArchivedWrap = new Wrap<Boolean>().var("seeArchived");
+    if(seeArchived == null) {
+      _seeArchived(seeArchivedWrap);
+      Optional.ofNullable(seeArchivedWrap.getO()).ifPresent(o -> {
+        setSeeArchived(o);
+      });
+    }
+    return (SiteRequest)this;
+  }
+
+  public static Boolean staticSearchSeeArchived(SiteRequest siteRequest_, Boolean o) {
+    return o;
+  }
+
+  public static String staticSearchStrSeeArchived(SiteRequest siteRequest_, Boolean o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqSeeArchived(SiteRequest siteRequest_, String o) {
+    return SiteRequest.staticSearchSeeArchived(siteRequest_, SiteRequest.staticSetSeeArchived(siteRequest_, o)).toString();
   }
 
 	/////////////////////////
@@ -852,60 +1007,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
 
   public static String staticSearchFqSessionId(SiteRequest siteRequest_, String o) {
     return SiteRequest.staticSearchSessionId(siteRequest_, SiteRequest.staticSetSessionId(siteRequest_, o)).toString();
-  }
-
-	/////////////////////
-  // sessionIdBefore //
-	/////////////////////
-
-
-  /**
-   *  The entity sessionIdBefore
-   *	 is defined as null before being initialized. 
-   */
-  @JsonProperty
-  @JsonInclude(Include.NON_NULL)
-  protected String sessionIdBefore;
-
-  /**
-   * <br> The entity sessionIdBefore
-   *  is defined as null before being initialized. 
-   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.request.SiteRequest&fq=entiteVar_enUS_indexed_string:sessionIdBefore">Find the entity sessionIdBefore in Solr</a>
-   * <br>
-   * @param c is for wrapping a value to assign to this entity during initialization. 
-   **/
-  protected abstract void _sessionIdBefore(Wrap<String> c);
-
-  public String getSessionIdBefore() {
-    return sessionIdBefore;
-  }
-  public void setSessionIdBefore(String o) {
-    this.sessionIdBefore = SiteRequest.staticSetSessionIdBefore(siteRequest_, o);
-  }
-  public static String staticSetSessionIdBefore(SiteRequest siteRequest_, String o) {
-    return o;
-  }
-  protected SiteRequest sessionIdBeforeInit() {
-    Wrap<String> sessionIdBeforeWrap = new Wrap<String>().var("sessionIdBefore");
-    if(sessionIdBefore == null) {
-      _sessionIdBefore(sessionIdBeforeWrap);
-      Optional.ofNullable(sessionIdBeforeWrap.getO()).ifPresent(o -> {
-        setSessionIdBefore(o);
-      });
-    }
-    return (SiteRequest)this;
-  }
-
-  public static String staticSearchSessionIdBefore(SiteRequest siteRequest_, String o) {
-    return o;
-  }
-
-  public static String staticSearchStrSessionIdBefore(SiteRequest siteRequest_, String o) {
-    return o == null ? null : o.toString();
-  }
-
-  public static String staticSearchFqSessionIdBefore(SiteRequest siteRequest_, String o) {
-    return SiteRequest.staticSearchSessionIdBefore(siteRequest_, SiteRequest.staticSetSessionIdBefore(siteRequest_, o)).toString();
   }
 
 	///////////////////////
@@ -1962,7 +2063,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
   //////////////
 
   public SiteRequest initDeepSiteRequest(SiteRequest siteRequest_) {
-    setSiteRequest_(siteRequest_);
+    if(this.siteRequest_ == null)
+      setSiteRequest_(siteRequest_);
     initDeepSiteRequest();
     return (SiteRequest)this;
   }
@@ -1976,9 +2078,11 @@ public abstract class SiteRequestGen<DEV> extends Object {
         i18nInit();
         siteRequest_Init();
         webClientInit();
+        jinjavaInit();
         apiRequest_Init();
         jsonObjectInit();
         serviceRequestInit();
+        seeArchivedInit();
         sessionSiteFontSizeInit();
         sessionSiteThemeInit();
         userInit();
@@ -1986,7 +2090,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
         userIdInit();
         userKeyInit();
         sessionIdInit();
-        sessionIdBeforeInit();
         customerProfileIdInit();
         userNameInit();
         userLastNameInit();
@@ -2055,12 +2158,16 @@ public abstract class SiteRequestGen<DEV> extends Object {
         return oSiteRequest.siteRequest_;
       case "webClient":
         return oSiteRequest.webClient;
+      case "jinjava":
+        return oSiteRequest.jinjava;
       case "apiRequest_":
         return oSiteRequest.apiRequest_;
       case "jsonObject":
         return oSiteRequest.jsonObject;
       case "serviceRequest":
         return oSiteRequest.serviceRequest;
+      case "seeArchived":
+        return oSiteRequest.seeArchived;
       case "sessionSiteFontSize":
         return oSiteRequest.sessionSiteFontSize;
       case "sessionSiteTheme":
@@ -2075,8 +2182,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
         return oSiteRequest.userKey;
       case "sessionId":
         return oSiteRequest.sessionId;
-      case "sessionIdBefore":
-        return oSiteRequest.sessionIdBefore;
       case "customerProfileId":
         return oSiteRequest.customerProfileId;
       case "userName":
@@ -2160,6 +2265,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSetI18n(siteRequest_, v);
     case "jsonObject":
       return SiteRequest.staticSetJsonObject(siteRequest_, v);
+    case "seeArchived":
+      return SiteRequest.staticSetSeeArchived(siteRequest_, v);
     case "sessionSiteFontSize":
       return SiteRequest.staticSetSessionSiteFontSize(siteRequest_, v);
     case "sessionSiteTheme":
@@ -2172,8 +2279,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSetUserKey(siteRequest_, v);
     case "sessionId":
       return SiteRequest.staticSetSessionId(siteRequest_, v);
-    case "sessionIdBefore":
-      return SiteRequest.staticSetSessionIdBefore(siteRequest_, v);
     case "customerProfileId":
       return SiteRequest.staticSetCustomerProfileId(siteRequest_, v);
     case "userName":
@@ -2224,6 +2329,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSearchI18n(siteRequest_, (JsonObject)o);
     case "jsonObject":
       return SiteRequest.staticSearchJsonObject(siteRequest_, (JsonObject)o);
+    case "seeArchived":
+      return SiteRequest.staticSearchSeeArchived(siteRequest_, (Boolean)o);
     case "sessionSiteFontSize":
       return SiteRequest.staticSearchSessionSiteFontSize(siteRequest_, (String)o);
     case "sessionSiteTheme":
@@ -2236,8 +2343,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSearchUserKey(siteRequest_, (Long)o);
     case "sessionId":
       return SiteRequest.staticSearchSessionId(siteRequest_, (String)o);
-    case "sessionIdBefore":
-      return SiteRequest.staticSearchSessionIdBefore(siteRequest_, (String)o);
     case "customerProfileId":
       return SiteRequest.staticSearchCustomerProfileId(siteRequest_, (String)o);
     case "userName":
@@ -2288,6 +2393,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSearchStrI18n(siteRequest_, (String)o);
     case "jsonObject":
       return SiteRequest.staticSearchStrJsonObject(siteRequest_, (String)o);
+    case "seeArchived":
+      return SiteRequest.staticSearchStrSeeArchived(siteRequest_, (Boolean)o);
     case "sessionSiteFontSize":
       return SiteRequest.staticSearchStrSessionSiteFontSize(siteRequest_, (String)o);
     case "sessionSiteTheme":
@@ -2300,8 +2407,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSearchStrUserKey(siteRequest_, (Long)o);
     case "sessionId":
       return SiteRequest.staticSearchStrSessionId(siteRequest_, (String)o);
-    case "sessionIdBefore":
-      return SiteRequest.staticSearchStrSessionIdBefore(siteRequest_, (String)o);
     case "customerProfileId":
       return SiteRequest.staticSearchStrCustomerProfileId(siteRequest_, (String)o);
     case "userName":
@@ -2352,6 +2457,8 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSearchFqI18n(siteRequest_, o);
     case "jsonObject":
       return SiteRequest.staticSearchFqJsonObject(siteRequest_, o);
+    case "seeArchived":
+      return SiteRequest.staticSearchFqSeeArchived(siteRequest_, o);
     case "sessionSiteFontSize":
       return SiteRequest.staticSearchFqSessionSiteFontSize(siteRequest_, o);
     case "sessionSiteTheme":
@@ -2364,8 +2471,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return SiteRequest.staticSearchFqUserKey(siteRequest_, o);
     case "sessionId":
       return SiteRequest.staticSearchFqSessionId(siteRequest_, o);
-    case "sessionIdBefore":
-      return SiteRequest.staticSearchFqSessionIdBefore(siteRequest_, o);
     case "customerProfileId":
       return SiteRequest.staticSearchFqCustomerProfileId(siteRequest_, o);
     case "userName":
@@ -2412,7 +2517,7 @@ public abstract class SiteRequestGen<DEV> extends Object {
 
   public static final String CLASS_SIMPLE_NAME = "SiteRequest";
   public static final String CLASS_CANONICAL_NAME = "org.computate.aitelemetry.request.SiteRequest";
-  public static final String CLASS_AUTH_RESOURCE = "";
+  public static final String CLASS_AUTH_RESOURCE = "SITEREQUEST";
   public static final String VAR_config = "config";
   public static final String SET_config = "setConfig";
   public static final String VAR_i18n = "i18n";
@@ -2421,12 +2526,16 @@ public abstract class SiteRequestGen<DEV> extends Object {
   public static final String SET_siteRequest_ = "setSiteRequest_";
   public static final String VAR_webClient = "webClient";
   public static final String SET_webClient = "setWebClient";
+  public static final String VAR_jinjava = "jinjava";
+  public static final String SET_jinjava = "setJinjava";
   public static final String VAR_apiRequest_ = "apiRequest_";
   public static final String SET_apiRequest_ = "setApiRequest_";
   public static final String VAR_jsonObject = "jsonObject";
   public static final String SET_jsonObject = "setJsonObject";
   public static final String VAR_serviceRequest = "serviceRequest";
   public static final String SET_serviceRequest = "setServiceRequest";
+  public static final String VAR_seeArchived = "seeArchived";
+  public static final String SET_seeArchived = "setSeeArchived";
   public static final String VAR_sessionSiteFontSize = "sessionSiteFontSize";
   public static final String SET_sessionSiteFontSize = "setSessionSiteFontSize";
   public static final String VAR_sessionSiteTheme = "sessionSiteTheme";
@@ -2441,8 +2550,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
   public static final String SET_userKey = "setUserKey";
   public static final String VAR_sessionId = "sessionId";
   public static final String SET_sessionId = "setSessionId";
-  public static final String VAR_sessionIdBefore = "sessionIdBefore";
-  public static final String SET_sessionIdBefore = "setSessionIdBefore";
   public static final String VAR_customerProfileId = "customerProfileId";
   public static final String SET_customerProfileId = "setCustomerProfileId";
   public static final String VAR_userName = "userName";
@@ -2486,9 +2593,11 @@ public abstract class SiteRequestGen<DEV> extends Object {
   public static final String DISPLAY_NAME_i18n = "";
   public static final String DISPLAY_NAME_siteRequest_ = "";
   public static final String DISPLAY_NAME_webClient = "";
+  public static final String DISPLAY_NAME_jinjava = "";
   public static final String DISPLAY_NAME_apiRequest_ = "";
   public static final String DISPLAY_NAME_jsonObject = "";
   public static final String DISPLAY_NAME_serviceRequest = "";
+  public static final String DISPLAY_NAME_seeArchived = "";
   public static final String DISPLAY_NAME_sessionSiteFontSize = "";
   public static final String DISPLAY_NAME_sessionSiteTheme = "";
   public static final String DISPLAY_NAME_user = "";
@@ -2496,7 +2605,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
   public static final String DISPLAY_NAME_userId = "";
   public static final String DISPLAY_NAME_userKey = "";
   public static final String DISPLAY_NAME_sessionId = "";
-  public static final String DISPLAY_NAME_sessionIdBefore = "";
   public static final String DISPLAY_NAME_customerProfileId = "";
   public static final String DISPLAY_NAME_userName = "";
   public static final String DISPLAY_NAME_userLastName = "";
@@ -2530,12 +2638,16 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return DISPLAY_NAME_siteRequest_;
     case VAR_webClient:
       return DISPLAY_NAME_webClient;
+    case VAR_jinjava:
+      return DISPLAY_NAME_jinjava;
     case VAR_apiRequest_:
       return DISPLAY_NAME_apiRequest_;
     case VAR_jsonObject:
       return DISPLAY_NAME_jsonObject;
     case VAR_serviceRequest:
       return DISPLAY_NAME_serviceRequest;
+    case VAR_seeArchived:
+      return DISPLAY_NAME_seeArchived;
     case VAR_sessionSiteFontSize:
       return DISPLAY_NAME_sessionSiteFontSize;
     case VAR_sessionSiteTheme:
@@ -2550,8 +2662,6 @@ public abstract class SiteRequestGen<DEV> extends Object {
       return DISPLAY_NAME_userKey;
     case VAR_sessionId:
       return DISPLAY_NAME_sessionId;
-    case VAR_sessionIdBefore:
-      return DISPLAY_NAME_sessionIdBefore;
     case VAR_customerProfileId:
       return DISPLAY_NAME_customerProfileId;
     case VAR_userName:

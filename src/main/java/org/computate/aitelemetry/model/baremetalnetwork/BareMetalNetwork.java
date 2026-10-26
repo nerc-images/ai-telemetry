@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonArray;
  * Order: 18
  * Description: An OpenStack bare metal network
  * AName: a bare metal network
- * Icon: <i class="fa-duotone fa-regular fa-network-wired"></i>
+ * <i class="{{ FONTAWESOME_STYLE }} fa-network-wired"></i>
  * 
  * SearchPageUri: /en-us/search/bare-metal-network
  * EditPageUri: /en-us/edit/bare-metal-network/{id}

@@ -6,10 +6,10 @@ computate-smart-cloud-deployer
 .flattened-pom.xml
 .vscode
 *.code-workspace
-bin/generate.sh
-bin/generateonce.sh
-bin/index.sh
-bin/indexonce.sh
-bin/watch.sh
-bin/watchnow.sh
+scripts/generate.sh
+scripts/generateonce.sh
+scripts/index.sh
+scripts/indexonce.sh
+scripts/watch.sh
+scripts/watchnow.sh
 *.code-workspace

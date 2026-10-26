@@ -7,12 +7,15 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.computate.search.wrap.Wrap;
 import org.computate.vertx.api.ApiRequest;
 import org.computate.vertx.config.ComputateConfigKeys;
 import org.computate.vertx.model.user.ComputateSiteUser;
 import org.computate.vertx.request.ComputateSiteRequest;
+
+import com.hubspot.jinjava.Jinjava;
 import org.computate.aitelemetry.user.SiteUser;
 
 import io.vertx.core.MultiMap;
@@ -62,6 +65,13 @@ public class SiteRequest extends SiteRequestGen<Object> implements ComputateSite
 
   /**
    * {@inheritDoc}
+   * Description: A Jinja template handler for Java. 
+   **/
+  protected void _jinjava(Wrap<Jinjava> c) { 
+  }
+
+  /**
+   * {@inheritDoc}
    * Description: An API request object for returning information through websockets about API changes
    **/
   protected void _apiRequest_(Wrap<ApiRequest> c) { 
@@ -80,13 +90,19 @@ public class SiteRequest extends SiteRequestGen<Object> implements ComputateSite
    **/
   protected void _serviceRequest(Wrap<ServiceRequest> c) {
   }
-
+  /**
+   * {@inheritDoc}
+   * Description: Enable viewing archived records for the user. 
+   **/
+  protected void _seeArchived(Wrap<Boolean> w) {
+    w.o(BooleanUtils.toBoolean(Optional.ofNullable(serviceRequest).map(r -> r.getParams()).map(p -> p.getJsonObject("cookie")).map(c -> c.getString(ComputateConfigKeys.ENABLE_ARCHIVED)).orElse("false")));
+  }
   /**
    * {@inheritDoc}
    * Description: The session site font size. 
    **/
   protected void _sessionSiteFontSize(Wrap<String> w) {
-    w.o(Optional.ofNullable(user).map(u -> u.attributes()).map(a -> a.getJsonObject("accessToken")).map(a -> a.getString(SiteUser.VAR_siteFontSize)).orElse(siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_FONT_SIZE)));
+    w.o(Optional.ofNullable(serviceRequest).map(r -> r.getParams()).map(p -> p.getJsonObject("cookie")).map(c -> c.getString(ComputateConfigKeys.SITE_FONT_SIZE)).orElse(siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_FONT_SIZE)));
   }
 
   /**
@@ -94,7 +110,7 @@ public class SiteRequest extends SiteRequestGen<Object> implements ComputateSite
    * Description: The session site theme. 
    **/
   protected void _sessionSiteTheme(Wrap<String> w) {
-    w.o(Optional.ofNullable(user).map(u -> u.attributes()).map(a -> a.getJsonObject("accessToken")).map(a -> a.getString(SiteUser.VAR_siteTheme)).orElse(siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_THEME)));
+    w.o(Optional.ofNullable(serviceRequest).map(r -> r.getParams()).map(p -> p.getJsonObject("cookie")).map(c -> c.getString(ComputateConfigKeys.SITE_THEME)).orElse(siteRequest_.getConfig().getString(ComputateConfigKeys.SITE_THEME)));
   }
 
   /**
@@ -142,16 +158,6 @@ public class SiteRequest extends SiteRequestGen<Object> implements ComputateSite
           c.o(m.group(1));
         }
       }
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   * Description: The session ID of the user before the user logged in
-   **/
-  protected void _sessionIdBefore(Wrap<String> c) {
-    if(serviceRequest != null) {
-      c.o(serviceRequest.getParams().getJsonObject("cookie").getString("sessionIdBefore"));
     }
   }
 

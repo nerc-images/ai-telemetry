@@ -2,6 +2,80 @@ package org.computate.aitelemetry.model.clusterorder;
 
 import org.computate.aitelemetry.model.clustertemplate.ClusterTemplateEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.clustertemplate.ClusterTemplate;
+import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.computate.search.wrap.Wrap;
+import org.computate.aitelemetry.config.ConfigKeys;
+import org.computate.aitelemetry.request.SiteRequest;
+import org.computate.vertx.config.ComputateConfigKeys;
+import org.computate.vertx.model.base.ComputateBaseModel;
+import org.computate.aitelemetry.request.SiteRequest;
+import java.lang.Object;
+import org.computate.aitelemetry.model.BaseModel;
+import io.vertx.core.json.JsonObject;
+import java.util.Date;
+import java.util.Set;
+import org.computate.vertx.api.ApiRequest;
+import org.computate.aitelemetry.config.ConfigKeys;
+import java.util.Optional;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.computate.search.serialize.ComputateLocalDateSerializer;
+import org.computate.search.serialize.ComputateLocalDateDeserializer;
+import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
+import org.computate.search.serialize.ComputateZonedDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.computate.search.serialize.ComputateBigDecimalDeserializer;
+import java.math.MathContext;
+import org.apache.commons.lang3.math.NumberUtils;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.math.RoundingMode;
+import java.util.Map;
+import java.lang.Long;
+import java.lang.String;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.lang.Boolean;
+import io.vertx.core.json.JsonArray;
+import org.computate.search.wrap.Wrap;
+import io.vertx.core.Promise;
+import io.vertx.core.Future;
+import org.computate.vertx.search.list.SearchList;
+import org.computate.search.tool.SearchTool;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.computate.search.response.solr.SolrResponse;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.user.SiteUser;
 import org.computate.vertx.api.ApiRequest;
@@ -125,55 +199,26 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchClusterOrderList(siteRequest, false, true, false, "GET").onSuccess(listClusterOrder -> {
-                response200SearchClusterOrder(listClusterOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchClusterOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "Search", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchClusterOrderList(siteRequest2, false, true, false, "GET").onSuccess(listClusterOrder -> {
+              response200SearchClusterOrder(listClusterOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchClusterOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchClusterOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchClusterOrder failed. "), ex);
@@ -289,55 +334,26 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchClusterOrderList(siteRequest, false, true, false, "GET").onSuccess(listClusterOrder -> {
-                response200GETClusterOrder(listClusterOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("getClusterOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("getClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "GET", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchClusterOrderList(siteRequest2, false, true, false, "GET").onSuccess(listClusterOrder -> {
+              response200GETClusterOrder(listClusterOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("getClusterOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("getClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("getClusterOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("getClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("getClusterOrder failed. "), ex);
@@ -391,89 +407,48 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "PATCH"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PATCH")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchClusterOrderList(siteRequest, false, true, true, "PATCH").onSuccess(listClusterOrder -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listClusterOrder.getRequest().getRows());
-                  apiRequest.setNumFound(listClusterOrder.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listClusterOrder.first());
-                  apiRequest.setId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getId().toString()).orElse(null));
-                  apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PATCH", "PATCH", "PATCH").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchClusterOrderList(siteRequest2, false, true, true, "PATCH").onSuccess(listClusterOrder -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listClusterOrder.getRequest().getRows());
+                apiRequest.setNumFound(listClusterOrder.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listClusterOrder.first());
+                apiRequest.setId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getId().toString()).orElse(null));
+                apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
 
-                  listPATCHClusterOrder(apiRequest, listClusterOrder).onSuccess(e -> {
-                    response200PATCHClusterOrder(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("patchClusterOrder succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("patchClusterOrder failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listPATCHClusterOrder(apiRequest, listClusterOrder).onSuccess(e -> {
+                  response200PATCHClusterOrder(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("patchClusterOrder succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("patchClusterOrder failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("patchClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("patchClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("patchClusterOrder failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("patchClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("patchClusterOrder failed. "), ex);
@@ -571,7 +546,8 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
             apiRequest.setNumPATCH(0L);
             apiRequest.initDeepApiRequest(siteRequest);
             siteRequest.setApiRequest_(apiRequest);
-            if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+            Boolean refresh = Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L;
+            if(refresh) {
               siteRequest.getRequestVars().put( "refresh", "false" );
             }
             ClusterOrder o2;
@@ -588,6 +564,8 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
               }).onFailure(ex -> {
                 eventHandler.handle(Future.failedFuture(ex));
               });
+            } else if(refresh) {
+              eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(new JsonObject().encodePrettily()))));
             } else {
               String m = String.format("%s %s not found", "OpenShift cluster order", null);
               eventHandler.handle(Future.failedFuture(m));
@@ -620,19 +598,23 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
       pgPool.withTransaction(sqlConnection -> {
         siteRequest.setSqlConnection(sqlConnection);
         varsClusterOrder(siteRequest).onSuccess(a -> {
-          sqlPATCHClusterOrder(o, inheritPrimaryKey).onSuccess(clusterOrder -> {
-            persistClusterOrder(clusterOrder, true).onSuccess(c -> {
-              relateClusterOrder(clusterOrder).onSuccess(d -> {
-                indexClusterOrder(clusterOrder).onSuccess(o2 -> {
-                  if(apiRequest != null) {
-                    apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
-                    if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
-                      o2.apiRequestClusterOrder();
-                      if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
-                        eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
+          upsertClusterOrder(o, inheritPrimaryKey, true).onSuccess(c -> {
+            sqlPATCHClusterOrder(o, inheritPrimaryKey).onSuccess(clusterOrder -> {
+              persistClusterOrder(clusterOrder, true).onSuccess(d -> {
+                relateClusterOrder(clusterOrder).onSuccess(e -> {
+                  indexClusterOrder(clusterOrder).onSuccess(o2 -> {
+                    if(apiRequest != null) {
+                      apiRequest.setNumPATCH(apiRequest.getNumPATCH() + 1);
+                      if(apiRequest.getNumFound() == 1L && Optional.ofNullable(siteRequest.getJsonObject()).map(json -> json.size() > 0).orElse(false)) {
+                        o2.apiRequestClusterOrder();
+                        if(apiRequest.getVars().size() > 0 && Optional.ofNullable(siteRequest.getRequestVars().get("refresh")).map(refresh -> !refresh.equals("false")).orElse(true))
+                          eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
+                      }
                     }
-                  }
-                  promise1.complete(clusterOrder);
+                    promise1.complete(clusterOrder);
+                  }).onFailure(ex -> {
+                    promise1.tryFail(ex);
+                  });
                 }).onFailure(ex -> {
                   promise1.tryFail(ex);
                 });
@@ -734,14 +716,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
               }));
             });
             break;
-          case "setCreated":
-              o2.setCreated(jsonObject.getString(entityVar));
-              if(bParams.size() > 0)
-                bSql.append(", ");
-              bSql.append(ClusterOrder.VAR_created + "=$" + num);
-              num++;
-              bParams.add(o2.sqlCreated());
-            break;
           case "setState":
               o2.setState(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -757,6 +731,14 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
               bSql.append(ClusterOrder.VAR_clusterId + "=$" + num);
               num++;
               bParams.add(o2.sqlClusterId());
+            break;
+          case "setCreated":
+              o2.setCreated(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(ClusterOrder.VAR_created + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCreated());
             break;
           case "setArchived":
               o2.setArchived(jsonObject.getString(entityVar));
@@ -789,6 +771,14 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
               bSql.append(ClusterOrder.VAR_objectTitle + "=$" + num);
               num++;
               bParams.add(o2.sqlObjectTitle());
+            break;
+          case "setApiUrl":
+              o2.setApiUrl(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(ClusterOrder.VAR_apiUrl + "=$" + num);
+              num++;
+              bParams.add(o2.sqlApiUrl());
             break;
           case "setDisplayPage":
               o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -882,91 +872,55 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "POST"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("POST")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              apiRequest.setRows(1L);
-              apiRequest.setNumFound(1L);
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
-              JsonObject params = new JsonObject();
-              params.put("body", siteRequest.getJsonObject());
-              params.put("path", new JsonObject());
-              params.put("scopes", scopes2);
-              params.put("cookie", siteRequest.getServiceRequest().getParams().getJsonObject("cookie"));
-              params.put("header", siteRequest.getServiceRequest().getParams().getJsonObject("header"));
-              params.put("form", new JsonObject());
-              JsonObject query = new JsonObject();
-              Boolean softCommit = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
-              Integer commitWithin = Optional.ofNullable(siteRequest.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
-              if(softCommit == null && commitWithin == null)
-                softCommit = true;
-              if(softCommit != null)
-                query.put("softCommit", softCommit);
-              if(commitWithin != null)
-                query.put("commitWithin", commitWithin);
-              params.put("query", query);
-              JsonObject context = new JsonObject().put("params", params).put("user", siteRequest.getUserPrincipal());
-              JsonObject json = new JsonObject().put("context", context);
-              eventBus.request(ClusterOrder.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postClusterOrderFuture")).onSuccess(a -> {
-                JsonObject responseMessage = (JsonObject)a.body();
-                JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
-                apiRequest.setSolrId(responseBody.getString(ClusterOrder.VAR_solrId));
-                eventHandler.handle(Future.succeededFuture(ServiceResponse.completedWithJson(Buffer.buffer(responseBody.encodePrettily()))));
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "POST", "POST", "POST").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            apiRequest.setRows(1L);
+            apiRequest.setNumFound(1L);
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
+            JsonObject params = new JsonObject();
+            params.put("body", siteRequest2.getJsonObject());
+            params.put("path", new JsonObject());
+            params.put("scopes", scopes2);
+            params.put("cookie", siteRequest2.getServiceRequest().getParams().getJsonObject("cookie"));
+            params.put("header", siteRequest2.getServiceRequest().getParams().getJsonObject("header"));
+            params.put("form", new JsonObject());
+            JsonObject query = new JsonObject();
+            Boolean softCommit = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getBoolean("softCommit")).orElse(null);
+            Integer commitWithin = Optional.ofNullable(siteRequest2.getServiceRequest().getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getInteger("commitWithin")).orElse(null);
+            if(softCommit == null && commitWithin == null)
+              softCommit = true;
+            if(softCommit != null)
+              query.put("softCommit", softCommit);
+            if(commitWithin != null)
+              query.put("commitWithin", commitWithin);
+            params.put("query", query);
+            JsonObject context = new JsonObject().put("params", params).put("user", siteRequest2.getUserPrincipal());
+            JsonObject json = new JsonObject().put("context", context);
+            eventBus.request(ClusterOrder.getClassApiAddress(), json, new DeliveryOptions().addHeader("action", "postClusterOrderFuture")).onSuccess(a -> {
+              JsonObject responseMessage = (JsonObject)a.body();
+              JsonObject responseBody = new JsonObject(Buffer.buffer(JsonUtil.BASE64_DECODER.decode(responseMessage.getString("payload"))));
+              apiRequest.setSolrId(responseBody.getString(ClusterOrder.VAR_solrId));
+              response200POSTClusterOrder(siteRequest2, responseBody).onSuccess(response -> {
                 LOG.debug(String.format("postClusterOrder succeeded. "));
+                eventHandler.handle(Future.succeededFuture(response));
               }).onFailure(ex -> {
                 LOG.error(String.format("postClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("postClusterOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("postClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("postClusterOrder failed. "), ex);
@@ -1062,11 +1016,15 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
         siteRequest.setSqlConnection(sqlConnection);
         varsClusterOrder(siteRequest).onSuccess(a -> {
           createClusterOrder(siteRequest).onSuccess(clusterOrder -> {
-            sqlPOSTClusterOrder(clusterOrder, id).onSuccess(b -> {
-              persistClusterOrder(clusterOrder, false).onSuccess(c -> {
-                relateClusterOrder(clusterOrder).onSuccess(d -> {
-                  indexClusterOrder(clusterOrder).onSuccess(o2 -> {
-                    promise1.complete(clusterOrder);
+            upsertClusterOrder(clusterOrder, id, false).onSuccess(b -> {
+              sqlPOSTClusterOrder(clusterOrder, id).onSuccess(c -> {
+                persistClusterOrder(clusterOrder, false).onSuccess(d -> {
+                  relateClusterOrder(clusterOrder).onSuccess(e -> {
+                    indexClusterOrder(clusterOrder).onSuccess(o2 -> {
+                      promise1.complete(clusterOrder);
+                    }).onFailure(ex -> {
+                      promise1.tryFail(ex);
+                    });
                   }).onFailure(ex -> {
                     promise1.tryFail(ex);
                   });
@@ -1201,15 +1159,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
               }));
             });
             break;
-          case ClusterOrder.VAR_created:
-            o2.setCreated(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(ClusterOrder.VAR_created + "=$" + num);
-            num++;
-            bParams.add(o2.sqlCreated());
-            break;
           case ClusterOrder.VAR_state:
             o2.setState(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1228,6 +1177,15 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
             num++;
             bParams.add(o2.sqlClusterId());
             break;
+          case ClusterOrder.VAR_created:
+            o2.setCreated(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(ClusterOrder.VAR_created + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCreated());
+            break;
           case ClusterOrder.VAR_archived:
             o2.setArchived(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1236,15 +1194,6 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
             bSql.append(ClusterOrder.VAR_archived + "=$" + num);
             num++;
             bParams.add(o2.sqlArchived());
-            break;
-          case ClusterOrder.VAR_sessionId:
-            o2.setSessionId(jsonObject.getString(entityVar));
-            if(bParams.size() > 0) {
-              bSql.append(", ");
-            }
-            bSql.append(ClusterOrder.VAR_sessionId + "=$" + num);
-            num++;
-            bParams.add(o2.sqlSessionId());
             break;
           case ClusterOrder.VAR_userKey:
             o2.setUserKey(jsonObject.getString(entityVar));
@@ -1263,6 +1212,15 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
             bSql.append(ClusterOrder.VAR_objectTitle + "=$" + num);
             num++;
             bParams.add(o2.sqlObjectTitle());
+            break;
+          case ClusterOrder.VAR_apiUrl:
+            o2.setApiUrl(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(ClusterOrder.VAR_apiUrl + "=$" + num);
+            num++;
+            bParams.add(o2.sqlApiUrl());
             break;
           case ClusterOrder.VAR_displayPage:
             o2.setDisplayPage(jsonObject.getString(entityVar));
@@ -1337,11 +1295,9 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     return promise.future();
   }
 
-  public Future<ServiceResponse> response200POSTClusterOrder(ClusterOrder o) {
+  public Future<ServiceResponse> response200POSTClusterOrder(SiteRequest siteRequest, JsonObject json) {
     Promise<ServiceResponse> promise = Promise.promise();
     try {
-      SiteRequest siteRequest = o.getSiteRequest_();
-      JsonObject json = JsonObject.mapFrom(o);
       promise.complete(ServiceResponse.completedWithJson(Buffer.buffer(Optional.ofNullable(json).orElse(new JsonObject()).encodePrettily())));
     } catch(Exception ex) {
       LOG.error(String.format("response200POSTClusterOrder failed. "), ex);
@@ -1359,88 +1315,47 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "DELETE"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchClusterOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterOrder -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listClusterOrder.getRequest().getRows());
-                  apiRequest.setNumFound(listClusterOrder.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listClusterOrder.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETE", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchClusterOrderList(siteRequest2, false, true, true, "DELETE").onSuccess(listClusterOrder -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listClusterOrder.getRequest().getRows());
+                apiRequest.setNumFound(listClusterOrder.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listClusterOrder.first());
+                apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEClusterOrder(apiRequest, listClusterOrder).onSuccess(e -> {
-                    response200DELETEClusterOrder(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deleteClusterOrder succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deleteClusterOrder failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEClusterOrder(apiRequest, listClusterOrder).onSuccess(e -> {
+                  response200DELETEClusterOrder(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deleteClusterOrder succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deleteClusterOrder failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deleteClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deleteClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deleteClusterOrder failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deleteClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deleteClusterOrder failed. "), ex);
@@ -1730,80 +1645,39 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "PUT"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("PUT")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              ApiRequest apiRequest = new ApiRequest();
-              JsonArray jsonArray = Optional.ofNullable(siteRequest.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
-              apiRequest.setRows(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
-              apiRequest.setNumPATCH(0L);
-              apiRequest.initDeepApiRequest(siteRequest);
-              siteRequest.setApiRequest_(apiRequest);
-              eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
-              varsClusterOrder(siteRequest).onSuccess(d -> {
-                listPUTImportClusterOrder(apiRequest, siteRequest).onSuccess(e -> {
-                  response200PUTImportClusterOrder(siteRequest).onSuccess(response -> {
-                    LOG.debug(String.format("putimportClusterOrder succeeded. "));
-                    eventHandler.handle(Future.succeededFuture(response));
-                  }).onFailure(ex -> {
-                    LOG.error(String.format("putimportClusterOrder failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
-                  });
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "PUTImport", "PUT", "PUT").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            ApiRequest apiRequest = new ApiRequest();
+            JsonArray jsonArray = Optional.ofNullable(siteRequest2.getJsonObject()).map(o -> o.getJsonArray("list")).orElse(new JsonArray());
+            apiRequest.setRows(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumFound(Long.valueOf(jsonArray.size()));
+            apiRequest.setNumPATCH(0L);
+            apiRequest.initDeepApiRequest(siteRequest2);
+            siteRequest2.setApiRequest_(apiRequest);
+            eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
+            varsClusterOrder(siteRequest2).onSuccess(d -> {
+              listPUTImportClusterOrder(apiRequest, siteRequest2).onSuccess(e -> {
+                response200PUTImportClusterOrder(siteRequest2).onSuccess(response -> {
+                  LOG.debug(String.format("putimportClusterOrder succeeded. "));
+                  eventHandler.handle(Future.succeededFuture(response));
                 }).onFailure(ex -> {
                   LOG.error(String.format("putimportClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
+                  error(siteRequest2, eventHandler, ex);
                 });
               }).onFailure(ex -> {
                 LOG.error(String.format("putimportClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("putimportClusterOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("putimportClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("putimportClusterOrder failed. "), ex);
@@ -2054,55 +1928,26 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchClusterOrderList(siteRequest, false, true, false, "GET").onSuccess(listClusterOrder -> {
-                response200SearchPageClusterOrder(listClusterOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("searchpageClusterOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("searchpageClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "SearchPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchClusterOrderList(siteRequest2, false, true, false, "GET").onSuccess(listClusterOrder -> {
+              response200SearchPageClusterOrder(listClusterOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("searchpageClusterOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("searchpageClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
+                error(siteRequest2, eventHandler, ex);
               });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("searchpageClusterOrder failed. "), ex);
+            }).onFailure(ex -> {
+              LOG.error(String.format("searchpageClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("searchpageClusterOrder failed. "), ex);
@@ -2161,6 +2006,45 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/search/cluster-order/ClusterOrderSearchPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/cluster-order/ClusterOrderGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2239,19 +2123,24 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
           Promise<Void> promise1 = Promise.promise();
           searchpageClusterOrderPageInit(ctx, page, listClusterOrder, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateSearchPageClusterOrder(ctx, page, listClusterOrder, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200SearchPageClusterOrder failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateSearchPageClusterOrder(ctx, page, listClusterOrder, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200SearchPageClusterOrder failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200SearchPageClusterOrder failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2311,55 +2200,25 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "GET"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-              , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-              , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-              )
-              .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-              .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-              .sendForm(form)
-              .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchClusterOrderList(siteRequest, false, true, false, "GET").onSuccess(listClusterOrder -> {
-                response200EditPageClusterOrder(listClusterOrder).onSuccess(response -> {
-                  eventHandler.handle(Future.succeededFuture(response));
-                  LOG.debug(String.format("editpageClusterOrder succeeded. "));
-                }).onFailure(ex -> {
-                  LOG.error(String.format("editpageClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                });
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "EditPage", "GET", "GET").onSuccess(siteRequest2 -> {
+            searchClusterOrderList(siteRequest2, false, true, false, "GET").onSuccess(listClusterOrder -> {
+              response200EditPageClusterOrder(listClusterOrder).onSuccess(response -> {
+                eventHandler.handle(Future.succeededFuture(response));
+                LOG.debug(String.format("editpageClusterOrder succeeded. "));
               }).onFailure(ex -> {
                 LOG.error(String.format("editpageClusterOrder failed. "), ex);
                 error(siteRequest, eventHandler, ex);
+              });
+          }).onFailure(ex -> {
+              LOG.error(String.format("editpageClusterOrder failed. "), ex);
+              error(siteRequest, eventHandler, ex);
             });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("editpageClusterOrder failed. "), ex);
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("editpageClusterOrder failed. "), ex);
@@ -2418,6 +2277,45 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
       if(result == null || !Files.exists(resourceTemplatePath)) {
         String template = Files.readString(Path.of(siteTemplatePath, "en-us/edit/cluster-order/ClusterOrderEditPage.htm"), Charset.forName("UTF-8"));
         String renderedTemplate = jinjava.render(template, ctx.getMap());
+        promise.complete(renderedTemplate);
+      } else if(pageTemplateUri.endsWith(".yaml") || pageTemplateUri.endsWith(".yml")) {
+        String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
+        Map<String, Object> data = new HashMap<>();
+        Yaml yaml = new Yaml();
+        Map<String, Object> mapResult = yaml.load(template);
+        if(mapResult.containsKey("result")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("result");
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+          map.forEach((key, value) -> {
+            String val = Optional.ofNullable(value).map(v -> v.toString()).orElse(null);
+            if(val instanceof String) {
+              String rendered = jinjava.render(val, ctx.getMap());
+              data.put(key, rendered);
+            }
+          });
+        }
+        String pageExtends = Optional.ofNullable(Optional.ofNullable((String)data.get("extends")).orElse("en-us/edit/cluster-order/ClusterOrderGenEditPage.htm")).orElse("en-us/Article.htm");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% extends \"").append(pageExtends).append("\" %}\n");
+        if(mapResult.containsKey("block")) {
+          Map<String, Object> map = (Map<String, Object>)mapResult.get("block");
+          map.forEach((resultKey, value) -> {
+            if(!"result".equals(resultKey)) {
+              String lineSpace = ((String)value).replaceAll("\\A(\\s*)[\\w\\W]+\\Z", "$1");
+              sb.append(lineSpace).append("{% block ").append(resultKey).append(" -%}\n");
+              sb.append(value);
+              sb.append(lineSpace).append("{% endblock ").append(resultKey).append(" -%}{{''}}\n");
+            }
+          });
+        }
+        String htmTemplate = sb.toString();
+        String renderedTemplate = jinjava.render(htmTemplate, ctx.getMap());
         promise.complete(renderedTemplate);
       } else if(pageTemplateUri.endsWith(".md")) {
         String template = siteTemplatePath == null ? Resources.toString(Resources.getResource(resourceTemplatePath.toString()), StandardCharsets.UTF_8) : Files.readString(resourceTemplatePath, Charset.forName("UTF-8"));
@@ -2496,19 +2394,24 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
           Promise<Void> promise1 = Promise.promise();
           editpageClusterOrderPageInit(ctx, page, listClusterOrder, promise1);
           promise1.future().onSuccess(b -> {
-            Promise<String> promise2 = Promise.promise();
-            templateEditPageClusterOrder(ctx, page, listClusterOrder, promise2);
-            promise2.future().onSuccess(renderedTemplate -> {
-              try {
-                Buffer buffer = Buffer.buffer(renderedTemplate);
-                promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
-              } catch(Throwable ex) {
-                LOG.error(String.format("response200EditPageClusterOrder failed. "), ex);
+            try {
+              Promise<String> promise2 = Promise.promise();
+              templateEditPageClusterOrder(ctx, page, listClusterOrder, promise2);
+              promise2.future().onSuccess(renderedTemplate -> {
+                try {
+                  Buffer buffer = Buffer.buffer(renderedTemplate);
+                  promise.complete(new ServiceResponse(200, "OK", buffer, requestHeaders));
+                } catch(Throwable ex) {
+                  LOG.error(String.format("response200EditPageClusterOrder failed. "), ex);
+                  promise.fail(ex);
+                }
+              }).onFailure(ex -> {
                 promise.fail(ex);
-              }
-            }).onFailure(ex -> {
-              promise.fail(ex);
-            });
+              });
+            } catch(Throwable ex) {
+              LOG.error(String.format("response200EditPageClusterOrder failed. "), ex);
+              promise.tryFail(ex);
+            }
           }).onFailure(ex -> {
             promise.tryFail(ex);
           });
@@ -2569,88 +2472,47 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
     user(serviceRequest, SiteRequest.class, SiteUser.class, SiteUser.getClassApiAddress(), "postSiteUserFuture", "patchSiteUserFuture", classPublicRead).onSuccess(siteRequest -> {
       try {
         siteRequest.setLang("enUS");
-        String id = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("id");
-        String CLUSTERORDER = siteRequest.getServiceRequest().getParams().getJsonObject("path").getString("CLUSTERORDER");
-        List<String> groups = Optional.ofNullable(siteRequest.getGroups()).orElse(new ArrayList<>());
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-        form.add("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket");
-        form.add("audience", config.getString(ComputateConfigKeys.AUTH_CLIENT));
-        form.add("response_mode", "permissions");
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "POST"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "GET"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "PATCH"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "DELETE"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "Admin"));
-        form.add("permission", String.format("%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin"));
-        if(id != null)
-          form.add("permission", String.format("%s-%s#%s", ClusterOrder.CLASS_AUTH_RESOURCE, id, "DELETE"));
-        webClient.post(
-            config.getInteger(ComputateConfigKeys.AUTH_PORT)
-            , config.getString(ComputateConfigKeys.AUTH_HOST_NAME)
-            , config.getString(ComputateConfigKeys.AUTH_TOKEN_URI)
-            )
-            .ssl(config.getBoolean(ComputateConfigKeys.AUTH_SSL))
-            .putHeader("Authorization", String.format("Bearer %s", Optional.ofNullable(siteRequest.getUser()).map(u -> u.principal().getString("access_token")).orElse("")))
-            .sendForm(form)
-            .expecting(HttpResponseExpectation.SC_OK)
-        .onComplete(authorizationDecisionResponse -> {
-          try {
-            HttpResponse<Buffer> authorizationDecision = authorizationDecisionResponse.result();
-            JsonArray authorizationDecisionBody = authorizationDecisionResponse.failed() ? new JsonArray() : authorizationDecision.bodyAsJsonArray();
-            JsonArray scopes = authorizationDecisionBody.stream().map(o -> (JsonObject)o).filter(o -> "CLUSTERORDER".equals(o.getString("rsname"))).findFirst().map(decision -> ((JsonObject)decision).getJsonArray("scopes")).orElse(new JsonArray());
-            if(authorizationDecisionResponse.failed() || !scopes.contains("DELETE")) {
-              String msg = String.format("403 FORBIDDEN user %s to %s %s", siteRequest.getUser().attributes().getJsonObject("accessToken").getString("preferred_username"), serviceRequest.getExtra().getString("method"), serviceRequest.getExtra().getString("uri"));
-              eventHandler.handle(Future.succeededFuture(
-                new ServiceResponse(403, "FORBIDDEN",
-                  Buffer.buffer().appendString(
-                    new JsonObject()
-                      .put("errorCode", "403")
-                      .put("errorMessage", msg)
-                      .encodePrettily()
-                    ), MultiMap.caseInsensitiveMultiMap()
-                )
-              ));
-            } else {
-              siteRequest.setScopes(scopes.stream().map(o -> o.toString()).collect(Collectors.toList()));
-              List<String> scopes2 = siteRequest.getScopes();
-              searchClusterOrderList(siteRequest, false, true, true, "DELETE").onSuccess(listClusterOrder -> {
-                try {
-                  ApiRequest apiRequest = new ApiRequest();
-                  apiRequest.setRows(listClusterOrder.getRequest().getRows());
-                  apiRequest.setNumFound(listClusterOrder.getResponse().getResponse().getNumFound());
-                  apiRequest.setNumPATCH(0L);
-                  apiRequest.initDeepApiRequest(siteRequest);
-                  siteRequest.setApiRequest_(apiRequest);
-                  if(apiRequest.getNumFound() == 1L)
-                    apiRequest.setOriginal(listClusterOrder.first());
-                  apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
-                  eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
+        ClusterOrder.authorizationClusterOrder(siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(authorizationDecisionResponse -> {
+          ClusterOrder.authorizationScopesClusterOrder(authorizationDecisionResponse, siteRequest, webClient, classPublicRead, "DELETEFilter", "DELETE", "DELETE").onSuccess(siteRequest2 -> {
+            List<String> scopes2 = siteRequest2.getScopes();
+            searchClusterOrderList(siteRequest2, false, true, true, "DELETE").onSuccess(listClusterOrder -> {
+              try {
+                ApiRequest apiRequest = new ApiRequest();
+                apiRequest.setRows(listClusterOrder.getRequest().getRows());
+                apiRequest.setNumFound(listClusterOrder.getResponse().getResponse().getNumFound());
+                apiRequest.setNumPATCH(0L);
+                apiRequest.initDeepApiRequest(siteRequest2);
+                siteRequest2.setApiRequest_(apiRequest);
+                if(apiRequest.getNumFound() == 1L)
+                  apiRequest.setOriginal(listClusterOrder.first());
+                apiRequest.setSolrId(Optional.ofNullable(listClusterOrder.first()).map(o2 -> o2.getSolrId()).orElse(null));
+                eventBus.publish("websocketClusterOrder", JsonObject.mapFrom(apiRequest).toString());
 
-                  listDELETEFilterClusterOrder(apiRequest, listClusterOrder).onSuccess(e -> {
-                    response200DELETEFilterClusterOrder(siteRequest).onSuccess(response -> {
-                      LOG.debug(String.format("deletefilterClusterOrder succeeded. "));
-                      eventHandler.handle(Future.succeededFuture(response));
-                    }).onFailure(ex -> {
-                      LOG.error(String.format("deletefilterClusterOrder failed. "), ex);
-                      error(siteRequest, eventHandler, ex);
-                    });
+                listDELETEFilterClusterOrder(apiRequest, listClusterOrder).onSuccess(e -> {
+                  response200DELETEFilterClusterOrder(siteRequest2).onSuccess(response -> {
+                    LOG.debug(String.format("deletefilterClusterOrder succeeded. "));
+                    eventHandler.handle(Future.succeededFuture(response));
                   }).onFailure(ex -> {
                     LOG.error(String.format("deletefilterClusterOrder failed. "), ex);
-                    error(siteRequest, eventHandler, ex);
+                    error(siteRequest2, eventHandler, ex);
                   });
-                } catch(Exception ex) {
+                }).onFailure(ex -> {
                   LOG.error(String.format("deletefilterClusterOrder failed. "), ex);
-                  error(siteRequest, eventHandler, ex);
-                }
-              }).onFailure(ex -> {
+                  error(siteRequest2, eventHandler, ex);
+                });
+              } catch(Exception ex) {
                 LOG.error(String.format("deletefilterClusterOrder failed. "), ex);
-                error(siteRequest, eventHandler, ex);
-              });
-            }
-          } catch(Exception ex) {
-            LOG.error(String.format("deletefilterClusterOrder failed. "), ex);
+                error(siteRequest2, eventHandler, ex);
+              }
+            }).onFailure(ex -> {
+              LOG.error(String.format("deletefilterClusterOrder failed. "), ex);
+              error(siteRequest2, eventHandler, ex);
+            });
+          }).onFailure(ex -> {
             error(null, eventHandler, ex);
-          }
+          });
+        }).onFailure(ex -> {
+          error(null, eventHandler, ex);
         });
       } catch(Exception ex) {
         LOG.error(String.format("deletefilterClusterOrder failed. "), ex);
@@ -3251,13 +3113,117 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
   public void searchClusterOrder2(SiteRequest siteRequest, Boolean populate, Boolean store, Boolean modify, SearchList<ClusterOrder> searchList) {
   }
 
+  public Future<JsonObject> upsertClusterOrder(ClusterOrder o, Boolean inheritPrimaryKey, Boolean patch) {
+    Promise<JsonObject> promise = Promise.promise();
+    try {
+      SiteRequest siteRequest = o.getSiteRequest_();
+      ServiceRequest serviceRequest = siteRequest.getServiceRequest();
+      if(Optional.ofNullable(serviceRequest.getParams()).map(p -> p.getJsonObject("query")).map( q -> q.getJsonArray("var")).orElse(new JsonArray()).stream().filter(s -> "refresh:false".equals(s)).count() > 0L) {
+        promise.complete();
+      } else {
+        JsonObject json = o.getSiteRequest_().getJsonObject();
+
+        String old_id = ClusterOrder.staticJsonId(o.getId());
+        String new_id = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_id, patch));
+
+        String old_templateId = ClusterOrder.staticJsonTemplateId(o.getTemplateId());
+        String new_templateId = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_templateId, patch));
+
+        String old_state = ClusterOrder.staticJsonState(o.getState());
+        String new_state = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_state, patch));
+
+        String old_clusterId = ClusterOrder.staticJsonClusterId(o.getClusterId());
+        String new_clusterId = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_clusterId, patch));
+
+        String old_created = ClusterOrder.staticJsonCreated(o.getCreated());
+        String new_created = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_created, patch));
+
+        Boolean old_archived = ClusterOrder.staticJsonArchived(o.getArchived());
+        Boolean new_archived = json.getBoolean(ClusterOrder.varJson(ClusterOrder.VAR_archived, patch));
+
+        String old_sessionId = ClusterOrder.staticJsonSessionId(o.getSessionId());
+        String new_sessionId = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_sessionId, patch));
+
+        String old_userKey = ClusterOrder.staticJsonUserKey(o.getUserKey());
+        String new_userKey = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_userKey, patch));
+
+        String old_objectTitle = ClusterOrder.staticJsonObjectTitle(o.getObjectTitle());
+        String new_objectTitle = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_objectTitle, patch));
+
+        String old_apiUrl = ClusterOrder.staticJsonApiUrl(o.getApiUrl());
+        String new_apiUrl = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_apiUrl, patch));
+
+        String old_displayPage = ClusterOrder.staticJsonDisplayPage(o.getDisplayPage());
+        String new_displayPage = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_displayPage, patch));
+
+        String old_editPage = ClusterOrder.staticJsonEditPage(o.getEditPage());
+        String new_editPage = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_editPage, patch));
+
+        String old_userPage = ClusterOrder.staticJsonUserPage(o.getUserPage());
+        String new_userPage = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_userPage, patch));
+
+        String old_download = ClusterOrder.staticJsonDownload(o.getDownload());
+        String new_download = json.getString(ClusterOrder.varJson(ClusterOrder.VAR_download, patch));
+
+        String id = Optional.ofNullable(Optional.ofNullable(new_id).orElse(old_id)).orElse(null);
+        // if(!Objects.equals(old_id, id))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_id, patch), id);
+        String templateId = Optional.ofNullable(Optional.ofNullable(new_templateId).orElse(old_templateId)).orElse(null);
+        // if(!Objects.equals(old_templateId, templateId))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_templateId, patch), templateId);
+        String state = Optional.ofNullable(Optional.ofNullable(new_state).orElse(old_state)).orElse(null);
+        // if(!Objects.equals(old_state, state))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_state, patch), state);
+        String clusterId = Optional.ofNullable(Optional.ofNullable(new_clusterId).orElse(old_clusterId)).orElse(null);
+        // if(!Objects.equals(old_clusterId, clusterId))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_clusterId, patch), clusterId);
+        String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
+        // if(!Objects.equals(old_created, created))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_created, patch), created);
+        Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
+        // if(!Objects.equals(old_archived, archived))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_archived, patch), archived);
+        String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
+        // if(!Objects.equals(old_sessionId, sessionId))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_sessionId, patch), sessionId);
+        String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
+        // if(!Objects.equals(old_userKey, userKey))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_userKey, patch), userKey);
+        String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
+        // if(!Objects.equals(old_objectTitle, objectTitle))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_objectTitle, patch), objectTitle);
+        String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
+        // if(!Objects.equals(old_apiUrl, apiUrl))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_apiUrl, patch), apiUrl);
+        String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
+        // if(!Objects.equals(old_displayPage, displayPage))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_displayPage, patch), displayPage);
+        String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
+        // if(!Objects.equals(old_editPage, editPage))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_editPage, patch), editPage);
+        String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
+        // if(!Objects.equals(old_userPage, userPage))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_userPage, patch), userPage);
+        String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
+        // if(!Objects.equals(old_download, download))
+          // json.put(ClusterOrder.varJson(ClusterOrder.VAR_download, patch), download);
+
+        promise.complete(json);
+      }
+    } catch(Exception ex) {
+      LOG.error(String.format("upsertClusterOrder failed. "), ex);
+      promise.tryFail(ex);
+    }
+    return promise.future();
+  }
+
   public Future<Void> persistClusterOrder(ClusterOrder o, Boolean patch) {
     Promise<Void> promise = Promise.promise();
     try {
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT id, templateId, created, state, clusterId, archived, sessionId, userKey, objectTitle, displayPage, editPage, userPage, download FROM ClusterOrder WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT id, templateId, state, clusterId, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM ClusterOrder WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -3526,13 +3492,14 @@ public class ClusterOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl implem
 
       o.persistForClass(ClusterOrder.VAR_id, ClusterOrder.staticSetId(siteRequest2, (String)result.get(ClusterOrder.VAR_id)));
       o.persistForClass(ClusterOrder.VAR_templateId, ClusterOrder.staticSetTemplateId(siteRequest2, (String)result.get(ClusterOrder.VAR_templateId)));
-      o.persistForClass(ClusterOrder.VAR_created, ClusterOrder.staticSetCreated(siteRequest2, (String)result.get(ClusterOrder.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(ClusterOrder.VAR_state, ClusterOrder.staticSetState(siteRequest2, (String)result.get(ClusterOrder.VAR_state)));
       o.persistForClass(ClusterOrder.VAR_clusterId, ClusterOrder.staticSetClusterId(siteRequest2, (String)result.get(ClusterOrder.VAR_clusterId)));
+      o.persistForClass(ClusterOrder.VAR_created, ClusterOrder.staticSetCreated(siteRequest2, (String)result.get(ClusterOrder.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(ClusterOrder.VAR_archived, ClusterOrder.staticSetArchived(siteRequest2, (String)result.get(ClusterOrder.VAR_archived)));
       o.persistForClass(ClusterOrder.VAR_sessionId, ClusterOrder.staticSetSessionId(siteRequest2, (String)result.get(ClusterOrder.VAR_sessionId)));
       o.persistForClass(ClusterOrder.VAR_userKey, ClusterOrder.staticSetUserKey(siteRequest2, (String)result.get(ClusterOrder.VAR_userKey)));
       o.persistForClass(ClusterOrder.VAR_objectTitle, ClusterOrder.staticSetObjectTitle(siteRequest2, (String)result.get(ClusterOrder.VAR_objectTitle)));
+      o.persistForClass(ClusterOrder.VAR_apiUrl, ClusterOrder.staticSetApiUrl(siteRequest2, (String)result.get(ClusterOrder.VAR_apiUrl)));
       o.persistForClass(ClusterOrder.VAR_displayPage, ClusterOrder.staticSetDisplayPage(siteRequest2, (String)result.get(ClusterOrder.VAR_displayPage)));
       o.persistForClass(ClusterOrder.VAR_editPage, ClusterOrder.staticSetEditPage(siteRequest2, (String)result.get(ClusterOrder.VAR_editPage)));
       o.persistForClass(ClusterOrder.VAR_userPage, ClusterOrder.staticSetUserPage(siteRequest2, (String)result.get(ClusterOrder.VAR_userPage)));

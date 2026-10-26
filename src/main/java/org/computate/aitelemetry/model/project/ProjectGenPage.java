@@ -33,6 +33,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.Arrays;
+import javax.measure.Quantity;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Length;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.math.MathContext;
@@ -406,17 +409,6 @@ public class ProjectGenPage extends ProjectGenPageGen<PageLayout> {
   }
 
   @Override
-  protected void _DEFAULT_MAP_LOCATION(Wrap<JsonObject> w) {
-  }
-
-  @Override
-  protected void _DEFAULT_MAP_ZOOM(Wrap<BigDecimal> w) {
-    String s = Optional.ofNullable(siteRequest_.getRequestVars().get(VAR_DEFAULT_MAP_ZOOM)).orElse(siteRequest_.getConfig().getString(ConfigKeys.DEFAULT_MAP_ZOOM));
-    if(s != null)
-      w.o(new BigDecimal(s));
-  }
-
-  @Override
   protected void _defaultSortVars(List<String> l) {
     if(!searchListProject_.getDefaultSort()) {
       Optional.ofNullable(searchListProject_.getSorts()).orElse(Arrays.asList()).forEach(varSortStr -> {
@@ -563,7 +555,7 @@ public class ProjectGenPage extends ProjectGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-people-line\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-people-line\"></i>");
   }
 
   protected void _pageUriProject(Wrap<String> c) {

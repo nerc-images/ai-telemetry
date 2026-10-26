@@ -24,7 +24,7 @@ import io.vertx.pgclient.data.Polygon;
  * Order: 11
  * Description: A Red Hat OpenShift virtual machine
  * AName: a virtual machine
- * Icon: <i class="fa-regular fa-sidebar"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-sidebar"></i>
  * Sort.asc: hubId
  * Sort.asc: clusterName
  * Sort.asc: vmProject

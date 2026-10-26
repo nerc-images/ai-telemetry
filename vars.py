@@ -83,7 +83,7 @@ if __name__ == '__main__':
     k8s_client = kubernetes.client.ApiClient()
     openshift_client = DynamicClient(k8s_client)
 
-    parser = argparse.ArgumentParser(description='Parse vars.yaml file for a computate project')
+    parser = argparse.ArgumentParser(description='Parse vars.yaml file for a shield project')
     parser.add_argument('path', nargs='?', default='vars.yaml', help='the path to the vars.yaml file for the project to generate')
     args = parser.parse_args()
 

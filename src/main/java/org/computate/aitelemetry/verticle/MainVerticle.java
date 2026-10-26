@@ -1,51 +1,27 @@
 package org.computate.aitelemetry.verticle;
 
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DateFormat;
 import java.text.Normalizer;
-import java.text.NumberFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.computate.search.serialize.ComputateLocalTimeSerializer;
-import org.computate.search.serialize.ComputateZonedDateTimeSerializer;
 import org.computate.search.tool.SearchTool;
-import org.computate.vertx.api.ApiCounter;
-import org.computate.vertx.api.ApiRequest;
-import org.computate.vertx.api.BaseApiServiceImpl;
 import org.computate.vertx.api.BaseApiServiceInterface;
 import org.computate.vertx.config.ComputateConfigKeys;
-import org.computate.vertx.model.base.ComputateBaseModel;
-import org.computate.vertx.model.user.ComputateSiteUser;
 import org.computate.vertx.openapi.OpenApi3Generator;
 import org.computate.vertx.openapi.ComputateOAuth2AuthHandlerImpl;
 import org.computate.vertx.request.ComputateSiteRequest;
@@ -55,7 +31,6 @@ import org.computate.vertx.verticle.EmailVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Resources;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.loader.FileLocator;
 
@@ -70,24 +45,14 @@ import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import io.vertx.amqp.AmqpClient;
-import io.vertx.amqp.AmqpClientOptions;
 import io.vertx.amqp.AmqpSender;
 import io.vertx.rabbitmq.RabbitMQClient;
-import io.vertx.rabbitmq.RabbitMQOptions;
 import io.vertx.serviceproxy.ServiceBinder;
-import io.vertx.openapi.validation.RequestUtils;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.AMQP.BasicProperties;
 
-import io.vertx.amqp.AmqpMessage;
-import io.vertx.amqp.AmqpMessageBuilder;
-import io.vertx.amqp.AmqpSenderOptions;
-import io.vertx.codegen.annotations.Nullable;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
@@ -97,33 +62,19 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxBuilder;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.WorkerExecutor;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBusOptions;
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpResponseExpectation;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.net.JksOptions;
-import io.vertx.core.net.PemKeyCertOptions;
-import io.vertx.core.shareddata.SharedData;
 import io.vertx.core.spi.cluster.ClusterManager;
-import io.vertx.core.spi.cluster.NodeInfo;
-import io.opentelemetry.api.trace.Tracer;
-import io.vertx.core.tracing.TracingPolicy;
-import io.vertx.core.tracing.TracingOptions;
-import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.authorization.AuthorizationProvider;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import io.vertx.ext.auth.oauth2.OAuth2Options;
 import io.vertx.ext.auth.oauth2.Oauth2Credentials;
 import io.vertx.ext.auth.oauth2.authorization.KeycloakAuthorization;
-import io.vertx.ext.auth.oauth2.impl.OAuth2AuthProviderImpl;
 import io.vertx.ext.auth.oauth2.providers.OpenIDConnectAuth;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.healthchecks.HealthCheckHandler;
@@ -132,8 +83,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.Session;
 import io.vertx.ext.web.api.service.ServiceRequest;
-import io.vertx.ext.web.api.service.ServiceResponse;
-import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -141,30 +90,24 @@ import io.vertx.ext.web.handler.FileSystemAccess;
 import io.vertx.ext.web.handler.OAuth2AuthHandler;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.handler.TemplateHandler;
-import io.vertx.ext.web.handler.impl.OAuth2AuthHandlerImpl;
 import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
-import io.vertx.ext.web.impl.RoutingContextImpl;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.sstore.LocalSessionStore;
+import io.vertx.ext.web.sstore.ClusteredSessionStore;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
-import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.mqtt.MqttClient;
-import io.vertx.openapi.contract.OpenAPIContract;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgBuilder;
 import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager;
 import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowStream;
+import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Transaction;
 import io.vertx.sqlclient.Tuple;
-import io.vertx.tracing.opentelemetry.OpenTelemetryOptions;
 import io.vertx.tracing.opentelemetry.OpenTelemetryTracingFactory;
-import io.vertx.tracing.opentracing.OpenTracingTracerFactory;
 
 import org.computate.aitelemetry.config.ConfigKeys;
 import org.computate.aitelemetry.request.SiteRequest;
@@ -172,16 +115,18 @@ import org.computate.aitelemetry.user.SiteUser;
 import org.computate.aitelemetry.user.SiteUserEnUSGenApiService;
 import org.computate.aitelemetry.user.SiteUserEnUSApiServiceImpl;
 import org.computate.aitelemetry.result.BaseResult;
-import org.computate.aitelemetry.model.BaseModel;
 import org.computate.aitelemetry.timezone.TimeZoneEnUSGenApiService;
 import org.computate.aitelemetry.timezone.TimeZoneEnUSApiServiceImpl;
 import org.computate.aitelemetry.timezone.TimeZone;
-import org.computate.aitelemetry.page.SitePageEnUSGenApiService;
-import org.computate.aitelemetry.page.SitePageEnUSApiServiceImpl;
-import org.computate.aitelemetry.page.SitePage;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSGenApiService;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper;
+import org.computate.aitelemetry.page.SitePageEnUSGenApiService;
+import org.computate.aitelemetry.page.SitePageEnUSApiServiceImpl;
+import org.computate.aitelemetry.page.SitePage;
+import org.computate.aitelemetry.model.MapModelEnUSGenApiService;
+import org.computate.aitelemetry.model.MapModelEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.MapModel;
 import org.computate.aitelemetry.model.tenant.TenantEnUSGenApiService;
 import org.computate.aitelemetry.model.tenant.TenantEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.tenant.Tenant;
@@ -241,7 +186,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
   private Integer jdbcMaxPoolSize; 
   private Integer jdbcMaxWaitQueueSize;
 
-  LocalSessionStore sessionStore;
+  ClusteredSessionStore sessionStore;
   SessionHandler sessionHandler;
   ComputateOAuth2AuthHandlerImpl oauth2AuthHandler;
 
@@ -254,7 +199,8 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 
   private WebClient webClient;
 
-  private Router router;
+  private Router rootRouter;
+  private Router apiRouter;
 
   private WorkerExecutor workerExecutor;
 
@@ -367,14 +313,18 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiTimeZone.setVertx(vertx);
       apiTimeZone.setConfig(config);
       apiTimeZone.setWebClient(webClient);
-      SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
-      apiSitePage.setVertx(vertx);
-      apiSitePage.setConfig(config);
-      apiSitePage.setWebClient(webClient);
       AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
       apiAiTelemetryDeveloper.setVertx(vertx);
       apiAiTelemetryDeveloper.setConfig(config);
       apiAiTelemetryDeveloper.setWebClient(webClient);
+      SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
+      apiSitePage.setVertx(vertx);
+      apiSitePage.setConfig(config);
+      apiSitePage.setWebClient(webClient);
+      MapModelEnUSApiServiceImpl apiMapModel = new MapModelEnUSApiServiceImpl();
+      apiMapModel.setVertx(vertx);
+      apiMapModel.setConfig(config);
+      apiMapModel.setWebClient(webClient);
       TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
       apiTenant.setVertx(vertx);
       apiTenant.setConfig(config);
@@ -435,73 +385,84 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiBareMetalNode.setVertx(vertx);
       apiBareMetalNode.setConfig(config);
       apiBareMetalNode.setWebClient(webClient);
-      apiSiteUser.createAuthorizationScopes(new String[] { "DELETE", "GET", "PATCH", "POST", "SuperAdmin", "Admin", "GETManager", "PUT" }).onSuccess(authToken -> {
-          apiTimeZone.authorizeGroupData(authToken, TimeZone.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" })
-              .onSuccess(q2 -> {
-            apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
-                .compose(q3 -> apiSitePage.authorizeGroupData(authToken, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                .onSuccess(q3 -> {
-              apiAiTelemetryDeveloper.authorizeGroupData(authToken, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "COMPANYPRODUCT-ai-telemetry-developer-GET", new String[] { "GET" })
-                  .compose(q4 -> apiAiTelemetryDeveloper.authorizeGroupData(authToken, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }))
-                  .compose(q4 -> apiAiTelemetryDeveloper.authorizeGroupData(authToken, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                  .onSuccess(q4 -> {
-                apiTenant.authorizeGroupData(authToken, Tenant.CLASS_AUTH_RESOURCE, "TenantAdmin", new String[] { "GET", "GETManager" })
-                    .compose(q5 -> apiTenant.authorizeGroupData(authToken, Tenant.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET", "GETManager" }))
-                    .compose(q5 -> apiTenant.authorizeGroupData(authToken, Tenant.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "GETManager", "DELETE", "Admin", "SuperAdmin" }))
-                    .onSuccess(q5 -> {
-                  apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
-                      .compose(q6 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-                      .compose(q6 -> apiHub.authorizeGroupData(authToken, Hub.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }))
-                      .onSuccess(q6 -> {
-                    apiCluster.authorizeGroupData(authToken, Cluster.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
-                        .compose(q7 -> apiCluster.authorizeGroupData(authToken, Cluster.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-                        .compose(q7 -> apiCluster.authorizeGroupData(authToken, Cluster.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }))
-                        .onSuccess(q7 -> {
-                      apiAiNode.authorizeGroupData(authToken, AiNode.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
-                          .compose(q8 -> apiAiNode.authorizeGroupData(authToken, AiNode.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-                          .compose(q8 -> apiAiNode.authorizeGroupData(authToken, AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                          .onSuccess(q8 -> {
-                        apiGpuDevice.authorizeGroupData(authToken, GpuDevice.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
-                            .compose(q9 -> apiGpuDevice.authorizeGroupData(authToken, GpuDevice.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-                            .compose(q9 -> apiGpuDevice.authorizeGroupData(authToken, GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "PUT", "DELETE", "SuperAdmin" }))
-                            .onSuccess(q9 -> {
-                          apiProject.authorizeGroupData(authToken, Project.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
-                              .compose(q10 -> apiProject.authorizeGroupData(authToken, Project.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET", "GETManager" }))
-                              .compose(q10 -> apiProject.authorizeGroupData(authToken, Project.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "GETManager", "DELETE", "Admin", "SuperAdmin" }))
-                              .onSuccess(q10 -> {
-                            apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" })
-                                .compose(q11 -> apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-                                .compose(q11 -> apiVirtualMachine.authorizeGroupData(authToken, VirtualMachine.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                .onSuccess(q11 -> {
-                              apiClusterRequest.authorizeGroupData(authToken, ClusterRequest.CLASS_AUTH_RESOURCE, "ClusterOwner", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
-                                  .compose(q12 -> apiClusterRequest.authorizeGroupData(authToken, ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                  .onSuccess(q12 -> {
-                                apiClusterOrder.authorizeGroupData(authToken, ClusterOrder.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "GET", "PATCH", "DELETE", "Admin" })
-                                    .compose(q13 -> apiClusterOrder.authorizeGroupData(authToken, ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                    .onSuccess(q13 -> {
-                                  apiClusterTemplate.authorizeGroupData(authToken, ClusterTemplate.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" })
-                                      .compose(q14 -> apiClusterTemplate.authorizeGroupData(authToken, ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                      .onSuccess(q14 -> {
-                                    apiManagedCluster.authorizeGroupData(authToken, ManagedCluster.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "GET", "PATCH", "DELETE", "Admin" })
-                                        .compose(q15 -> apiManagedCluster.authorizeGroupData(authToken, ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                        .onSuccess(q15 -> {
-                                      apiBareMetalOrder.authorizeGroupData(authToken, BareMetalOrder.CLASS_AUTH_RESOURCE, "BareMetalOrderOwner", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" })
-                                          .compose(q16 -> apiBareMetalOrder.authorizeGroupData(authToken, BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }))
-                                          .compose(q16 -> apiBareMetalOrder.authorizeGroupData(authToken, BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                          .onSuccess(q16 -> {
-                                        apiBareMetalResourceClass.authorizeGroupData(authToken, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" })
-                                            .compose(q17 -> apiBareMetalResourceClass.authorizeGroupData(authToken, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                            .onSuccess(q17 -> {
-                                          apiBareMetalNetwork.authorizeGroupData(authToken, BareMetalNetwork.CLASS_AUTH_RESOURCE, "BareMetalNetworkReader", new String[] { "GET" })
-                                              .compose(q18 -> apiBareMetalNetwork.authorizeGroupData(authToken, BareMetalNetwork.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-                                              .compose(q18 -> apiBareMetalNetwork.authorizeGroupData(authToken, BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                              .onSuccess(q18 -> {
-                                            apiBareMetalNode.authorizeGroupData(authToken, BareMetalNode.CLASS_AUTH_RESOURCE, "BareMetalNodeReader", new String[] { "GET" })
-                                                .compose(q19 -> apiBareMetalNode.authorizeGroupData(authToken, BareMetalNode.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }))
-                                                .compose(q19 -> apiBareMetalNode.authorizeGroupData(authToken, BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }))
-                                                .onSuccess(q19 -> {
-                                              LOG.info("authorize data complete");
-                                              promise.complete();
+      String realmName = config.getString(ComputateConfigKeys.AUTH_REALM);
+      String clientId = config.getString(ComputateConfigKeys.AUTH_CLIENT);
+      String[] defaultScopes = new String[] { "GET", "DELETE", "PATCH", "POST", "SuperAdmin", "Admin", "GETManager", "PUT" };
+      apiSiteUser.obtainKeycloakAdminToken().onSuccess(adminToken -> {
+        apiSiteUser.obtainClientUuid(adminToken, realmName, clientId).onSuccess(clientUuid -> {
+          apiSiteUser.createAuthorizationScopes(adminToken, realmName, clientId, clientUuid, defaultScopes).onSuccess(authorizationScopeResponse -> {
+              apiTimeZone.authorizeGroupData(adminToken, realmName, clientId, clientUuid, TimeZone.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes)
+                  .onSuccess(q2 -> {
+                apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "COMPANYPRODUCT-ai-telemetry-developer-GET", new String[] { "GET" }, defaultScopes)
+                    .compose(q3 -> apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes))
+                    .compose(q3 -> apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                    .onSuccess(q3 -> {
+                  apiSitePage.authorizeGroupData(adminToken, realmName, clientId, clientUuid, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes)
+                      .compose(q4 -> apiSitePage.authorizeGroupData(adminToken, realmName, clientId, clientUuid, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                      .onSuccess(q4 -> {
+                    apiMapModel.authorizeGroupData(adminToken, realmName, clientId, clientUuid, MapModel.CLASS_AUTH_RESOURCE, "MapModelViewer", new String[] { "GET" }, defaultScopes)
+                        .compose(q5 -> apiMapModel.authorizeGroupData(adminToken, realmName, clientId, clientUuid, MapModel.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                        .onSuccess(q5 -> {
+                      apiTenant.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Tenant.CLASS_AUTH_RESOURCE, "TenantAdmin", new String[] { "GET", "GETManager" }, defaultScopes)
+                          .compose(q6 -> apiTenant.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Tenant.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET", "GETManager" }, defaultScopes))
+                          .compose(q6 -> apiTenant.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Tenant.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "GETManager", "DELETE", "Admin", "SuperAdmin" }, defaultScopes))
+                          .onSuccess(q6 -> {
+                        apiHub.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Hub.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" }, defaultScopes)
+                            .compose(q7 -> apiHub.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Hub.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                            .compose(q7 -> apiHub.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Hub.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }, defaultScopes))
+                            .onSuccess(q7 -> {
+                          apiCluster.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Cluster.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" }, defaultScopes)
+                              .compose(q8 -> apiCluster.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Cluster.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                              .compose(q8 -> apiCluster.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Cluster.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin", "SuperAdmin" }, defaultScopes))
+                              .onSuccess(q8 -> {
+                            apiAiNode.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiNode.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" }, defaultScopes)
+                                .compose(q9 -> apiAiNode.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiNode.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                                .compose(q9 -> apiAiNode.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiNode.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                .onSuccess(q9 -> {
+                              apiGpuDevice.authorizeGroupData(adminToken, realmName, clientId, clientUuid, GpuDevice.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" }, defaultScopes)
+                                  .compose(q10 -> apiGpuDevice.authorizeGroupData(adminToken, realmName, clientId, clientUuid, GpuDevice.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                                  .compose(q10 -> apiGpuDevice.authorizeGroupData(adminToken, realmName, clientId, clientUuid, GpuDevice.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "PUT", "DELETE", "SuperAdmin" }, defaultScopes))
+                                  .onSuccess(q10 -> {
+                                apiProject.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Project.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" }, defaultScopes)
+                                    .compose(q11 -> apiProject.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Project.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET", "GETManager" }, defaultScopes))
+                                    .compose(q11 -> apiProject.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Project.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "GETManager", "DELETE", "Admin", "SuperAdmin" }, defaultScopes))
+                                    .onSuccess(q11 -> {
+                                  apiVirtualMachine.authorizeGroupData(adminToken, realmName, clientId, clientUuid, VirtualMachine.CLASS_AUTH_RESOURCE, "HubAdmin", new String[] { "GET" }, defaultScopes)
+                                      .compose(q12 -> apiVirtualMachine.authorizeGroupData(adminToken, realmName, clientId, clientUuid, VirtualMachine.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                                      .compose(q12 -> apiVirtualMachine.authorizeGroupData(adminToken, realmName, clientId, clientUuid, VirtualMachine.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                      .onSuccess(q12 -> {
+                                    apiClusterRequest.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ClusterRequest.CLASS_AUTH_RESOURCE, "ClusterOwner", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes)
+                                        .compose(q13 -> apiClusterRequest.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ClusterRequest.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                        .onSuccess(q13 -> {
+                                      apiClusterOrder.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ClusterOrder.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "GET", "PATCH", "DELETE", "Admin" }, defaultScopes)
+                                          .compose(q14 -> apiClusterOrder.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ClusterOrder.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                          .onSuccess(q14 -> {
+                                        apiClusterTemplate.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ClusterTemplate.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes)
+                                            .compose(q15 -> apiClusterTemplate.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ClusterTemplate.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                            .onSuccess(q15 -> {
+                                          apiManagedCluster.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ManagedCluster.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "GET", "PATCH", "DELETE", "Admin" }, defaultScopes)
+                                              .compose(q16 -> apiManagedCluster.authorizeGroupData(adminToken, realmName, clientId, clientUuid, ManagedCluster.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                              .onSuccess(q16 -> {
+                                            apiBareMetalOrder.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalOrder.CLASS_AUTH_RESOURCE, "BareMetalOrderOwner", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes)
+                                                .compose(q17 -> apiBareMetalOrder.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalOrder.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes))
+                                                .compose(q17 -> apiBareMetalOrder.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalOrder.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                                .onSuccess(q17 -> {
+                                              apiBareMetalResourceClass.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes)
+                                                  .compose(q18 -> apiBareMetalResourceClass.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalResourceClass.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                                  .onSuccess(q18 -> {
+                                                apiBareMetalNetwork.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalNetwork.CLASS_AUTH_RESOURCE, "BareMetalNetworkReader", new String[] { "GET" }, defaultScopes)
+                                                    .compose(q19 -> apiBareMetalNetwork.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalNetwork.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                                                    .compose(q19 -> apiBareMetalNetwork.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalNetwork.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                                    .onSuccess(q19 -> {
+                                                  apiBareMetalNode.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalNode.CLASS_AUTH_RESOURCE, "BareMetalNodeReader", new String[] { "GET" }, defaultScopes)
+                                                      .compose(q20 -> apiBareMetalNode.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalNode.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                                                      .compose(q20 -> apiBareMetalNode.authorizeGroupData(adminToken, realmName, clientId, clientUuid, BareMetalNode.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                                                      .onSuccess(q20 -> {
+                                                    LOG.info("authorize data complete");
+                                                    promise.complete();
+                                                }).onFailure(ex -> promise.fail(ex));
+                                              }).onFailure(ex -> promise.fail(ex));
+                                            }).onFailure(ex -> promise.fail(ex));
                                           }).onFailure(ex -> promise.fail(ex));
                                         }).onFailure(ex -> promise.fail(ex));
                                       }).onFailure(ex -> promise.fail(ex));
@@ -564,11 +525,18 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
                   .filter(line -> !line.trim().isEmpty())
                   .collect(Collectors.toList());
               for(String line : nonBlankLines) {
-                LOG.info(line);
-                transactionFuture.compose(transaction -> 
-                  sqlConnection.preparedQuery(line)
-                      .execute(Tuple.tuple())
-                );
+                transactionFuture.compose(transaction -> {
+                  Promise<RowSet<Row>> promise2 = Promise.promise();
+                  sqlConnection.preparedQuery(line).execute(Tuple.tuple()).onSuccess(row -> {
+                    promise2.complete(row);
+                  }).onFailure(ex -> {
+                    if(!Strings.CI.startsWith(ex.getMessage(), "ERROR: current transaction is aborted, commands ignored until end of transaction block (25P02)")) {
+                      LOG.error(String.format("Failed to configure database schema: %s", ex.getMessage()), ex);
+                    }
+                    promise2.fail(ex);
+                  });
+                  return promise2.future();
+                });
               }
 
               transactionFuture.onSuccess(transaction -> {
@@ -832,35 +800,19 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
   @Override()
   public void start(Promise<Void> startPromise) throws Exception, Exception {
     try {
-      configureI18n().onSuccess(a ->
-        configureWebClient().onSuccess(b ->
-          configureDataLoop().onSuccess(c -> 
-            configureOpenApi().onSuccess(d -> 
-              configureHealthChecks().onSuccess(e -> 
-                configureSharedWorkerExecutor().onSuccess(f -> 
-                  configureWebsockets().onSuccess(g -> 
-                    configureKafka().onSuccess(h -> 
-                      configureMqtt().onSuccess(i -> 
-                        configureAmqp().onSuccess(j -> 
-                          configureRabbitmq().onSuccess(k -> 
-                            configureJinjava().onSuccess(l -> 
-                                configureApi().onSuccess(n -> 
-                                  configureUi().onSuccess(o -> 
-                                    startServer().onSuccess(p -> startPromise.complete())
-                                  ).onFailure(ex -> startPromise.fail(ex))
-                                ).onFailure(ex -> startPromise.fail(ex))
-                            ).onFailure(ex -> startPromise.fail(ex))
-                          ).onFailure(ex -> startPromise.fail(ex))
-                        ).onFailure(ex -> startPromise.fail(ex))
-                      ).onFailure(ex -> startPromise.fail(ex))
-                    ).onFailure(ex -> startPromise.fail(ex))
-                  ).onFailure(ex -> startPromise.fail(ex))
-                ).onFailure(ex -> startPromise.fail(ex))
-              ).onFailure(ex -> startPromise.fail(ex))
-            ).onFailure(ex -> startPromise.fail(ex))
-          ).onFailure(ex -> startPromise.fail(ex))
-        ).onFailure(ex -> startPromise.fail(ex))
-      ).onFailure(ex -> startPromise.fail(ex));
+      configureI18n()
+          .compose(a -> configureWebClient())
+          .compose(a -> configureDataLoop())
+          .compose(a -> configureOpenApi())
+          .compose(a -> configureHealthChecks())
+          .compose(a -> configureSharedWorkerExecutor())
+          .compose(a -> configureWebsockets())
+          .compose(a -> configureJinjava())
+          .compose(a -> configureApi())
+          .compose(a -> configureUi())
+          .compose(a -> startServer())
+          .onSuccess(a -> startPromise.complete())
+          ;
     } catch (Exception ex) {
       LOG.error("Couldn't start verticle. ", ex);
       startPromise.fail(ex);
@@ -927,186 +879,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 
     return promise.future();
   }
-
-  /**
-   **/
-  public Future<KafkaProducer<String, String>> configureKafka() {
-    Promise<KafkaProducer<String, String>> promise = Promise.promise();
-
-    try {
-      if(Boolean.valueOf(config().getString(ConfigKeys.ENABLE_KAFKA))) {
-        Map<String, String> kafkaConfig = new HashMap<>();
-        kafkaConfig.put("bootstrap.servers", config().getString(ConfigKeys.KAFKA_BROKERS));
-        kafkaConfig.put("acks", "1");
-        if(StringUtils.isNotBlank(config().getString(ConfigKeys.KAFKA_SECURITY_PROTOCOL)))
-          kafkaConfig.put("security.protocol", config().getString(ConfigKeys.KAFKA_SECURITY_PROTOCOL));
-        kafkaConfig.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaConfig.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaConfig.put("group.id", config().getString(ConfigKeys.KAFKA_GROUP));
-        kafkaConfig.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        kafkaConfig.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        kafkaConfig.put("auto.offset.reset", "earliest");
-        kafkaConfig.put("enable.auto.commit", "true");
-        Optional.ofNullable(config().getString(ConfigKeys.KAFKA_SSL_KEYSTORE_TYPE)).ifPresent(keystoreType -> {
-          kafkaConfig.put("ssl.keystore.type", keystoreType);
-          kafkaConfig.put("ssl.keystore.location", config().getString(ConfigKeys.KAFKA_SSL_KEYSTORE_LOCATION));
-          kafkaConfig.put("ssl.keystore.password", config().getString(ConfigKeys.KAFKA_SSL_KEYSTORE_PASSWORD));
-        });
-        Optional.ofNullable(config().getString(ConfigKeys.KAFKA_SSL_KEYSTORE_TYPE)).ifPresent(truststoreType -> {
-          kafkaConfig.put("ssl.truststore.type", truststoreType);
-          kafkaConfig.put("ssl.truststore.location", config().getString(ConfigKeys.KAFKA_SSL_TRUSTSTORE_LOCATION));
-          kafkaConfig.put("ssl.truststore.password", config().getString(ConfigKeys.KAFKA_SSL_TRUSTSTORE_PASSWORD));
-        });
-
-        kafkaProducer = KafkaProducer.createShared(vertx, config().getString(ConfigKeys.SITE_NAME), kafkaConfig);
-              
-        // use consumer for interacting with Apache Kafka
-        kafkaConsumer = KafkaConsumer.create(vertx, kafkaConfig);
-        SiteRoutes.kafkaConsumer(vertx, kafkaConsumer, config(), webClient).onSuccess(a -> {
-          LOG.info("The Kafka producer was initialized successfully. ");
-          promise.complete(kafkaProducer);
-        }).onFailure(ex -> {
-          promise.fail(ex);
-        });
-      } else {
-        LOG.info("The Kafka producer was initialized successfully. ");
-        promise.complete(null);
-      }
-    } catch(Exception ex) {
-      LOG.error("Unable to configure Kafka. ", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
-  /**
-   **/
-  public Future<MqttClient> configureMqtt() {
-    Promise<MqttClient> promise = Promise.promise();
-
-    try {
-      if(Boolean.valueOf(config().getString(ConfigKeys.ENABLE_MQTT))) {
-        try {
-          mqttClient = MqttClient.create(vertx);
-          mqttClient.connect(Integer.parseInt(config().getString(ConfigKeys.MQTT_PORT)), config().getString(ConfigKeys.MQTT_HOST_NAME)).onSuccess(mqttConnection -> {
-            try {
-              LOG.info("The MQTT client was initialized successfully.");
-              promise.complete(mqttClient);
-            } catch(Exception ex) {
-              LOG.error("The MQTT client failed to initialize.", ex);
-              promise.fail(ex);
-            }
-          }).onFailure(ex -> {
-            LOG.error("The MQTT client failed to initialize.", ex);
-            promise.fail(ex);
-          });
-        } catch(Exception ex) {
-          LOG.error("The MQTT client failed to initialize.", ex);
-          promise.fail(ex);
-        }
-      } else {
-        promise.complete();
-      }
-    } catch(Exception ex) {
-      LOG.error("The MQTT client failed to initialize.", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
-  /**
-   **/
-  public Future<AmqpClient> configureAmqp() {
-    Promise<AmqpClient> promise = Promise.promise();
-
-    try {
-      if(Boolean.valueOf(config().getString(ConfigKeys.ENABLE_AMQP))) {
-        try {
-          AmqpClientOptions options = new AmqpClientOptions()
-              .setHost(config().getString(ConfigKeys.AMQP_HOST_NAME))
-              .setPort(Integer.parseInt(config().getString(ConfigKeys.AMQP_PORT)))
-              .setUsername(config().getString(ConfigKeys.AMQP_USERNAME))
-              .setPassword(config().getString(ConfigKeys.AMQP_PASSWORD))
-              .setVirtualHost(config().getString(ConfigKeys.AMQP_VIRTUAL_HOST))
-              ;
-          amqpClient = AmqpClient.create(vertx, options);
-          amqpClient.connect().onSuccess(amqpConnection -> {
-            try {
-              AmqpSenderOptions senderOptions = new AmqpSenderOptions();
-              amqpConnection
-                  .createSender("my-queue", senderOptions)
-                  .onSuccess(sender -> {
-                this.amqpSender = sender;
-                LOG.info("The AMQP client was initialized successfully.");
-                promise.complete(amqpClient);
-              }).onFailure(ex -> {
-                LOG.error("The AMQP client failed to initialize.", ex);
-                promise.fail(ex);
-              });
-            } catch(Exception ex) {
-              LOG.error("The AMQP client failed to initialize.", ex);
-              promise.fail(ex);
-            }
-          }).onFailure(ex -> {
-            LOG.error("The AMQP client failed to initialize.", ex);
-            promise.fail(ex);
-          });
-        } catch(Exception ex) {
-          LOG.error("The AMQP client failed to initialize.", ex);
-          promise.fail(ex);
-        }
-      } else {
-        promise.complete();
-      }
-    } catch(Exception ex) {
-      LOG.error("The AMQP client failed to initialize.", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
-  /**
-   **/
-  public Future<RabbitMQClient> configureRabbitmq() {
-    Promise<RabbitMQClient> promise = Promise.promise();
-
-    try {
-      if(Boolean.valueOf(config().getString(ConfigKeys.ENABLE_RABBITMQ))) {
-        try {
-          RabbitMQOptions options = new RabbitMQOptions()
-              .setHost(config().getString(ConfigKeys.RABBITMQ_HOST_NAME))
-              .setPort(Integer.parseInt(config().getString(ConfigKeys.RABBITMQ_PORT)))
-              .setUser(config().getString(ConfigKeys.RABBITMQ_USERNAME))
-              .setPassword(config().getString(ConfigKeys.RABBITMQ_PASSWORD))
-              .setVirtualHost(config().getString(ConfigKeys.RABBITMQ_VIRTUAL_HOST))
-              .setAutomaticRecoveryEnabled(true)
-              ;
-          this.rabbitmqClient = RabbitMQClient.create(vertx, options);
-          rabbitmqClient.start().onSuccess(a -> {
-            LOG.info("The AMQP client was initialized successfully.");
-            promise.complete(rabbitmqClient);
-          }).onFailure(ex -> {
-            LOG.error("The AMQP client failed to initialize.", ex);
-            promise.fail(ex);
-          });
-        } catch(Exception ex) {
-          LOG.error("The AMQP client failed to initialize.", ex);
-          promise.fail(ex);
-        }
-      } else {
-        promise.complete();
-      }
-    } catch(Exception ex) {
-      LOG.error("The AMQP client failed to initialize.", ex);
-      promise.fail(ex);
-    }
-
-    return promise.future();
-  }
-
   /**
    **/
   public Future<Jinjava> configureJinjava() {
@@ -1280,9 +1052,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
         oauth2AuthenticationProvider = authProviders.get(authProviders.keySet().toArray()[0]);
         authorizationProvider = KeycloakAuthorization.create();
     
-        //ClusteredSessionStore sessionStore = ClusteredSessionStore.create(vertx);
-        sessionStore = LocalSessionStore.create(vertx, config().getString(ConfigKeys.SITE_NAME));
+        sessionStore = ClusteredSessionStore.create(vertx, String.format("%s.sessionmap", config().getString(ConfigKeys.SITE_NAME)));
         sessionHandler = SessionHandler.create(sessionStore);
+        sessionHandler.setCookieHttpOnlyFlag(true);
+        sessionHandler.setSessionTimeout(1800000);
         if(StringUtils.startsWith(siteBaseUrl, "https://"))
           sessionHandler.setCookieSecureFlag(true);
     
@@ -1322,44 +1095,33 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
             config.put("redirectUri", siteBaseUrl + authCallbackUri);
             OAuth2Auth authProvider = authProviders.get(authClientOpenApiId);
 
-            authProvider.authenticate(new Oauth2Credentials(config), res -> {
+            authProvider.authenticate(new Oauth2Credentials(config)).onSuccess(user -> {
               try {
-                if (res.failed()) {
-                  LOG.error("Failed to authenticate user. ", res.cause());
-                  ctx.fail(res.cause());
+                ctx.setUser(user);
+                Session session = ctx.session();
+                if (session != null) {
+                  String redirectUri = session.get("redirect_uri");
+                  ctx.response()
+                      // disable all caching
+                      .putHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                      .putHeader("Pragma", "no-cache")
+                      .putHeader(HttpHeaders.EXPIRES, "0")
+                      // redirect (when there is no state, redirect to home
+                      .putHeader(HttpHeaders.LOCATION, redirectUri != null ? redirectUri : "/")
+                      .setStatusCode(302)
+                      .end("Redirecting to " + (redirectUri != null ? redirectUri : "/") + ".");
                 } else {
-                  ctx.setUser(res.result());
-                  Session session = ctx.session();
-                  if (session != null) {
-                    // the user has upgraded from unauthenticated to authenticated
-                    // session should be upgraded as recommended by owasp
-                    Cookie cookie = Cookie.cookie("sessionIdBefore", session.id());
-                    if(StringUtils.startsWith(siteBaseUrl, "https://"))
-                      cookie.setSecure(true);
-                    ctx.response().addCookie(cookie);
-                    session.regenerateId();
-                    String redirectUri = session.get("redirect_uri");
-                    // we should redirect the UA so this link becomes invalid
-                    ctx.response()
-                        // disable all caching
-                        .putHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
-                        .putHeader("Pragma", "no-cache")
-                        .putHeader(HttpHeaders.EXPIRES, "0")
-                        // redirect (when there is no state, redirect to home
-                        .putHeader(HttpHeaders.LOCATION, redirectUri != null ? redirectUri : "/")
-                        .setStatusCode(302)
-                        .end("Redirecting to " + (redirectUri != null ? redirectUri : "/") + ".");
-                  } else {
-                    // there is no session object so we cannot keep state
-                    ctx.reroute(state != null ? state : "/");
-                  }
+                  // there is no session object so we cannot keep state
+                  ctx.reroute(state != null ? state : "/");
                 }
               } catch(Throwable ex) {
-                  LOG.error("Failed to authenticate user. ", res.cause());
-                  ctx.fail(res.cause());
+                LOG.error("Failed to authenticate user. ", ex);
+                ctx.fail(ex);
               }
+            }).onFailure(ex -> {
+              LOG.error("Failed to authenticate user. ", ex);
+              ctx.fail(ex);
             });
-  
           });
           routerBuilder.operation("callback").failureHandler(ex -> {
             LOG.error("Failed callback. ", ex);
@@ -1377,8 +1139,19 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
           });
           routerBuilder.operation("logout").handler(c -> {});
   
-          router = routerBuilder.createRouter();
-  
+          rootRouter = Router.router(vertx);
+
+          String staticPath = config().getString(ConfigKeys.STATIC_PATH);
+          StaticHandler staticHandler = StaticHandler.create(FileSystemAccess.ROOT, staticPath).setCachingEnabled(false).setFilesReadOnly(false);
+          if(staticPath != null) {
+            staticHandler.setFilesReadOnly(true);
+            staticHandler.setCachingEnabled(true);
+          }
+          rootRouter.route("/static/*").handler(staticHandler);
+
+          apiRouter = routerBuilder.createRouter();
+          rootRouter.route("/*").subRouter(apiRouter);
+
           LOG.info("The auth server and API was configured successfully.");
           promise.complete();
         }).onFailure(ex -> {
@@ -1465,7 +1238,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       healthCheckHandler.register("vertx", 2000, a -> {
         a.complete(Status.OK(new JsonObject().put(ConfigKeys.SITE_INSTANCES, siteInstances).put("workerPoolSize", workerPoolSize)));
       });
-      router.get("/health").handler(healthCheckHandler);
+      rootRouter.get("/health").handler(healthCheckHandler);
       LOG.info("The health checks were configured successfully.");
       promise.complete();
     } catch (Exception ex) {
@@ -1484,7 +1257,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       SockJSBridgeOptions options = new SockJSBridgeOptions()
           .addOutboundPermitted(new PermittedOptions().setAddressRegex("websocket.*"))
           ;
-      router.route("/eventbus*").subRouter(SockJSHandler.create(vertx).bridge(options));
+      rootRouter.route("/eventbus*").subRouter(SockJSHandler.create(vertx).bridge(options));
       LOG.info("Configure websockets succeeded.");
       promise.complete();
     } catch (Exception ex) {
@@ -1521,26 +1294,30 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
     Promise<Void> promise = Promise.promise();
     try {
       List<Future<?>> futures = new ArrayList<>();
-      List<String> authClassSimpleNames = Arrays.asList("SitePage","AiTelemetryDeveloper","Tenant","Hub","Cluster","AiNode","GpuDevice","Project","VirtualMachine","ClusterRequest","ClusterOrder","ClusterTemplate","ManagedCluster","BareMetalOrder","BareMetalResourceClass","BareMetalNetwork","BareMetalNode");
-      List<String> authResources = Arrays.asList("SITEPAGE","AITELEMETRYDEVELOPER","TENANT","HUB","CLUSTER","AINODE","GPUDEVICE","PROJECT","VIRTUALMACHINE","CLUSTERREQUEST","CLUSTERORDER","CLUSTERTEMPLATE","MANAGEDCLUSTER","BAREMETALORDER","BAREMETALRESOURCECLASS","BAREMETALNETWORK","BAREMETALNODE");
+      List<String> authClassSimpleNames = Arrays.asList("AiTelemetryDeveloper","SitePage","Tenant","Hub","Cluster","AiNode","GpuDevice","Project","VirtualMachine","ClusterRequest","ClusterOrder","ClusterTemplate","ManagedCluster","BareMetalOrder","BareMetalResourceClass","BareMetalNetwork","BareMetalNode");
+      List<String> authResources = Arrays.asList("AITELEMETRYDEVELOPER","SITEPAGE","TENANT","HUB","CLUSTER","AINODE","GPUDEVICE","PROJECT","VIRTUALMACHINE","CLUSTERREQUEST","CLUSTERORDER","CLUSTERTEMPLATE","MANAGEDCLUSTER","BAREMETALORDER","BAREMETALRESOURCECLASS","BAREMETALNETWORK","BAREMETALNODE");
       List<String> publicClassSimpleNames = Arrays.asList("SitePage","ClusterTemplate","BareMetalResourceClass");
       SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
       initializeApiService(apiSiteUser);
       registerApiService(SiteUserEnUSGenApiService.class, apiSiteUser, SiteUser.getClassApiAddress());
-      apiSiteUser.configureUserSearchApi(config().getString(ComputateConfigKeys.USER_SEARCH_URI), router, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_SiteUser, config(), webClient, authResources, authClassSimpleNames);
-      apiSiteUser.configurePublicSearchApi(config().getString(ComputateConfigKeys.PUBLIC_SEARCH_URI), router, SiteRequest.class, config(), webClient, publicClassSimpleNames);
+      apiSiteUser.configureUserSearchApi(config().getString(ComputateConfigKeys.USER_SEARCH_URI), apiRouter, SiteRequest.class, SiteUser.class, SiteUser.CLASS_API_ADDRESS_SiteUser, config(), webClient, authResources, authClassSimpleNames);
+      apiSiteUser.configurePublicSearchApi(config().getString(ComputateConfigKeys.PUBLIC_SEARCH_URI), apiRouter, SiteRequest.class, config(), webClient, publicClassSimpleNames);
 
       TimeZoneEnUSApiServiceImpl apiTimeZone = new TimeZoneEnUSApiServiceImpl();
       initializeApiService(apiTimeZone);
       registerApiService(TimeZoneEnUSGenApiService.class, apiTimeZone, TimeZone.getClassApiAddress());
 
+      AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
+      initializeApiService(apiAiTelemetryDeveloper);
+      registerApiService(AiTelemetryDeveloperEnUSGenApiService.class, apiAiTelemetryDeveloper, AiTelemetryDeveloper.getClassApiAddress());
+
       SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
       initializeApiService(apiSitePage);
       registerApiService(SitePageEnUSGenApiService.class, apiSitePage, SitePage.getClassApiAddress());
 
-      AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
-      initializeApiService(apiAiTelemetryDeveloper);
-      registerApiService(AiTelemetryDeveloperEnUSGenApiService.class, apiAiTelemetryDeveloper, AiTelemetryDeveloper.getClassApiAddress());
+      MapModelEnUSApiServiceImpl apiMapModel = new MapModelEnUSApiServiceImpl();
+      initializeApiService(apiMapModel);
+      registerApiService(MapModelEnUSGenApiService.class, apiMapModel, MapModel.getClassApiAddress());
 
       TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
       initializeApiService(apiTenant);
@@ -1621,16 +1398,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
   public Future<Void> configureUi() {
     Promise<Void> promise = Promise.promise();
     try {
-      String staticPath = config().getString(ConfigKeys.STATIC_PATH);
-
-      StaticHandler staticHandler = StaticHandler.create(FileSystemAccess.ROOT, staticPath).setCachingEnabled(false).setFilesReadOnly(false);
-      if(staticPath != null) {
-        staticHandler.setFilesReadOnly(true);
-        staticHandler.setCachingEnabled(true);
-      }
-      router.route("/static/*").handler(staticHandler);
-
-      router.getWithRegex("\\/en-us/download(?<uri>.*)").handler(oauth2AuthHandler).handler(handler -> {
+      apiRouter.getWithRegex("\\/en-us/download(?<uri>.*)").handler(oauth2AuthHandler).handler(handler -> {
         String originalUri = handler.pathParam("uri");
         SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
         initializeApiService(apiSiteUser);
@@ -1727,7 +1495,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 
       SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
       initializeApiService(apiSiteUser);
-      SiteRoutes.routes(vertx, router, oauth2AuthenticationProvider, oauth2AuthHandler, config(), webClient, jinjava, apiSiteUser);
+      SiteRoutes.routes(vertx, apiRouter, oauth2AuthenticationProvider, oauth2AuthHandler, config(), webClient, jinjava, apiSiteUser);
 
       LOG.info("The UI was configured properly.");
       promise.complete();
@@ -1777,10 +1545,11 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       String sslPrivateKeyPath = config().getString(ConfigKeys.SSL_KEY_PATH);
       String sslCertPath = config().getString(ConfigKeys.SSL_CERT_PATH);
       HttpServerOptions options = new HttpServerOptions();
+      options.setIdleTimeout(1800);
       options.setPort(sitePort);
   
       LOG.info(String.format("HTTP server starting: %s", siteBaseUrl));
-      vertx.createHttpServer(options).requestHandler(router).listen().onSuccess(ar -> {
+      vertx.createHttpServer(options).requestHandler(rootRouter).listen().onSuccess(ar -> {
         LOG.info(String.format("The HTTP server is running: %s", siteBaseUrl));
         promise.complete();
       }).onFailure(ex -> {
@@ -1910,11 +1679,11 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
   }
 
   public Router getRouter() {
-    return router;
+    return rootRouter;
   }
 
   public void setRouter(Router router) {
-    this.router = router;
+    this.rootRouter = router;
   }
 
   public WorkerExecutor getWorkerExecutor() {
