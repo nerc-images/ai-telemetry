@@ -265,7 +265,7 @@ public abstract class GpuDeviceGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/gpu-device";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/gpu-device";
 
-  public static final String Icon = "<i class=\"fa-regular fa-memory\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-memory\"></i>";
   public static final Integer Rows = 100;
 
 	///////////

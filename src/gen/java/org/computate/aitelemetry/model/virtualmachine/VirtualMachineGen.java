@@ -263,7 +263,7 @@ public abstract class VirtualMachineGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/vm";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/vm";
 
-  public static final String Icon = "<i class=\"fa-regular fa-sidebar\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-sidebar\"></i>";
   public static final Integer Rows = 100;
 
 	///////////

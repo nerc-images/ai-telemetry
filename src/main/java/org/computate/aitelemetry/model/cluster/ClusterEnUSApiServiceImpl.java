@@ -73,7 +73,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
   // Cluster import //
   ////////////////////
 
-  public static Future<Void> importCluster(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String classApiAddress, String possibleClusterName, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult, JsonObject vmResult) {
+  public static Future<Void> importCluster(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String classApiAddress, String possibleClusterName, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject clusterCephUsedBytesResult, JsonObject clusterCephCapacityBytesResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult, JsonObject vmResult) {
     Promise<Void> promise = Promise.promise();
     try {
       String hubId = hub.getHubId();
@@ -97,7 +97,8 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
       body.put(Cluster.VAR_gpuDevicesTotal, Optional.ofNullable(gpuDeviceResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
       body.put(Cluster.VAR_cpuCoresTotal, Optional.ofNullable(clusterCpuCoresResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
       body.put(Cluster.VAR_memoryBytesTotal, Optional.ofNullable(clusterMemoryBytesResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
-
+      body.put(Cluster.VAR_cephUsedBytes, Optional.ofNullable(clusterCephUsedBytesResult).map(result -> result.getJsonArray("value").getString(1) + " B").orElse(null));
+      body.put(Cluster.VAR_cephCapacityBytes, Optional.ofNullable(clusterCephCapacityBytesResult).map(result -> result.getJsonArray("value").getString(1) + "B").orElse(null));
       JsonObject pageParams = new JsonObject();
       pageParams.put("body", body);
       pageParams.put("path", new JsonObject());
@@ -118,26 +119,11 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
                 VirtualMachineEnUSApiServiceImpl.importVirtualMachineData(vertx, webClient, config, body).onSuccess(e -> {
                   LOG.info(String.format("Imported %s AI cluster in %s", clusterName, hubId));
                   promise.complete();
-                }).onFailure(ex -> {
-                  LOG.error(String.format(importDataFail, classSimpleName), ex);
-                  promise.fail(ex);
-                });
-              }).onFailure(ex -> {
-                LOG.error(String.format(importDataFail, classSimpleName), ex);
-                promise.fail(ex);
-              });
-            }).onFailure(ex -> {
-              LOG.error(String.format(importDataFail, classSimpleName), ex);
-              promise.fail(ex);
-            });
-          }).onFailure(ex -> {
-            LOG.error(String.format(importDataFail, classSimpleName), ex);
-            promise.fail(ex);
-          });
-        }).onFailure(ex -> {
-          LOG.error(String.format(importDataFail, classSimpleName), ex);
-          promise.fail(ex);
-        });
+                }).onFailure(ex -> promise.fail(ex));
+              }).onFailure(ex -> promise.fail(ex));
+            }).onFailure(ex -> promise.fail(ex));
+          }).onFailure(ex -> promise.fail(ex));
+        }).onFailure(ex -> promise.fail(ex));
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
         promise.fail(ex);
@@ -165,7 +151,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
       }
       BaseApiServiceImpl.obtainKeycloakAdminTokenStatic(config, webClient).onSuccess(adminToken -> {
         BaseApiServiceImpl.obtainClientUuidStatic(config, webClient, adminToken, realmName, clientId).onSuccess(clientUuid -> {
-          BaseApiServiceImpl.authorizeGroupDataStatic(config, webClient, adminToken, realmName, clientId, clientUuid, Cluster.CLASS_AUTH_RESOURCE, groupName, scopes, defaultScopes).onSuccess(a -> {
+          BaseApiServiceImpl.authorizeGroupDataStatic(config, webClient, adminToken, realmName, clientId, clientUuid, resourceName, groupName, scopes, defaultScopes).onSuccess(a -> {
             LOG.info(String.format("Successfully granted %s access to %s", "GET", resourceName));
             promise.complete();
           }).onFailure(ex -> promise.fail(ex));
@@ -196,7 +182,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
         promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
-        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        LOG.error(String.format("Failed to import the %s metric for %s", promKeycloakProxyUri, hub.getHubResource()), ex);
         promise.fail(ex);
       });
     } catch(Throwable ex) {
@@ -224,7 +210,63 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
         JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
         promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
       }).onFailure(ex -> {
-        LOG.error(String.format(importDataFail, classSimpleName), ex);
+        LOG.error(String.format("Failed to import the %s metric for %s", promKeycloakProxyUri, hub.getHubResource()), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<JsonArray> queryCephClusterUsedBytes(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyQuery = String.format("ceph_cluster_used_bytes{}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format("Failed to import the %s metric for %s", promKeycloakProxyQuery, hub.getHubResource()), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<JsonArray> queryCephClusterCapacityBytes(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyQuery = String.format("ceph_cluster_capacity_bytes{}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format("Failed to import the %s metric for %s", promKeycloakProxyQuery, hub.getHubResource()), ex);
         promise.fail(ex);
       });
     } catch(Throwable ex) {

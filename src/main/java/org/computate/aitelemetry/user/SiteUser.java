@@ -17,7 +17,7 @@ import org.computate.aitelemetry.request.SiteRequest;
  * Order: 1
  * Description: A user record for each site user
  * AName: a site user
- * Icon: <i class="fa-regular  fa-user-gear"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }}  fa-user-gear"></i>
  * 
  * Keyword: classSimpleNameSiteUser
  * Filter: userId

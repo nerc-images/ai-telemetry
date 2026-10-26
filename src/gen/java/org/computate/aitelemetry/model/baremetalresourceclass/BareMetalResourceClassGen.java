@@ -237,7 +237,7 @@ public abstract class BareMetalResourceClassGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/bare-metal-resource-class";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/bare-metal-resource-class";
 
-  public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-server\"></i>";
 
 	//////////
   // name //

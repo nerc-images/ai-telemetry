@@ -548,7 +548,7 @@ public class TimeZoneGenPage extends TimeZoneGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-globe\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-globe\"></i>");
   }
 
   protected void _pageUriTimeZone(Wrap<String> c) {

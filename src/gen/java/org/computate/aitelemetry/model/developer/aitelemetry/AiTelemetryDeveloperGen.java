@@ -268,7 +268,6 @@ public abstract class AiTelemetryDeveloperGen<DEV> extends BaseResult {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/ai-telemetry-developer";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/ai-telemetry-developer";
 
-  public static final String Icon = "<i class=\"fa-duotone fa-regular fa-chart-fft\"></i>";
 
 	/////////////
   // article //

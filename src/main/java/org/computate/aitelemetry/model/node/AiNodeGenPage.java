@@ -574,7 +574,7 @@ public class AiNodeGenPage extends AiNodeGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-computer\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-computer\"></i>");
   }
 
   protected void _pageUriAiNode(Wrap<String> c) {

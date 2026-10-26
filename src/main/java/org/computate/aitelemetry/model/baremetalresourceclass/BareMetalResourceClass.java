@@ -8,7 +8,7 @@ import org.computate.aitelemetry.model.BaseModel;
  * Description: A bare metal resource class
  * AName: a bare metal resource class
  * PluralName: bare metal resource classes
- * Icon: <i class="fa-regular fa-server"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-server"></i>
  * 
  * SearchPageUri: /en-us/search/bare-metal-resource-class
  * EditPageUri: /en-us/edit/bare-metal-resource-class/{name}

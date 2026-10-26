@@ -253,7 +253,6 @@ public abstract class BareMetalNetworkGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/bare-metal-network";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/bare-metal-network";
 
-  public static final String Icon = "<i class=\"fa-duotone fa-regular fa-network-wired\"></i>";
 
 	////////
   // id //

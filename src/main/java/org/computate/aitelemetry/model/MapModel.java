@@ -25,7 +25,7 @@ import tech.units.indriya.unit.Units;
  * Order: 4
  * Description.enUS: A map model
  * AName.enUS: a map model
- * Icon: <i class="fa-regular  fa-map-location-dot"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }}  fa-map-location-dot"></i>
  * Rows: 100
  * Ignore: true
  * 

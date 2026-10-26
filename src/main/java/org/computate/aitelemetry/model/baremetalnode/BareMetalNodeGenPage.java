@@ -554,7 +554,7 @@ public class BareMetalNodeGenPage extends BareMetalNodeGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-hexagon-nodes\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-hexagon-nodes\"></i>");
   }
 
   protected void _pageUriBareMetalNode(Wrap<String> c) {

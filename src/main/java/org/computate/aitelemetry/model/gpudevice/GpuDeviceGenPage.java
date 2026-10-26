@@ -574,7 +574,7 @@ public class GpuDeviceGenPage extends GpuDeviceGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-memory\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-memory\"></i>");
   }
 
   protected void _pageUriGpuDevice(Wrap<String> c) {

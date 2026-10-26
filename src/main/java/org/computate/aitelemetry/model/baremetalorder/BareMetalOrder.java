@@ -14,7 +14,7 @@ import io.vertx.core.Promise;
  * Order: 16
  * Description: A bare metal order
  * AName: a bare metal order
- * Icon: <i class="fa-regular fa-share-nodes"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-share-nodes"></i>
  * MenuDetails: bare metal
  * MenuDetailsOpen: true
  * Feature: ENABLE_FEATURE_ORDER_BARE_METAL

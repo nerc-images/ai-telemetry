@@ -242,7 +242,7 @@ public abstract class ClusterRequestGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/cluster-request";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/cluster-request";
 
-  public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-server\"></i>";
 
 	//////////
   // name //

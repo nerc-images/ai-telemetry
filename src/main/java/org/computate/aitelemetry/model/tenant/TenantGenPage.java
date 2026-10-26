@@ -553,7 +553,7 @@ public class TenantGenPage extends TenantGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-buildings\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-buildings\"></i>");
   }
 
   protected void _pageUriTenant(Wrap<String> c) {

@@ -7,7 +7,7 @@ import org.computate.aitelemetry.model.BaseModel;
  * Order: 15
  * Description: An OpenShift tenant cluster
  * AName: a tenant cluster
- * Icon: <i class="fa-regular fa-server"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-server"></i>
  * Feature: ENABLE_FEATURE_ORDER_CLUSTER or ENABLE_FEATURE_OBSERVE_CLUSTER
  * 
  * SearchPageUri: /en-us/search/managed-cluster

@@ -574,7 +574,7 @@ public class MapModelGenPage extends MapModelGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular  fa-map-location-dot\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }}  fa-map-location-dot\"></i>");
   }
 
   protected void _pageUriMapModel(Wrap<String> c) {

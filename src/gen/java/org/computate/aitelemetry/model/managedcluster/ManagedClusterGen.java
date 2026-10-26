@@ -240,7 +240,7 @@ public abstract class ManagedClusterGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/managed-cluster";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/managed-cluster";
 
-  public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-server\"></i>";
 
 	////////
   // id //

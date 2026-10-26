@@ -555,7 +555,7 @@ public class ProjectGenPage extends ProjectGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-people-line\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-people-line\"></i>");
   }
 
   protected void _pageUriProject(Wrap<String> c) {

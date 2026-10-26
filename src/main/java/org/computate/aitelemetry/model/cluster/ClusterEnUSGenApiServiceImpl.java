@@ -836,6 +836,30 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlMemoryBytesTotal());
             break;
+          case "setCephUsedBytes":
+              o2.setCephUsedBytes(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Cluster.VAR_cephUsedBytes + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCephUsedBytes());
+            break;
+          case "setCephCapacityBytes":
+              o2.setCephCapacityBytes(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Cluster.VAR_cephCapacityBytes + "=$" + num);
+              num++;
+              bParams.add(o2.sqlCephCapacityBytes());
+            break;
+          case "setStatusStorage":
+              o2.setStatusStorage(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Cluster.VAR_statusStorage + "=$" + num);
+              num++;
+              bParams.add(o2.sqlStatusStorage());
+            break;
           case "setCreated":
               o2.setCreated(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1397,6 +1421,33 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Cluster.VAR_memoryBytesTotal + "=$" + num);
             num++;
             bParams.add(o2.sqlMemoryBytesTotal());
+            break;
+          case Cluster.VAR_cephUsedBytes:
+            o2.setCephUsedBytes(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Cluster.VAR_cephUsedBytes + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCephUsedBytes());
+            break;
+          case Cluster.VAR_cephCapacityBytes:
+            o2.setCephCapacityBytes(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Cluster.VAR_cephCapacityBytes + "=$" + num);
+            num++;
+            bParams.add(o2.sqlCephCapacityBytes());
+            break;
+          case Cluster.VAR_statusStorage:
+            o2.setStatusStorage(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Cluster.VAR_statusStorage + "=$" + num);
+            num++;
+            bParams.add(o2.sqlStatusStorage());
             break;
           case Cluster.VAR_created:
             o2.setCreated(jsonObject.getString(entityVar));
@@ -3705,6 +3756,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   String old_memoryBytesTotal = Cluster.staticJsonMemoryBytesTotal(o.getMemoryBytesTotal());
                   String new_memoryBytesTotal = json.getString(Cluster.varJson(Cluster.VAR_memoryBytesTotal, patch));
 
+                  String old_cephUsedBytes = Cluster.staticJsonCephUsedBytes(o.getCephUsedBytes());
+                  String new_cephUsedBytes = json.getString(Cluster.varJson(Cluster.VAR_cephUsedBytes, patch));
+
+                  String old_cephCapacityBytes = Cluster.staticJsonCephCapacityBytes(o.getCephCapacityBytes());
+                  String new_cephCapacityBytes = json.getString(Cluster.varJson(Cluster.VAR_cephCapacityBytes, patch));
+
+                  String old_statusStorage = Cluster.staticJsonStatusStorage(o.getStatusStorage());
+                  String new_statusStorage = json.getString(Cluster.varJson(Cluster.VAR_statusStorage, patch));
+
                   String old_created = Cluster.staticJsonCreated(o.getCreated());
                   String new_created = json.getString(Cluster.varJson(Cluster.VAR_created, patch));
 
@@ -3783,6 +3843,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   String memoryBytesTotal = Optional.ofNullable(Optional.ofNullable(new_memoryBytesTotal).orElse(old_memoryBytesTotal)).orElse(null);
                   // if(!Objects.equals(old_memoryBytesTotal, memoryBytesTotal))
                     // json.put(Cluster.varJson(Cluster.VAR_memoryBytesTotal, patch), memoryBytesTotal);
+                  String cephUsedBytes = Optional.ofNullable(Optional.ofNullable(new_cephUsedBytes).orElse(old_cephUsedBytes)).orElse(null);
+                  // if(!Objects.equals(old_cephUsedBytes, cephUsedBytes))
+                    // json.put(Cluster.varJson(Cluster.VAR_cephUsedBytes, patch), cephUsedBytes);
+                  String cephCapacityBytes = Optional.ofNullable(Optional.ofNullable(new_cephCapacityBytes).orElse(old_cephCapacityBytes)).orElse(null);
+                  // if(!Objects.equals(old_cephCapacityBytes, cephCapacityBytes))
+                    // json.put(Cluster.varJson(Cluster.VAR_cephCapacityBytes, patch), cephCapacityBytes);
+                  String statusStorage = Optional.ofNullable(Optional.ofNullable(new_statusStorage).orElse(old_statusStorage)).orElse(null);
+                  // if(!Objects.equals(old_statusStorage, statusStorage))
+                    // json.put(Cluster.varJson(Cluster.VAR_statusStorage, patch), statusStorage);
                   String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
                   // if(!Objects.equals(old_created, created))
                     // json.put(Cluster.varJson(Cluster.VAR_created, patch), created);
@@ -3843,7 +3912,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, hubCluster, clusterResource, description, location, id, ngsildTenant, ngsildPath, ngsildContext, ngsildData, aiNodesTotal, gpuDevicesTotal, vmsTotal, cpuCoresTotal, memoryBytesTotal, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM Cluster WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, hubCluster, clusterResource, description, location, id, ngsildTenant, ngsildPath, ngsildContext, ngsildData, aiNodesTotal, gpuDevicesTotal, vmsTotal, cpuCoresTotal, memoryBytesTotal, cephUsedBytes, cephCapacityBytes, statusStorage, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM Cluster WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4127,6 +4196,9 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       o.persistForClass(Cluster.VAR_vmsTotal, Cluster.staticSetVmsTotal(siteRequest2, (String)result.get(Cluster.VAR_vmsTotal)));
       o.persistForClass(Cluster.VAR_cpuCoresTotal, Cluster.staticSetCpuCoresTotal(siteRequest2, (String)result.get(Cluster.VAR_cpuCoresTotal)));
       o.persistForClass(Cluster.VAR_memoryBytesTotal, Cluster.staticSetMemoryBytesTotal(siteRequest2, (String)result.get(Cluster.VAR_memoryBytesTotal)));
+      o.persistForClass(Cluster.VAR_cephUsedBytes, Cluster.staticSetCephUsedBytes(siteRequest2, (String)result.get(Cluster.VAR_cephUsedBytes)));
+      o.persistForClass(Cluster.VAR_cephCapacityBytes, Cluster.staticSetCephCapacityBytes(siteRequest2, (String)result.get(Cluster.VAR_cephCapacityBytes)));
+      o.persistForClass(Cluster.VAR_statusStorage, Cluster.staticSetStatusStorage(siteRequest2, (String)result.get(Cluster.VAR_statusStorage)));
       o.persistForClass(Cluster.VAR_created, Cluster.staticSetCreated(siteRequest2, (String)result.get(Cluster.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(Cluster.VAR_archived, Cluster.staticSetArchived(siteRequest2, (String)result.get(Cluster.VAR_archived)));
       o.persistForClass(Cluster.VAR_sessionId, Cluster.staticSetSessionId(siteRequest2, (String)result.get(Cluster.VAR_sessionId)));

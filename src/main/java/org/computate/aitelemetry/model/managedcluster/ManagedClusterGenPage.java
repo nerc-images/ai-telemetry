@@ -553,7 +553,7 @@ public class ManagedClusterGenPage extends ManagedClusterGenPageGen<PageLayout> 
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-server\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-server\"></i>");
   }
 
   protected void _pageUriManagedCluster(Wrap<String> c) {

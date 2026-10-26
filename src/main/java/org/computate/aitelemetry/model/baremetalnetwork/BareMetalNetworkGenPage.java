@@ -553,11 +553,6 @@ public class BareMetalNetworkGenPage extends BareMetalNetworkGenPageGen<PageLayo
       c.o("/png/en-us/search/bare-metal-network-999.png");
   }
 
-  @Override
-  protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-duotone fa-regular fa-network-wired\"></i>");
-  }
-
   protected void _pageUriBareMetalNetwork(Wrap<String> c) {
       c.o("/en-us/search/bare-metal-network");
   }

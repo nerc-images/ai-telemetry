@@ -228,7 +228,7 @@ public abstract class TimeZoneGen<DEV> extends BaseResult {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/time-zone";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/time-zone";
 
-  public static final String Icon = "<i class=\"fa-regular fa-globe\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-globe\"></i>";
   public static final Integer Rows = 10;
 
 	//////////////////

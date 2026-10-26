@@ -548,11 +548,6 @@ public class AiTelemetryDeveloperGenPage extends AiTelemetryDeveloperGenPageGen<
       c.o("/png/en-us/search/ai-telemetry-developer-999.png");
   }
 
-  @Override
-  protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-duotone fa-regular fa-chart-fft\"></i>");
-  }
-
   protected void _pageUriAiTelemetryDeveloper(Wrap<String> c) {
       c.o("/en-us/search/ai-telemetry-developer");
   }

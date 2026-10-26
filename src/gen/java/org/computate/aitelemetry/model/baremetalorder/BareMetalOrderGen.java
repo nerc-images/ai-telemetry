@@ -246,7 +246,7 @@ public abstract class BareMetalOrderGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/bare-metal-order";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/bare-metal-order";
 
-  public static final String Icon = "<i class=\"fa-regular fa-share-nodes\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-share-nodes\"></i>";
 
 	/////////////////
   // description //

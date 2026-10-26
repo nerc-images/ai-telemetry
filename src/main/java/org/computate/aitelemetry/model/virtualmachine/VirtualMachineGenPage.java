@@ -573,7 +573,7 @@ public class VirtualMachineGenPage extends VirtualMachineGenPageGen<PageLayout> 
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-sidebar\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-sidebar\"></i>");
   }
 
   protected void _pageUriVirtualMachine(Wrap<String> c) {

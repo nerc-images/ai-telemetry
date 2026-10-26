@@ -247,7 +247,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * DisplayName: manage
    * Description: Manage this
    * Link: true
-   * Icon: <i class="fa-regular fa-pen-to-square"></i>
+   * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-pen-to-square"></i>
    * VarUrlEditPage: true
    * StringFormat: null
    */

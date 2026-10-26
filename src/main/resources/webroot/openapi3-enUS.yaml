@@ -21566,9 +21566,15 @@ components:
                     type: string
                   memoryBytesTotal:
                     type: string
+                  cephUsedBytes:
+                    type: string
+                  cephCapacityBytes:
+                    type: string
                   grafanaUrl:
                     type: string
                   modified:
+                    type: string
+                  statusStorage:
                     type: string
     PATCHClusterRequest:
       allOf:
@@ -21765,6 +21771,20 @@ components:
               type: string
             removeAllMemoryBytesTotal:
               type: string
+            setCephUsedBytes:
+              type: string
+              nullable: true
+            removeCephUsedBytes:
+              type: string
+            removeAllCephUsedBytes:
+              type: string
+            setCephCapacityBytes:
+              type: string
+              nullable: true
+            removeCephCapacityBytes:
+              type: string
+            removeAllCephCapacityBytes:
+              type: string
             setGrafanaUrl:
               type: string
               nullable: true
@@ -21778,6 +21798,13 @@ components:
             removeModified:
               type: string
             removeAllModified:
+              type: string
+            setStatusStorage:
+              type: string
+              nullable: true
+            removeStatusStorage:
+              type: string
+            removeAllStatusStorage:
               type: string
     PATCHClusterResponse:
       allOf:
@@ -21974,6 +22001,20 @@ components:
               type: string
             removeAllMemoryBytesTotal:
               type: string
+            setCephUsedBytes:
+              type: string
+              nullable: true
+            removeCephUsedBytes:
+              type: string
+            removeAllCephUsedBytes:
+              type: string
+            setCephCapacityBytes:
+              type: string
+              nullable: true
+            removeCephCapacityBytes:
+              type: string
+            removeAllCephCapacityBytes:
+              type: string
             setGrafanaUrl:
               type: string
               nullable: true
@@ -21987,6 +22028,13 @@ components:
             removeModified:
               type: string
             removeAllModified:
+              type: string
+            setStatusStorage:
+              type: string
+              nullable: true
+            removeStatusStorage:
+              type: string
+            removeAllStatusStorage:
               type: string
     POSTClusterRequest:
       allOf:
@@ -22044,9 +22092,15 @@ components:
               type: string
             memoryBytesTotal:
               type: string
+            cephUsedBytes:
+              type: string
+            cephCapacityBytes:
+              type: string
             grafanaUrl:
               type: string
             modified:
+              type: string
+            statusStorage:
               type: string
     POSTClusterResponse:
       allOf:
@@ -22104,9 +22158,15 @@ components:
               type: string
             memoryBytesTotal:
               type: string
+            cephUsedBytes:
+              type: string
+            cephCapacityBytes:
+              type: string
             grafanaUrl:
               type: string
             modified:
+              type: string
+            statusStorage:
               type: string
     DELETEFilterClusterResponse:
       allOf:
@@ -22164,9 +22224,15 @@ components:
               type: string
             memoryBytesTotal:
               type: string
+            cephUsedBytes:
+              type: string
+            cephCapacityBytes:
+              type: string
             grafanaUrl:
               type: string
             modified:
+              type: string
+            statusStorage:
               type: string
     PUTImportClusterRequest:
       allOf:
@@ -22229,9 +22295,15 @@ components:
                     type: string
                   memoryBytesTotal:
                     type: string
+                  cephUsedBytes:
+                    type: string
+                  cephCapacityBytes:
+                    type: string
                   grafanaUrl:
                     type: string
                   modified:
+                    type: string
+                  statusStorage:
                     type: string
     PUTImportClusterResponse:
       allOf:
@@ -22289,9 +22361,15 @@ components:
                     type: string
                   memoryBytesTotal:
                     type: string
+                  cephUsedBytes:
+                    type: string
+                  cephCapacityBytes:
+                    type: string
                   grafanaUrl:
                     type: string
                   modified:
+                    type: string
+                  statusStorage:
                     type: string
     GETClusterResponse:
       allOf:
@@ -22349,9 +22427,15 @@ components:
               type: string
             memoryBytesTotal:
               type: string
+            cephUsedBytes:
+              type: string
+            cephCapacityBytes:
+              type: string
             grafanaUrl:
               type: string
             modified:
+              type: string
+            statusStorage:
               type: string
     DELETEClusterResponse:
       allOf:
@@ -22409,9 +22493,15 @@ components:
               type: string
             memoryBytesTotal:
               type: string
+            cephUsedBytes:
+              type: string
+            cephCapacityBytes:
+              type: string
             grafanaUrl:
               type: string
             modified:
+              type: string
+            statusStorage:
               type: string
     EditPageClusterResponse:
       allOf:

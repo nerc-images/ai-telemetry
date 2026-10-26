@@ -290,6 +290,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                   LOG.info(String.format("Successfully updated project %s with page template %s", "GET", projectName, templatePath));
                   promise.complete();
                 }).onFailure(ex -> {
+                  LOG.error(String.format("Failed to update project %s with page template %s", "GET", projectName, templatePath), ex);
                   promise.complete();
                 });
               } else {
@@ -347,160 +348,163 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                     ProjectEnUSApiServiceImpl.queryPodTerminating(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(podTerminatingResponse -> {
                       ProjectEnUSApiServiceImpl.queryInitPodRestarts(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(initPodRestartsResponse -> {
                         ProjectEnUSApiServiceImpl.queryPvcsFull(vertx, webClient, config, clusterJson, classSimpleName, accessToken).onSuccess(fullPvcsResponse -> {
-                          List<Future<?>> futures = new ArrayList<>();
-                          for(Integer i = 0; i < nonOpenShiftNamespacesTotal.size(); i++) {
-                            JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
-                            String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
-                            String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
-                            String namespacePhaseTerminating = namespaceResult.getJsonArray("value").getString(1);
-                            Boolean namespaceTerminating = "1".equals(namespacePhaseTerminating);
+                          try {
+                            List<Future<?>> futures = new ArrayList<>();
+                            for(Integer i = 0; i < nonOpenShiftNamespacesTotal.size(); i++) {
+                              JsonObject namespaceResult = nonOpenShiftNamespacesTotal.getJsonObject(i);
+                              String clusterName = namespaceResult.getJsonObject("metric").getString("cluster");
+                              String projectName = namespaceResult.getJsonObject("metric").getString("namespace");
+                              String namespacePhaseTerminating = namespaceResult.getJsonArray("value").getString(1);
+                              Boolean namespaceTerminating = "1".equals(namespacePhaseTerminating);
 
-                            JsonObject coldfrontProject = coldfrontProjects.stream().map(o -> (JsonObject)o).filter(proj -> 
-                                Objects.equals(projectName, Optional.ofNullable(proj.getJsonObject("attributes")).map(attributes -> attributes.getString("Allocated Project ID")).orElse(null))
-                                ).findFirst().orElse(null);
+                              JsonObject coldfrontProject = coldfrontProjects.stream().map(o -> (JsonObject)o).filter(proj -> 
+                                  Objects.equals(projectName, Optional.ofNullable(proj.getJsonObject("attributes")).map(attributes -> attributes.getString("Allocated Project ID")).orElse(null))
+                                  ).findFirst().orElse(null);
 
-                            JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
-                                ).findFirst().orElse(null);
+                              JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
+                                  ).findFirst().orElse(null);
 
-                            JsonObject vllmResult = vllmTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).findFirst().orElse(null);
+                              JsonObject vllmResult = vllmTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).findFirst().orElse(null);
 
-                            List<JsonObject> podRestartsResults = podRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer podRestartCount = Optional.ofNullable(podRestartsResults).map(l -> l.size()).orElse(0);
-                            List<String> podsRestarting = Optional.ofNullable(podRestartsResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
+                              List<JsonObject> podRestartsResults = podRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer podRestartCount = Optional.ofNullable(podRestartsResults).map(l -> l.size()).orElse(0);
+                              List<String> podsRestarting = Optional.ofNullable(podRestartsResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
 
-                            List<JsonObject> podTerminatingResults = podTerminatingResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer podTerminatingCount = Optional.ofNullable(podTerminatingResults).map(l -> l.size()).orElse(0);
-                            List<String> podsTerminating = Optional.ofNullable(podTerminatingResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
+                              List<JsonObject> podTerminatingResults = podTerminatingResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer podTerminatingCount = Optional.ofNullable(podTerminatingResults).map(l -> l.size()).orElse(0);
+                              List<String> podsTerminating = Optional.ofNullable(podTerminatingResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
 
-                            List<JsonObject> initPodRestartsResults = initPodRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer initPodRestartCount = Optional.ofNullable(initPodRestartsResults).map(l -> l.size()).orElse(0);
-                            List<String> initPodsRestarting = Optional.ofNullable(initPodRestartsResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
-                            Integer totalPodsRestarting = podRestartCount + initPodRestartCount;
-                            Set<String> allPodsRestarting = new HashSet<>();
-                            allPodsRestarting.addAll(podsRestarting);
-                            allPodsRestarting.addAll(initPodsRestarting);
+                              List<JsonObject> initPodRestartsResults = initPodRestartsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer initPodRestartCount = Optional.ofNullable(initPodRestartsResults).map(l -> l.size()).orElse(0);
+                              List<String> initPodsRestarting = Optional.ofNullable(initPodRestartsResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("pod")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
+                              Integer totalPodsRestarting = podRestartCount + initPodRestartCount;
+                              Set<String> allPodsRestarting = new HashSet<>();
+                              allPodsRestarting.addAll(podsRestarting);
+                              allPodsRestarting.addAll(initPodsRestarting);
 
-                            List<JsonObject> fullPvcsResults = fullPvcsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
-                                Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-                                && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-                                ).collect(Collectors.toList());
-                            Integer fullPvcsCount = Optional.ofNullable(fullPvcsResults).map(l -> l.size()).orElse(0);
-                            List<String> fullPvcs = Optional.ofNullable(fullPvcsResults).map(l -> 
-                                l.stream().map(o -> o.getJsonObject("metric").getString("persistentvolumeclaim")).collect(Collectors.toList())
-                                ).orElse(Arrays.asList());
+                              List<JsonObject> fullPvcsResults = fullPvcsResponse.stream().map(o -> (JsonObject)o).filter(metrics -> 
+                                  Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+                                  && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+                                  ).collect(Collectors.toList());
+                              Integer fullPvcsCount = Optional.ofNullable(fullPvcsResults).map(l -> l.size()).orElse(0);
+                              List<String> fullPvcs = Optional.ofNullable(fullPvcsResults).map(l -> 
+                                  l.stream().map(o -> o.getJsonObject("metric").getString("persistentvolumeclaim")).collect(Collectors.toList())
+                                  ).orElse(Arrays.asList());
 
-                            if(projectName != null) {
-                              futures.add(Future.future(promise1 -> {
-                                try {
-                                  String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
-                                  String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
-                                  String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+                              if(projectName != null) {
+                                futures.add(Future.future(promise1 -> {
+                                  try {
+                                    String hubResource = String.format("%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId);
+                                    String clusterResource = String.format("%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""));
+                                    String projectResource = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
 
-                                  List<String> pageTemplatePaths = new ArrayList<>();
-                                  Path pagePath = Paths.get(config.getString(ComputateConfigKeys.TEMPLATE_PATH), "/en-us/user/project");
-                                  if(Files.exists(pagePath)) {
-                                    try(Stream<Path> stream = Files.walk(pagePath, 1, FileVisitOption.FOLLOW_LINKS)) {
-                                      stream.filter(Files::isRegularFile).filter(p -> 
-                                          p.getFileName().toString().equals(projectResource + ".htm")
-                                          || p.getFileName().toString().equals(projectResource + ".html")
-                                          || p.getFileName().toString().equals(projectResource + ".md")
-                                          ).forEach(path -> {
-                                        pageTemplatePaths.add(path.toAbsolutePath().toString());
-                                      });
+                                    List<String> pageTemplatePaths = new ArrayList<>();
+                                    Path pagePath = Paths.get(config.getString(ComputateConfigKeys.TEMPLATE_PATH), "/en-us/user/project");
+                                    if(Files.exists(pagePath)) {
+                                      try(Stream<Path> stream = Files.walk(pagePath, 1, FileVisitOption.FOLLOW_LINKS)) {
+                                        stream.filter(Files::isRegularFile).filter(p -> 
+                                            p.getFileName().toString().equals(projectResource + ".htm")
+                                            || p.getFileName().toString().equals(projectResource + ".html")
+                                            || p.getFileName().toString().equals(projectResource + ".md")
+                                            ).forEach(path -> {
+                                          pageTemplatePaths.add(path.toAbsolutePath().toString());
+                                        });
+                                      }
                                     }
-                                  }
-                                  String templatePath = pageTemplatePaths.stream().findFirst().orElse(null);
-                                  SiteRequest siteRequest = new SiteRequest();
-                                  siteRequest.setConfig(config);
-                                  siteRequest.setWebClient(webClient);
-                                  siteRequest.initDeepSiteRequest(siteRequest);
-                                  Jinjava jinjava = new Jinjava();
-                                  JsonObject body = new JsonObject();
-                                  if(coldfrontProject != null) {
-                                    body.put(Project.VAR_description, coldfrontProject.getJsonObject("project").getString("description").replace("\r\n", " ").replace("\n", " "));
-                                    body.put(Project.VAR_projectTitle, coldfrontProject.getJsonObject("project").getString("title").replace("\r\n", " ").replace("\n", " "));
-                                    body.put(Project.VAR_projectFieldOfScience, coldfrontProject.getJsonObject("project").getString("field_of_science").replace("\r\n", " ").replace("\n", " "));
-                                    body.put(Project.VAR_projectActive, "Active".equals(coldfrontProject.getString("status")));
-                                  }
-                                  importPageFromFile(body, vertx, config, jinjava, siteRequest, templatePath, Project.CLASS_SIMPLE_NAME).onSuccess(a -> {
-                                    body.put(Project.VAR_pk, projectResource);
-                                    body.put(Project.VAR_hubId, hubId);
-                                    body.put(Project.VAR_hubResource, hubResource);
-                                    body.put(Project.VAR_clusterName, clusterName);
-                                    body.put(Project.VAR_clusterResource, clusterResource);
-                                    body.put(Project.VAR_projectResource, projectResource);
-                                    body.put(Project.VAR_projectName, projectName);
-                                    body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
-                                    body.put(Project.VAR_vllmEnabled, vllmResult != null);
-                                    body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
-                                    body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
-                                    body.put(Project.VAR_podTerminatingCount, podTerminatingCount.toString());
-                                    body.put(Project.VAR_podsTerminating, new ArrayList<>(podsTerminating));
-                                    body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
-                                    body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
-                                    body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
+                                    String templatePath = pageTemplatePaths.stream().findFirst().orElse(null);
+                                    SiteRequest siteRequest = new SiteRequest();
+                                    siteRequest.setConfig(config);
+                                    siteRequest.setWebClient(webClient);
+                                    siteRequest.initDeepSiteRequest(siteRequest);
+                                    Jinjava jinjava = new Jinjava();
+                                    JsonObject body = new JsonObject();
+                                    if(coldfrontProject != null) {
+                                      body.put(Project.VAR_description, coldfrontProject.getJsonObject("project").getString("description").replace("\r\n", " ").replace("\n", " "));
+                                      body.put(Project.VAR_projectTitle, coldfrontProject.getJsonObject("project").getString("title").replace("\r\n", " ").replace("\n", " "));
+                                      body.put(Project.VAR_projectFieldOfScience, coldfrontProject.getJsonObject("project").getString("field_of_science").replace("\r\n", " ").replace("\n", " "));
+                                      body.put(Project.VAR_projectActive, "Active".equals(coldfrontProject.getString("status")));
+                                    }
+                                    importPageFromFile(body, vertx, config, jinjava, siteRequest, templatePath, Project.CLASS_SIMPLE_NAME).onSuccess(a -> {
+                                      body.put(Project.VAR_pk, projectResource);
+                                      body.put(Project.VAR_hubId, hubId);
+                                      body.put(Project.VAR_hubResource, hubResource);
+                                      body.put(Project.VAR_clusterName, clusterName);
+                                      body.put(Project.VAR_clusterResource, clusterResource);
+                                      body.put(Project.VAR_projectResource, projectResource);
+                                      body.put(Project.VAR_projectName, projectName);
+                                      body.put(Project.VAR_gpuEnabled, gpuDeviceResult != null);
+                                      body.put(Project.VAR_vllmEnabled, vllmResult != null);
+                                      body.put(Project.VAR_podRestartCount, totalPodsRestarting.toString());
+                                      body.put(Project.VAR_podsRestarting, new ArrayList<>(allPodsRestarting));
+                                      body.put(Project.VAR_podTerminatingCount, podTerminatingCount.toString());
+                                      body.put(Project.VAR_podsTerminating, new ArrayList<>(podsTerminating));
+                                      body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
+                                      body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
+                                      body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
 
-                                    JsonObject pageParams = new JsonObject();
-                                    pageParams.put("body", body);
-                                    pageParams.put("path", new JsonObject());
-                                    pageParams.put("cookie", new JsonObject());
-                                    pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
-                                    pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
-                                    JsonObject pageContext = new JsonObject().put("params", pageParams);
-                                    JsonObject pageRequest = new JsonObject().put("context", pageContext);
+                                      JsonObject pageParams = new JsonObject();
+                                      pageParams.put("body", body);
+                                      pageParams.put("path", new JsonObject());
+                                      pageParams.put("cookie", new JsonObject());
+                                      pageParams.put("query", new JsonObject().put("softCommit", true).put("q", "*:*").put("var", new JsonArray().add("refresh:false")));
+                                      pageParams.put("scopes", new JsonArray().add("GET").add("POST").add("PATCH").add("PUT"));
+                                      JsonObject pageContext = new JsonObject().put("params", pageParams);
+                                      JsonObject pageRequest = new JsonObject().put("context", pageContext);
 
-                                    vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
-                                        .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
-                                        .addHeader("action", String.format("putimport%sFuture", classSimpleName))
-                                        ).onSuccess(message -> {
-                                      ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
-                                        LOG.info(String.format("Imported %s project", projectResource));
-                                        promise1.complete();
+                                      vertx.eventBus().request(classApiAddress, pageRequest, new DeliveryOptions()
+                                          .setSendTimeout(config.getLong(ComputateConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME) * 1000)
+                                          .addHeader("action", String.format("putimport%sFuture", classSimpleName))
+                                          ).onSuccess(message -> {
+                                        ProjectEnUSApiServiceImpl.importProjectAuth(vertx, webClient, config, hubId, classSimpleName, classApiAddress, body).onSuccess(c -> {
+                                          LOG.info(String.format("Imported %s project", projectResource));
+                                          promise1.complete();
+                                        }).onFailure(ex -> {
+                                          promise1.fail(ex);
+                                        });
                                       }).onFailure(ex -> {
                                         LOG.error(String.format(importDataFail, classSimpleName), ex);
                                         promise1.fail(ex);
                                       });
                                     }).onFailure(ex -> {
-                                      LOG.error(String.format(importDataFail, classSimpleName), ex);
                                       promise1.fail(ex);
                                     });
-                                  }).onFailure(ex -> {
+                                  } catch(Exception ex) {
                                     LOG.error(String.format(importDataFail, classSimpleName), ex);
                                     promise1.fail(ex);
-                                  });
-                                } catch(Exception ex) {
-                                  LOG.error(String.format(importDataFail, classSimpleName), ex);
-                                  promise1.fail(ex);
-                                }
-                              }));
+                                  }
+                                }));
+                              }
                             }
-                          }
-                          Future.all(futures).onSuccess(b -> {
-                            promise.complete();
-                          }).onFailure(ex -> {
+                            Future.all(futures).onSuccess(b -> {
+                              promise.complete();
+                            }).onFailure(ex -> {
+                              LOG.error(String.format(importDataFail, classSimpleName), ex);
+                              promise.fail(ex);
+                            });
+                          } catch(Throwable ex) {
                             LOG.error(String.format(importDataFail, classSimpleName), ex);
                             promise.fail(ex);
-                          });
+                          }
                         }).onFailure(ex -> {
                           LOG.error(String.format(importDataFail, classSimpleName), ex);
                           promise.fail(ex);
@@ -704,6 +708,7 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       String groupName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
       String policyId = UUID.nameUUIDFromBytes(String.format("%s-group-%s", realmName, groupName).getBytes(StandardCharsets.UTF_8)).toString();
       String policyName = String.format("%s-%s-%s-%s-%s-%s-GET", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
+      String resourceName = String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
       String permissionName = String.format("%s-%s-%s-%s-%s-%s-GET-permission", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, Optional.ofNullable(clusterName).orElse(""), Project.CLASS_AUTH_RESOURCE, projectName);
       String classAuthResource = Project.CLASS_AUTH_RESOURCE;
       String[] defaultScopes = new String[] { "GET", "DELETE", "PATCH", "POST", "SuperAdmin", "Admin", "GETManager", "PUT" };
@@ -738,8 +743,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                       webClient.post(authPort, authHostName, String.format("/admin/realms/%s/clients/%s/authz/resource-server/resource", realmName, clientUuid)).ssl(authSsl)
                           .putHeader("Authorization", String.format("Bearer %s", adminToken))
                           .sendJson(new JsonObject()
-                              .put("name", classAuthResource)
-                              .put("displayName", classAuthResource)
+                              .put("name", resourceName)
+                              .put("displayName", resourceName)
                               .put("scopes", defaultScopes)
                               )
                           .expecting(HttpResponseExpectation.SC_CREATED.or(HttpResponseExpectation.SC_CONFLICT))

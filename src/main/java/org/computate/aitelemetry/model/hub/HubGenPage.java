@@ -553,7 +553,7 @@ public class HubGenPage extends HubGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-sitemap\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-sitemap\"></i>");
   }
 
   protected void _pageUriHub(Wrap<String> c) {

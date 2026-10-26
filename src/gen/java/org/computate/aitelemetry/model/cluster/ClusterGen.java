@@ -1,24 +1,19 @@
 package org.computate.aitelemetry.model.cluster;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import javax.measure.Quantity;
 import org.apache.commons.lang3.StringUtils;
-import org.computate.search.tool.SearchTool;
 import org.computate.search.wrap.Wrap;
 import org.computate.vertx.api.BaseApiServiceImpl;
 import org.computate.vertx.config.ComputateConfigKeys;
-import org.computate.vertx.search.list.SearchList;
 import org.computate.aitelemetry.config.ConfigKeys;
 import org.computate.aitelemetry.model.BaseModel;
 import org.computate.aitelemetry.model.hub.Hub;
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.pgclient.data.Path;
 import io.vertx.pgclient.data.Point;
-import io.vertx.pgclient.data.Polygon;
+import systems.uom.quantity.Information;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.model.BaseModel;
 import io.vertx.core.json.JsonObject;
@@ -75,6 +70,12 @@ import io.vertx.core.json.Json;
 import org.computate.vertx.serialize.vertx.JsonObjectDeserializer;
 import java.lang.Integer;
 import java.lang.Long;
+import javax.measure.Quantity;
+import systems.uom.quantity.Information;
+import tech.units.indriya.format.SimpleUnitFormat;
+import org.computate.vertx.tool.GeoTool;
+import org.computate.vertx.serialize.unit.QuantitySerializer;
+import org.computate.vertx.serialize.unit.QuantityDeserializer;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -276,7 +277,7 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/cluster";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/cluster";
 
-  public static final String Icon = "<i class=\"fa-regular fa-server\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-server\"></i>";
   public static final Integer Rows = 100;
 
 	///////////
@@ -1827,6 +1828,160 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return Optional.ofNullable(memoryBytesTotal).map(v -> v.toString()).orElse(null);
   }
 
+	///////////////////
+  // cephUsedBytes //
+	///////////////////
+
+
+  /**
+   *  The entity cephUsedBytes
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = QuantityDeserializer.class)
+  @JsonSerialize(using = QuantitySerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Quantity<Information> cephUsedBytes;
+
+  /**
+   * <br> The entity cephUsedBytes
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:cephUsedBytes">Find the entity cephUsedBytes in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _cephUsedBytes(Wrap<Quantity<Information>> w);
+
+  public Quantity<Information> getCephUsedBytes() {
+    return cephUsedBytes;
+  }
+
+  public void setCephUsedBytes(Quantity<Information> cephUsedBytes) {
+    this.cephUsedBytes = cephUsedBytes;
+  }
+  /** Example: 100 meters, 1 m, 2 feet, 1 ft **/
+  @JsonIgnore
+  public void setCephUsedBytes(String o) {
+    this.cephUsedBytes = Cluster.staticSetCephUsedBytes(siteRequest_, o);
+  }
+  public static Quantity<Information> staticSetCephUsedBytes(String o) {
+    if(o != null)
+      return GeoTool.parseQuantity(o).asType(systems.uom.quantity.Information.class);
+    return null;
+  }
+  public static Quantity<Information> staticSetCephUsedBytes(SiteRequest siteRequest_, String o) {
+    if(o != null)
+      return GeoTool.parseQuantity(o).asType(systems.uom.quantity.Information.class);
+    return null;
+  }
+  protected Cluster cephUsedBytesInit() {
+    Wrap<Quantity<Information>> cephUsedBytesWrap = new Wrap<Quantity<Information>>().var("cephUsedBytes");
+    if(cephUsedBytes == null) {
+      _cephUsedBytes(cephUsedBytesWrap);
+      Optional.ofNullable(cephUsedBytesWrap.getO()).ifPresent(o -> {
+        setCephUsedBytes(o);
+      });
+    }
+    return (Cluster)this;
+  }
+
+  public static String staticSearchCephUsedBytes(SiteRequest siteRequest_, Quantity o) {
+    return o.toString();
+  }
+
+  public static String staticSearchStrCephUsedBytes(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqCephUsedBytes(SiteRequest siteRequest_, String o) {
+    return Cluster.staticSearchCephUsedBytes(siteRequest_, Cluster.staticSetCephUsedBytes(siteRequest_, o)).toString();
+  }
+
+  public String sqlCephUsedBytes() {
+    return Optional.ofNullable(cephUsedBytes).map(o -> o.toString()).orElse(null);
+  }
+
+  public static String staticJsonCephUsedBytes(Quantity<Information> cephUsedBytes) {
+    return Optional.ofNullable(cephUsedBytes).map(v -> v.toString()).orElse(null);
+  }
+
+	///////////////////////
+  // cephCapacityBytes //
+	///////////////////////
+
+
+  /**
+   *  The entity cephCapacityBytes
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonDeserialize(using = QuantityDeserializer.class)
+  @JsonSerialize(using = QuantitySerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Quantity<Information> cephCapacityBytes;
+
+  /**
+   * <br> The entity cephCapacityBytes
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:cephCapacityBytes">Find the entity cephCapacityBytes in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _cephCapacityBytes(Wrap<Quantity<Information>> w);
+
+  public Quantity<Information> getCephCapacityBytes() {
+    return cephCapacityBytes;
+  }
+
+  public void setCephCapacityBytes(Quantity<Information> cephCapacityBytes) {
+    this.cephCapacityBytes = cephCapacityBytes;
+  }
+  /** Example: 100 meters, 1 m, 2 feet, 1 ft **/
+  @JsonIgnore
+  public void setCephCapacityBytes(String o) {
+    this.cephCapacityBytes = Cluster.staticSetCephCapacityBytes(siteRequest_, o);
+  }
+  public static Quantity<Information> staticSetCephCapacityBytes(String o) {
+    if(o != null)
+      return GeoTool.parseQuantity(o).asType(systems.uom.quantity.Information.class);
+    return null;
+  }
+  public static Quantity<Information> staticSetCephCapacityBytes(SiteRequest siteRequest_, String o) {
+    if(o != null)
+      return GeoTool.parseQuantity(o).asType(systems.uom.quantity.Information.class);
+    return null;
+  }
+  protected Cluster cephCapacityBytesInit() {
+    Wrap<Quantity<Information>> cephCapacityBytesWrap = new Wrap<Quantity<Information>>().var("cephCapacityBytes");
+    if(cephCapacityBytes == null) {
+      _cephCapacityBytes(cephCapacityBytesWrap);
+      Optional.ofNullable(cephCapacityBytesWrap.getO()).ifPresent(o -> {
+        setCephCapacityBytes(o);
+      });
+    }
+    return (Cluster)this;
+  }
+
+  public static String staticSearchCephCapacityBytes(SiteRequest siteRequest_, Quantity o) {
+    return o.toString();
+  }
+
+  public static String staticSearchStrCephCapacityBytes(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqCephCapacityBytes(SiteRequest siteRequest_, String o) {
+    return Cluster.staticSearchCephCapacityBytes(siteRequest_, Cluster.staticSetCephCapacityBytes(siteRequest_, o)).toString();
+  }
+
+  public String sqlCephCapacityBytes() {
+    return Optional.ofNullable(cephCapacityBytes).map(o -> o.toString()).orElse(null);
+  }
+
+  public static String staticJsonCephCapacityBytes(Quantity<Information> cephCapacityBytes) {
+    return Optional.ofNullable(cephCapacityBytes).map(v -> v.toString()).orElse(null);
+  }
+
 	////////////////
   // grafanaUrl //
 	////////////////
@@ -1879,6 +2034,68 @@ public abstract class ClusterGen<DEV> extends BaseModel {
 
   public static String staticSearchFqGrafanaUrl(SiteRequest siteRequest_, String o) {
     return Cluster.staticSearchGrafanaUrl(siteRequest_, Cluster.staticSetGrafanaUrl(siteRequest_, o)).toString();
+  }
+
+	///////////////////
+  // statusStorage //
+	///////////////////
+
+
+  /**
+   *  The entity statusStorage
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String statusStorage;
+
+  /**
+   * <br> The entity statusStorage
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:statusStorage">Find the entity statusStorage in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _statusStorage(Wrap<String> w);
+
+  public String getStatusStorage() {
+    return statusStorage;
+  }
+  public void setStatusStorage(String o) {
+    this.statusStorage = Cluster.staticSetStatusStorage(siteRequest_, o);
+  }
+  public static String staticSetStatusStorage(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Cluster statusStorageInit() {
+    Wrap<String> statusStorageWrap = new Wrap<String>().var("statusStorage");
+    if(statusStorage == null) {
+      _statusStorage(statusStorageWrap);
+      Optional.ofNullable(statusStorageWrap.getO()).ifPresent(o -> {
+        setStatusStorage(o);
+      });
+    }
+    return (Cluster)this;
+  }
+
+  public static String staticSearchStatusStorage(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrStatusStorage(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqStatusStorage(SiteRequest siteRequest_, String o) {
+    return Cluster.staticSearchStatusStorage(siteRequest_, Cluster.staticSetStatusStorage(siteRequest_, o)).toString();
+  }
+
+  public String sqlStatusStorage() {
+    return statusStorage;
+  }
+
+  public static String staticJsonStatusStorage(String statusStorage) {
+    return statusStorage;
   }
 
   //////////////
@@ -1934,7 +2151,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         vmsTotalInit();
         cpuCoresTotalInit();
         memoryBytesTotalInit();
+        cephUsedBytesInit();
+        cephCapacityBytesInit();
         grafanaUrlInit();
+        statusStorageInit();
         promise2.complete();
       } catch(Exception ex) {
         promise2.fail(ex);
@@ -2034,8 +2254,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return oCluster.cpuCoresTotal;
       case "memoryBytesTotal":
         return oCluster.memoryBytesTotal;
+      case "cephUsedBytes":
+        return oCluster.cephUsedBytes;
+      case "cephCapacityBytes":
+        return oCluster.cephCapacityBytes;
       case "grafanaUrl":
         return oCluster.grafanaUrl;
+      case "statusStorage":
+        return oCluster.statusStorage;
       default:
         return super.obtainBaseModel(var);
     }
@@ -2127,8 +2353,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSetCpuCoresTotal(siteRequest_, v);
     case "memoryBytesTotal":
       return Cluster.staticSetMemoryBytesTotal(siteRequest_, v);
+    case "cephUsedBytes":
+      return Cluster.staticSetCephUsedBytes(siteRequest_, v);
+    case "cephCapacityBytes":
+      return Cluster.staticSetCephCapacityBytes(siteRequest_, v);
     case "grafanaUrl":
       return Cluster.staticSetGrafanaUrl(siteRequest_, v);
+    case "statusStorage":
+      return Cluster.staticSetStatusStorage(siteRequest_, v);
       default:
         return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
     }
@@ -2342,8 +2574,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchCpuCoresTotal(siteRequest_, (Integer)o);
     case "memoryBytesTotal":
       return Cluster.staticSearchMemoryBytesTotal(siteRequest_, (Long)o);
+    case "cephUsedBytes":
+      return Cluster.staticSearchCephUsedBytes(siteRequest_, (Quantity<Information>)o);
+    case "cephCapacityBytes":
+      return Cluster.staticSearchCephCapacityBytes(siteRequest_, (Quantity<Information>)o);
     case "grafanaUrl":
       return Cluster.staticSearchGrafanaUrl(siteRequest_, (String)o);
+    case "statusStorage":
+      return Cluster.staticSearchStatusStorage(siteRequest_, (String)o);
       default:
         return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
     }
@@ -2404,8 +2642,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchStrCpuCoresTotal(siteRequest_, (Integer)o);
     case "memoryBytesTotal":
       return Cluster.staticSearchStrMemoryBytesTotal(siteRequest_, (Long)o);
+    case "cephUsedBytes":
+      return Cluster.staticSearchStrCephUsedBytes(siteRequest_, (String)o);
+    case "cephCapacityBytes":
+      return Cluster.staticSearchStrCephCapacityBytes(siteRequest_, (String)o);
     case "grafanaUrl":
       return Cluster.staticSearchStrGrafanaUrl(siteRequest_, (String)o);
+    case "statusStorage":
+      return Cluster.staticSearchStrStatusStorage(siteRequest_, (String)o);
       default:
         return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
     }
@@ -2466,8 +2710,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchFqCpuCoresTotal(siteRequest_, o);
     case "memoryBytesTotal":
       return Cluster.staticSearchFqMemoryBytesTotal(siteRequest_, o);
+    case "cephUsedBytes":
+      return Cluster.staticSearchFqCephUsedBytes(siteRequest_, o);
+    case "cephCapacityBytes":
+      return Cluster.staticSearchFqCephCapacityBytes(siteRequest_, o);
     case "grafanaUrl":
       return Cluster.staticSearchFqGrafanaUrl(siteRequest_, o);
+    case "statusStorage":
+      return Cluster.staticSearchFqStatusStorage(siteRequest_, o);
       default:
         return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
     }
@@ -2617,6 +2867,28 @@ public abstract class ClusterGen<DEV> extends BaseModel {
           setMemoryBytesTotal(val == null ? null : val.toString());
         }
         saves.add("memoryBytesTotal");
+        return val;
+      } else if("cephusedbytes".equals(varLower)) {
+        if(val instanceof Quantity) {
+          setCephUsedBytes((Quantity<Information>)val);
+        } else {
+          setCephUsedBytes(val == null ? null : val.toString());
+        }
+        saves.add("cephUsedBytes");
+        return val;
+      } else if("cephcapacitybytes".equals(varLower)) {
+        if(val instanceof Quantity) {
+          setCephCapacityBytes((Quantity<Information>)val);
+        } else {
+          setCephCapacityBytes(val == null ? null : val.toString());
+        }
+        saves.add("cephCapacityBytes");
+        return val;
+      } else if("statusstorage".equals(varLower)) {
+        if(val instanceof String) {
+          setStatusStorage((String)val);
+        }
+        saves.add("statusStorage");
         return val;
     } else {
       return super.persistBaseModel(var, val);
@@ -2780,10 +3052,28 @@ public abstract class ClusterGen<DEV> extends BaseModel {
           oCluster.setMemoryBytesTotal(memoryBytesTotal);
       }
 
+      if(saves.contains("cephUsedBytes")) {
+        String cephUsedBytes = (String)doc.get("cephUsedBytes_docvalues_string");
+        if(cephUsedBytes != null)
+          oCluster.setCephUsedBytes(cephUsedBytes);
+      }
+
+      if(saves.contains("cephCapacityBytes")) {
+        String cephCapacityBytes = (String)doc.get("cephCapacityBytes_docvalues_string");
+        if(cephCapacityBytes != null)
+          oCluster.setCephCapacityBytes(cephCapacityBytes);
+      }
+
       if(saves.contains("grafanaUrl")) {
         String grafanaUrl = (String)doc.get("grafanaUrl_docvalues_string");
         if(grafanaUrl != null)
           oCluster.setGrafanaUrl(grafanaUrl);
+      }
+
+      if(saves.contains("statusStorage")) {
+        String statusStorage = (String)doc.get("statusStorage_docvalues_string");
+        if(statusStorage != null)
+          oCluster.setStatusStorage(statusStorage);
       }
     }
 
@@ -2872,8 +3162,17 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     if(memoryBytesTotal != null) {
       doc.put("memoryBytesTotal_docvalues_long", memoryBytesTotal);
     }
+    if(cephUsedBytes != null) {
+      doc.put("cephUsedBytes_docvalues_string", cephUsedBytes.toString());
+    }
+    if(cephCapacityBytes != null) {
+      doc.put("cephCapacityBytes_docvalues_string", cephCapacityBytes.toString());
+    }
     if(grafanaUrl != null) {
       doc.put("grafanaUrl_docvalues_string", grafanaUrl);
+    }
+    if(statusStorage != null) {
+      doc.put("statusStorage_docvalues_string", statusStorage);
     }
     super.indexBaseModel(doc);
 
@@ -2927,8 +3226,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "cpuCoresTotal_docvalues_int";
       case "memoryBytesTotal":
         return "memoryBytesTotal_docvalues_long";
+      case "cephUsedBytes":
+        return "cephUsedBytes_docvalues_string";
+      case "cephCapacityBytes":
+        return "cephCapacityBytes_docvalues_string";
       case "grafanaUrl":
         return "grafanaUrl_docvalues_string";
+      case "statusStorage":
+        return "statusStorage_docvalues_string";
       default:
         return BaseModel.varStoredBaseModel(entityVar);
     }
@@ -2982,8 +3287,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "cpuCoresTotal_docvalues_int";
       case "memoryBytesTotal":
         return "memoryBytesTotal_docvalues_long";
+      case "cephUsedBytes":
+        return "cephUsedBytes_docvalues_string";
+      case "cephCapacityBytes":
+        return "cephCapacityBytes_docvalues_string";
       case "grafanaUrl":
         return "grafanaUrl_docvalues_string";
+      case "statusStorage":
+        return "statusStorage_docvalues_string";
       default:
         return BaseModel.varIndexedBaseModel(entityVar);
     }
@@ -3037,8 +3348,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "cpuCoresTotal";
       case "memoryBytesTotal_docvalues_long":
         return "memoryBytesTotal";
+      case "cephUsedBytes_docvalues_string":
+        return "cephUsedBytes";
+      case "cephCapacityBytes_docvalues_string":
+        return "cephCapacityBytes";
       case "grafanaUrl_docvalues_string":
         return "grafanaUrl";
+      case "statusStorage_docvalues_string":
+        return "statusStorage";
       default:
         return BaseModel.searchVarBaseModel(searchVar);
     }
@@ -3098,7 +3415,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     oCluster.setVmsTotal(Optional.ofNullable(doc.get("vmsTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
     oCluster.setCpuCoresTotal(Optional.ofNullable(doc.get("cpuCoresTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
     oCluster.setMemoryBytesTotal(Optional.ofNullable(doc.get("memoryBytesTotal_docvalues_long")).map(v -> v.toString()).orElse(null));
+    oCluster.setCephUsedBytes(Optional.ofNullable(doc.get("cephUsedBytes_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oCluster.setCephCapacityBytes(Optional.ofNullable(doc.get("cephCapacityBytes_docvalues_string")).map(v -> v.toString()).orElse(null));
     oCluster.setGrafanaUrl(Optional.ofNullable(doc.get("grafanaUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oCluster.setStatusStorage(Optional.ofNullable(doc.get("statusStorage_docvalues_string")).map(v -> v.toString()).orElse(null));
 
     super.storeBaseModel(doc);
   }
@@ -3158,8 +3478,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         apiRequest.addVars("cpuCoresTotal");
       if(!Objects.equals(memoryBytesTotal, original.getMemoryBytesTotal()))
         apiRequest.addVars("memoryBytesTotal");
+      if(!Objects.equals(cephUsedBytes, original.getCephUsedBytes()))
+        apiRequest.addVars("cephUsedBytes");
+      if(!Objects.equals(cephCapacityBytes, original.getCephCapacityBytes()))
+        apiRequest.addVars("cephCapacityBytes");
       if(!Objects.equals(grafanaUrl, original.getGrafanaUrl()))
         apiRequest.addVars("grafanaUrl");
+      if(!Objects.equals(statusStorage, original.getStatusStorage()))
+        apiRequest.addVars("statusStorage");
       super.apiRequestBaseModel();
     }
   }
@@ -3194,7 +3520,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(vmsTotal).map(v -> "vmsTotal: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(cpuCoresTotal).map(v -> "cpuCoresTotal: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(memoryBytesTotal).map(v -> "memoryBytesTotal: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(cephUsedBytes).map(v -> "cephUsedBytes: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(cephCapacityBytes).map(v -> "cephCapacityBytes: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(grafanaUrl).map(v -> "grafanaUrl: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(statusStorage).map(v -> "statusStorage: \"" + v + "\"\n" ).orElse(""));
     return sb.toString();
   }
 
@@ -3251,8 +3580,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static final String SET_cpuCoresTotal = "setCpuCoresTotal";
   public static final String VAR_memoryBytesTotal = "memoryBytesTotal";
   public static final String SET_memoryBytesTotal = "setMemoryBytesTotal";
+  public static final String VAR_cephUsedBytes = "cephUsedBytes";
+  public static final String SET_cephUsedBytes = "setCephUsedBytes";
+  public static final String VAR_cephCapacityBytes = "cephCapacityBytes";
+  public static final String SET_cephCapacityBytes = "setCephCapacityBytes";
   public static final String VAR_grafanaUrl = "grafanaUrl";
   public static final String SET_grafanaUrl = "setGrafanaUrl";
+  public static final String VAR_statusStorage = "statusStorage";
+  public static final String SET_statusStorage = "setStatusStorage";
 
   public static List<String> varsQForClass() {
     return Cluster.varsQCluster(new ArrayList<String>());
@@ -3285,6 +3620,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     vars.add(VAR_vmsTotal);
     vars.add(VAR_cpuCoresTotal);
     vars.add(VAR_memoryBytesTotal);
+    vars.add(VAR_cephUsedBytes);
+    vars.add(VAR_cephCapacityBytes);
     vars.add(VAR_grafanaUrl);
     BaseModel.varsFqBaseModel(vars);
     return vars;
@@ -3328,7 +3665,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_vmsTotal = "VMs total";
   public static final String DISPLAY_NAME_cpuCoresTotal = "CPU cores total";
   public static final String DISPLAY_NAME_memoryBytesTotal = "memory bytes total";
+  public static final String DISPLAY_NAME_cephUsedBytes = "Ceph used bytes";
+  public static final String DISPLAY_NAME_cephCapacityBytes = "Ceph capacity bytes";
   public static final String DISPLAY_NAME_grafanaUrl = "Grafana GPU utilization";
+  public static final String DISPLAY_NAME_statusStorage = "Storage";
 
   @Override
   public String idForClass() {
@@ -3421,8 +3761,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return patch ? SET_cpuCoresTotal : VAR_cpuCoresTotal;
     case VAR_memoryBytesTotal:
       return patch ? SET_memoryBytesTotal : VAR_memoryBytesTotal;
+    case VAR_cephUsedBytes:
+      return patch ? SET_cephUsedBytes : VAR_cephUsedBytes;
+    case VAR_cephCapacityBytes:
+      return patch ? SET_cephCapacityBytes : VAR_cephCapacityBytes;
     case VAR_grafanaUrl:
       return patch ? SET_grafanaUrl : VAR_grafanaUrl;
+    case VAR_statusStorage:
+      return patch ? SET_statusStorage : VAR_statusStorage;
     default:
       return BaseModel.varJsonBaseModel(var, patch);
     }
@@ -3479,8 +3825,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return DISPLAY_NAME_cpuCoresTotal;
     case VAR_memoryBytesTotal:
       return DISPLAY_NAME_memoryBytesTotal;
+    case VAR_cephUsedBytes:
+      return DISPLAY_NAME_cephUsedBytes;
+    case VAR_cephCapacityBytes:
+      return DISPLAY_NAME_cephCapacityBytes;
     case VAR_grafanaUrl:
       return DISPLAY_NAME_grafanaUrl;
+    case VAR_statusStorage:
+      return DISPLAY_NAME_statusStorage;
     default:
       return BaseModel.displayNameBaseModel(var);
     }
@@ -3536,8 +3888,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return "The total number of CPU cores on this cluster. ";
     case VAR_memoryBytesTotal:
       return "The total number of memory bytes on this cluster. ";
+    case VAR_cephUsedBytes:
+      return "The amount of Ceph storage used on this cluster. ";
+    case VAR_cephCapacityBytes:
+      return "The amount of Ceph storage total capacity on this cluster. ";
     case VAR_grafanaUrl:
       return "Explore this cluster's GPU utilization in Grafana. ";
+    case VAR_statusStorage:
+      return "{{ 'Warning, no storage metrics were found. The system cannot determine the health of the storage of this cluster. ' if (cephUsedBytes is not defined or cephCapacityBytes is not defined) else 'Ceph storage status' }}";
       default:
         return BaseModel.descriptionBaseModel(var);
     }
@@ -3591,7 +3949,13 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return "Integer";
     case VAR_memoryBytesTotal:
       return "Long";
+    case VAR_cephUsedBytes:
+      return "Quantity";
+    case VAR_cephCapacityBytes:
+      return "Quantity";
     case VAR_grafanaUrl:
+      return "String";
+    case VAR_statusStorage:
       return "String";
       default:
         return BaseModel.classSimpleNameBaseModel(var);
@@ -3612,41 +3976,47 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static Integer htmRowCluster(String var) {
     switch(var) {
     case VAR_hubId:
-      return 3;
+      return 4;
     case VAR_clusterName:
-      return 3;
+      return 4;
     case VAR_hubCluster:
-      return 3;
+      return 4;
     case VAR_clusterNameMetrics:
-      return 3;
+      return 4;
     case VAR_uniqueName:
-      return 3;
+      return 4;
     case VAR_description:
-      return 3;
+      return 4;
     case VAR_location:
-      return 3;
+      return 4;
     case VAR_id:
-      return 5;
+      return 6;
     case VAR_ngsildTenant:
-      return 5;
+      return 6;
     case VAR_ngsildPath:
-      return 5;
+      return 6;
     case VAR_ngsildContext:
-      return 5;
+      return 6;
     case VAR_ngsildData:
-      return 5;
+      return 6;
     case VAR_aiNodesTotal:
-      return 4;
+      return 5;
     case VAR_gpuDevicesTotal:
-      return 4;
+      return 5;
     case VAR_vmsTotal:
-      return 4;
+      return 5;
     case VAR_cpuCoresTotal:
-      return 4;
+      return 5;
     case VAR_memoryBytesTotal:
-      return 4;
+      return 5;
+    case VAR_cephUsedBytes:
+      return 5;
+    case VAR_cephCapacityBytes:
+      return 5;
     case VAR_grafanaUrl:
-      return 4;
+      return 5;
+    case VAR_statusStorage:
+      return 3;
       default:
         return BaseModel.htmRowBaseModel(var);
     }
@@ -3688,8 +4058,14 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return 4;
     case VAR_memoryBytesTotal:
       return 4;
+    case VAR_cephUsedBytes:
+      return 4;
+    case VAR_cephCapacityBytes:
+      return 4;
     case VAR_grafanaUrl:
       return 3;
+    case VAR_statusStorage:
+      return 0;
       default:
         return BaseModel.htmCellBaseModel(var);
     }

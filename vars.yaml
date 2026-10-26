@@ -184,7 +184,7 @@ SPINE_INSTANCES: 8
 # The number of Vert.x worker instances to run per pod. 
 WORKER_POOL_SIZE: 2
 # The max event loop execute time in seconds. 
-VERTX_MAX_EVENT_LOOP_EXECUTE_TIME: 30
+VERTX_MAX_EVENT_LOOP_EXECUTE_TIME: 300
 # The max worker execute time in seconds. 
 VERTX_MAX_WORKER_EXECUTE_TIME: 6000
 # The time before showing a warning of blocking threads in seconds. 
@@ -301,7 +301,7 @@ ZOOKEEPER_NAMESPACE: "{{ lookup('env', 'ZOOKEEPER_NAMESPACE') | default('zookeep
 ZOOKEEPER_HOST_NAME: "{{ lookup('env', 'ZOOKEEPER_HOST_NAME') | default('console-openshift-console.' + OPENSHIFT_APPS_DOMAIN, true) }}"
 # The default port that Zookeeper runs to manage the cluster. 
 ZOOKEEPER_PORT: "{{ lookup('env', 'ZOOKEEPER_PORT') | default('30081', true) }}"
-ZOOKEEPER_MAX_RETRIES: 0
+ZOOKEEPER_MAX_RETRIES: 100
 ZOOKEEPER_BASE_SLEEP_TIME_MILLIS: 5000
 ZOOKEEPER_MAX_SLEEP_MILLIS: 5000
 ZOOKEEPER_CONNECTION_TIMEOUT_MILLIS: 3000

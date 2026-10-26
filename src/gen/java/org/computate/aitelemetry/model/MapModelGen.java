@@ -244,7 +244,7 @@ public abstract class MapModelGen<DEV> extends BaseModel {
   public static final String SearchPage_enUS_StringFormatUri = "/en-us/search/map-model";
   public static final String SearchPage_enUS_StringFormatUrl = "%s/en-us/search/map-model";
 
-  public static final String Icon = "<i class=\"fa-regular  fa-map-location-dot\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }}  fa-map-location-dot\"></i>";
   public static final Integer Rows = 100;
 
 	//////////

@@ -8,6 +8,8 @@ import io.vertx.pgclient.data.Point;
 import io.vertx.core.json.JsonObject;
 import java.lang.Integer;
 import java.lang.Long;
+import javax.measure.Quantity;
+import systems.uom.quantity.Information;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -35,7 +37,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.Arrays;
-import javax.measure.Quantity;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Length;
 import java.math.BigDecimal;
@@ -576,7 +577,7 @@ public class ClusterGenPage extends ClusterGenPageGen<PageLayout> {
 
   @Override
   protected void _classIcon(Wrap<String> c) {
-      c.o("<i class=\"fa-regular fa-server\"></i>");
+      c.o("<i class=\"{{ FONTAWESOME_STYLE }} fa-server\"></i>");
   }
 
   protected void _pageUriCluster(Wrap<String> c) {

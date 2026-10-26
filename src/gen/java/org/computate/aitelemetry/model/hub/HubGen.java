@@ -1,23 +1,7 @@
 package org.computate.aitelemetry.model.hub;
 
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
-import org.computate.search.tool.SearchTool;
 import org.computate.search.wrap.Wrap;
-import org.computate.vertx.api.BaseApiServiceImpl;
-import org.computate.vertx.config.ComputateConfigKeys;
-import org.computate.vertx.search.list.SearchList;
-import org.computate.aitelemetry.config.ConfigKeys;
 import org.computate.aitelemetry.model.BaseModel;
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.pgclient.data.Path;
-import io.vertx.pgclient.data.Point;
-import io.vertx.pgclient.data.Polygon;
 import org.computate.aitelemetry.request.SiteRequest;
 import org.computate.aitelemetry.model.BaseModel;
 import io.vertx.core.json.JsonObject;
@@ -253,7 +237,7 @@ public abstract class HubGen<DEV> extends BaseModel {
   public static final String DELETEFilter_enUS_StringFormatUri = "/en-us/api/hub";
   public static final String DELETEFilter_enUS_StringFormatUrl = "%s/en-us/api/hub";
 
-  public static final String Icon = "<i class=\"fa-regular fa-sitemap\"></i>";
+  public static final String Icon = "<i class=\"{{ FONTAWESOME_STYLE }} fa-sitemap\"></i>";
 
 	/////////////
   // hubName //

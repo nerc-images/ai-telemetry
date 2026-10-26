@@ -208,7 +208,7 @@ public class BaseResult extends BaseResultGen<Object> implements ComputateBaseRe
    * DisplayName: manage
    * Description: Manage this
    * Link: true
-   * Icon: <i class="fa-regular fa-pen-to-square"></i>
+   * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-pen-to-square"></i>
    * VarUrlEditPage: true
    * StringFormat: null
    */

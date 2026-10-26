@@ -38,7 +38,7 @@ import io.vertx.core.json.JsonObject;
  * Order: 4
  * Description: Read the latest articles to learn more
  * AName: an article
- * Icon: <i class="fa-regular fa-newspaper"></i>
+ * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-newspaper"></i>
  * Sort.desc: courseNum
  * Sort.desc: lessonNum
  * Rows: 100

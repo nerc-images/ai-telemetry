@@ -141,7 +141,7 @@ public class TenantEnUSApiServiceImpl extends TenantEnUSGenApiServiceImpl {
       String[] defaultScopes = new String[] { "GET", "DELETE", "PATCH", "POST", "SuperAdmin", "Admin", "GETManager", "PUT" };
       obtainKeycloakAdminToken().onSuccess(adminToken -> {
         obtainClientUuid(adminToken, realmName, clientId).onSuccess(clientUuid -> {
-          authorizeGroupData(adminToken, realmName, clientId, clientUuid, Tenant.CLASS_AUTH_RESOURCE, groupName, new String[] { scope }, defaultScopes).onSuccess(a -> {
+          authorizeGroupData(adminToken, realmName, clientId, clientUuid, resourceName, groupName, new String[] { scope }, defaultScopes).onSuccess(a -> {
             LOG.info(String.format("Successfully granted %s access to %s", scope, resourceName));
             promise.complete();
           }).onFailure(ex -> promise.fail(ex));
